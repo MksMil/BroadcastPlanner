@@ -1,18 +1,25 @@
-//
-//  CameraListView.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 03.10.2023.
-//
-
 import SwiftUI
 
 struct CameraListView: View {
+    
+    @EnvironmentObject var storage: Storage
+    
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        
+        List(storage.cameras) { cam in
+            CameraListCellView(camera: cam)
+                .listRowInsets(.init(top: 0, leading: 10, bottom: 0, trailing: 10))
+                .listRowBackground(Color.clear)
+                .onTapGesture { storage.select(cam: cam) }
+            
+        }
+        .listStyle(.inset)
+        .listRowSpacing(10)
+        
     }
 }
 
 #Preview {
-    CameraListView()
+    CameraListView().environmentObject(Storage(cameras: MockData.sampleCameras))
 }

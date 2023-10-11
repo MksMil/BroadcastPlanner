@@ -7,19 +7,63 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		297EC5692ACC2DD0009BB06C /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 297EC5682ACC2DD0009BB06C /* Storage.swift */; };
+		297EC56E2ACC5116009BB06C /* AddCameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 297EC56D2ACC5116009BB06C /* AddCameraView.swift */; };
+		297EC5712ACDB567009BB06C /* AddUserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 297EC5702ACDB567009BB06C /* AddUserView.swift */; };
+		297EC5732AD3E6D8009BB06C /* SingleCameraStadiumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 297EC5722AD3E6D8009BB06C /* SingleCameraStadiumView.swift */; };
 		29C041C02AC556CE008B3E1F /* BroadcastPlannerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041BF2AC556CE008B3E1F /* BroadcastPlannerApp.swift */; };
-		29C041C22AC556CE008B3E1F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041C12AC556CE008B3E1F /* ContentView.swift */; };
+		29C041C22AC556CE008B3E1F /* EventMainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041C12AC556CE008B3E1F /* EventMainView.swift */; };
 		29C041C42AC556D2008B3E1F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 29C041C32AC556D2008B3E1F /* Assets.xcassets */; };
 		29C041C82AC556D2008B3E1F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 29C041C72AC556D2008B3E1F /* Preview Assets.xcassets */; };
+		29C041D02AC557E1008B3E1F /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041CF2AC557E0008B3E1F /* User.swift */; };
+		29C041D22AC55C7A008B3E1F /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041D12AC55C7A008B3E1F /* Event.swift */; };
+		29C041D42AC55CEA008B3E1F /* CreativeGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041D32AC55CEA008B3E1F /* CreativeGroup.swift */; };
+		29C041D62AC55D11008B3E1F /* Broadcaster.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041D52AC55D11008B3E1F /* Broadcaster.swift */; };
+		29C041D82AC55D4A008B3E1F /* Stadium.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041D72AC55D4A008B3E1F /* Stadium.swift */; };
+		29C041DB2AC5620A008B3E1F /* StadiumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041DA2AC5620A008B3E1F /* StadiumView.swift */; };
+		29C041DD2AC56AE8008B3E1F /* EventInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041DC2AC56AE8008B3E1F /* EventInfoView.swift */; };
+		29C041DF2AC5B133008B3E1F /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041DE2AC5B133008B3E1F /* CameraView.swift */; };
+		29C041E32AC6988B008B3E1F /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041E22AC6988B008B3E1F /* NetworkManager.swift */; };
+		29C041E72AC69A11008B3E1F /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041E62AC69A11008B3E1F /* Camera.swift */; };
+		29C041E92AC69A5D008B3E1F /* MockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041E82AC69A5D008B3E1F /* MockData.swift */; };
+		29C041EB2ACBE4CC008B3E1F /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041EA2ACBE4CC008B3E1F /* MainTabView.swift */; };
+		29C041ED2ACBE96D008B3E1F /* EventMainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041EC2ACBE96D008B3E1F /* EventMainViewModel.swift */; };
+		29C041EF2ACBF3AE008B3E1F /* DeepConcaveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041EE2ACBF3AE008B3E1F /* DeepConcaveView.swift */; };
+		29C041F22ACBF45B008B3E1F /* Color+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041F12ACBF45B008B3E1F /* Color+Ext.swift */; };
+		29C041F42ACBF65D008B3E1F /* ShalowConcaveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041F32ACBF65D008B3E1F /* ShalowConcaveView.swift */; };
+		29C041F62ACC0AE2008B3E1F /* CameraListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041F52ACC0AE2008B3E1F /* CameraListView.swift */; };
+		29C041F82ACC0AFD008B3E1F /* CameraListCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041F72ACC0AFC008B3E1F /* CameraListCellView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		297EC5682ACC2DD0009BB06C /* Storage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storage.swift; sourceTree = "<group>"; };
+		297EC56D2ACC5116009BB06C /* AddCameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCameraView.swift; sourceTree = "<group>"; };
+		297EC5702ACDB567009BB06C /* AddUserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddUserView.swift; sourceTree = "<group>"; };
+		297EC5722AD3E6D8009BB06C /* SingleCameraStadiumView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleCameraStadiumView.swift; sourceTree = "<group>"; };
 		29C041BC2AC556CE008B3E1F /* BroadcastPlanner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BroadcastPlanner.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		29C041BF2AC556CE008B3E1F /* BroadcastPlannerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BroadcastPlannerApp.swift; sourceTree = "<group>"; };
-		29C041C12AC556CE008B3E1F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		29C041C12AC556CE008B3E1F /* EventMainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventMainView.swift; sourceTree = "<group>"; };
 		29C041C32AC556D2008B3E1F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		29C041C52AC556D2008B3E1F /* BroadcastPlanner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BroadcastPlanner.entitlements; sourceTree = "<group>"; };
 		29C041C72AC556D2008B3E1F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		29C041CF2AC557E0008B3E1F /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		29C041D12AC55C7A008B3E1F /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
+		29C041D32AC55CEA008B3E1F /* CreativeGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreativeGroup.swift; sourceTree = "<group>"; };
+		29C041D52AC55D11008B3E1F /* Broadcaster.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Broadcaster.swift; sourceTree = "<group>"; };
+		29C041D72AC55D4A008B3E1F /* Stadium.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stadium.swift; sourceTree = "<group>"; };
+		29C041DA2AC5620A008B3E1F /* StadiumView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StadiumView.swift; sourceTree = "<group>"; };
+		29C041DC2AC56AE8008B3E1F /* EventInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventInfoView.swift; sourceTree = "<group>"; };
+		29C041DE2AC5B133008B3E1F /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
+		29C041E22AC6988B008B3E1F /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
+		29C041E62AC69A11008B3E1F /* Camera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
+		29C041E82AC69A5D008B3E1F /* MockData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockData.swift; sourceTree = "<group>"; };
+		29C041EA2ACBE4CC008B3E1F /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		29C041EC2ACBE96D008B3E1F /* EventMainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventMainViewModel.swift; sourceTree = "<group>"; };
+		29C041EE2ACBF3AE008B3E1F /* DeepConcaveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepConcaveView.swift; sourceTree = "<group>"; };
+		29C041F12ACBF45B008B3E1F /* Color+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Ext.swift"; sourceTree = "<group>"; };
+		29C041F32ACBF65D008B3E1F /* ShalowConcaveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShalowConcaveView.swift; sourceTree = "<group>"; };
+		29C041F52ACC0AE2008B3E1F /* CameraListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraListView.swift; sourceTree = "<group>"; };
+		29C041F72ACC0AFC008B3E1F /* CameraListCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraListCellView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -33,6 +77,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		297EC56C2ACC50FA009BB06C /* AddCameraView */ = {
+			isa = PBXGroup;
+			children = (
+				297EC56D2ACC5116009BB06C /* AddCameraView.swift */,
+			);
+			path = AddCameraView;
+			sourceTree = "<group>";
+		};
+		297EC56F2ACDB549009BB06C /* UserTab */ = {
+			isa = PBXGroup;
+			children = (
+				297EC5702ACDB567009BB06C /* AddUserView.swift */,
+			);
+			path = UserTab;
+			sourceTree = "<group>";
+		};
 		29C041B32AC556CE008B3E1F = {
 			isa = PBXGroup;
 			children = (
@@ -53,7 +113,10 @@
 			isa = PBXGroup;
 			children = (
 				29C041BF2AC556CE008B3E1F /* BroadcastPlannerApp.swift */,
-				29C041C12AC556CE008B3E1F /* ContentView.swift */,
+				29C041E02AC69864008B3E1F /* Utilities */,
+				29C041CE2AC557D1008B3E1F /* Models */,
+				29C041D92AC561F2008B3E1F /* Views */,
+				29C041E42AC69976008B3E1F /* Screens */,
 				29C041C32AC556D2008B3E1F /* Assets.xcassets */,
 				29C041C52AC556D2008B3E1F /* BroadcastPlanner.entitlements */,
 				29C041C62AC556D2008B3E1F /* Preview Content */,
@@ -67,6 +130,89 @@
 				29C041C72AC556D2008B3E1F /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		29C041CE2AC557D1008B3E1F /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				29C041CF2AC557E0008B3E1F /* User.swift */,
+				29C041D12AC55C7A008B3E1F /* Event.swift */,
+				29C041D32AC55CEA008B3E1F /* CreativeGroup.swift */,
+				29C041D52AC55D11008B3E1F /* Broadcaster.swift */,
+				29C041D72AC55D4A008B3E1F /* Stadium.swift */,
+				29C041E62AC69A11008B3E1F /* Camera.swift */,
+				29C041E82AC69A5D008B3E1F /* MockData.swift */,
+				297EC5682ACC2DD0009BB06C /* Storage.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		29C041D92AC561F2008B3E1F /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				29C041DA2AC5620A008B3E1F /* StadiumView.swift */,
+				29C041DC2AC56AE8008B3E1F /* EventInfoView.swift */,
+				29C041DE2AC5B133008B3E1F /* CameraView.swift */,
+				29C041EE2ACBF3AE008B3E1F /* DeepConcaveView.swift */,
+				29C041F32ACBF65D008B3E1F /* ShalowConcaveView.swift */,
+				29C041F92ACC0BE7008B3E1F /* CameraList */,
+				297EC5722AD3E6D8009BB06C /* SingleCameraStadiumView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		29C041E02AC69864008B3E1F /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				29C041F02ACBF443008B3E1F /* Extensions */,
+				29C041E12AC69872008B3E1F /* Network */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		29C041E12AC69872008B3E1F /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				29C041E22AC6988B008B3E1F /* NetworkManager.swift */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
+		29C041E42AC69976008B3E1F /* Screens */ = {
+			isa = PBXGroup;
+			children = (
+				297EC56F2ACDB549009BB06C /* UserTab */,
+				29C041EA2ACBE4CC008B3E1F /* MainTabView.swift */,
+				29C041E52AC6997C008B3E1F /* EventMain */,
+			);
+			path = Screens;
+			sourceTree = "<group>";
+		};
+		29C041E52AC6997C008B3E1F /* EventMain */ = {
+			isa = PBXGroup;
+			children = (
+				297EC56C2ACC50FA009BB06C /* AddCameraView */,
+				29C041C12AC556CE008B3E1F /* EventMainView.swift */,
+				29C041EC2ACBE96D008B3E1F /* EventMainViewModel.swift */,
+			);
+			path = EventMain;
+			sourceTree = "<group>";
+		};
+		29C041F02ACBF443008B3E1F /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				29C041F12ACBF45B008B3E1F /* Color+Ext.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		29C041F92ACC0BE7008B3E1F /* CameraList */ = {
+			isa = PBXGroup;
+			children = (
+				29C041F52ACC0AE2008B3E1F /* CameraListView.swift */,
+				29C041F72ACC0AFC008B3E1F /* CameraListCellView.swift */,
+			);
+			path = CameraList;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -139,8 +285,30 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				29C041C22AC556CE008B3E1F /* ContentView.swift in Sources */,
+				29C041ED2ACBE96D008B3E1F /* EventMainViewModel.swift in Sources */,
+				29C041D42AC55CEA008B3E1F /* CreativeGroup.swift in Sources */,
+				29C041D82AC55D4A008B3E1F /* Stadium.swift in Sources */,
+				29C041D22AC55C7A008B3E1F /* Event.swift in Sources */,
+				29C041F42ACBF65D008B3E1F /* ShalowConcaveView.swift in Sources */,
+				297EC5712ACDB567009BB06C /* AddUserView.swift in Sources */,
+				29C041F22ACBF45B008B3E1F /* Color+Ext.swift in Sources */,
+				29C041E92AC69A5D008B3E1F /* MockData.swift in Sources */,
+				297EC56E2ACC5116009BB06C /* AddCameraView.swift in Sources */,
+				29C041DF2AC5B133008B3E1F /* CameraView.swift in Sources */,
+				297EC5692ACC2DD0009BB06C /* Storage.swift in Sources */,
+				29C041E32AC6988B008B3E1F /* NetworkManager.swift in Sources */,
+				29C041D62AC55D11008B3E1F /* Broadcaster.swift in Sources */,
+				297EC5732AD3E6D8009BB06C /* SingleCameraStadiumView.swift in Sources */,
+				29C041EF2ACBF3AE008B3E1F /* DeepConcaveView.swift in Sources */,
+				29C041F82ACC0AFD008B3E1F /* CameraListCellView.swift in Sources */,
+				29C041C22AC556CE008B3E1F /* EventMainView.swift in Sources */,
+				29C041DD2AC56AE8008B3E1F /* EventInfoView.swift in Sources */,
+				29C041F62ACC0AE2008B3E1F /* CameraListView.swift in Sources */,
+				29C041E72AC69A11008B3E1F /* Camera.swift in Sources */,
 				29C041C02AC556CE008B3E1F /* BroadcastPlannerApp.swift in Sources */,
+				29C041EB2ACBE4CC008B3E1F /* MainTabView.swift in Sources */,
+				29C041DB2AC5620A008B3E1F /* StadiumView.swift in Sources */,
+				29C041D02AC557E1008B3E1F /* User.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -282,9 +450,8 @@
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.6;
@@ -320,9 +487,8 @@
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.6;

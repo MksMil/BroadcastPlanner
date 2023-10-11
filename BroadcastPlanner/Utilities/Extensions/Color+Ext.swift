@@ -1,8 +1,7 @@
-//
-//  Color+Ext.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 03.10.2023.
-//
+import SwiftUI
 
-import Foundation
+extension Color{
+    static let mainBackgroundColor = Color("MainBackgroundColor")
+    static let lightBackgroundColor = Color("LightBackgroundColor")
+    static let darkBackgroundColor = Color("DarkBackgroundColor")
+}

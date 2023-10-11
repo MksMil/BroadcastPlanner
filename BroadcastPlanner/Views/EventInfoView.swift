@@ -1,18 +1,18 @@
-//
-//  EventInfoView.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 28.09.2023.
-//
-
 import SwiftUI
 
 struct EventInfoView: View {
+    
+    var event: Event
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        HStack{
+            Text(event.date.formatted(date: .abbreviated,
+                                      time: .shortened))
+            
+        }
     }
 }
 
 #Preview {
-    EventInfoView()
+    EventInfoView(event: MockData.sampleEvent)
 }

@@ -1,21 +1,44 @@
-//
-//  CameraListCellView.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 03.10.2023.
-//
-
 import SwiftUI
 
 struct CameraListCellView: View {
+    
+    var camera: Camera
+    
     var body: some View {
-        ZStack{
-            ShalowConcaveView(cornerRadius: 8, linewidth: 2)
-            Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-        }
+
+            RoundedRectangle(cornerRadius: 8)
+                .fill(.gray)
+                .opacity(0.3)
+                .frame(height: 70)
+                .overlay {
+                    ZStack{
+                        RoundedRectangle(cornerRadius: 8)
+                            .strokeBorder(lineWidth: /*@START_MENU_TOKEN@*/1.0/*@END_MENU_TOKEN@*/)
+                            .frame( height: 70)
+                            .background {
+                                Color.clear
+                            }
+                        HStack{
+                            camera.cameraMan.image
+                                .resizable()
+                                .frame(width: 50, height: 50)
+                                .aspectRatio(contentMode: .fit)
+                                .padding(.horizontal)
+                            
+                            VStack{
+                                Text(camera.cameraMan.name )
+                                    .font(.title)
+                                    .bold()
+                                Text(camera.position.rawValue)
+                                    .font(.subheadline)
+                                    .italic()
+                            }
+                        }
+                    }
+                }
     }
 }
 
 #Preview {
-    CameraListCellView()
+    CameraListCellView(camera: Camera(position: .dressingRoom))
 }
