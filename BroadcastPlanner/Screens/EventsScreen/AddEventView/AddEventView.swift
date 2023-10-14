@@ -1,0 +1,88 @@
+//
+//  AddEventView.swift
+//  BroadcastPlanner
+//
+//  Created by Миляев Максим on 14.10.2023.
+//
+
+import SwiftUI
+
+struct AddEventView: View {
+    
+    @EnvironmentObject var storage: Storage
+    
+    @State private var matchDay: Date = Date()
+    @State private var startTime: Date = Date()
+    @State private var sport: String?
+    @State private var homeTeam: String?
+    @State private var awayTeam: String?
+    
+    @State private var broadcaster: Broadcaster?
+    @State private var creativeGroup: CreativeGroup?
+    
+    
+    var body: some View {
+        ZStack{
+            Color.lightBackgroundColor.ignoresSafeArea()
+            VStack{
+                Form{
+                    
+                    DatePicker(
+                        "Match Day",
+                        selection: $matchDay,
+                        displayedComponents: .date
+                    )
+                    
+                    DatePicker(
+                        "Start time",
+                        selection: $startTime,
+                        displayedComponents: .hourAndMinute
+                    )
+                    .datePickerStyle(.automatic)
+                    
+                    Divider()
+                        .listRowBackground(Color.lightBackgroundColor)
+                    
+                    Text(sport ?? "no sport selected")
+                    Text(homeTeam ?? "no home team selected")
+                    Text(awayTeam ?? "no away team selected")
+                    
+                    Divider()
+                        .listRowBackground(Color.lightBackgroundColor)
+                    
+                    Text(broadcaster?.name ?? "no broadcaster selected")
+                    Text(creativeGroup?.name ?? "no creative group selected")
+                }
+//                .listRowBackground(Color.lightBackgroundColor)
+                  .scrollContentBackground(.hidden)
+                  
+                
+
+                Button {
+                    addEvent()
+                } label: {
+                    RoundedRectangle(cornerRadius: 10)
+                        .strokeBorder(Color.orange,lineWidth: 2)
+                        .background{
+                            Color.blue
+//                                .opacity(0.2)
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                        }
+                    
+                        .frame(width: 150, height: 50)
+                        .overlay {
+                            Text("Add Event")
+                        }
+                }
+                .padding(.bottom,50)
+            }
+        }
+    }
+    func addEvent(){
+        
+    }
+}
+
+#Preview {
+    AddEventView().environmentObject(Storage())
+}

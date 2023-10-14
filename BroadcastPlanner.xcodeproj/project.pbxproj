@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		290B816B2AD7F01100B858F1 /* CameraDirection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 290B816A2AD7F01100B858F1 /* CameraDirection.swift */; };
+		290B816D2AD7F03900B858F1 /* CameraPosition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 290B816C2AD7F03900B858F1 /* CameraPosition.swift */; };
+		290B81702AD7FCE700B858F1 /* MainEventsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 290B816F2AD7FCE700B858F1 /* MainEventsList.swift */; };
+		290B81752AD9149800B858F1 /* MotionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 290B81742AD9149800B858F1 /* MotionManager.swift */; };
 		297EC5692ACC2DD0009BB06C /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 297EC5682ACC2DD0009BB06C /* Storage.swift */; };
 		297EC56E2ACC5116009BB06C /* AddCameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 297EC56D2ACC5116009BB06C /* AddCameraView.swift */; };
 		297EC5712ACDB567009BB06C /* AddUserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 297EC5702ACDB567009BB06C /* AddUserView.swift */; };
@@ -33,9 +37,16 @@
 		29C041F42ACBF65D008B3E1F /* ShalowConcaveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041F32ACBF65D008B3E1F /* ShalowConcaveView.swift */; };
 		29C041F62ACC0AE2008B3E1F /* CameraListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041F52ACC0AE2008B3E1F /* CameraListView.swift */; };
 		29C041F82ACC0AFD008B3E1F /* CameraListCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041F72ACC0AFC008B3E1F /* CameraListCellView.swift */; };
+		29C82BE02AD7BF030056A998 /* AddCameraViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C82BDF2AD7BF030056A998 /* AddCameraViewModel.swift */; };
+		29FFDAAD2AD945EC005AD50F /* MainEventListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29FFDAAC2AD945EC005AD50F /* MainEventListCell.swift */; };
+		29FFDAB02ADA560E005AD50F /* AddEventView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29FFDAAF2ADA560E005AD50F /* AddEventView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		290B816A2AD7F01100B858F1 /* CameraDirection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraDirection.swift; sourceTree = "<group>"; };
+		290B816C2AD7F03900B858F1 /* CameraPosition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPosition.swift; sourceTree = "<group>"; };
+		290B816F2AD7FCE700B858F1 /* MainEventsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainEventsList.swift; sourceTree = "<group>"; };
+		290B81742AD9149800B858F1 /* MotionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionManager.swift; sourceTree = "<group>"; };
 		297EC5682ACC2DD0009BB06C /* Storage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storage.swift; sourceTree = "<group>"; };
 		297EC56D2ACC5116009BB06C /* AddCameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCameraView.swift; sourceTree = "<group>"; };
 		297EC5702ACDB567009BB06C /* AddUserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddUserView.swift; sourceTree = "<group>"; };
@@ -64,6 +75,9 @@
 		29C041F32ACBF65D008B3E1F /* ShalowConcaveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShalowConcaveView.swift; sourceTree = "<group>"; };
 		29C041F52ACC0AE2008B3E1F /* CameraListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraListView.swift; sourceTree = "<group>"; };
 		29C041F72ACC0AFC008B3E1F /* CameraListCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraListCellView.swift; sourceTree = "<group>"; };
+		29C82BDF2AD7BF030056A998 /* AddCameraViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCameraViewModel.swift; sourceTree = "<group>"; };
+		29FFDAAC2AD945EC005AD50F /* MainEventListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainEventListCell.swift; sourceTree = "<group>"; };
+		29FFDAAF2ADA560E005AD50F /* AddEventView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEventView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,20 +91,73 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		290B81692AD7F00000B858F1 /* Camera */ = {
+			isa = PBXGroup;
+			children = (
+				29C041E62AC69A11008B3E1F /* Camera.swift */,
+				290B816A2AD7F01100B858F1 /* CameraDirection.swift */,
+				290B816C2AD7F03900B858F1 /* CameraPosition.swift */,
+			);
+			path = Camera;
+			sourceTree = "<group>";
+		};
+		290B816E2AD7FCBC00B858F1 /* EventsScreen */ = {
+			isa = PBXGroup;
+			children = (
+				29FFDAAE2ADA55F8005AD50F /* AddEventView */,
+				290B816F2AD7FCE700B858F1 /* MainEventsList.swift */,
+			);
+			path = EventsScreen;
+			sourceTree = "<group>";
+		};
+		290B81712AD8473300B858F1 /* StadiumViews */ = {
+			isa = PBXGroup;
+			children = (
+				29C041DA2AC5620A008B3E1F /* StadiumView.swift */,
+				297EC5722AD3E6D8009BB06C /* SingleCameraStadiumView.swift */,
+			);
+			path = StadiumViews;
+			sourceTree = "<group>";
+		};
+		290B81722AD8474C00B858F1 /* HelperViews */ = {
+			isa = PBXGroup;
+			children = (
+				29C041EE2ACBF3AE008B3E1F /* DeepConcaveView.swift */,
+				29C041F32ACBF65D008B3E1F /* ShalowConcaveView.swift */,
+			);
+			path = HelperViews;
+			sourceTree = "<group>";
+		};
+		290B81732AD9148200B858F1 /* Motion */ = {
+			isa = PBXGroup;
+			children = (
+				290B81742AD9149800B858F1 /* MotionManager.swift */,
+			);
+			path = Motion;
+			sourceTree = "<group>";
+		};
+		290B81762AD91FF200B858F1 /* Modifiers */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Modifiers;
+			sourceTree = "<group>";
+		};
 		297EC56C2ACC50FA009BB06C /* AddCameraView */ = {
 			isa = PBXGroup;
 			children = (
 				297EC56D2ACC5116009BB06C /* AddCameraView.swift */,
+				29C82BDF2AD7BF030056A998 /* AddCameraViewModel.swift */,
 			);
 			path = AddCameraView;
 			sourceTree = "<group>";
 		};
-		297EC56F2ACDB549009BB06C /* UserTab */ = {
+		297EC56F2ACDB549009BB06C /* UserTabScreen */ = {
 			isa = PBXGroup;
 			children = (
 				297EC5702ACDB567009BB06C /* AddUserView.swift */,
 			);
-			path = UserTab;
+			path = UserTabScreen;
 			sourceTree = "<group>";
 		};
 		29C041B32AC556CE008B3E1F = {
@@ -135,14 +202,14 @@
 		29C041CE2AC557D1008B3E1F /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				29C041CF2AC557E0008B3E1F /* User.swift */,
+				297EC5682ACC2DD0009BB06C /* Storage.swift */,
 				29C041D12AC55C7A008B3E1F /* Event.swift */,
+				290B81692AD7F00000B858F1 /* Camera */,
+				29C041CF2AC557E0008B3E1F /* User.swift */,
 				29C041D32AC55CEA008B3E1F /* CreativeGroup.swift */,
 				29C041D52AC55D11008B3E1F /* Broadcaster.swift */,
 				29C041D72AC55D4A008B3E1F /* Stadium.swift */,
-				29C041E62AC69A11008B3E1F /* Camera.swift */,
 				29C041E82AC69A5D008B3E1F /* MockData.swift */,
-				297EC5682ACC2DD0009BB06C /* Storage.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -150,13 +217,13 @@
 		29C041D92AC561F2008B3E1F /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				29C041DA2AC5620A008B3E1F /* StadiumView.swift */,
+				29FFDAAB2AD945DA005AD50F /* MainEventList */,
+				290B81762AD91FF200B858F1 /* Modifiers */,
+				290B81712AD8473300B858F1 /* StadiumViews */,
 				29C041DC2AC56AE8008B3E1F /* EventInfoView.swift */,
 				29C041DE2AC5B133008B3E1F /* CameraView.swift */,
-				29C041EE2ACBF3AE008B3E1F /* DeepConcaveView.swift */,
-				29C041F32ACBF65D008B3E1F /* ShalowConcaveView.swift */,
+				290B81722AD8474C00B858F1 /* HelperViews */,
 				29C041F92ACC0BE7008B3E1F /* CameraList */,
-				297EC5722AD3E6D8009BB06C /* SingleCameraStadiumView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -165,6 +232,7 @@
 			isa = PBXGroup;
 			children = (
 				29C041F02ACBF443008B3E1F /* Extensions */,
+				290B81732AD9148200B858F1 /* Motion */,
 				29C041E12AC69872008B3E1F /* Network */,
 			);
 			path = Utilities;
@@ -181,21 +249,22 @@
 		29C041E42AC69976008B3E1F /* Screens */ = {
 			isa = PBXGroup;
 			children = (
-				297EC56F2ACDB549009BB06C /* UserTab */,
 				29C041EA2ACBE4CC008B3E1F /* MainTabView.swift */,
-				29C041E52AC6997C008B3E1F /* EventMain */,
+				290B816E2AD7FCBC00B858F1 /* EventsScreen */,
+				29C041E52AC6997C008B3E1F /* EventMainScreen */,
+				297EC56F2ACDB549009BB06C /* UserTabScreen */,
 			);
 			path = Screens;
 			sourceTree = "<group>";
 		};
-		29C041E52AC6997C008B3E1F /* EventMain */ = {
+		29C041E52AC6997C008B3E1F /* EventMainScreen */ = {
 			isa = PBXGroup;
 			children = (
 				297EC56C2ACC50FA009BB06C /* AddCameraView */,
 				29C041C12AC556CE008B3E1F /* EventMainView.swift */,
 				29C041EC2ACBE96D008B3E1F /* EventMainViewModel.swift */,
 			);
-			path = EventMain;
+			path = EventMainScreen;
 			sourceTree = "<group>";
 		};
 		29C041F02ACBF443008B3E1F /* Extensions */ = {
@@ -213,6 +282,22 @@
 				29C041F72ACC0AFC008B3E1F /* CameraListCellView.swift */,
 			);
 			path = CameraList;
+			sourceTree = "<group>";
+		};
+		29FFDAAB2AD945DA005AD50F /* MainEventList */ = {
+			isa = PBXGroup;
+			children = (
+				29FFDAAC2AD945EC005AD50F /* MainEventListCell.swift */,
+			);
+			path = MainEventList;
+			sourceTree = "<group>";
+		};
+		29FFDAAE2ADA55F8005AD50F /* AddEventView */ = {
+			isa = PBXGroup;
+			children = (
+				29FFDAAF2ADA560E005AD50F /* AddEventView.swift */,
+			);
+			path = AddEventView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -286,6 +371,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				29C041ED2ACBE96D008B3E1F /* EventMainViewModel.swift in Sources */,
+				290B81752AD9149800B858F1 /* MotionManager.swift in Sources */,
 				29C041D42AC55CEA008B3E1F /* CreativeGroup.swift in Sources */,
 				29C041D82AC55D4A008B3E1F /* Stadium.swift in Sources */,
 				29C041D22AC55C7A008B3E1F /* Event.swift in Sources */,
@@ -294,20 +380,26 @@
 				29C041F22ACBF45B008B3E1F /* Color+Ext.swift in Sources */,
 				29C041E92AC69A5D008B3E1F /* MockData.swift in Sources */,
 				297EC56E2ACC5116009BB06C /* AddCameraView.swift in Sources */,
+				290B81702AD7FCE700B858F1 /* MainEventsList.swift in Sources */,
 				29C041DF2AC5B133008B3E1F /* CameraView.swift in Sources */,
 				297EC5692ACC2DD0009BB06C /* Storage.swift in Sources */,
+				29C82BE02AD7BF030056A998 /* AddCameraViewModel.swift in Sources */,
 				29C041E32AC6988B008B3E1F /* NetworkManager.swift in Sources */,
 				29C041D62AC55D11008B3E1F /* Broadcaster.swift in Sources */,
 				297EC5732AD3E6D8009BB06C /* SingleCameraStadiumView.swift in Sources */,
 				29C041EF2ACBF3AE008B3E1F /* DeepConcaveView.swift in Sources */,
 				29C041F82ACC0AFD008B3E1F /* CameraListCellView.swift in Sources */,
+				29FFDAAD2AD945EC005AD50F /* MainEventListCell.swift in Sources */,
 				29C041C22AC556CE008B3E1F /* EventMainView.swift in Sources */,
 				29C041DD2AC56AE8008B3E1F /* EventInfoView.swift in Sources */,
 				29C041F62ACC0AE2008B3E1F /* CameraListView.swift in Sources */,
 				29C041E72AC69A11008B3E1F /* Camera.swift in Sources */,
+				29FFDAB02ADA560E005AD50F /* AddEventView.swift in Sources */,
+				290B816D2AD7F03900B858F1 /* CameraPosition.swift in Sources */,
 				29C041C02AC556CE008B3E1F /* BroadcastPlannerApp.swift in Sources */,
 				29C041EB2ACBE4CC008B3E1F /* MainTabView.swift in Sources */,
 				29C041DB2AC5620A008B3E1F /* StadiumView.swift in Sources */,
+				290B816B2AD7F01100B858F1 /* CameraDirection.swift in Sources */,
 				29C041D02AC557E1008B3E1F /* User.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

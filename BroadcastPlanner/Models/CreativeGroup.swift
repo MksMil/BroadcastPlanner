@@ -1,5 +1,5 @@
 import Foundation
 
-class CreativeGroup {
-    
+class CreativeGroup: ObservableObject {
+    @Published var name: String = "Some Group"
 }

@@ -1,13 +1,13 @@
 import SwiftUI
 
-struct StadiumView: View {
-    
-    @EnvironmentObject var storage:Storage
+struct SingleCameraStadiumView: View {
+//    @ObservedObject var camera: Camera
+    @ObservedObject var vm: AddCameraViewModel
     
     var body: some View {
-        //just a plceholder for a stadium
+        
         GeometryReader{ geo in
-            let camH = geo.size.height / 10.0
+            let camH = geo.size.height / 4.0
             let camW = geo.size.width / 10.0
             
             ZStack{
@@ -15,19 +15,35 @@ struct StadiumView: View {
                     //outer
                     RoundedRectangle(cornerRadius: 20)
                         .fill(.gray/*.shadow(.inner(radius: 10))*/)
+                        
                         .frame(width: geo.size.width, height: camH * 4)
                         .shadow(radius: 10)
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 20)
+                                .strokeBorder(Color.black,lineWidth: 2)
+                                .frame(width: geo.size.width, height: camH * 4)
+                        }
                     
                     //inner
                     RoundedRectangle(cornerRadius: 20)
                         .fill(.white.shadow(.inner(radius: 3)))
                         .frame(width: camW * 8,height: camH * 3)
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 20)
+                                .strokeBorder(Color.black,lineWidth: 1)
+                                .frame(width: camW * 8,height: camH * 3)
+                        }
                     
                     //field
                     Section{
                         Rectangle()
                             .fill(.green.shadow(.inner(radius: 2)))
                             .frame(width: camW * 5, height: camH * 2)
+                            .overlay {
+                                Rectangle()
+                                    .strokeBorder(Color.black,lineWidth: 1)
+                                    .frame(width: camW * 5, height: camH * 2)
+                            }
                         Circle()
                             .stroke(lineWidth: 2)
                             .frame(width: camH / 2)
@@ -64,27 +80,19 @@ struct StadiumView: View {
                             .offset(CGSize(width: camW * 2.06, height: 0))
                     }
                 }
-//                .onTapGesture {
-//                    storage.deselect()
-//                }
+                
                 
                 //cameras
-                ForEach(storage.cameras) { cam in
-                    Button(action: {
-                        storage.select(cam: cam)
-                    }, label: {
-                        CameraView(camera: cam)
-                    })
-                    .offset(cam.makeOffset(camH: camH,camW: camW))
-                        .zIndex(1.0)
-                }
+                let camera = Camera(position: vm.position)
+                
+                    CameraView(camera: camera)
+                        .offset(camera.makeOffset(camH: camH,camW: camW))
             }
-            
         }
+        
     }
 }
 
 #Preview {
-    StadiumView().environmentObject(Storage(cameras: MockData.sampleCameras))
-
+    SingleCameraStadiumView(vm: AddCameraViewModel())
 }

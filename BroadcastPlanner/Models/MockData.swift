@@ -5,11 +5,15 @@ class MockData {
                                           date: Date(),
                                           creativeGroup: CreativeGroup(),
                                           broadcaster: MockData.sampleBroadcaster,
-                                          location: Stadium(),
+                                          location: sampleStadium,
                                           cameras: MockData.sampleCameras)
     
     static var sampleUser: User = User()
-    
+    static let sampleStadium: Stadium = Stadium(
+        title: "ARENA - LVIV",
+        city: "Lviv",
+        address: "Lviv. Striyska str. 199. 79031"
+    )
     static var sampleUsers: [User] = [
         User(name: "Viktor Kabkoff"),
         User(name: "Valeriy Gozha"),

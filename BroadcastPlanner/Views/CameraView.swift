@@ -2,7 +2,7 @@ import SwiftUI
 
 struct CameraView: View {
     
-   @StateObject var camera: Camera
+   @ObservedObject var camera: Camera
     
     var camH: Double = 10
     var camW: Double = 20
@@ -12,7 +12,7 @@ struct CameraView: View {
             Image(systemName: "video.fill")
                 .resizable()
                 .frame(width:  camW, height: camH)
-                .foregroundStyle(camera.selected ? .red : .black)
+                .foregroundStyle(camera.selected ? .orange : .black)
                 .aspectRatio(contentMode: .fit)
                 .rotationEffect(Angle(radians: camera.direction.directionMultiplier))
                

@@ -3,13 +3,14 @@ import SwiftUI
 struct EventMainView: View {
     
     @EnvironmentObject var storage: Storage
+    @ObservedObject var motionManager: MotionManager
     
     @State private var isAddCam: Bool = false
-    @StateObject var viewModel: EventMainViewModel
     
     var body: some View {
         ZStack{
-             
+            Color.lightBackgroundColor
+                .ignoresSafeArea()
             VStack {
                 EventInfoView(event: MockData.sampleEvent)
                 StadiumView()
@@ -33,7 +34,7 @@ struct EventMainView: View {
                     }
                     .padding(.horizontal)
                     .sheet(isPresented: $isAddCam, content: {
-                        AddCameraView()
+                        AddCameraView(motionManager: motionManager)
                     })
                 }
                 .padding(.top,330)
@@ -47,6 +48,18 @@ struct EventMainView: View {
                 }
             }
         }
+        .tint(Color.white)
+        .foregroundStyle(Color.white)
+        // TODO:  background animation
+//        .padding()
+//        .offset(x: motionManager.roll * 100,
+//                y: motionManager.pitch * 100)
+//        .onAppear{
+//            motionManager.startMonitoringMotionUpdates()
+//        }
+//        .onDisappear(perform: {
+//            motionManager.stopMonitoringMotionUpdates()
+//        })
     }
     func addCamera(){
 //        storage.addCamera()
@@ -55,5 +68,5 @@ struct EventMainView: View {
 }
 
 #Preview {
-    EventMainView(viewModel: EventMainViewModel(cameras: [])).environmentObject(Storage(cameras: []))
+    EventMainView(motionManager: MotionManager()).environmentObject(Storage(cameras: []))
 }
