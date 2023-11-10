@@ -5,7 +5,7 @@ class User:  ObservableObject, Identifiable {
     
     @Published var name : String
     
-    var id: String
+    let id: UUID = UUID()
     var phoneNumber: String = ""
     var email: String = ""
     var homeAddress: String = ""
@@ -16,7 +16,7 @@ class User:  ObservableObject, Identifiable {
 
     init(name: String = "Empty"){
         self.name = name
-        self.id = name
+        
     }
 }
 

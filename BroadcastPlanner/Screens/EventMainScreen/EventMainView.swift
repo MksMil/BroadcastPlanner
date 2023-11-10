@@ -3,14 +3,13 @@ import SwiftUI
 struct EventMainView: View {
     
     @EnvironmentObject var storage: Storage
-    @ObservedObject var motionManager: MotionManager
-    
+//    @ObservedObject var motionManager: MotionManager
+    @Binding var isShowCreativeGroupEdit: Bool
     @State private var isAddCam: Bool = false
     
     var body: some View {
         ZStack{
-            Color.lightBackgroundColor
-                .ignoresSafeArea()
+            BackgroundTabItem()
             VStack {
                 EventInfoView(event: MockData.sampleEvent)
                 StadiumView()
@@ -34,7 +33,7 @@ struct EventMainView: View {
                     }
                     .padding(.horizontal)
                     .sheet(isPresented: $isAddCam, content: {
-                        AddCameraView(motionManager: motionManager)
+                        AddCameraView(/*motionManager: motionManager*/)
                     })
                 }
                 .padding(.top,330)
@@ -50,6 +49,23 @@ struct EventMainView: View {
         }
         .tint(Color.white)
         .foregroundStyle(Color.white)
+        .safeAreaInset(edge: .bottom) {
+            VStack{
+                Button(action: {
+                    isShowCreativeGroupEdit = false
+                }, label: {
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color.blue)
+                        .frame(width: 100, height: 50)
+                        .overlay {
+                            Text("Button")
+                                .foregroundStyle(Color.white)
+                        }
+                })
+                Text("Cameras: \(storage.cameras.count)").foregroundStyle(Color.white)
+                
+            }
+        }
         // TODO:  background animation
 //        .padding()
 //        .offset(x: motionManager.roll * 100,
@@ -68,5 +84,5 @@ struct EventMainView: View {
 }
 
 #Preview {
-    EventMainView(motionManager: MotionManager()).environmentObject(Storage(cameras: []))
+    EventMainView(/*motionManager: MotionManager()*/ isShowCreativeGroupEdit: .constant(false)).environmentObject(Storage(cameras: [],users: MockData.sampleUsers))
 }

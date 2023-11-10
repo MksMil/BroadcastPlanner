@@ -13,7 +13,7 @@ struct AddEventView: View {
     
     @State private var matchDay: Date = Date()
     @State private var startTime: Date = Date()
-    @State private var sport: String?
+    @State private var sport: Sport?
     @State private var homeTeam: String?
     @State private var awayTeam: String?
     
@@ -23,7 +23,7 @@ struct AddEventView: View {
     
     var body: some View {
         ZStack{
-            Color.lightBackgroundColor.ignoresSafeArea()
+            BackgroundTabItem()
             VStack{
                 Form{
                     
@@ -33,28 +33,41 @@ struct AddEventView: View {
                         displayedComponents: .date
                     )
                     
+                    .listRowBackground(Color.lightBackgroundColor)
+                        
+                    
                     DatePicker(
                         "Start time",
                         selection: $startTime,
                         displayedComponents: .hourAndMinute
                     )
                     .datePickerStyle(.automatic)
+                    .listRowBackground(Color.lightBackgroundColor)
                     
+                    DatePicker("Date", selection: $matchDay)
+                        .listRowBackground(Color.lightBackgroundColor)
                     Divider()
                         .listRowBackground(Color.lightBackgroundColor)
                     
-                    Text(sport ?? "no sport selected")
+                    Text(sport?.rawValue ?? "no sport selected")
+                        .listRowBackground(Color.lightBackgroundColor)
                     Text(homeTeam ?? "no home team selected")
+                        .listRowBackground(Color.lightBackgroundColor)
                     Text(awayTeam ?? "no away team selected")
+                        .listRowBackground(Color.lightBackgroundColor)
                     
                     Divider()
                         .listRowBackground(Color.lightBackgroundColor)
                     
                     Text(broadcaster?.name ?? "no broadcaster selected")
+                        .listRowBackground(Color.lightBackgroundColor)
                     Text(creativeGroup?.name ?? "no creative group selected")
+                        .listRowBackground(Color.lightBackgroundColor)
+                    
                 }
-//                .listRowBackground(Color.lightBackgroundColor)
+                .listRowBackground(Color.lightBackgroundColor)
                   .scrollContentBackground(.hidden)
+                  .foregroundStyle(Color.white)
                   
                 
 
@@ -76,6 +89,7 @@ struct AddEventView: View {
                 }
                 .padding(.bottom,50)
             }
+            .foregroundStyle(Color.white)
         }
     }
     func addEvent(){

@@ -3,7 +3,7 @@ import SwiftUI
 struct AddCameraView: View {
     @Environment(\.dismiss) var dissmiss
     @EnvironmentObject var storage: Storage
-    @ObservedObject var motionManager: MotionManager
+//    @ObservedObject var motionManager: MotionManager
     
     @StateObject var viewModel: AddCameraViewModel = AddCameraViewModel()
     
@@ -11,8 +11,7 @@ struct AddCameraView: View {
         
         ZStack{
             //just simple background
-            Color.lightBackgroundColor
-                .ignoresSafeArea()
+            BackgroundTabItem()
             
             VStack{
                 SingleCameraStadiumView(vm: viewModel)
@@ -20,6 +19,7 @@ struct AddCameraView: View {
                     .padding(.horizontal,50)
                     .padding(.top,50)
                 
+                // TODO: Make custom picker  
                 if storage.isCamerasAvailable{
                     Picker("cam", selection: $viewModel.position){
                         let positions = storage.possibleCameras.map { $0.position }
@@ -49,13 +49,15 @@ struct AddCameraView: View {
                     }
                     .padding(.horizontal)
                     .shadow(radius: 10)
-                
+             
+                // TODO: Make custom picker
                 if storage.isUsersAvailable{
                     Picker(
-                        "name",
+                        viewModel.selectedUserName,
                         selection: $viewModel.selectedUserName
                     ){
-                        ForEach(storage.possibleUsers) { Text($0.name)
+//                        Text("Empty").tag("Empty")
+                        ForEach(storage.possibleUsers) { Text($0.name).tag($0.name)
                         }
                     }
                     .pickerStyle(.wheel)
@@ -115,7 +117,7 @@ struct AddCameraView: View {
 }
 
 #Preview {
-    AddCameraView(motionManager: MotionManager())
+    AddCameraView(/*motionManager: MotionManager()*/)
         .environmentObject(
             Storage(
                 cameras: [],

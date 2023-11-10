@@ -8,16 +8,16 @@
 import SwiftUI
 
 struct MainEventListCell: View {
-    
+    @Binding var isShowCreativeGroupEdit: Bool
     var event: Event
     
     var body: some View {
         GeometryReader { geo in
             ZStack{
                 
-//                Color.green.opacity(0.1)
-//                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                
+                Color.green
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+ 
                 HStack{
                     Spacer()
                     VStack{
@@ -54,16 +54,39 @@ struct MainEventListCell: View {
                     Divider()
                         .frame(width: 3)
                         .background(Color.orange)
-                    VStack{
-                        Text("Broadcaster")
-                            .font(.caption)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.9)
-                        Text("Creative Group")
-                            .font(.caption)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.9)
-                            
+                    
+                    VStack(spacing: 5){
+                        Button {
+                            print("broadcaster pressed")
+                        } label: {
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color.blue)
+                                .frame(height: geo.size.height / 2)
+                                .overlay {
+                                    Text("Broadcaster")
+                                        .font(.caption)
+                                        .lineLimit(1)
+                                        .minimumScaleFactor(0.9)
+                                }
+                        }
+                        Divider()
+                        
+                       
+                        
+                        Button {
+                            showCreativeGroupEdit()
+                        } label: {
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color.blue)
+                                .frame(height: geo.size.height / 3)
+                                .overlay {
+                                    Text("Creative Group")
+                                        .font(.caption)
+                                        .lineLimit(1)
+                                        .minimumScaleFactor(0.9)
+                                }
+                            }
+                        
                     }
                     .frame(width: geo.size.width / 3.5)
                     Spacer()
@@ -76,8 +99,13 @@ struct MainEventListCell: View {
         }
         .foregroundStyle(Color.white)
     }
+    
+    func showCreativeGroupEdit(){
+        print("button pressed")
+        isShowCreativeGroupEdit = true
+    }
 }
 
 #Preview {
-    MainEventListCell(event: MockData.sampleEvent)
+    MainEventListCell(isShowCreativeGroupEdit: .constant(false), event: MockData.sampleEvent)
 }

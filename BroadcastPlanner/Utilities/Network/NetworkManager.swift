@@ -14,4 +14,6 @@ class NetworkManager{
     func getUsers() -> [User]{
         return MockData.sampleUsers
     }
+    
+    
 }

@@ -8,18 +8,18 @@
 import SwiftUI
 
 struct MainEventsList: View {
-    
+    @State var isShowCreativeGroupEdit: Bool = false
+
     @EnvironmentObject var storage: Storage
-    @ObservedObject var motionManager: MotionManager
+//    @ObservedObject var motionManager: MotionManager
     
     var body: some View {
         ZStack{
-            Color.lightBackgroundColor
-                .ignoresSafeArea()
+            BackgroundTabItem()
             
             List {
                 ForEach(storage.events,id: \.id) { event in
-                    MainEventListCell(event: event)
+                    MainEventListCell(isShowCreativeGroupEdit: $isShowCreativeGroupEdit, event: event)
                         .frame(height: 70)
                         .listRowBackground(Color.lightBackgroundColor)
                 }
@@ -37,12 +37,15 @@ struct MainEventsList: View {
             //        .onDisappear(perform: {
             //            motionManager.stopMonitoringMotionUpdates()
             //        })
+            if isShowCreativeGroupEdit{
+                EventMainView(/*motionManager: MotionManager()*/ isShowCreativeGroupEdit: $isShowCreativeGroupEdit)
+            }
         }
     }
 }
 
 #Preview {
-    MainEventsList(motionManager: MotionManager()).environmentObject(
+    MainEventsList(/*motionManager: MotionManager()*/).environmentObject(
         Storage(
             events: [
                 MockData.sampleEvent,

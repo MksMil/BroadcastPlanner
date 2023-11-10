@@ -15,6 +15,7 @@
 		297EC56E2ACC5116009BB06C /* AddCameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 297EC56D2ACC5116009BB06C /* AddCameraView.swift */; };
 		297EC5712ACDB567009BB06C /* AddUserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 297EC5702ACDB567009BB06C /* AddUserView.swift */; };
 		297EC5732AD3E6D8009BB06C /* SingleCameraStadiumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 297EC5722AD3E6D8009BB06C /* SingleCameraStadiumView.swift */; };
+		298932682AE24D7000BD93CA /* BPError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 298932672AE24D7000BD93CA /* BPError.swift */; };
 		29C041C02AC556CE008B3E1F /* BroadcastPlannerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041BF2AC556CE008B3E1F /* BroadcastPlannerApp.swift */; };
 		29C041C22AC556CE008B3E1F /* EventMainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041C12AC556CE008B3E1F /* EventMainView.swift */; };
 		29C041C42AC556D2008B3E1F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 29C041C32AC556D2008B3E1F /* Assets.xcassets */; };
@@ -40,6 +41,9 @@
 		29C82BE02AD7BF030056A998 /* AddCameraViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C82BDF2AD7BF030056A998 /* AddCameraViewModel.swift */; };
 		29FFDAAD2AD945EC005AD50F /* MainEventListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29FFDAAC2AD945EC005AD50F /* MainEventListCell.swift */; };
 		29FFDAB02ADA560E005AD50F /* AddEventView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29FFDAAF2ADA560E005AD50F /* AddEventView.swift */; };
+		29FFDAB22ADA7F6F005AD50F /* Sport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29FFDAB12ADA7F6F005AD50F /* Sport.swift */; };
+		29FFDAB52ADBBFA1005AD50F /* StaffTabItamView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29FFDAB42ADBBFA1005AD50F /* StaffTabItamView.swift */; };
+		29FFDAB82ADBC2F1005AD50F /* BackgroundTabItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29FFDAB72ADBC2F1005AD50F /* BackgroundTabItem.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -51,6 +55,7 @@
 		297EC56D2ACC5116009BB06C /* AddCameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCameraView.swift; sourceTree = "<group>"; };
 		297EC5702ACDB567009BB06C /* AddUserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddUserView.swift; sourceTree = "<group>"; };
 		297EC5722AD3E6D8009BB06C /* SingleCameraStadiumView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleCameraStadiumView.swift; sourceTree = "<group>"; };
+		298932672AE24D7000BD93CA /* BPError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPError.swift; sourceTree = "<group>"; };
 		29C041BC2AC556CE008B3E1F /* BroadcastPlanner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BroadcastPlanner.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		29C041BF2AC556CE008B3E1F /* BroadcastPlannerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BroadcastPlannerApp.swift; sourceTree = "<group>"; };
 		29C041C12AC556CE008B3E1F /* EventMainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventMainView.swift; sourceTree = "<group>"; };
@@ -78,6 +83,9 @@
 		29C82BDF2AD7BF030056A998 /* AddCameraViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCameraViewModel.swift; sourceTree = "<group>"; };
 		29FFDAAC2AD945EC005AD50F /* MainEventListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainEventListCell.swift; sourceTree = "<group>"; };
 		29FFDAAF2ADA560E005AD50F /* AddEventView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEventView.swift; sourceTree = "<group>"; };
+		29FFDAB12ADA7F6F005AD50F /* Sport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sport.swift; sourceTree = "<group>"; };
+		29FFDAB42ADBBFA1005AD50F /* StaffTabItamView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaffTabItamView.swift; sourceTree = "<group>"; };
+		29FFDAB72ADBC2F1005AD50F /* BackgroundTabItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundTabItem.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -160,6 +168,14 @@
 			path = UserTabScreen;
 			sourceTree = "<group>";
 		};
+		298932662AE24D5700BD93CA /* Error */ = {
+			isa = PBXGroup;
+			children = (
+				298932672AE24D7000BD93CA /* BPError.swift */,
+			);
+			path = Error;
+			sourceTree = "<group>";
+		};
 		29C041B32AC556CE008B3E1F = {
 			isa = PBXGroup;
 			children = (
@@ -180,6 +196,7 @@
 			isa = PBXGroup;
 			children = (
 				29C041BF2AC556CE008B3E1F /* BroadcastPlannerApp.swift */,
+				29FFDAB92ADFA3EF005AD50F /* DataModels */,
 				29C041E02AC69864008B3E1F /* Utilities */,
 				29C041CE2AC557D1008B3E1F /* Models */,
 				29C041D92AC561F2008B3E1F /* Views */,
@@ -210,6 +227,7 @@
 				29C041D52AC55D11008B3E1F /* Broadcaster.swift */,
 				29C041D72AC55D4A008B3E1F /* Stadium.swift */,
 				29C041E82AC69A5D008B3E1F /* MockData.swift */,
+				29FFDAB12ADA7F6F005AD50F /* Sport.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -217,6 +235,7 @@
 		29C041D92AC561F2008B3E1F /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				29FFDAB62ADBC2C3005AD50F /* Backgrounds */,
 				29FFDAAB2AD945DA005AD50F /* MainEventList */,
 				290B81762AD91FF200B858F1 /* Modifiers */,
 				290B81712AD8473300B858F1 /* StadiumViews */,
@@ -231,6 +250,7 @@
 		29C041E02AC69864008B3E1F /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				298932662AE24D5700BD93CA /* Error */,
 				29C041F02ACBF443008B3E1F /* Extensions */,
 				290B81732AD9148200B858F1 /* Motion */,
 				29C041E12AC69872008B3E1F /* Network */,
@@ -250,6 +270,7 @@
 			isa = PBXGroup;
 			children = (
 				29C041EA2ACBE4CC008B3E1F /* MainTabView.swift */,
+				29FFDAB32ADBBF70005AD50F /* StaffTabItemView */,
 				290B816E2AD7FCBC00B858F1 /* EventsScreen */,
 				29C041E52AC6997C008B3E1F /* EventMainScreen */,
 				297EC56F2ACDB549009BB06C /* UserTabScreen */,
@@ -298,6 +319,29 @@
 				29FFDAAF2ADA560E005AD50F /* AddEventView.swift */,
 			);
 			path = AddEventView;
+			sourceTree = "<group>";
+		};
+		29FFDAB32ADBBF70005AD50F /* StaffTabItemView */ = {
+			isa = PBXGroup;
+			children = (
+				29FFDAB42ADBBFA1005AD50F /* StaffTabItamView.swift */,
+			);
+			path = StaffTabItemView;
+			sourceTree = "<group>";
+		};
+		29FFDAB62ADBC2C3005AD50F /* Backgrounds */ = {
+			isa = PBXGroup;
+			children = (
+				29FFDAB72ADBC2F1005AD50F /* BackgroundTabItem.swift */,
+			);
+			path = Backgrounds;
+			sourceTree = "<group>";
+		};
+		29FFDAB92ADFA3EF005AD50F /* DataModels */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = DataModels;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -384,7 +428,9 @@
 				29C041DF2AC5B133008B3E1F /* CameraView.swift in Sources */,
 				297EC5692ACC2DD0009BB06C /* Storage.swift in Sources */,
 				29C82BE02AD7BF030056A998 /* AddCameraViewModel.swift in Sources */,
+				29FFDAB82ADBC2F1005AD50F /* BackgroundTabItem.swift in Sources */,
 				29C041E32AC6988B008B3E1F /* NetworkManager.swift in Sources */,
+				298932682AE24D7000BD93CA /* BPError.swift in Sources */,
 				29C041D62AC55D11008B3E1F /* Broadcaster.swift in Sources */,
 				297EC5732AD3E6D8009BB06C /* SingleCameraStadiumView.swift in Sources */,
 				29C041EF2ACBF3AE008B3E1F /* DeepConcaveView.swift in Sources */,
@@ -400,7 +446,9 @@
 				29C041EB2ACBE4CC008B3E1F /* MainTabView.swift in Sources */,
 				29C041DB2AC5620A008B3E1F /* StadiumView.swift in Sources */,
 				290B816B2AD7F01100B858F1 /* CameraDirection.swift in Sources */,
+				29FFDAB22ADA7F6F005AD50F /* Sport.swift in Sources */,
 				29C041D02AC557E1008B3E1F /* User.swift in Sources */,
+				29FFDAB52ADBBFA1005AD50F /* StaffTabItamView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

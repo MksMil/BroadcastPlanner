@@ -2,7 +2,7 @@ import SwiftUI
 
 struct AddUserView: View {
     @EnvironmentObject var storage: Storage
-    @ObservedObject var motionManager: MotionManager
+//    @ObservedObject var motionManager: MotionManager
     
     @State var name: String = ""
     @State private var phoneNumber: String = ""
@@ -111,5 +111,5 @@ struct AddUserView: View {
 }
 
 #Preview {
-    AddUserView(motionManager: MotionManager()).environmentObject(Storage(cameras: [], users: MockData.sampleUsers))
+    AddUserView(/*motionManager: MotionManager()*/).environmentObject(Storage(cameras: [], users: MockData.sampleUsers))
 }
