@@ -3,7 +3,6 @@ import SwiftUI
 struct AddCameraView: View {
     @Environment(\.dismiss) var dissmiss
     @EnvironmentObject var storage: Storage
-//    @ObservedObject var motionManager: MotionManager
     
     @StateObject var viewModel: AddCameraViewModel = AddCameraViewModel()
     
@@ -100,24 +99,16 @@ struct AddCameraView: View {
         }
         .tint(Color.white)
         .foregroundStyle(Color.white)
-        // TODO:  background animation
-        //        .padding()
-        //        .offset(x: motionManager.roll * 100,
-        //                y: motionManager.pitch * 100)
         .onAppear{
-            //            motionManager.startMonitoringMotionUpdates()
             viewModel.selectedUserName = storage.possibleUsers.first?.name ?? "Empty cam"
         }
-        //        .onDisappear(perform: {
-        //            motionManager.stopMonitoringMotionUpdates()
-        //        })
-        
+  
     }
     
 }
 
 #Preview {
-    AddCameraView(/*motionManager: MotionManager()*/)
+    AddCameraView()
         .environmentObject(
             Storage(
                 cameras: [],

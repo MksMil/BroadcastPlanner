@@ -3,7 +3,6 @@ import SwiftUI
 struct EventMainView: View {
     
     @EnvironmentObject var storage: Storage
-//    @ObservedObject var motionManager: MotionManager
     @Binding var isShowCreativeGroupEdit: Bool
     @State private var isAddCam: Bool = false
     
@@ -33,7 +32,7 @@ struct EventMainView: View {
                     }
                     .padding(.horizontal)
                     .sheet(isPresented: $isAddCam, content: {
-                        AddCameraView(/*motionManager: motionManager*/)
+                        AddCameraView()
                     })
                 }
                 .padding(.top,330)
@@ -66,16 +65,6 @@ struct EventMainView: View {
                 
             }
         }
-        // TODO:  background animation
-//        .padding()
-//        .offset(x: motionManager.roll * 100,
-//                y: motionManager.pitch * 100)
-//        .onAppear{
-//            motionManager.startMonitoringMotionUpdates()
-//        }
-//        .onDisappear(perform: {
-//            motionManager.stopMonitoringMotionUpdates()
-//        })
     }
     func addCamera(){
 //        storage.addCamera()
@@ -84,5 +73,5 @@ struct EventMainView: View {
 }
 
 #Preview {
-    EventMainView(/*motionManager: MotionManager()*/ isShowCreativeGroupEdit: .constant(false)).environmentObject(Storage(cameras: [],users: MockData.sampleUsers))
+    EventMainView(isShowCreativeGroupEdit: .constant(false)).environmentObject(Storage(cameras: [],users: MockData.sampleUsers))
 }

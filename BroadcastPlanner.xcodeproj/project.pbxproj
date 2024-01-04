@@ -11,9 +11,12 @@
 		290B816D2AD7F03900B858F1 /* CameraPosition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 290B816C2AD7F03900B858F1 /* CameraPosition.swift */; };
 		290B81702AD7FCE700B858F1 /* MainEventsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 290B816F2AD7FCE700B858F1 /* MainEventsList.swift */; };
 		290B81752AD9149800B858F1 /* MotionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 290B81742AD9149800B858F1 /* MotionManager.swift */; };
+		294D97A72B3B2AEC00057F70 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 294D97A62B3B2AEC00057F70 /* FirebaseAuth */; };
+		294D97A92B3CD38700057F70 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 294D97A82B3CD38600057F70 /* GoogleService-Info.plist */; };
+		2955C9612B46AE72003F9ADC /* LogScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2955C9602B46AE72003F9ADC /* LogScreen.swift */; };
+		29656CD42B17600A0093A19A /* BroadcastPlannerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29656CD32B17600A0093A19A /* BroadcastPlannerTests.swift */; };
 		297EC5692ACC2DD0009BB06C /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 297EC5682ACC2DD0009BB06C /* Storage.swift */; };
 		297EC56E2ACC5116009BB06C /* AddCameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 297EC56D2ACC5116009BB06C /* AddCameraView.swift */; };
-		297EC5712ACDB567009BB06C /* AddUserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 297EC5702ACDB567009BB06C /* AddUserView.swift */; };
 		297EC5732AD3E6D8009BB06C /* SingleCameraStadiumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 297EC5722AD3E6D8009BB06C /* SingleCameraStadiumView.swift */; };
 		298932682AE24D7000BD93CA /* BPError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 298932672AE24D7000BD93CA /* BPError.swift */; };
 		29C041C02AC556CE008B3E1F /* BroadcastPlannerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041BF2AC556CE008B3E1F /* BroadcastPlannerApp.swift */; };
@@ -22,7 +25,6 @@
 		29C041C82AC556D2008B3E1F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 29C041C72AC556D2008B3E1F /* Preview Assets.xcassets */; };
 		29C041D02AC557E1008B3E1F /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041CF2AC557E0008B3E1F /* User.swift */; };
 		29C041D22AC55C7A008B3E1F /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041D12AC55C7A008B3E1F /* Event.swift */; };
-		29C041D42AC55CEA008B3E1F /* CreativeGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041D32AC55CEA008B3E1F /* CreativeGroup.swift */; };
 		29C041D62AC55D11008B3E1F /* Broadcaster.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041D52AC55D11008B3E1F /* Broadcaster.swift */; };
 		29C041D82AC55D4A008B3E1F /* Stadium.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041D72AC55D4A008B3E1F /* Stadium.swift */; };
 		29C041DB2AC5620A008B3E1F /* StadiumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041DA2AC5620A008B3E1F /* StadiumView.swift */; };
@@ -33,29 +35,40 @@
 		29C041E92AC69A5D008B3E1F /* MockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041E82AC69A5D008B3E1F /* MockData.swift */; };
 		29C041EB2ACBE4CC008B3E1F /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041EA2ACBE4CC008B3E1F /* MainTabView.swift */; };
 		29C041ED2ACBE96D008B3E1F /* EventMainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041EC2ACBE96D008B3E1F /* EventMainViewModel.swift */; };
-		29C041EF2ACBF3AE008B3E1F /* DeepConcaveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041EE2ACBF3AE008B3E1F /* DeepConcaveView.swift */; };
 		29C041F22ACBF45B008B3E1F /* Color+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041F12ACBF45B008B3E1F /* Color+Ext.swift */; };
-		29C041F42ACBF65D008B3E1F /* ShalowConcaveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041F32ACBF65D008B3E1F /* ShalowConcaveView.swift */; };
 		29C041F62ACC0AE2008B3E1F /* CameraListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041F52ACC0AE2008B3E1F /* CameraListView.swift */; };
 		29C041F82ACC0AFD008B3E1F /* CameraListCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041F72ACC0AFC008B3E1F /* CameraListCellView.swift */; };
 		29C82BE02AD7BF030056A998 /* AddCameraViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C82BDF2AD7BF030056A998 /* AddCameraViewModel.swift */; };
 		29FFDAAD2AD945EC005AD50F /* MainEventListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29FFDAAC2AD945EC005AD50F /* MainEventListCell.swift */; };
 		29FFDAB02ADA560E005AD50F /* AddEventView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29FFDAAF2ADA560E005AD50F /* AddEventView.swift */; };
 		29FFDAB22ADA7F6F005AD50F /* Sport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29FFDAB12ADA7F6F005AD50F /* Sport.swift */; };
-		29FFDAB52ADBBFA1005AD50F /* StaffTabItamView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29FFDAB42ADBBFA1005AD50F /* StaffTabItamView.swift */; };
 		29FFDAB82ADBC2F1005AD50F /* BackgroundTabItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29FFDAB72ADBC2F1005AD50F /* BackgroundTabItem.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		29656CD52B17600A0093A19A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29C041B42AC556CE008B3E1F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 29C041BB2AC556CE008B3E1F;
+			remoteInfo = BroadcastPlanner;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		290B816A2AD7F01100B858F1 /* CameraDirection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraDirection.swift; sourceTree = "<group>"; };
 		290B816C2AD7F03900B858F1 /* CameraPosition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPosition.swift; sourceTree = "<group>"; };
 		290B816F2AD7FCE700B858F1 /* MainEventsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainEventsList.swift; sourceTree = "<group>"; };
 		290B81742AD9149800B858F1 /* MotionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionManager.swift; sourceTree = "<group>"; };
+		294D97A82B3CD38600057F70 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		2955C9602B46AE72003F9ADC /* LogScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogScreen.swift; sourceTree = "<group>"; };
+		29656CD12B17600A0093A19A /* BroadcastPlannerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BroadcastPlannerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		29656CD32B17600A0093A19A /* BroadcastPlannerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BroadcastPlannerTests.swift; sourceTree = "<group>"; };
 		297EC5682ACC2DD0009BB06C /* Storage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storage.swift; sourceTree = "<group>"; };
 		297EC56D2ACC5116009BB06C /* AddCameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCameraView.swift; sourceTree = "<group>"; };
-		297EC5702ACDB567009BB06C /* AddUserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddUserView.swift; sourceTree = "<group>"; };
 		297EC5722AD3E6D8009BB06C /* SingleCameraStadiumView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleCameraStadiumView.swift; sourceTree = "<group>"; };
 		298932672AE24D7000BD93CA /* BPError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPError.swift; sourceTree = "<group>"; };
+		299805FC2B2057DE00B01C33 /* BroadcastPlanner.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = BroadcastPlanner.xctestplan; sourceTree = "<group>"; };
 		29C041BC2AC556CE008B3E1F /* BroadcastPlanner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BroadcastPlanner.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		29C041BF2AC556CE008B3E1F /* BroadcastPlannerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BroadcastPlannerApp.swift; sourceTree = "<group>"; };
 		29C041C12AC556CE008B3E1F /* EventMainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventMainView.swift; sourceTree = "<group>"; };
@@ -64,7 +77,6 @@
 		29C041C72AC556D2008B3E1F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		29C041CF2AC557E0008B3E1F /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		29C041D12AC55C7A008B3E1F /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
-		29C041D32AC55CEA008B3E1F /* CreativeGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreativeGroup.swift; sourceTree = "<group>"; };
 		29C041D52AC55D11008B3E1F /* Broadcaster.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Broadcaster.swift; sourceTree = "<group>"; };
 		29C041D72AC55D4A008B3E1F /* Stadium.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stadium.swift; sourceTree = "<group>"; };
 		29C041DA2AC5620A008B3E1F /* StadiumView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StadiumView.swift; sourceTree = "<group>"; };
@@ -75,24 +87,29 @@
 		29C041E82AC69A5D008B3E1F /* MockData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockData.swift; sourceTree = "<group>"; };
 		29C041EA2ACBE4CC008B3E1F /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		29C041EC2ACBE96D008B3E1F /* EventMainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventMainViewModel.swift; sourceTree = "<group>"; };
-		29C041EE2ACBF3AE008B3E1F /* DeepConcaveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepConcaveView.swift; sourceTree = "<group>"; };
 		29C041F12ACBF45B008B3E1F /* Color+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Ext.swift"; sourceTree = "<group>"; };
-		29C041F32ACBF65D008B3E1F /* ShalowConcaveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShalowConcaveView.swift; sourceTree = "<group>"; };
 		29C041F52ACC0AE2008B3E1F /* CameraListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraListView.swift; sourceTree = "<group>"; };
 		29C041F72ACC0AFC008B3E1F /* CameraListCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraListCellView.swift; sourceTree = "<group>"; };
 		29C82BDF2AD7BF030056A998 /* AddCameraViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCameraViewModel.swift; sourceTree = "<group>"; };
 		29FFDAAC2AD945EC005AD50F /* MainEventListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainEventListCell.swift; sourceTree = "<group>"; };
 		29FFDAAF2ADA560E005AD50F /* AddEventView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEventView.swift; sourceTree = "<group>"; };
 		29FFDAB12ADA7F6F005AD50F /* Sport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sport.swift; sourceTree = "<group>"; };
-		29FFDAB42ADBBFA1005AD50F /* StaffTabItamView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaffTabItamView.swift; sourceTree = "<group>"; };
 		29FFDAB72ADBC2F1005AD50F /* BackgroundTabItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundTabItem.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		29656CCE2B17600A0093A19A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		29C041B92AC556CE008B3E1F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				294D97A72B3B2AEC00057F70 /* FirebaseAuth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,8 +129,9 @@
 		290B816E2AD7FCBC00B858F1 /* EventsScreen */ = {
 			isa = PBXGroup;
 			children = (
-				29FFDAAE2ADA55F8005AD50F /* AddEventView */,
 				290B816F2AD7FCE700B858F1 /* MainEventsList.swift */,
+				29C041E52AC6997C008B3E1F /* EventMainScreen */,
+				29FFDAAE2ADA55F8005AD50F /* AddEventView */,
 			);
 			path = EventsScreen;
 			sourceTree = "<group>";
@@ -125,15 +143,6 @@
 				297EC5722AD3E6D8009BB06C /* SingleCameraStadiumView.swift */,
 			);
 			path = StadiumViews;
-			sourceTree = "<group>";
-		};
-		290B81722AD8474C00B858F1 /* HelperViews */ = {
-			isa = PBXGroup;
-			children = (
-				29C041EE2ACBF3AE008B3E1F /* DeepConcaveView.swift */,
-				29C041F32ACBF65D008B3E1F /* ShalowConcaveView.swift */,
-			);
-			path = HelperViews;
 			sourceTree = "<group>";
 		};
 		290B81732AD9148200B858F1 /* Motion */ = {
@@ -151,6 +160,22 @@
 			path = Modifiers;
 			sourceTree = "<group>";
 		};
+		2955C95F2B46AE64003F9ADC /* LogScreen */ = {
+			isa = PBXGroup;
+			children = (
+				2955C9602B46AE72003F9ADC /* LogScreen.swift */,
+			);
+			path = LogScreen;
+			sourceTree = "<group>";
+		};
+		29656CD22B17600A0093A19A /* BroadcastPlannerTests */ = {
+			isa = PBXGroup;
+			children = (
+				29656CD32B17600A0093A19A /* BroadcastPlannerTests.swift */,
+			);
+			path = BroadcastPlannerTests;
+			sourceTree = "<group>";
+		};
 		297EC56C2ACC50FA009BB06C /* AddCameraView */ = {
 			isa = PBXGroup;
 			children = (
@@ -158,14 +183,6 @@
 				29C82BDF2AD7BF030056A998 /* AddCameraViewModel.swift */,
 			);
 			path = AddCameraView;
-			sourceTree = "<group>";
-		};
-		297EC56F2ACDB549009BB06C /* UserTabScreen */ = {
-			isa = PBXGroup;
-			children = (
-				297EC5702ACDB567009BB06C /* AddUserView.swift */,
-			);
-			path = UserTabScreen;
 			sourceTree = "<group>";
 		};
 		298932662AE24D5700BD93CA /* Error */ = {
@@ -180,6 +197,8 @@
 			isa = PBXGroup;
 			children = (
 				29C041BE2AC556CE008B3E1F /* BroadcastPlanner */,
+				29656CD22B17600A0093A19A /* BroadcastPlannerTests */,
+				299805FC2B2057DE00B01C33 /* BroadcastPlanner.xctestplan */,
 				29C041BD2AC556CE008B3E1F /* Products */,
 			);
 			sourceTree = "<group>";
@@ -188,6 +207,7 @@
 			isa = PBXGroup;
 			children = (
 				29C041BC2AC556CE008B3E1F /* BroadcastPlanner.app */,
+				29656CD12B17600A0093A19A /* BroadcastPlannerTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -195,6 +215,7 @@
 		29C041BE2AC556CE008B3E1F /* BroadcastPlanner */ = {
 			isa = PBXGroup;
 			children = (
+				294D97A82B3CD38600057F70 /* GoogleService-Info.plist */,
 				29C041BF2AC556CE008B3E1F /* BroadcastPlannerApp.swift */,
 				29FFDAB92ADFA3EF005AD50F /* DataModels */,
 				29C041E02AC69864008B3E1F /* Utilities */,
@@ -219,14 +240,13 @@
 		29C041CE2AC557D1008B3E1F /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				29C041E82AC69A5D008B3E1F /* MockData.swift */,
 				297EC5682ACC2DD0009BB06C /* Storage.swift */,
 				29C041D12AC55C7A008B3E1F /* Event.swift */,
-				290B81692AD7F00000B858F1 /* Camera */,
 				29C041CF2AC557E0008B3E1F /* User.swift */,
-				29C041D32AC55CEA008B3E1F /* CreativeGroup.swift */,
+				290B81692AD7F00000B858F1 /* Camera */,
 				29C041D52AC55D11008B3E1F /* Broadcaster.swift */,
 				29C041D72AC55D4A008B3E1F /* Stadium.swift */,
-				29C041E82AC69A5D008B3E1F /* MockData.swift */,
 				29FFDAB12ADA7F6F005AD50F /* Sport.swift */,
 			);
 			path = Models;
@@ -235,13 +255,12 @@
 		29C041D92AC561F2008B3E1F /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				290B81762AD91FF200B858F1 /* Modifiers */,
 				29FFDAB62ADBC2C3005AD50F /* Backgrounds */,
 				29FFDAAB2AD945DA005AD50F /* MainEventList */,
-				290B81762AD91FF200B858F1 /* Modifiers */,
 				290B81712AD8473300B858F1 /* StadiumViews */,
 				29C041DC2AC56AE8008B3E1F /* EventInfoView.swift */,
 				29C041DE2AC5B133008B3E1F /* CameraView.swift */,
-				290B81722AD8474C00B858F1 /* HelperViews */,
 				29C041F92ACC0BE7008B3E1F /* CameraList */,
 			);
 			path = Views;
@@ -270,10 +289,8 @@
 			isa = PBXGroup;
 			children = (
 				29C041EA2ACBE4CC008B3E1F /* MainTabView.swift */,
-				29FFDAB32ADBBF70005AD50F /* StaffTabItemView */,
+				2955C95F2B46AE64003F9ADC /* LogScreen */,
 				290B816E2AD7FCBC00B858F1 /* EventsScreen */,
-				29C041E52AC6997C008B3E1F /* EventMainScreen */,
-				297EC56F2ACDB549009BB06C /* UserTabScreen */,
 			);
 			path = Screens;
 			sourceTree = "<group>";
@@ -321,14 +338,6 @@
 			path = AddEventView;
 			sourceTree = "<group>";
 		};
-		29FFDAB32ADBBF70005AD50F /* StaffTabItemView */ = {
-			isa = PBXGroup;
-			children = (
-				29FFDAB42ADBBFA1005AD50F /* StaffTabItamView.swift */,
-			);
-			path = StaffTabItemView;
-			sourceTree = "<group>";
-		};
 		29FFDAB62ADBC2C3005AD50F /* Backgrounds */ = {
 			isa = PBXGroup;
 			children = (
@@ -347,6 +356,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		29656CD02B17600A0093A19A /* BroadcastPlannerTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 29656CD92B17600A0093A19A /* Build configuration list for PBXNativeTarget "BroadcastPlannerTests" */;
+			buildPhases = (
+				29656CCD2B17600A0093A19A /* Sources */,
+				29656CCE2B17600A0093A19A /* Frameworks */,
+				29656CCF2B17600A0093A19A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				29656CD62B17600A0093A19A /* PBXTargetDependency */,
+			);
+			name = BroadcastPlannerTests;
+			productName = BroadcastPlannerTests;
+			productReference = 29656CD12B17600A0093A19A /* BroadcastPlannerTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		29C041BB2AC556CE008B3E1F /* BroadcastPlanner */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 29C041CB2AC556D2008B3E1F /* Build configuration list for PBXNativeTarget "BroadcastPlanner" */;
@@ -360,6 +387,9 @@
 			dependencies = (
 			);
 			name = BroadcastPlanner;
+			packageProductDependencies = (
+				294D97A62B3B2AEC00057F70 /* FirebaseAuth */,
+			);
 			productName = BroadcastPlanner;
 			productReference = 29C041BC2AC556CE008B3E1F /* BroadcastPlanner.app */;
 			productType = "com.apple.product-type.application";
@@ -374,6 +404,10 @@
 				LastSwiftUpdateCheck = 1500;
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
+					29656CD02B17600A0093A19A = {
+						CreatedOnToolsVersion = 15.0;
+						TestTargetID = 29C041BB2AC556CE008B3E1F;
+					};
 					29C041BB2AC556CE008B3E1F = {
 						CreatedOnToolsVersion = 15.0;
 					};
@@ -388,39 +422,57 @@
 				Base,
 			);
 			mainGroup = 29C041B32AC556CE008B3E1F;
+			packageReferences = (
+				294D97A52B3B2AEC00057F70 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			productRefGroup = 29C041BD2AC556CE008B3E1F /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				29C041BB2AC556CE008B3E1F /* BroadcastPlanner */,
+				29656CD02B17600A0093A19A /* BroadcastPlannerTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		29656CCF2B17600A0093A19A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		29C041BA2AC556CE008B3E1F /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				29C041C82AC556D2008B3E1F /* Preview Assets.xcassets in Resources */,
 				29C041C42AC556D2008B3E1F /* Assets.xcassets in Resources */,
+				294D97A92B3CD38700057F70 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		29656CCD2B17600A0093A19A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				29656CD42B17600A0093A19A /* BroadcastPlannerTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		29C041B82AC556CE008B3E1F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2955C9612B46AE72003F9ADC /* LogScreen.swift in Sources */,
 				29C041ED2ACBE96D008B3E1F /* EventMainViewModel.swift in Sources */,
 				290B81752AD9149800B858F1 /* MotionManager.swift in Sources */,
-				29C041D42AC55CEA008B3E1F /* CreativeGroup.swift in Sources */,
 				29C041D82AC55D4A008B3E1F /* Stadium.swift in Sources */,
 				29C041D22AC55C7A008B3E1F /* Event.swift in Sources */,
-				29C041F42ACBF65D008B3E1F /* ShalowConcaveView.swift in Sources */,
-				297EC5712ACDB567009BB06C /* AddUserView.swift in Sources */,
 				29C041F22ACBF45B008B3E1F /* Color+Ext.swift in Sources */,
 				29C041E92AC69A5D008B3E1F /* MockData.swift in Sources */,
 				297EC56E2ACC5116009BB06C /* AddCameraView.swift in Sources */,
@@ -433,7 +485,6 @@
 				298932682AE24D7000BD93CA /* BPError.swift in Sources */,
 				29C041D62AC55D11008B3E1F /* Broadcaster.swift in Sources */,
 				297EC5732AD3E6D8009BB06C /* SingleCameraStadiumView.swift in Sources */,
-				29C041EF2ACBF3AE008B3E1F /* DeepConcaveView.swift in Sources */,
 				29C041F82ACC0AFD008B3E1F /* CameraListCellView.swift in Sources */,
 				29FFDAAD2AD945EC005AD50F /* MainEventListCell.swift in Sources */,
 				29C041C22AC556CE008B3E1F /* EventMainView.swift in Sources */,
@@ -448,13 +499,65 @@
 				290B816B2AD7F01100B858F1 /* CameraDirection.swift in Sources */,
 				29FFDAB22ADA7F6F005AD50F /* Sport.swift in Sources */,
 				29C041D02AC557E1008B3E1F /* User.swift in Sources */,
-				29FFDAB52ADBBFA1005AD50F /* StaffTabItamView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		29656CD62B17600A0093A19A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 29C041BB2AC556CE008B3E1F /* BroadcastPlanner */;
+			targetProxy = 29656CD52B17600A0093A19A /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		29656CD72B17600A0093A19A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.maksymmiliaiev.BroadcastPlannerTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BroadcastPlanner.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/BroadcastPlanner";
+			};
+			name = Debug;
+		};
+		29656CD82B17600A0093A19A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.maksymmiliaiev.BroadcastPlannerTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BroadcastPlanner.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/BroadcastPlanner";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		29C041C92AC556D2008B3E1F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -591,7 +694,7 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.6;
@@ -628,7 +731,7 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.6;
@@ -646,6 +749,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		29656CD92B17600A0093A19A /* Build configuration list for PBXNativeTarget "BroadcastPlannerTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				29656CD72B17600A0093A19A /* Debug */,
+				29656CD82B17600A0093A19A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		29C041B72AC556CE008B3E1F /* Build configuration list for PBXProject "BroadcastPlanner" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -665,6 +777,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		294D97A52B3B2AEC00057F70 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 10.19.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		294D97A62B3B2AEC00057F70 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 294D97A52B3B2AEC00057F70 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 29C041B42AC556CE008B3E1F /* Project object */;
 }

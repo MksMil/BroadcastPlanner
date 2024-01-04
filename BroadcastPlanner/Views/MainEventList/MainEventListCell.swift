@@ -26,7 +26,7 @@ struct MainEventListCell: View {
                         Text(event.date.formatted(date: .omitted, time: .shortened))
                             .minimumScaleFactor(0.9)
                     }
-                    .frame(width: geo.size.width / 3.5)
+                    .frame(width: geo.frame(in: .local).size.width / 3.5)
                     Divider()
                         .frame(width: 3)
                         .background(Color.orange)
@@ -50,45 +50,17 @@ struct MainEventListCell: View {
                         }
                         .padding(.bottom,10)
                     }
-                    .frame(width: geo.size.width / 3.5)
+                    .frame(width: geo.frame(in: .local).size.width / 3.5)
                     Divider()
                         .frame(width: 3)
                         .background(Color.orange)
                     
                     VStack(spacing: 5){
-                        Button {
-                            print("broadcaster pressed")
-                        } label: {
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(Color.blue)
-                                .frame(height: geo.size.height / 2)
-                                .overlay {
-                                    Text("Broadcaster")
-                                        .font(.caption)
-                                        .lineLimit(1)
-                                        .minimumScaleFactor(0.9)
-                                }
-                        }
-                        Divider()
                         
-                       
-                        
-                        Button {
-                            showCreativeGroupEdit()
-                        } label: {
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(Color.blue)
-                                .frame(height: geo.size.height / 3)
-                                .overlay {
-                                    Text("Creative Group")
-                                        .font(.caption)
-                                        .lineLimit(1)
-                                        .minimumScaleFactor(0.9)
-                                }
-                            }
+                        Text("Staff Here")
                         
                     }
-                    .frame(width: geo.size.width / 3.5)
+                    .frame(width: geo.frame(in: .local).size.width / 3.5)
                     Spacer()
                 }
                 .overlay {

@@ -3,36 +3,34 @@ import SwiftUI
 struct MainTabView: View {
     
     var storage: Storage = Storage(cameras: [])
-//    @StateObject var motionManager = MotionManager()
+    @State var isLogged: Bool = false
     
     var body: some View {
-        ZStack{
-            BackgroundTabItem()
-            TabView {
+        
+        if isLogged {
+            ZStack{
+                BackgroundTabItem()
+                TabView {
+                    
+                    MainEventsList()
+                        .tabItem { Label("Events", systemImage: "calendar").foregroundStyle(Color.white) }
+                    
+                    // MyInfo Screen
+                    
+                    //Settings Screen
+                    
+                    
+                }
+                .tint(Color.white)
                 
-                MainEventsList(/*motionManager: motionManager*/)
-                    .tabItem { Label("Events", systemImage: "calendar").foregroundStyle(Color.white) }
-                
-                StaffTabItamView()
-                    .tabItem { Label("Staff", systemImage: "person.3.fill") }
-//                            EventMainView(motionManager: motionManager)
-//                                .tabItem { Label("Cameras", systemImage: "video") }
-                
-                AddUserView(/*motionManager: motionManager*/)
-                    .tabItem { Label("Users", systemImage: "person.crop.circle") }
-                
+                .environmentObject(storage)
+                .task {
+                    storage.users = NetworkManager.shared.getUsers()
+                    storage.events = NetworkManager.shared.getEvents()
+                }
             }
-            .tint(Color.white)
-            
-            // TODO:  background animation
-            //        .onAppear{
-            //            motionManager.startMonitoringMotionUpdates()
-            //        }
-            .environmentObject(storage)
-            .task {
-                storage.users = NetworkManager.shared.getUsers()
-                storage.events = NetworkManager.shared.getEvents()
-            }
+        } else {
+            LogScreen(isLogged: $isLogged)
         }
     }
 }

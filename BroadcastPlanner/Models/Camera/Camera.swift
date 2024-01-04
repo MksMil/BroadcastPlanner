@@ -1,10 +1,5 @@
 import Foundation
 
-//enum Signal : String{
-//    case radio
-//    case cable
-//}
-
 final class Camera: Identifiable, ObservableObject {
     var id = UUID()
     
@@ -12,8 +7,6 @@ final class Camera: Identifiable, ObservableObject {
     @Published var selected: Bool = false
     @Published var number: String = ""
     @Published var position: CameraPosition
-    //    @Published var signal: Signal = .cable
-    
     
     //init
     init(position: CameraPosition){
@@ -205,9 +198,6 @@ final class Camera: Identifiable, ObservableObject {
             CGSize(width: 0, height: camH * 1.8)
         }
     }
-    
-    
-    
    
 }
 

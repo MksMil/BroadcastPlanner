@@ -68,8 +68,7 @@ final class Storage: ObservableObject {
     }
     
     func assignSelectedUser(){
-            selectedUserName = users.first(where: { !$0.reserved
-            })?.name ?? User().name
+        selectedUserName = users.first(where: { !$0.reserved })?.name ?? User().name
         print(selectedUserName)
     }
     

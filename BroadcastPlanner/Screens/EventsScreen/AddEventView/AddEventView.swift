@@ -18,7 +18,6 @@ struct AddEventView: View {
     @State private var awayTeam: String?
     
     @State private var broadcaster: Broadcaster?
-    @State private var creativeGroup: CreativeGroup?
     
     
     var body: some View {
@@ -61,7 +60,6 @@ struct AddEventView: View {
                     
                     Text(broadcaster?.name ?? "no broadcaster selected")
                         .listRowBackground(Color.lightBackgroundColor)
-                    Text(creativeGroup?.name ?? "no creative group selected")
                         .listRowBackground(Color.lightBackgroundColor)
                     
                 }

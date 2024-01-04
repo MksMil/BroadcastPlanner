@@ -8,7 +8,6 @@ struct EventInfoView: View {
         HStack{
             Text(event.date.formatted(date: .abbreviated,
                                       time: .shortened))
-            
         }
     }
 }

@@ -1,9 +1,9 @@
 import SwiftUI
 
 
-class User:  ObservableObject, Identifiable {
+class User:  ObservableObject, Identifiable, Decodable {
     
-    @Published var name : String
+    @Published var name : String = ""
     
     let id: UUID = UUID()
     var phoneNumber: String = ""
@@ -17,6 +17,10 @@ class User:  ObservableObject, Identifiable {
     init(name: String = "Empty"){
         self.name = name
         
+    }
+    
+    required init(from decoder: Decoder) throws {
+       
     }
 }
 

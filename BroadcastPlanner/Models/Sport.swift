@@ -8,8 +8,5 @@
 import Foundation
 
 enum Sport: String {
-    
-    case football, hockey, basketball
-    
-    
+    case football, hockey, basketball    
 }

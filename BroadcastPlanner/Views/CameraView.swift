@@ -39,5 +39,10 @@ struct CameraView: View {
 }
 
 #Preview {
-    CameraView(camera: Camera(position: .mainMatch))
+//    Group{
+        CameraView(camera: Camera(position: .mainMatch))
+            .preferredColorScheme(.dark) 
+//        CameraView(camera: Camera(position: .mainMatch))
+//            .preferredColorScheme(.light)
+//    }
 }

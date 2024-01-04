@@ -3,7 +3,6 @@ import Foundation
 class MockData {
     static var sampleEvent: Event = Event(id: UUID(),
                                           date: Date(),
-                                          creativeGroup: CreativeGroup(),
                                           broadcaster: MockData.sampleBroadcaster,
                                           location: sampleStadium,
                                           cameras: MockData.sampleCameras)

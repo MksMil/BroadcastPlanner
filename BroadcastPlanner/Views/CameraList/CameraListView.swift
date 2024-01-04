@@ -4,7 +4,6 @@ struct CameraListView: View {
     
     @EnvironmentObject var storage: Storage
     
-    
     var body: some View {
         
         List {
@@ -21,9 +20,6 @@ struct CameraListView: View {
         }
         .listStyle(.inset)
         .listRowSpacing(6)
-        
-
-        
     }
 }
 
