@@ -7,16 +7,16 @@ final class Storage: ObservableObject {
     @Published var possibleCameras: [Camera] =
         CameraPosition.allCases.map{Camera(position: $0)}
     
-    @Published var users: [User]
+    @Published var users: [BPUser]
     @Published var selectedUserName: String = "Empty cam"
     
-    init(events: [Event] = [],cameras: [Camera] = [], users: [User] = []){
+    init(events: [Event] = [],cameras: [Camera] = [], users: [BPUser] = []){
         self.events = events
         self.cameras = cameras
         self.users = users
     }
     
-    func addUser(user: User){
+    func addUser(user: BPUser){
         guard !users.contains(where: { $0 == user}) else {
         //alert "This user already exist" here
             return
@@ -26,7 +26,7 @@ final class Storage: ObservableObject {
     
     func addCamera(position: CameraPosition, userName: String, camNumber: String){
         let cam = Camera(position: position)
-        cam.cameraMan = possibleUsers.first(where: { $0.name == userName}) ?? User()
+        cam.cameraMan = possibleUsers.first(where: { $0.name == userName}) ?? BPUser()
         cam.cameraMan.reserved = true
         if !possibleCameras.isEmpty, let index = possibleCameras.firstIndex(of: cam){
             possibleCameras.remove(at: index)
@@ -68,7 +68,7 @@ final class Storage: ObservableObject {
     }
     
     func assignSelectedUser(){
-        selectedUserName = users.first(where: { !$0.reserved })?.name ?? User().name
+        selectedUserName = users.first(where: { !$0.reserved })?.name ?? BPUser().name
         print(selectedUserName)
     }
     
@@ -78,7 +78,7 @@ final class Storage: ObservableObject {
     var isUsersAvailable: Bool {
          !users.filter({!$0.reserved}).isEmpty
     }
-    var possibleUsers: [User] {
+    var possibleUsers: [BPUser] {
         users.filter { !$0.reserved }
     }
  

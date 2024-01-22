@@ -1,4 +1,5 @@
 import Foundation
+import Firebase
 
 class NetworkManager{
     static let shared = NetworkManager()
@@ -13,12 +14,12 @@ class NetworkManager{
         ]
     }
     
-    func getUsers() -> [User]{
+    func getUsers() -> [BPUser]{
         return MockData.sampleUsers
     }
     
-    func getUser(id: UUID) -> User {
-        let resUser = User()
+    func getUser(id: UUID) -> BPUser {
+        let resUser = BPUser()
         guard let url = URL(string: baseURL + "/user/id/\(id.uuidString)" ) else {
             //Error
             return resUser
@@ -31,13 +32,10 @@ class NetworkManager{
         
         let jsonDecoder = JSONDecoder()
         
-        guard let user = try? jsonDecoder.decode(User.self, from: data) else {
+        guard let user = try? jsonDecoder.decode(BPUser.self, from: data) else {
             //error
             return resUser
         }
-        
-        
-        
         return user
     }
     

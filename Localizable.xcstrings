@@ -1,0 +1,75 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    ":" : {
+
+    },
+    "Add Cam" : {
+
+    },
+    "Add Event" : {
+
+    },
+    "Button" : {
+
+    },
+    "cam" : {
+
+    },
+    "Cameras: %lld" : {
+
+    },
+    "Date" : {
+
+    },
+    "Events" : {
+
+    },
+    "Forget password" : {
+
+    },
+    "Hello, World!" : {
+
+    },
+    "Match Day" : {
+
+    },
+    "No available Cameras" : {
+
+    },
+    "No available users" : {
+
+    },
+    "password" : {
+
+    },
+    "Settings" : {
+
+    },
+    "Settings here" : {
+
+    },
+    "Sign In" : {
+
+    },
+    "Sign In with Apple" : {
+
+    },
+    "Sign In with Google" : {
+
+    },
+    "Sign Out" : {
+
+    },
+    "Sign Up" : {
+
+    },
+    "Staff Here" : {
+
+    },
+    "Start time" : {
+
+    }
+  },
+  "version" : "1.0"
+}

@@ -1,7 +1,7 @@
 import SwiftUI
 
 
-class User:  ObservableObject, Identifiable, Decodable {
+class BPUser:  ObservableObject, Identifiable, Decodable {
     
     @Published var name : String = ""
     
@@ -24,9 +24,9 @@ class User:  ObservableObject, Identifiable, Decodable {
     }
 }
 
-extension User: Hashable, Equatable{
+extension BPUser: Hashable, Equatable{
     //equatable
-    static func == (lhs: User, rhs: User) -> Bool {
+    static func == (lhs: BPUser, rhs: BPUser) -> Bool {
         lhs.name == rhs.name
     }
     //hashable

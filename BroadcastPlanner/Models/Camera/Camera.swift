@@ -3,7 +3,7 @@ import Foundation
 final class Camera: Identifiable, ObservableObject {
     var id = UUID()
     
-    @Published var cameraMan: User = User()
+    @Published var cameraMan: BPUser = BPUser()
     @Published var selected: Bool = false
     @Published var number: String = ""
     @Published var position: CameraPosition

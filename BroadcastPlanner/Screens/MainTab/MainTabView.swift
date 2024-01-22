@@ -3,38 +3,32 @@ import SwiftUI
 struct MainTabView: View {
     
     var storage: Storage = Storage(cameras: [])
-    @State var isLogged: Bool = false
+    @Binding var isLogged: Bool
     
     var body: some View {
         
-        if isLogged {
             ZStack{
                 BackgroundTabItem()
                 TabView {
                     
                     MainEventsList()
-                        .tabItem { Label("Events", systemImage: "calendar").foregroundStyle(Color.white) }
+                        .tabItem { Label("Events", systemImage: "calendar")
+                            .foregroundStyle(Color.white) }
                     
                     // MyInfo Screen
                     
                     //Settings Screen
-                    
-                    
+                    SettingsView(isLogged: $isLogged)
+                        .tabItem { Label("Settings", systemImage: "gear") }
                 }
                 .tint(Color.white)
                 
                 .environmentObject(storage)
-                .task {
-                    storage.users = NetworkManager.shared.getUsers()
-                    storage.events = NetworkManager.shared.getEvents()
-                }
             }
-        } else {
-            LogScreen(isLogged: $isLogged)
-        }
+        
     }
 }
 
 #Preview {
-    MainTabView()
+    MainTabView(isLogged: .constant(false))
 }

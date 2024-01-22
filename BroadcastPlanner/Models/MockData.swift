@@ -7,18 +7,18 @@ class MockData {
                                           location: sampleStadium,
                                           cameras: MockData.sampleCameras)
     
-    static var sampleUser: User = User()
+    static var sampleUser: BPUser = BPUser()
     static let sampleStadium: Stadium = Stadium(
         title: "ARENA - LVIV",
         city: "Lviv",
         address: "Lviv. Striyska str. 199. 79031"
     )
-    static var sampleUsers: [User] = [
-        User(name: "Viktor Kabkoff"),
-        User(name: "Valeriy Gozha"),
-        User(name: "Sergiy Maliovanniy"),
-        User(name: "Ihor Stepanovitch"),
-        User(name: "Aleksandr Grianko")
+    static var sampleUsers: [BPUser] = [
+        BPUser(name: "Viktor Kabkoff"),
+        BPUser(name: "Valeriy Gozha"),
+        BPUser(name: "Sergiy Maliovanniy"),
+        BPUser(name: "Ihor Stepanovitch"),
+        BPUser(name: "Aleksandr Grianko")
     ]
     
     static let sampleBroadcaster: Broadcaster  = Broadcaster(name: "SG", cars: [BroadcasterCar(name: "SG SUPER CAR")])
