@@ -43,4 +43,14 @@ final class AuthenticationManager {
     func logOut() throws{
         try Auth.auth().signOut()
     }
+    
+    // MARK: - forget password handler
+    func forgetPass(){
+
+    }
+    
+    // MARK: - change password
+    
+    
+    // MARK: - change email
 }

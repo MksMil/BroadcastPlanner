@@ -10,7 +10,7 @@ import SwiftUI
 struct AuthenticationScreen: View {
     
     @StateObject var viewManager: AuthViewManager = AuthViewManager()
-
+    @EnvironmentObject var globalStorage: GlobalStorage
     @Binding var isLogged: Bool
     
     
@@ -47,7 +47,12 @@ struct AuthenticationScreen: View {
                 HStack{
                     Spacer()
                     Button(action: {
-                        
+                        Task {
+                            
+                                globalStorage.errorDescription = BPErrorHandleManager.mockError
+                                globalStorage.isErrorShow = true
+                            
+                        }
                     }, label: {
                         Text("Forget password")
                     })
@@ -101,7 +106,8 @@ struct AuthenticationScreen: View {
                     
                     // MARK: - "Sign in with Apple"
                     Button(action: {
-                        
+                        globalStorage.errorDescription = BPErrorHandleManager.handleError(error: BPError.invalidData, completion: { })
+                        globalStorage.isErrorShow = true
                     }, label: {
                         Text("Sign In with Apple")
                             .frame(maxWidth: .infinity)

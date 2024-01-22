@@ -4,16 +4,16 @@
 //
 //  Created by Миляев Максим on 22.01.2024.
 //
+//  Object for manage global data through the app
 
 import Foundation
 
 
 final class GlobalStorage: ObservableObject{
+    // MARK: - Authentication
     @Published var currentFirebaseUser: AuthDataResultModel?
     
-    
-    
-//    init(currentUer: User = nil) {
-//        self.currentUer = currentUer
-//    }
+    // MARK: - Error Handling
+    @Published var isErrorShow: Bool = false
+    @Published var errorDescription: (String, String) = BPErrorHandleManager.mockError
 }

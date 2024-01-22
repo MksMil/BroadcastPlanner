@@ -25,4 +25,8 @@ final class AuthViewManager: ObservableObject{
     func signUpwithEmailAndPassword() async throws{
         try await AuthenticationManager.shared.createUser(email: email, password: password)
     }
+    
+    func passfor(){
+        
+    }
 }
