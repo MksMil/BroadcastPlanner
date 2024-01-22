@@ -29,8 +29,13 @@ enum BPErrorHandleManager {
         
     }
     
-    static func handleError(error: AuthErrorCode, completion: @escaping ()->()){
-        
+    static func handleError(error: AuthErrorCode.Code, completion: @escaping ()->()) -> (String, String){
+        switch error {
+        case .networkError:
+            return ("network Error","network.slash")
+        default:
+            return ("","")
+        }
     }
     
     static func handleError(error: BPError, completion: @escaping ()->()) -> (String, String){

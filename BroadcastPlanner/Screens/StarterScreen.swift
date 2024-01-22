@@ -23,14 +23,14 @@ struct StarterScreen: View {
                         .environmentObject(globalStorage)
                 }
             }
-            .blur(radius: globalStorage.isErrorShow ? 20.0 : 0.0)
+            .blur(radius: globalStorage.isErrorShow ? 5.0 : 0.0)
             .animation(.easeInOut, value: globalStorage.isErrorShow)
             .zIndex(1)
             .disabled(globalStorage.isErrorShow)
             
             if globalStorage.isErrorShow{
                 BPErrorView(errorDescription: globalStorage.errorDescription)
-                    .transition(.asymmetric(insertion: .scale.animation(.easeInOut), removal: .scale.animation(.easeInOut)))
+                    .transition(.asymmetric(insertion: .scale.combined(with: .opacity).animation(.easeInOut), removal: .scale.combined(with: .opacity).animation(.easeInOut)))
                     .zIndex(2)
                     .onTapGesture { globalStorage.isErrorShow = false }
                 // TODO: Manage canceling task if disappear manualy

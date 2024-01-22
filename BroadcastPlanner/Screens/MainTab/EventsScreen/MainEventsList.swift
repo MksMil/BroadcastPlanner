@@ -25,7 +25,7 @@ struct MainEventsList: View {
                             .frame(height: 70)
                             .shadow(radius: 5)
                     }
-                    .listRowBackground(Color.lightBackgroundColor)
+                    .listRowBackground(Color.mainBackgroundColor)
                 }
             }
             .scrollContentBackground(.hidden)

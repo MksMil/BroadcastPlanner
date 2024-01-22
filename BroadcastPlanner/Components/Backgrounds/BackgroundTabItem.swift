@@ -10,7 +10,7 @@ import SwiftUI
 struct BackgroundTabItem: View {
     var body: some View {
         ZStack{
-            Color.lightBackgroundColor
+            Color.mainBackgroundColor
                 .ignoresSafeArea()
         }
     }

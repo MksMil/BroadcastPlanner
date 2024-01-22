@@ -8,7 +8,7 @@
 
 import Foundation
 
-
+@MainActor
 final class GlobalStorage: ObservableObject{
     // MARK: - Authentication
     @Published var currentFirebaseUser: AuthDataResultModel?

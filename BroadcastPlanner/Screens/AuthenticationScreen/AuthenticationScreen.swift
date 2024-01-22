@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
 struct AuthenticationScreen: View {
     
@@ -22,7 +23,7 @@ struct AuthenticationScreen: View {
     
     var body: some View {
         ZStack{
-            Color.blue.opacity(0.3).ignoresSafeArea()
+            Color.mainBackgroundColor.ignoresSafeArea()
             VStack(spacing: 20){
                 // MARK: - Logo
                 //logo here. circle is just a placeholder
@@ -48,10 +49,8 @@ struct AuthenticationScreen: View {
                     Spacer()
                     Button(action: {
                         Task {
-                            
                                 globalStorage.errorDescription = BPErrorHandleManager.mockError
                                 globalStorage.isErrorShow = true
-                            
                         }
                     }, label: {
                         Text("Forget password")
@@ -91,7 +90,10 @@ struct AuthenticationScreen: View {
                     
                     // MARK: - "Sign in with Google"
                     Button(action: {
-                        
+                        Task{
+                            globalStorage.errorDescription = BPErrorHandleManager.handleError(error: .networkError, completion: { })
+                            globalStorage.isErrorShow = true
+                        }
                     }, label: {
                         Text("Sign In with Google")
                             .frame(maxWidth: .infinity)
@@ -106,8 +108,10 @@ struct AuthenticationScreen: View {
                     
                     // MARK: - "Sign in with Apple"
                     Button(action: {
-                        globalStorage.errorDescription = BPErrorHandleManager.handleError(error: BPError.invalidData, completion: { })
-                        globalStorage.isErrorShow = true
+                        Task{
+                            globalStorage.errorDescription = BPErrorHandleManager.handleError(error: BPError.invalidData, completion: { })
+                            globalStorage.isErrorShow = true
+                        }
                     }, label: {
                         Text("Sign In with Apple")
                             .frame(maxWidth: .infinity)
@@ -125,10 +129,11 @@ struct AuthenticationScreen: View {
                 
                 // MARK: - "Sign Up" button
                 Button(action: {
-                    viewManager.email = ""
-                    viewManager.password = ""
-                    isSignUp = true
-                    
+                    Task{
+                        viewManager.email = ""
+                        viewManager.password = ""
+                        isSignUp = true
+                    }
                 }, label: {
                     Text("Sign Up")
                         .frame(maxWidth: .infinity)
