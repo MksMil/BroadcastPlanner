@@ -19,7 +19,19 @@
     "Cameras: %lld" : {
 
     },
+    "Change E-mail" : {
+
+    },
+    "Change Password" : {
+
+    },
+    "Confirm" : {
+
+    },
     "Date" : {
+
+    },
+    "Email and Password" : {
 
     },
     "Events" : {
@@ -68,6 +80,9 @@
 
     },
     "Start time" : {
+
+    },
+    "Udate %@" : {
 
     }
   },

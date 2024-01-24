@@ -36,9 +36,15 @@ final class AuthenticationManager {
     }
     
     // MARK: - SU SI with Apple
+    func signWithAppl(){
+        
+    }
     
     // MARK: - SU SI with Google
     
+    func signWithGgl(){
+        
+    }
     // MARK: - Log Out
     func logOut() throws{
         try Auth.auth().signOut()
@@ -51,6 +57,12 @@ final class AuthenticationManager {
     
     // MARK: - change password
     
+    func updatePass(pass: String) async throws {
+        try await Auth.auth().currentUser?.updatePassword(to: pass)
+    }
     
     // MARK: - change email
+    func updateEmail(newEmail: String) async throws {
+        try await Auth.auth().currentUser?.sendEmailVerification(beforeUpdatingEmail: newEmail)
+    }
 }

@@ -12,8 +12,14 @@ import Foundation
 final class GlobalStorage: ObservableObject{
     // MARK: - Authentication
     @Published var currentFirebaseUser: AuthDataResultModel?
+    var password: String = ""
     
     // MARK: - Error Handling
     @Published var isErrorShow: Bool = false
     @Published var errorDescription: (String, String) = BPErrorHandleManager.mockError
+    
+    func showSuccessMessage(){
+        errorDescription = ("Success!","checkmark")
+        isErrorShow = true
+    }
 }

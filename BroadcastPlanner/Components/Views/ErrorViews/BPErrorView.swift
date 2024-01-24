@@ -10,7 +10,10 @@ import SwiftUI
 struct BPErrorView: View {
     
     var errorDescription: (String, String)
+    
+    //animation parameter
     @State private var animatedOpacity: Double = 1
+    
     var body: some View {
         ZStack{
             RoundedRectangle(cornerRadius: 25.0)
@@ -19,10 +22,11 @@ struct BPErrorView: View {
                 .frame(width: 200,height: 200)
                 .overlay {
                     VStack{
+                        // TODO: check image size for different alerts
                         Image(systemName: errorDescription.1)
                             .resizable()
                             .scaledToFit()
-                            .frame(height: 80)
+                            .frame(width: 80,height: 80)
                             .opacity(animatedOpacity)
                             .onAppear(perform: {
                                 Task{
@@ -31,10 +35,19 @@ struct BPErrorView: View {
                                     }
                                 }
                             })
+                        
+                        VStack{
+                            Spacer()
                             
-                        Text(errorDescription.0)
-                            .padding(.bottom)
-                            
+                            Text(errorDescription.0)
+                                .font(.title3)
+                                .fontWeight(.medium)
+                                .lineLimit(3)
+                                .multilineTextAlignment(.center)
+
+                            Spacer()
+                        }
+                         Spacer()
                     }
                     .foregroundColor(.white).opacity(0.8)
                     .padding()
@@ -44,5 +57,5 @@ struct BPErrorView: View {
 }
 
 #Preview {
-    BPErrorView(errorDescription: ("Error with very very very big and imformative Description", "wifi.exclamationmark"))
+    BPErrorView(errorDescription: ("Error", "wifi.exclamationmark"))
 }

@@ -6,7 +6,8 @@
 //
 
 import SwiftUI
-import FirebaseAuth
+import Firebase
+
 
 struct AuthenticationScreen: View {
     
@@ -49,8 +50,7 @@ struct AuthenticationScreen: View {
                     Spacer()
                     Button(action: {
                         Task {
-                                globalStorage.errorDescription = BPErrorHandleManager.mockError
-                                globalStorage.isErrorShow = true
+                               
                         }
                     }, label: {
                         Text("Forget password")
@@ -68,7 +68,11 @@ struct AuthenticationScreen: View {
                                 isLogged = true
                             } catch {
                                 //UI error message must be here
-                                print(error.localizedDescription)
+                                
+                                print(error)
+                                
+                                globalStorage.errorDescription = BPErrorHandleManager.handleFError(error: error as NSError)
+                                globalStorage.isErrorShow = true
                             }
                         }
                         
@@ -91,8 +95,7 @@ struct AuthenticationScreen: View {
                     // MARK: - "Sign in with Google"
                     Button(action: {
                         Task{
-                            globalStorage.errorDescription = BPErrorHandleManager.handleError(error: .networkError, completion: { })
-                            globalStorage.isErrorShow = true
+                            
                         }
                     }, label: {
                         Text("Sign In with Google")
@@ -109,8 +112,7 @@ struct AuthenticationScreen: View {
                     // MARK: - "Sign in with Apple"
                     Button(action: {
                         Task{
-                            globalStorage.errorDescription = BPErrorHandleManager.handleError(error: BPError.invalidData, completion: { })
-                            globalStorage.isErrorShow = true
+                           
                         }
                     }, label: {
                         Text("Sign In with Apple")
