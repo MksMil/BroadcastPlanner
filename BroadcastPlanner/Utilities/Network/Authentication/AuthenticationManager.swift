@@ -63,6 +63,6 @@ final class AuthenticationManager {
     
     // MARK: - change email
     func updateEmail(newEmail: String) async throws {
-        try await Auth.auth().currentUser?.sendEmailVerification(beforeUpdatingEmail: newEmail)
+        try await Auth.auth().currentUser?.updateEmail(to: newEmail)
     }
 }

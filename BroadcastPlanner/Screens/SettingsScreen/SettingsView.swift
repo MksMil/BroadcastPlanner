@@ -9,6 +9,8 @@ import SwiftUI
 
 struct SettingsView: View {
     
+    @EnvironmentObject var globalStorage: GlobalStorage
+    
     @Binding var isLogged: Bool
     @State var newEmail: String = ""
     @State var newPassword: String = ""
@@ -64,11 +66,14 @@ struct SettingsView: View {
                         Task{
                             do{
                                 try AuthenticationManager.shared.logOut()
+                                
                             } catch {
                                 print("failed to signing out: \(error.localizedDescription)")
                             }
                         }
                         isLogged = false
+                        globalStorage.showSuccessMessage()
+                        
                     }, label: {
                         Text("Sign Out")
                             .font(.title)
@@ -85,4 +90,5 @@ struct SettingsView: View {
 
 #Preview {
     SettingsView(isLogged: .constant(false))
+        .environmentObject(GlobalStorage())
 }

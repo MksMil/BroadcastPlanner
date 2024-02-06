@@ -8,12 +8,16 @@
 import SwiftUI
 
 struct MainEventsList: View {
-    @State var isShowCreativeGroupEdit: Bool = false
+    @EnvironmentObject var globalStorage: GlobalStorage
 
     @EnvironmentObject var storage: Storage
     
+    @State var isShowCreativeGroupEdit: Bool = false
+    
+    
     var body: some View {
         ZStack{
+            // MARK: - Background View
             BackgroundTabItem()
             
             List {
@@ -31,7 +35,15 @@ struct MainEventsList: View {
             .scrollContentBackground(.hidden)
             .listStyle(.inset)
             .padding(.top, 30)
-
+            
+            // MARK: - test error button
+            Button(action: {
+                globalStorage.errorDescription = ("Error tapped","checkmark.bubble")
+                globalStorage.isErrorShow = true
+            }, label: {
+                Text("ERROR")
+            })
+            
             if isShowCreativeGroupEdit{
                 EventMainView(isShowCreativeGroupEdit: $isShowCreativeGroupEdit)
             }
@@ -48,5 +60,5 @@ struct MainEventsList: View {
                 MockData.sampleEvent
             ]
         )
-    )
+    ).environmentObject(GlobalStorage())
 }

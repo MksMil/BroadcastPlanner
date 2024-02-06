@@ -27,6 +27,10 @@
 		2955C9822B57C1BE003F9ADC /* AuthDataResultModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2955C9812B57C1BE003F9ADC /* AuthDataResultModel.swift */; };
 		29656CD42B17600A0093A19A /* BroadcastPlannerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29656CD32B17600A0093A19A /* BroadcastPlannerTests.swift */; };
 		2967DF192B61109B003956FD /* UpdateEPView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2967DF182B61109B003956FD /* UpdateEPView.swift */; };
+		2967DF1B2B639A90003956FD /* Error+Modifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2967DF1A2B639A90003956FD /* Error+Modifier.swift */; };
+		2967DF1D2B63C5AF003956FD /* Publishers+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2967DF1C2B63C5AF003956FD /* Publishers+Ext.swift */; };
+		2967DF1F2B64E444003956FD /* TestTFKBRD.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2967DF1E2B64E444003956FD /* TestTFKBRD.swift */; };
+		2967DF212B64F69B003956FD /* KeyboardAdaptiveModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2967DF202B64F69B003956FD /* KeyboardAdaptiveModifier.swift */; };
 		297EC5692ACC2DD0009BB06C /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 297EC5682ACC2DD0009BB06C /* Storage.swift */; };
 		297EC56E2ACC5116009BB06C /* AddCameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 297EC56D2ACC5116009BB06C /* AddCameraView.swift */; };
 		297EC5732AD3E6D8009BB06C /* SingleCameraStadiumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 297EC5722AD3E6D8009BB06C /* SingleCameraStadiumView.swift */; };
@@ -88,6 +92,10 @@
 		29656CD12B17600A0093A19A /* BroadcastPlannerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BroadcastPlannerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		29656CD32B17600A0093A19A /* BroadcastPlannerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BroadcastPlannerTests.swift; sourceTree = "<group>"; };
 		2967DF182B61109B003956FD /* UpdateEPView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateEPView.swift; sourceTree = "<group>"; };
+		2967DF1A2B639A90003956FD /* Error+Modifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Error+Modifier.swift"; sourceTree = "<group>"; };
+		2967DF1C2B63C5AF003956FD /* Publishers+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Publishers+Ext.swift"; sourceTree = "<group>"; };
+		2967DF1E2B64E444003956FD /* TestTFKBRD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestTFKBRD.swift; sourceTree = "<group>"; };
+		2967DF202B64F69B003956FD /* KeyboardAdaptiveModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardAdaptiveModifier.swift; sourceTree = "<group>"; };
 		297EC5682ACC2DD0009BB06C /* Storage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storage.swift; sourceTree = "<group>"; };
 		297EC56D2ACC5116009BB06C /* AddCameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCameraView.swift; sourceTree = "<group>"; };
 		297EC5722AD3E6D8009BB06C /* SingleCameraStadiumView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleCameraStadiumView.swift; sourceTree = "<group>"; };
@@ -180,6 +188,8 @@
 		290B81762AD91FF200B858F1 /* Modifiers */ = {
 			isa = PBXGroup;
 			children = (
+				2967DF1A2B639A90003956FD /* Error+Modifier.swift */,
+				2967DF202B64F69B003956FD /* KeyboardAdaptiveModifier.swift */,
 			);
 			path = Modifiers;
 			sourceTree = "<group>";
@@ -200,6 +210,7 @@
 				2967DF152B5FD507003956FD /* ErrorViews */,
 				2967DF162B5FD585003956FD /* TextFieldViews */,
 				2955C96E2B4EDB15003F9ADC /* BPButtonLargeStyle.swift */,
+				2967DF1E2B64E444003956FD /* TestTFKBRD.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -408,6 +419,7 @@
 			isa = PBXGroup;
 			children = (
 				29C041F12ACBF45B008B3E1F /* Color+Ext.swift */,
+				2967DF1C2B63C5AF003956FD /* Publishers+Ext.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -565,6 +577,7 @@
 				290B81752AD9149800B858F1 /* MotionManager.swift in Sources */,
 				2955C9822B57C1BE003F9ADC /* AuthDataResultModel.swift in Sources */,
 				29C041D82AC55D4A008B3E1F /* Stadium.swift in Sources */,
+				2967DF1B2B639A90003956FD /* Error+Modifier.swift in Sources */,
 				29C041D22AC55C7A008B3E1F /* Event.swift in Sources */,
 				29C041F22ACBF45B008B3E1F /* Color+Ext.swift in Sources */,
 				2955C96F2B4EDB15003F9ADC /* BPButtonLargeStyle.swift in Sources */,
@@ -572,8 +585,10 @@
 				297EC56E2ACC5116009BB06C /* AddCameraView.swift in Sources */,
 				290B81702AD7FCE700B858F1 /* MainEventsList.swift in Sources */,
 				29C041DF2AC5B133008B3E1F /* CameraView.swift in Sources */,
+				2967DF1D2B63C5AF003956FD /* Publishers+Ext.swift in Sources */,
 				297EC5692ACC2DD0009BB06C /* Storage.swift in Sources */,
 				29C82BE02AD7BF030056A998 /* AddCameraViewModel.swift in Sources */,
+				2967DF1F2B64E444003956FD /* TestTFKBRD.swift in Sources */,
 				29FFDAB82ADBC2F1005AD50F /* BackgroundTabItem.swift in Sources */,
 				29C041E32AC6988B008B3E1F /* NetworkManager.swift in Sources */,
 				2955C9772B4FECDE003F9ADC /* AuthenticationManager.swift in Sources */,
@@ -601,6 +616,7 @@
 				290B816B2AD7F01100B858F1 /* CameraDirection.swift in Sources */,
 				29FFDAB22ADA7F6F005AD50F /* Sport.swift in Sources */,
 				29C041D02AC557E1008B3E1F /* BPUser.swift in Sources */,
+				2967DF212B64F69B003956FD /* KeyboardAdaptiveModifier.swift in Sources */,
 				2967DF192B61109B003956FD /* UpdateEPView.swift in Sources */,
 				2955C97C2B518715003F9ADC /* SettingsView.swift in Sources */,
 			);

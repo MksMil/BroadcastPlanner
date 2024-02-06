@@ -19,53 +19,52 @@ struct AddEventView: View {
     
     @State private var broadcaster: Broadcaster?
     
-    
     var body: some View {
         ZStack{
             BackgroundTabItem()
             VStack{
                 Form{
-                    
-                    DatePicker(
-                        "Match Day",
-                        selection: $matchDay,
-                        displayedComponents: .date
-                    )
-                    
-                    .listRowBackground(Color.lightBackgroundColor)
-                        
-                    
-                    DatePicker(
-                        "Start time",
-                        selection: $startTime,
-                        displayedComponents: .hourAndMinute
-                    )
-                    .datePickerStyle(.automatic)
-                    .listRowBackground(Color.lightBackgroundColor)
-                    
+//                    DatePicker(
+//                        "Match Day",
+//                        selection: $matchDay,
+//                        displayedComponents: .date
+//                    )
+//                    .foregroundStyle(Color.lightBackgroundColor)
+//                    .listRowBackground(Color.mainBackgroundColor)
+//                        
+//                    
+//                    DatePicker(
+//                        "Start time",
+//                        selection: $startTime,
+//                        displayedComponents: .hourAndMinute
+//                    )
+//                    .foregroundStyle(Color.lightBackgroundColor)
+//                    .datePickerStyle(.automatic)
+//                    .listRowBackground(Color.mainBackgroundColor)
+//                    
                     DatePicker("Date", selection: $matchDay)
-                        .listRowBackground(Color.lightBackgroundColor)
+                        .listRowBackground(Color.mainBackgroundColor)
+                        .foregroundStyle(Color.lightBackgroundColor)
                     Divider()
-                        .listRowBackground(Color.lightBackgroundColor)
+                        .listRowBackground(Color.mainBackgroundColor)
                     
                     Text(sport?.rawValue ?? "no sport selected")
-                        .listRowBackground(Color.lightBackgroundColor)
+                        .listRowBackground(Color.mainBackgroundColor)
                     Text(homeTeam ?? "no home team selected")
-                        .listRowBackground(Color.lightBackgroundColor)
+                        .listRowBackground(Color.mainBackgroundColor)
                     Text(awayTeam ?? "no away team selected")
-                        .listRowBackground(Color.lightBackgroundColor)
+                        .listRowBackground(Color.mainBackgroundColor)
                     
                     Divider()
-                        .listRowBackground(Color.lightBackgroundColor)
+                        .listRowBackground(Color.mainBackground)
                     
                     Text(broadcaster?.name ?? "no broadcaster selected")
-                        .listRowBackground(Color.lightBackgroundColor)
-                        .listRowBackground(Color.lightBackgroundColor)
+                        .listRowBackground(Color.mainBackgroundColor)
                     
                 }
-                .listRowBackground(Color.lightBackgroundColor)
+                
                   .scrollContentBackground(.hidden)
-                  .foregroundStyle(Color.white)
+                  .foregroundStyle(Color.lightBackgroundColor)
                   
                 
 
@@ -73,7 +72,7 @@ struct AddEventView: View {
                     addEvent()
                 } label: {
                     RoundedRectangle(cornerRadius: 10)
-                        .strokeBorder(Color.orange,lineWidth: 2)
+                        .strokeBorder(Color.lightBackgroundColor,lineWidth: 2)
                         .background{
                             Color.blue
 //                                .opacity(0.2)

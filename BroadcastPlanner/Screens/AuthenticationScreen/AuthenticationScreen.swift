@@ -7,152 +7,153 @@
 
 import SwiftUI
 import Firebase
+import Combine
 
 
 struct AuthenticationScreen: View {
+    enum FieldInFocus: Hashable{
+        case firstField, secondField
+    }
+    
+    @FocusState private var isFocused: FieldInFocus?
     
     @StateObject var viewManager: AuthViewManager = AuthViewManager()
     @EnvironmentObject var globalStorage: GlobalStorage
     @Binding var isLogged: Bool
     
-    
-    
-    @State private var isSignUp: Bool = false
-    
     //viewModel here, viewModel contrlos data and delegates creating user to manager
     
     
     var body: some View {
-        ZStack{
-            Color.mainBackgroundColor.ignoresSafeArea()
-            VStack(spacing: 20){
-                // MARK: - Logo
-                //logo here. circle is just a placeholder
-                Circle()
-                    .frame(width: 150)
-                    .opacity(0.8)
+        NavigationStack{
+            ZStack{
+                Color.mainBackgroundColor.ignoresSafeArea()
                 
-                Divider()
-                // MARK: - Email/Password Textfields
                 VStack{
-                    BPTextFieldWithIcon(text: $viewManager.email,
-                                        placeholder: "e-mail",
-                                        imageName: "envelope")
+                    // MARK: - Logo
+                    //logo here. circle is just a placeholder
+                    Circle()
+                        .frame(width: 150, height: 150)
+                        .opacity(0.8)
                     
-                    BPTextFieldWithIcon(text: $viewManager.password,
-                                        placeholder: "password",
-                                        imageName: "lock.fill",
-                                        isSecureField: true)
-                }
-                
-                // MARK: - "Forget password" button
-                HStack{
-                    Spacer()
-                    Button(action: {
-                        Task {
-                               
-                        }
-                    }, label: {
-                        Text("Forget password")
-                    })
-                }
-                .padding(.horizontal)
-                
-                VStack{
+                    Divider()
+                    // MARK: - Email/Password Textfields
+                    VStack{
+                        BPTextFieldWithIcon(text: $viewManager.email,
+                                            placeholder: "e-mail",
+                                            imageName: "envelope")
+                        .keyboardType(.emailAddress)
+                        .focused($isFocused,equals: .firstField)
+                        
+                        BPTextFieldWithIcon(text: $viewManager.password,
+                                            placeholder: "password",
+                                            imageName: "lock.fill",
+                                            isSecureField: true)
+                        .keyboardType(.default)
+                        .focused($isFocused,equals: .secondField)
+                    }
+                    
+                    // MARK: - "Forget password" button
+                    HStack{
+                        Spacer()
+                        Button(action: {
+                            Task {
+                                
+                            }
+                        }, label: {
+                            Text("Forget password")
+                        })
+                    }
+                    .padding(.horizontal)
                     
                     // MARK: - "Sign In"
                     Button(action: {
                         Task{
                             do {
+                                isFocused = nil
                                 try await viewManager.signInWithEmailAndPassword()
                                 isLogged = true
+                                globalStorage.showSuccessMessage()
                             } catch {
-                                //UI error message must be here
-                                
-                                print(error)
-                                
-                                globalStorage.errorDescription = BPErrorHandleManager.handleFError(error: error as NSError)
-                                globalStorage.isErrorShow = true
+                                globalStorage.showError(error: error)
                             }
                         }
-                        
                     }, label: {
                         Text("Sign In")
                             .frame(maxWidth: .infinity)
                             .frame(height: 30)
                             .padding()
-                            .background {
-                                Color(.systemGray4)
-                            }
+                            .background { Color(.systemGray4)}
                             .clipShape(RoundedRectangle(cornerRadius: 8))
                             .padding(.horizontal)
                     })
                     
                     Divider()
                     
-                    Spacer()
-                    
-                    // MARK: - "Sign in with Google"
-                    Button(action: {
-                        Task{
+                    if isFocused == nil {
+                        
+                            // MARK: - "Sign in with Google"
+                            Button(action: {
+                                Task{
+                                    
+                                }
+                            }, label: {
+                                Text("Sign In with Google")
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: 30)
+                                    .padding()
+                                    .background {Color(.systemGray4)}
+                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                                    .padding(.horizontal)
+                            })
+                            .transition(.asymmetric(insertion: .opacity
+                                .animation(.easeInOut(duration: 0.3)),
+                                                    removal: .opacity
+                                .animation(.easeInOut(duration: 0.3))))
                             
-                        }
-                    }, label: {
-                        Text("Sign In with Google")
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 30)
-                            .padding()
-                            .background {
-                                Color(.systemGray4)
+                            // MARK: - "Sign in with Apple"
+                            Button(action: {
+                                Task{
+                                    
+                                }
+                            }, label: {
+                                Text("Sign In with Apple")
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: 30)
+                                    .padding()
+                                    .background {Color(.systemGray4)}
+                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                                    .padding(.horizontal)
+                            })
+                            .transition(.asymmetric(insertion: .opacity
+                                .animation(.easeInOut(duration: 0.3)),
+                                                    removal: .opacity
+                                .animation(.easeInOut(duration: 0.3))))
+                            Spacer()
+                            
+                            // MARK: - "Sign Up" Link
+                            NavigationLink {
+                                SignUpView()
+                                    .environmentObject(viewManager)
+                            } label: {
+                                Text("Sign Up")
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: 30)
+                                    .padding()
+                                    .background { Color(.systemGray4)}
+                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                                    .padding(.horizontal)
                             }
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                            .padding(.horizontal)
-                    })
-                    
-                    // MARK: - "Sign in with Apple"
-                    Button(action: {
-                        Task{
-                           
-                        }
-                    }, label: {
-                        Text("Sign In with Apple")
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 30)
-                            .padding()
-                            .background {
-                                Color(.systemGray4)
-                            }
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                            .padding(.horizontal)
-                    })
+                            .transition(.asymmetric(insertion: .opacity
+                                .animation(.easeInOut(duration: 0.3)),
+                                                    removal: .opacity
+                                .animation(.easeInOut(duration: 0.3))))
+                        
+                        
+                    }
                     Spacer()
                 }
-                Spacer()
-                
-                // MARK: - "Sign Up" button
-                Button(action: {
-                    Task{
-                        viewManager.email = ""
-                        viewManager.password = ""
-                        isSignUp = true
-                    }
-                }, label: {
-                    Text("Sign Up")
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 30)
-                        .padding()
-                        .background {
-                            Color(.systemGray4)
-                        }
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                        .padding(.horizontal)
-                })
-                .padding(.bottom)
-            }
-            // MARK: - "Sign Up" flow
-            .fullScreenCover(isPresented: $isSignUp) {
-                SignUpView()
-                    .environmentObject(viewManager)
+//                .padding(.top,20)
             }
         }
     }
@@ -162,4 +163,5 @@ struct AuthenticationScreen: View {
 // MARK: - Preview
 #Preview {
     AuthenticationScreen(isLogged: .constant(false))
+        .environmentObject(GlobalStorage())
 }

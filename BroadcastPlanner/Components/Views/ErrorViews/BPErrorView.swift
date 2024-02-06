@@ -9,24 +9,21 @@ import SwiftUI
 
 struct BPErrorView: View {
     
-    var errorDescription: (String, String)
+    // first value : error text description
+    // second value: sf symbol image name
+    @State var errorDescription: (String, String)
     
-    //animation parameter
+    //animation parameters
     @State private var animatedOpacity: Double = 1
     
     var body: some View {
-        ZStack{
-            RoundedRectangle(cornerRadius: 25.0)
-                .foregroundColor(.black)
-                .opacity(0.75)
-                .frame(width: 200,height: 200)
-                .overlay {
                     VStack{
-                        // TODO: check image size for different alerts
+                        // MARK: - Error Image
                         Image(systemName: errorDescription.1)
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 80,height: 80)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 100)
                             .opacity(animatedOpacity)
                             .onAppear(perform: {
                                 Task{
@@ -35,27 +32,27 @@ struct BPErrorView: View {
                                     }
                                 }
                             })
-                        
-                        VStack{
-                            Spacer()
-                            
+                        // MARK: - Error Description
+                        if errorDescription.0.count > 0{
                             Text(errorDescription.0)
                                 .font(.title3)
                                 .fontWeight(.medium)
-                                .lineLimit(3)
                                 .multilineTextAlignment(.center)
-
-                            Spacer()
+                            //                                .padding(.top,30)
                         }
-                         Spacer()
+                        
                     }
                     .foregroundColor(.white).opacity(0.8)
-                    .padding()
-                }
-        }
+                    .padding(30)
+                    .background{
+                        RoundedRectangle(cornerRadius: 25.0)
+                            .foregroundColor(.black)
+                            .opacity(0.75)
+                    }
+                    .padding(.horizontal,80)
     }
 }
 
 #Preview {
-    BPErrorView(errorDescription: ("Error", "wifi.exclamationmark"))
+    BPErrorView(errorDescription: ("Error", "envelope.badge.shield.half.filled"))//"wifi.exclamationmark"))
 }

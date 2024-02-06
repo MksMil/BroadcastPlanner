@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct MainTabView: View {
+    @EnvironmentObject var globalStorage: GlobalStorage
     
     var storage: Storage = Storage(cameras: [])
     @Binding var isLogged: Bool
@@ -22,7 +23,6 @@ struct MainTabView: View {
                         .tabItem { Label("Settings", systemImage: "gear") }
                 }
                 .tint(Color.white)
-                
                 .environmentObject(storage)
             }
         

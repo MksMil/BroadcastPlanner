@@ -1,6 +1,9 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "" : {
+
+    },
     ":" : {
 
     },
@@ -11,6 +14,9 @@
 
     },
     "Button" : {
+
+    },
+    "ButtonName" : {
 
     },
     "cam" : {
@@ -34,16 +40,13 @@
     "Email and Password" : {
 
     },
+    "ERROR" : {
+
+    },
     "Events" : {
 
     },
     "Forget password" : {
-
-    },
-    "Hello, World!" : {
-
-    },
-    "Match Day" : {
 
     },
     "No available Cameras" : {
@@ -53,6 +56,9 @@
 
     },
     "password" : {
+
+    },
+    "regularMaterial" : {
 
     },
     "Settings" : {
@@ -79,10 +85,19 @@
     "Staff Here" : {
 
     },
-    "Start time" : {
+    "thickMaterial" : {
 
     },
-    "Udate %@" : {
+    "thinMaterial" : {
+
+    },
+    "ultraThickMaterial" : {
+
+    },
+    "ultraThinMaterial" : {
+
+    },
+    "Update %@" : {
 
     }
   },

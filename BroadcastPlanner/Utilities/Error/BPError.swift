@@ -29,12 +29,12 @@ enum BPError: Error {
 enum BPErrorHandleManager {
     
     // MARK: - Firebase error handler
-    static func handleFError(error: NSError) -> (String, String){
+    static func handleFError(error: Error) -> (String, String){
 
-        switch error.code {
+        switch (error as NSError).code {
             //Auth
         case AuthErrorCode.wrongPassword.rawValue:
-            return (/*"Wrong Password!"*/"This E-mail already in use","lock")
+            return ("Wrong Password!","lock")
         case AuthErrorCode.userDisabled.rawValue:
             return ("Account disabled, please contact with network administrator","person.fill.badge.minus")
         case AuthErrorCode.invalidEmail.rawValue:
