@@ -7,7 +7,10 @@
 
 import SwiftUI
 import Firebase
+import GoogleSignIn
+import GoogleSignInSwift
 import Combine
+import AuthenticationServices
 
 
 struct AuthenticationScreen: View {
@@ -23,10 +26,10 @@ struct AuthenticationScreen: View {
     
     //viewModel here, viewModel contrlos data and delegates creating user to manager
     
-    
     var body: some View {
         NavigationStack{
             ZStack{
+                
                 Color.mainBackgroundColor.ignoresSafeArea()
                 
                 VStack{
@@ -92,68 +95,63 @@ struct AuthenticationScreen: View {
                     
                     if isFocused == nil {
                         
-                            // MARK: - "Sign in with Google"
-                            Button(action: {
-                                Task{
-                                    
-                                }
-                            }, label: {
-                                Text("Sign In with Google")
-                                    .frame(maxWidth: .infinity)
-                                    .frame(height: 30)
-                                    .padding()
-                                    .background {Color(.systemGray4)}
-                                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                                    .padding(.horizontal)
-                            })
-                            .transition(.asymmetric(insertion: .opacity
-                                .animation(.easeInOut(duration: 0.3)),
-                                                    removal: .opacity
-                                .animation(.easeInOut(duration: 0.3))))
-                            
-                            // MARK: - "Sign in with Apple"
-                            Button(action: {
-                                Task{
-                                    
-                                }
-                            }, label: {
-                                Text("Sign In with Apple")
-                                    .frame(maxWidth: .infinity)
-                                    .frame(height: 30)
-                                    .padding()
-                                    .background {Color(.systemGray4)}
-                                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                                    .padding(.horizontal)
-                            })
-                            .transition(.asymmetric(insertion: .opacity
-                                .animation(.easeInOut(duration: 0.3)),
-                                                    removal: .opacity
-                                .animation(.easeInOut(duration: 0.3))))
-                            Spacer()
-                            
-                            // MARK: - "Sign Up" Link
-                            NavigationLink {
-                                SignUpView()
-                                    .environmentObject(viewManager)
-                            } label: {
-                                Text("Sign Up")
-                                    .frame(maxWidth: .infinity)
-                                    .frame(height: 30)
-                                    .padding()
-                                    .background { Color(.systemGray4)}
-                                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                                    .padding(.horizontal)
+                        // MARK: - "Sign in with Google"
+                        GoogleSignInButton(viewModel: GoogleSignInButtonViewModel(scheme: .light, style: .standard, state: .normal)) {
+                            Task{
+                                try await AuthenticationManager.shared.signWithGgl()
+                                isLogged = true
+                                globalStorage.showSuccessMessage()
                             }
-                            .transition(.asymmetric(insertion: .opacity
-                                .animation(.easeInOut(duration: 0.3)),
-                                                    removal: .opacity
-                                .animation(.easeInOut(duration: 0.3))))
+                        }
+                        .frame(height: 50)
+//                        .clipShape(RoundedRectangle(cornerRadius: ))
+                        .padding(.horizontal)
+                        .transition(.asymmetric(insertion: .opacity
+                            .animation(.easeInOut(duration: 0.3)),
+                                                removal: .opacity
+                            .animation(.easeInOut(duration: 0.3))))
+                        
+                        
+                        // MARK: - "Sign in with Apple"
+                        SignInWithAppleButton { req in
+                            
+                        } onCompletion: { res in
+                            
+                        }
+                        .frame(height: 50)
+                        .padding(.horizontal)
+                        .transition(.asymmetric(insertion: .opacity
+                            .animation(.easeInOut(duration: 0.3)),
+                                                removal: .opacity
+                            .animation(.easeInOut(duration: 0.3))))
+
+
+                        
+                        Spacer()
+                        
+                        // MARK: - "Sign Up" Link
+                        NavigationLink {
+                            SignUpView()
+                                .environmentObject(viewManager)
+                        } label: {
+                            Text("Sign Up")
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 30)
+                                .padding()
+                                .background { Color(.systemGray4)}
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                                .padding(.horizontal)
+                        }
+                        .transition(.asymmetric(insertion: .opacity
+                            .animation(.easeInOut(duration: 0.3)),
+                                                removal: .opacity
+                            .animation(.easeInOut(duration: 0.3))))
                         
                         
                     }
                     Spacer()
                 }
-//                .padding(.top,20)
+                //                .padding(.top,20)
             }
         }
     }

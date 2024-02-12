@@ -80,7 +80,10 @@ enum CameraPosition: String, CaseIterable, Identifiable{
         }
     }
     
+    // MARK: - ID
     var id: Self { self }
+    
+    // MARK: - Cases
     ///Usial cams
     //main upper
     case mainMatch = "Main Match Camera Wide Angle"
@@ -154,5 +157,92 @@ enum CameraPosition: String, CaseIterable, Identifiable{
     case dressingRoom = "Dressing room"
     case pressConference = "Press conference"
     case tunnelCam = "Tunell cam"
+
+//    var image: String {
+//        switch self {
+//        case .mainMatch:
+//            <#code#>
+//        case .mainCloseUp:
+//            <#code#>
+//        case .pitchSideHalfWay:
+//            <#code#>
+//        case .pitchSideBehindGoalLHS:
+//            <#code#>
+//        case .pitchSideBehindGoalRHS:
+//            <#code#>
+//        case .reverseCentralLower:
+//            <#code#>
+//        case .highBehindGoalRHS:
+//            <#code#>
+//        case .high16mLHS:
+//            <#code#>
+//        case .high16mRHS:
+//            <#code#>
+//        case .pitchSideBehindGoalLHSMirror:
+//            <#code#>
+//        case .polecamLHS:
+//            <#code#>
+//        case .goalCamLHSLeftCorner:
+//            <#code#>
+//        case .goalCamLHSRightCorner:
+//            <#code#>
+//        case .highBehindGoalLHS:
+//            <#code#>
+//        case .pitchSideBehindGoalRHSMirror:
+//            <#code#>
+//        case .polecamRHS:
+//            <#code#>
+//        case .goalCamRHSLeftCorner:
+//            <#code#>
+//        case .goalCamRHSRightCorner:
+//            <#code#>
+//        case .reverseCentralUpper:
+//            <#code#>
+//        case .secondReverseCentralUpper:
+//            <#code#>
+//        case .secondReverseCentralLower:
+//            <#code#>
+//        case .low16mLHS:
+//            <#code#>
+//        case .low16mRHS:
+//            <#code#>
+//        case .stedicamLHS:
+//            <#code#>
+//        case .stedicamRHS:
+//            <#code#>
+//        case .reverseStedicamLHS:
+//            <#code#>
+//        case .reverseStedicamRHS:
+//            <#code#>
+//        case .upperLeftBS:
+//            <#code#>
+//        case .upperRightBS:
+//            <#code#>
+//        case .lowerLeftBS:
+//            <#code#>
+//        case .lowerRightBS:
+//            <#code#>
+//        case .helicopter:
+//            <#code#>
+//        case .drone:
+//            <#code#>
+//        case .goalLineLHS:
+//            <#code#>
+//        case .goalLineRHS:
+//            <#code#>
+//        case .spiderCam:
+//            <#code#>
+//        case .teamArrivals:
+//            <#code#>
+//        case .flashInterview:
+//            <#code#>
+//        case .dressingRoom:
+//            <#code#>
+//        case .pressConference:
+//            <#code#>
+//        case .tunnelCam:
+//            <#code#>
+//        }
+//    }
     
 }

@@ -15,7 +15,6 @@
 		290FF3B52B5E5E180096D655 /* GlobalStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 290FF3B42B5E5E180096D655 /* GlobalStorage.swift */; };
 		290FF3B72B5E90240096D655 /* BPErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 290FF3B62B5E90240096D655 /* BPErrorView.swift */; };
 		294D97A72B3B2AEC00057F70 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 294D97A62B3B2AEC00057F70 /* FirebaseAuth */; };
-		294D97A92B3CD38700057F70 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 294D97A82B3CD38600057F70 /* GoogleService-Info.plist */; };
 		2955C9632B4B8C8C003F9ADC /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 2955C9622B4B8C8C003F9ADC /* Localizable.xcstrings */; };
 		2955C96A2B4E416D003F9ADC /* AuthenticationScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2955C9692B4E416D003F9ADC /* AuthenticationScreen.swift */; };
 		2955C96D2B4ECB05003F9ADC /* BPTextFieldWithIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2955C96C2B4ECB05003F9ADC /* BPTextFieldWithIcon.swift */; };
@@ -35,6 +34,7 @@
 		297EC56E2ACC5116009BB06C /* AddCameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 297EC56D2ACC5116009BB06C /* AddCameraView.swift */; };
 		297EC5732AD3E6D8009BB06C /* SingleCameraStadiumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 297EC5722AD3E6D8009BB06C /* SingleCameraStadiumView.swift */; };
 		298932682AE24D7000BD93CA /* BPError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 298932672AE24D7000BD93CA /* BPError.swift */; };
+		299277982B7629FD00B8F892 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 299277972B7629FD00B8F892 /* GoogleService-Info.plist */; };
 		29C041C02AC556CE008B3E1F /* BroadcastPlannerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041BF2AC556CE008B3E1F /* BroadcastPlannerApp.swift */; };
 		29C041C22AC556CE008B3E1F /* EventMainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041C12AC556CE008B3E1F /* EventMainView.swift */; };
 		29C041C42AC556D2008B3E1F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 29C041C32AC556D2008B3E1F /* Assets.xcassets */; };
@@ -55,6 +55,8 @@
 		29C041F62ACC0AE2008B3E1F /* CameraListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041F52ACC0AE2008B3E1F /* CameraListView.swift */; };
 		29C041F82ACC0AFD008B3E1F /* CameraListCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041F72ACC0AFC008B3E1F /* CameraListCellView.swift */; };
 		29C82BE02AD7BF030056A998 /* AddCameraViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C82BDF2AD7BF030056A998 /* AddCameraViewModel.swift */; };
+		29EBCDEE2B762C5A00696C25 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 29EBCDED2B762C5A00696C25 /* GoogleSignIn */; };
+		29EBCDF02B762C5A00696C25 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 29EBCDEF2B762C5A00696C25 /* GoogleSignInSwift */; };
 		29FFDAAD2AD945EC005AD50F /* MainEventListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29FFDAAC2AD945EC005AD50F /* MainEventListCell.swift */; };
 		29FFDAB02ADA560E005AD50F /* AddEventView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29FFDAAF2ADA560E005AD50F /* AddEventView.swift */; };
 		29FFDAB22ADA7F6F005AD50F /* Sport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29FFDAB12ADA7F6F005AD50F /* Sport.swift */; };
@@ -79,7 +81,6 @@
 		290FF3B22B5E56AD0096D655 /* AuthViewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewManager.swift; sourceTree = "<group>"; };
 		290FF3B42B5E5E180096D655 /* GlobalStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalStorage.swift; sourceTree = "<group>"; };
 		290FF3B62B5E90240096D655 /* BPErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPErrorView.swift; sourceTree = "<group>"; };
-		294D97A82B3CD38600057F70 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		2955C9622B4B8C8C003F9ADC /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		2955C9692B4E416D003F9ADC /* AuthenticationScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationScreen.swift; sourceTree = "<group>"; };
 		2955C96C2B4ECB05003F9ADC /* BPTextFieldWithIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPTextFieldWithIcon.swift; sourceTree = "<group>"; };
@@ -100,6 +101,8 @@
 		297EC56D2ACC5116009BB06C /* AddCameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCameraView.swift; sourceTree = "<group>"; };
 		297EC5722AD3E6D8009BB06C /* SingleCameraStadiumView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleCameraStadiumView.swift; sourceTree = "<group>"; };
 		298932672AE24D7000BD93CA /* BPError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPError.swift; sourceTree = "<group>"; };
+		299277972B7629FD00B8F892 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		299277992B762A4100B8F892 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		299805FC2B2057DE00B01C33 /* BroadcastPlanner.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = BroadcastPlanner.xctestplan; sourceTree = "<group>"; };
 		29C041BC2AC556CE008B3E1F /* BroadcastPlanner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BroadcastPlanner.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		29C041BF2AC556CE008B3E1F /* BroadcastPlannerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BroadcastPlannerApp.swift; sourceTree = "<group>"; };
@@ -141,7 +144,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				29EBCDF02B762C5A00696C25 /* GoogleSignInSwift in Frameworks */,
 				294D97A72B3B2AEC00057F70 /* FirebaseAuth in Frameworks */,
+				29EBCDEE2B762C5A00696C25 /* GoogleSignIn in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -301,11 +306,13 @@
 		29C041B32AC556CE008B3E1F = {
 			isa = PBXGroup;
 			children = (
+				299277972B7629FD00B8F892 /* GoogleService-Info.plist */,
 				2955C9622B4B8C8C003F9ADC /* Localizable.xcstrings */,
 				29C041BE2AC556CE008B3E1F /* BroadcastPlanner */,
 				29656CD22B17600A0093A19A /* BroadcastPlannerTests */,
 				299805FC2B2057DE00B01C33 /* BroadcastPlanner.xctestplan */,
 				29C041BD2AC556CE008B3E1F /* Products */,
+				29EBCDEC2B762C5A00696C25 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -321,7 +328,7 @@
 		29C041BE2AC556CE008B3E1F /* BroadcastPlanner */ = {
 			isa = PBXGroup;
 			children = (
-				294D97A82B3CD38600057F70 /* GoogleService-Info.plist */,
+				299277992B762A4100B8F892 /* Info.plist */,
 				29C041BF2AC556CE008B3E1F /* BroadcastPlannerApp.swift */,
 				29C041E42AC69976008B3E1F /* Screens */,
 				29C041CE2AC557D1008B3E1F /* Models */,
@@ -433,6 +440,13 @@
 			path = CameraList;
 			sourceTree = "<group>";
 		};
+		29EBCDEC2B762C5A00696C25 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		29FFDAAB2AD945DA005AD50F /* MainEventList */ = {
 			isa = PBXGroup;
 			children = (
@@ -493,6 +507,8 @@
 			name = BroadcastPlanner;
 			packageProductDependencies = (
 				294D97A62B3B2AEC00057F70 /* FirebaseAuth */,
+				29EBCDED2B762C5A00696C25 /* GoogleSignIn */,
+				29EBCDEF2B762C5A00696C25 /* GoogleSignInSwift */,
 			);
 			productName = BroadcastPlanner;
 			productReference = 29C041BC2AC556CE008B3E1F /* BroadcastPlanner.app */;
@@ -528,6 +544,7 @@
 			mainGroup = 29C041B32AC556CE008B3E1F;
 			packageReferences = (
 				294D97A52B3B2AEC00057F70 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				299277962B76208300B8F892 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 			);
 			productRefGroup = 29C041BD2AC556CE008B3E1F /* Products */;
 			projectDirPath = "";
@@ -552,9 +569,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				29C041C82AC556D2008B3E1F /* Preview Assets.xcassets in Resources */,
+				299277982B7629FD00B8F892 /* GoogleService-Info.plist in Resources */,
 				29C041C42AC556D2008B3E1F /* Assets.xcassets in Resources */,
 				2955C9632B4B8C8C003F9ADC /* Localizable.xcstrings in Resources */,
-				294D97A92B3CD38700057F70 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -808,6 +825,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = BroadcastPlanner/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -817,7 +835,7 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.6;
@@ -846,6 +864,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = BroadcastPlanner/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -855,7 +874,7 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.6;
@@ -911,6 +930,14 @@
 				minimumVersion = 10.19.1;
 			};
 		};
+		299277962B76208300B8F892 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 7.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -918,6 +945,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 294D97A52B3B2AEC00057F70 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseAuth;
+		};
+		29EBCDED2B762C5A00696C25 /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 299277962B76208300B8F892 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
+		};
+		29EBCDEF2B762C5A00696C25 /* GoogleSignInSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 299277962B76208300B8F892 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignInSwift;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

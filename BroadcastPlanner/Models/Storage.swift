@@ -3,6 +3,7 @@ import SwiftUI
 final class Storage: ObservableObject {
     @Published var events: [Event]
     @Published var cameras: [Camera]
+    
     @Published var lastSelected: Camera?
     @Published var possibleCameras: [Camera] =
         CameraPosition.allCases.map{Camera(position: $0)}

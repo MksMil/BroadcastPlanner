@@ -39,11 +39,11 @@ struct MainEventListCell: View {
                         }
                         Spacer()
                         VStack{
-                            Text(event.location.title)
+                            Text(event.eventLocation.title)
                                 .font(.caption2)
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.35)
-                            Text(event.location.city)
+                            Text(event.eventLocation.city)
                                 .font(.caption)
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.35)

@@ -30,5 +30,5 @@ struct MainTabView: View {
 }
 
 #Preview {
-    MainTabView(isLogged: .constant(false))
+    MainTabView(isLogged: .constant(true))
 }
