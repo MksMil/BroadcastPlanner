@@ -62,28 +62,30 @@ final class AuthenticationManager {
     func logOut() throws{
         try Auth.auth().signOut()
     }
-    
- 
-    
+
     // MARK: - UIApplication: TopViewController
     @MainActor
     func topViewController(controller: UIViewController? = nil) -> UIViewController? {
-        print("\(UIApplication.shared.connectedScenes.count)")
-        let controller = controller ?? UIApplication.shared.keyWindow?.rootViewController
+
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene else { return nil }
+
+        guard let rootviewcontroller = windowScene.windows.first?.rootViewController else { return nil}
         
-        if let navigationController = controller as? UINavigationController {
+        if let navigationController = rootviewcontroller as? UINavigationController {
             return topViewController(controller: navigationController.visibleViewController)
         }
-        if let tabController = controller as? UITabBarController {
+        
+        if let tabController = rootviewcontroller as? UITabBarController {
             if let selected = tabController.selectedViewController {
                 return topViewController(controller: selected)
             }
         }
-        if let presented = controller?.presentedViewController {
+        if let presented = rootviewcontroller.presentedViewController {
             return topViewController(controller: presented)
         }
-        return controller
+        return rootviewcontroller
     }
+    
 }
 
 // MARK: - SU SI with Email/Password
