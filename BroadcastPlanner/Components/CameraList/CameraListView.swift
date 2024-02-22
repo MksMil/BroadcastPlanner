@@ -5,7 +5,6 @@ struct CameraListView: View {
     @EnvironmentObject var storage: Storage
     
     var body: some View {
-        
         List {
             ForEach(storage.cameras) { cam in
                 CameraListCellView(camera: cam)
@@ -16,7 +15,6 @@ struct CameraListView: View {
             .onDelete(perform: { indexSet in
                 storage.deleteCamera(indexSet: indexSet)
             })
-            
         }
         .listStyle(.inset)
         .listRowSpacing(6)

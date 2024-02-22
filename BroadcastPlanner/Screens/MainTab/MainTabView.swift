@@ -4,7 +4,7 @@ struct MainTabView: View {
     @EnvironmentObject var globalStorage: GlobalStorage
     
     var storage: Storage = Storage(cameras: [])
-    @Binding var isLogged: Bool
+    
     
     var body: some View {
         
@@ -19,7 +19,7 @@ struct MainTabView: View {
                     // MyInfo Screen
                     
                     //Settings Screen
-                    SettingsView(isLogged: $isLogged)
+                    SettingsView()
                         .tabItem { Label("Settings", systemImage: "gear") }
                 }
                 .tint(Color.white)
@@ -30,5 +30,5 @@ struct MainTabView: View {
 }
 
 #Preview {
-    MainTabView(isLogged: .constant(true))
+    MainTabView()
 }

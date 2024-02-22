@@ -7,21 +7,24 @@ enum BPError: Error {
     case invalidData
     case invalidResponce
     case unableToComplete
+    case authError
     
-    var bpErrorDescription: (String, String) {
-        switch self {
-        case .invalidURL:
-            return ("","")
-        case .invalidData:
-            return ("","")
-        case .invalidResponce:
-            return ("","")
-        case .unableToComplete:
-            return ("","")
-//        default:
+    //
+    
+//    var bpErrorDescription: (String, String) {
+//        switch self {
+//        case .invalidURL:
 //            return ("","")
-        }
-    }
+//        case .invalidData:
+//            return ("","")
+//        case .invalidResponce:
+//            return ("","")
+//        case .unableToComplete:
+//            return ("","")
+////        default:
+////            return ("","")
+//        }
+//    }
 }
 
 //handler, returned string for message and name of sf-symbol for Image(systemname: ). optionally can make some 'completion' task
@@ -59,6 +62,8 @@ enum BPErrorHandleManager {
         switch error {
         case .invalidURL:
             return ("Invalid URL","eye.slash")
+        case .authError:
+            return ("Authorization Error","person.fill.xmark")
         default:
             return ("Unknown Error, Sorry","sparkles")
         }

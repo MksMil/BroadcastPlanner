@@ -1,5 +1,6 @@
 import Foundation
 
+//mock data for Previews only
 class MockData {
     static var sampleEvent: Event = Event(id: UUID(),
                                           date: Date(),

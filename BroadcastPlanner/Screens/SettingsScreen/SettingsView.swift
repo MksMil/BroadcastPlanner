@@ -11,7 +11,7 @@ struct SettingsView: View {
     
     @EnvironmentObject var globalStorage: GlobalStorage
     
-    @Binding var isLogged: Bool
+    
     @State var newEmail: String = ""
     @State var newPassword: String = ""
     
@@ -71,7 +71,7 @@ struct SettingsView: View {
                                 print("failed to signing out: \(error.localizedDescription)")
                             }
                         }
-                        isLogged = false
+                        globalStorage.currentFirebaseUser = nil
                         globalStorage.showSuccessMessage()
                         
                     }, label: {
@@ -89,6 +89,6 @@ struct SettingsView: View {
 }
 
 #Preview {
-    SettingsView(isLogged: .constant(false))
+    SettingsView()
         .environmentObject(GlobalStorage())
 }

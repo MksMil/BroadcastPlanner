@@ -5,12 +5,12 @@
 //  Created by Миляев Максим on 10.01.2024.
 //
 
-import SwiftUI
+import AuthenticationServices
+import Combine
 import Firebase
 import GoogleSignIn
 import GoogleSignInSwift
-import Combine
-import AuthenticationServices
+import SwiftUI
 
 
 struct AuthenticationScreen: View {
@@ -19,10 +19,11 @@ struct AuthenticationScreen: View {
     }
     
     @FocusState private var isFocused: FieldInFocus?
+    @State private var email: String = ""
+    @State private var password: String = ""
     
-    @StateObject var viewManager: AuthViewManager = AuthViewManager()
     @EnvironmentObject var globalStorage: GlobalStorage
-    @Binding var isLogged: Bool
+    
     
     //viewModel here, viewModel contrlos data and delegates creating user to manager
     
@@ -42,13 +43,13 @@ struct AuthenticationScreen: View {
                     Divider()
                     // MARK: - Email/Password Textfields
                     VStack{
-                        BPTextFieldWithIcon(text: $viewManager.email,
+                        BPTextFieldWithIcon(text: $email,
                                             placeholder: "e-mail",
                                             imageName: "envelope")
                         .keyboardType(.emailAddress)
                         .focused($isFocused,equals: .firstField)
                         
-                        BPTextFieldWithIcon(text: $viewManager.password,
+                        BPTextFieldWithIcon(text: $password,
                                             placeholder: "password",
                                             imageName: "lock.fill",
                                             isSecureField: true)
@@ -71,11 +72,10 @@ struct AuthenticationScreen: View {
                     
                     // MARK: - "Sign In"
                     Button(action: {
+                        isFocused = nil
                         Task{
                             do {
-                                isFocused = nil
-                                try await viewManager.signInWithEmailAndPassword()
-                                isLogged = true
+                                globalStorage.currentFirebaseUser = try await AuthenticationManager.shared.signIn(withEmail: email, password: password)
                                 globalStorage.showSuccessMessage()
                             } catch {
                                 globalStorage.showError(error: error)
@@ -83,83 +83,88 @@ struct AuthenticationScreen: View {
                         }
                     }, label: {
                         Text("Sign In")
-                            .frame(maxWidth: .infinity)
                             .frame(height: 30)
-                            .padding()
+                            .frame(width: 200)
+                            .padding(.vertical,10)
                             .background { Color(.systemGray4)}
                             .clipShape(RoundedRectangle(cornerRadius: 8))
                             .padding(.horizontal)
                     })
+                    .padding(.bottom,20)
                     
-                    Divider()
+                    //                    Divider()
                     
                     if isFocused == nil {
-                        
                         // MARK: - "Sign in with Google"
-                        GoogleSignInButton(viewModel: GoogleSignInButtonViewModel(scheme: .light, style: .standard, state: .normal)) {
+                        GoogleSignInButton(viewModel: GoogleSignInButtonViewModel(scheme: .light, style: .wide, state: .normal)) {
                             Task{
-                                try await AuthenticationManager.shared.signWithGgl()
-                                isLogged = true
-                                globalStorage.showSuccessMessage()
+                                do {
+                                    globalStorage.currentFirebaseUser = try await AuthenticationManager.shared.signWithGgl()
+                                    globalStorage.showSuccessMessage()
+                                } catch {
+                                    globalStorage.showError(error: BPError.authError)
+                                    //debug
+                                    print("\(error.localizedDescription)")
+                                }
                             }
                         }
-                        .frame(height: 50)
-//                        .clipShape(RoundedRectangle(cornerRadius: ))
+                        .frame(height: 44)
+                        .frame(width: 200)
                         .padding(.horizontal)
-                        .transition(.asymmetric(insertion: .opacity
-                            .animation(.easeInOut(duration: 0.3)),
-                                                removal: .opacity
-                            .animation(.easeInOut(duration: 0.3))))
-                        
+                        .transition(.asymmetric(insertion: .opacity.animation(.easeInOut(duration: 0.3)),
+                                                removal: .opacity.animation(.easeInOut(duration: 0.3))))
+                        .padding(.bottom,10)
                         
                         // MARK: - "Sign in with Apple"
-                        SignInWithAppleButton { req in
-                            
-                        } onCompletion: { res in
-                            
+                        SignInWithAppleButton { request in
+                            request.requestedScopes = [.fullName, .email]
+                            globalStorage.applCurrentNonce = AuthenticationManager.shared.getRandomNonceString()
+                            request.nonce = AuthenticationManager.shared.getSha256(globalStorage.applCurrentNonce)
+                        } onCompletion: { result in
+                            Task{
+                                do { globalStorage.currentFirebaseUser = try await AuthenticationManager.shared.handleResult(result, currentNonce: globalStorage.applCurrentNonce)
+                                    globalStorage.showSuccessMessage()
+                                } catch {
+                                    globalStorage.showError(error: BPError.authError)
+                                    //debug
+                                    print("\(error.localizedDescription)")
+                                }
+                            }
                         }
-                        .frame(height: 50)
+                        .signInWithAppleButtonStyle(.black)
+                        .frame(height: 40)
+                        .frame(width: 200)
                         .padding(.horizontal)
-                        .transition(.asymmetric(insertion: .opacity
-                            .animation(.easeInOut(duration: 0.3)),
-                                                removal: .opacity
-                            .animation(.easeInOut(duration: 0.3))))
-
-
-                        
+                        .transition(.asymmetric(insertion: .opacity.animation(.easeInOut(duration: 0.3)),
+                                                removal: .opacity.animation(.easeInOut(duration: 0.3))))
+                                                
                         Spacer()
                         
                         // MARK: - "Sign Up" Link
                         NavigationLink {
                             SignUpView()
-                                .environmentObject(viewManager)
+                            
                         } label: {
-                            Text("Sign Up")
+                            Text("Not Registered?   Sign Up!")
                                 .frame(maxWidth: .infinity)
-                                .frame(height: 30)
                                 .padding()
                                 .background { Color(.systemGray4)}
                                 .clipShape(RoundedRectangle(cornerRadius: 8))
                                 .padding(.horizontal)
                         }
-                        .transition(.asymmetric(insertion: .opacity
-                            .animation(.easeInOut(duration: 0.3)),
-                                                removal: .opacity
-                            .animation(.easeInOut(duration: 0.3))))
-                        
-                        
+                        .transition(.asymmetric(insertion: .opacity.animation(.easeInOut(duration: 0.3)),
+                                                removal: .opacity.animation(.easeInOut(duration: 0.3))))
                     }
                     Spacer()
                 }
-                //                .padding(.top,20)
+                .padding(.top,20)
             }
         }
     }
 }
 
-
 // MARK: - Preview
 #Preview {
-    AuthenticationScreen(isLogged: .constant(false))
+    AuthenticationScreen()
         .environmentObject(GlobalStorage())
 }

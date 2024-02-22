@@ -11,14 +11,38 @@ import Foundation
 @MainActor
 final class GlobalStorage: ObservableObject{
     // MARK: - Authentication
-    @Published var currentFirebaseUser: AuthDataResultModel?
+    var outerStorage: BPOuterStorage = .firebase
+    var authProvider: BPAuthProvider
+    
+    var applCurrentNonce: String = ""
+    
+    @Published var currentFirebaseUser: UserAuthInfo?
     var password: String = ""
     
     // MARK: - Error Handling
     @Published var isErrorShow: Bool = false
     @Published var errorDescription: (String, String) = BPErrorHandleManager.mockError
     
-    // MARK: - show Success
+    // MARK: - Init
+    init(
+        outerStorage: BPOuterStorage = .firebase,
+        currentFirebaseUser: UserAuthInfo? = nil,
+        password: String = "",
+        isErrorShow: Bool = false,
+        errorDescription: (String, String) = ("","")
+    ) {
+        self.outerStorage = outerStorage
+        switch outerStorage {
+        case .firebase:
+            self.authProvider = AuthenticationManager.shared
+        }
+        self.currentFirebaseUser = currentFirebaseUser
+        self.password = password
+        self.isErrorShow = isErrorShow
+        self.errorDescription = errorDescription
+    }
+    
+    // MARK: - show Success Message
     func showSuccessMessage(){
         errorDescription = ("Success!","checkmark")
         isErrorShow = true

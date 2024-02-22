@@ -15,8 +15,11 @@ struct SignUpView: View {
     }
     
     @EnvironmentObject var globalStorage: GlobalStorage
-    @EnvironmentObject var viewManager: AuthViewManager
     @FocusState private var isFocused: FieldInFocus?
+    
+    @State private var email: String = ""
+    @State private var password: String = ""
+    
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
@@ -26,11 +29,11 @@ struct SignUpView: View {
             
             VStack{
                 // MARK: - Email/Password TF's
-                BPTextFieldWithIcon(text: $viewManager.email,placeholder: "email", imageName: "envelope")
+                BPTextFieldWithIcon(text: $email,placeholder: "email", imageName: "envelope")
                     .keyboardType(.emailAddress)
                     .focused($isFocused,equals: .firstField)
                 
-                BPTextFieldWithIcon(text: $viewManager.password,placeholder: "password" ,imageName: "lock.fill",isSecureField: true)
+                BPTextFieldWithIcon(text: $password,placeholder: "password" ,imageName: "lock.fill",isSecureField: true)
                     .keyboardType(.default)
                     .focused($isFocused,equals: .secondField)
                 
@@ -39,7 +42,7 @@ struct SignUpView: View {
                     Task {
                         do{
                             isFocused = nil
-                            try await viewManager.signUpwithEmailAndPassword()
+                            globalStorage.currentFirebaseUser = try await AuthenticationManager.shared.createUser(email: email, password: password)
                             dismiss()
                         } catch {
                             globalStorage.showError(error: error)
@@ -67,6 +70,5 @@ struct SignUpView: View {
 // MARK: - Preview
 #Preview {
     SignUpView()
-        .environmentObject(AuthViewManager())
         .environmentObject(GlobalStorage())
 }

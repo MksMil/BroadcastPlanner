@@ -29,7 +29,8 @@ struct UpdateEPView: View {
     
     @State private var oldValue: String = ""
     @State private var newValue: String = ""
- var updEP: UpdatedEP
+    
+    var updEP: UpdatedEP
     
     var body: some View {
         
