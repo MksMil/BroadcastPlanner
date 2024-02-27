@@ -27,7 +27,6 @@ struct Mygrad: View{
     }
 }
 
-
 struct BPButtonLargeStyle: View {
 
     var startDate: Date = .now

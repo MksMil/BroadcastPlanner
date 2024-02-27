@@ -1,8 +1,7 @@
 import SwiftUI
 import Firebase
-import FirebaseAuth
 import GoogleSignIn
-import GoogleSignInSwift
+
 
 // MARK: - Main App
 @main

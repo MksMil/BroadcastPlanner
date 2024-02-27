@@ -13,29 +13,34 @@ struct SignUpView: View {
     enum FieldInFocus: Hashable{
         case firstField, secondField
     }
+    @FocusState private var isFocused: FieldInFocus?
     
     @EnvironmentObject var globalStorage: GlobalStorage
-    @FocusState private var isFocused: FieldInFocus?
+    @Environment(\.dismiss) var dismiss
     
     @State private var email: String = ""
     @State private var password: String = ""
     
-    @Environment(\.dismiss) var dismiss
-    
     var body: some View {
         ZStack{
-            Color.mainBackgroundColor
-                .ignoresSafeArea()
+            BackgroundTabItem()
             
             VStack{
                 // MARK: - Email/Password TF's
-                BPTextFieldWithIcon(text: $email,placeholder: "email", imageName: "envelope")
+                BPTextFieldWithIcon(text: $email,
+                                    placeholder: "email",
+                                    imageName: "envelope")
                     .keyboardType(.emailAddress)
-                    .focused($isFocused,equals: .firstField)
+                    .focused($isFocused,
+                             equals: .firstField)
                 
-                BPTextFieldWithIcon(text: $password,placeholder: "password" ,imageName: "lock.fill",isSecureField: true)
+                BPTextFieldWithIcon(text: $password,
+                                    placeholder: "password",
+                                    imageName: "lock.fill",
+                                    isSecureField: true)
                     .keyboardType(.default)
-                    .focused($isFocused,equals: .secondField)
+                    .focused($isFocused,
+                             equals: .secondField)
                 
                 // MARK: - Sign Up button
                 Button(action: {
@@ -45,7 +50,7 @@ struct SignUpView: View {
                             globalStorage.currentFirebaseUser = try await AuthenticationManager.shared.createUser(email: email, password: password)
                             dismiss()
                         } catch {
-                            globalStorage.showError(error: error)
+                            globalStorage.showFirebaseError(error: error)
                         }
                     }
                 }, label: {

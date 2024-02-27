@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Firebase
 import Combine
 
 enum UpdatedEP: String,Identifiable {
@@ -92,7 +91,7 @@ struct UpdateEPView: View {
     }
     
     func updateEmail() async {
-        guard let currentUser = Auth.auth().currentUser else {
+        guard let currentUser = globalStorage.currentFirebaseUser else {
             return
         }
         if currentUser.email == oldValue{
@@ -101,7 +100,7 @@ struct UpdateEPView: View {
                 dismiss()
                 globalStorage.showSuccessMessage()
             } catch {
-                globalStorage.showError(error: error)
+                globalStorage.showFirebaseError(error: error)
             }
         } else {
             print("error shown")
@@ -122,7 +121,7 @@ struct UpdateEPView: View {
             globalStorage.showSuccessMessage()
         } catch {
             print("password NOT changed! error: \(error)")
-            globalStorage.showError(error: error)
+            globalStorage.showFirebaseError(error: error)
         }
     }
 }

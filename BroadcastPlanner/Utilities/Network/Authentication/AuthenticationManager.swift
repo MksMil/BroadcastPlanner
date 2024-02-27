@@ -5,19 +5,19 @@
 //  Created by Миляев Максим on 11.01.2024.
 //
 
-import Foundation
+import AuthenticationServices
+import CryptoKit
 import Firebase
 import GoogleSignIn
-import GoogleSignInSwift
 import UIKit
-import CryptoKit
-import AuthenticationServices
+import FirebaseAuth
 
 
 protocol BPAuthProvider {
     
     //    func createUser() throws
     //
+    //    func signUp() throws
     //    func logIn() throws
     //    func logOut() throws
     //
@@ -28,13 +28,6 @@ enum BPOuterStorage{
     case firebase
     //for more storage options
 }
-
-
-/**
- To sign in users using Apple, first configure Sign In with Apple on Apple's developer site, then enable Apple as a sign-in provider for your Firebase project.
- To authenticate with an Apple account, first sign the user in to their Apple account using Apple's AuthenticationServices framework,
- and then use the ID token from Apple's response to create a Firebase AuthCredential object.
- */
 
 final class AuthenticationManager: BPAuthProvider {
     
@@ -48,23 +41,17 @@ final class AuthenticationManager: BPAuthProvider {
     }
     
     // MARK: - SU SI with Apple
-    func signWithAppl() async throws -> UserAuthInfo{
-        let credential = try await getAppleCredential()
-        let currentUser = try await signIn(credential: credential)
-        return currentUser
-    }
-    @MainActor
-    func getAppleCredential() async throws -> AuthCredential{
-        // TODO: Implement apple credential generating
-        
-        //temporary credential placeholder
-        let credential = OAuthProvider.appleCredential(withIDToken: "", rawNonce: "", fullName: PersonNameComponents())
-        //
-        
-        return credential
-    }
     
-    func handleResult(_ result: Result<ASAuthorization,Error>, currentNonce: String) async throws -> UserAuthInfo{
+//    func makeRequest() -> ASAuthorizationAppleIDRequest{
+//        let provider = ASAuthorizationAppleIDProvider()
+//        let request = provider.createRequest()
+//        request.requestedScopes = [.fullName, .email]
+//        request.nonce = getSha256(getRandomNonceString())
+//        
+//        return request
+//    }
+    
+    func signInWithAppleWithResult(_ result: Result<ASAuthorization,Error>, currentNonce: String) async throws -> UserAuthInfo{
         switch result {
         case .success(let auth):
             switch auth.credential {
@@ -73,7 +60,6 @@ final class AuthenticationManager: BPAuthProvider {
                 guard let appleIDToken = credential.identityToken else {  throw BPError.unableToComplete }
                 guard let idTokenString = String(data: appleIDToken, encoding: .utf8) else { throw BPError.unableToComplete }
                 
-                // Initialize a Firebase credential, including the user's full name.
                 let credential = OAuthProvider.appleCredential(
                     withIDToken: idTokenString,
                     rawNonce: currentNonce,
@@ -93,13 +79,11 @@ final class AuthenticationManager: BPAuthProvider {
         }
     }
     
-    
     func getRandomNonceString(length: Int = 32) -> String {
         precondition(length > 0)
         var randomBytes = [UInt8](repeating: 0, count: length)
         let errorCode = SecRandomCopyBytes(kSecRandomDefault, randomBytes.count, &randomBytes)
         if errorCode != errSecSuccess {
-            // TODO: make throwing custom error, not fatal error
             fatalError("Unable to generate nonce. SecRandomCopyBytes failed with OSStatus \(errorCode)")
         }
         let charset: [Character] = Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
@@ -118,6 +102,11 @@ final class AuthenticationManager: BPAuthProvider {
         }.joined()
         
         return hashString
+    }
+    
+    func linkWithApple(credential: AuthCredential ){
+        guard let user = Auth.auth().currentUser else { return }
+        user.link(with: credential)
     }
     
     // MARK: - SU SI with Google
@@ -145,8 +134,8 @@ final class AuthenticationManager: BPAuthProvider {
         guard let idToken = signInResult.user.idToken?.tokenString else {
             throw BPError.invalidData
         }
-        let accesToken = signInResult.user.accessToken.tokenString
         
+        let accesToken = signInResult.user.accessToken.tokenString
         let credentials = GoogleAuthProvider.credential(withIDToken: idToken,
                                                         accessToken: accesToken)
         return credentials
@@ -179,22 +168,41 @@ final class AuthenticationManager: BPAuthProvider {
         return rootviewcontroller
     }
     
+    func linkWithGoogle() async {
+        guard let user = Auth.auth().currentUser else { return }
+        do{
+            let credential = try await getGoogleCredential()
+            try await user.link(with: credential)
+        } catch {
+            print("Error linked google account: \(error.localizedDescription)")
+        }
+    }
+    
 }
 
 // MARK: - SU SI with Email/Password
 extension AuthenticationManager {
-    //    @discardableResult
+    
     func createUser(email: String, password: String) async throws -> UserAuthInfo?{
         let result = try await Auth.auth().createUser(withEmail: email, password: password)
         let currentUser = UserAuthInfo(user: result.user)
         return currentUser
     }
-    //    @discardableResult
+    
     func signIn(withEmail email: String, password: String) async throws -> UserAuthInfo {
         let result = try await Auth.auth().signIn(withEmail: email, password: password)
         let currentUser = UserAuthInfo(user: result.user)
         return currentUser
     }
+    
+    //link with e-mail
+    func linkWithEmail(email: String, password: String) throws{
+        let credential = EmailAuthProvider.credential(withEmail: email, password: password)
+        
+        guard let user = Auth.auth().currentUser else { throw BPError.authError }
+        user.link(with: credential)
+    }
+    
     // MARK: change password
     func updatePass(pass: String) async throws {
         try await Auth.auth().currentUser?.updatePassword(to: pass)

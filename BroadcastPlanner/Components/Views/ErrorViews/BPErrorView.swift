@@ -1,10 +1,3 @@
-//
-//  BPErrorView.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 22.01.2024.
-//
-
 import SwiftUI
 
 struct BPErrorView: View {
@@ -38,7 +31,6 @@ struct BPErrorView: View {
                                 .font(.title3)
                                 .fontWeight(.medium)
                                 .multilineTextAlignment(.center)
-                            //                                .padding(.top,30)
                         }
                         
                     }

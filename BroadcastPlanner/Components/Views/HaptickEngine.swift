@@ -50,9 +50,7 @@ struct HaptickEngine: View {
                 isPressed = false
             }
         }
-
-
-    }
+   }
     
     // MARK: triggerHapticFeedback
     private func triggerHapticFeedback() {

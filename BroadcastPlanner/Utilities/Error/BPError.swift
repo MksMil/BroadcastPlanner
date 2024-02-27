@@ -64,6 +64,10 @@ enum BPErrorHandleManager {
             return ("Invalid URL","eye.slash")
         case .authError:
             return ("Authorization Error","person.fill.xmark")
+        case .unableToComplete:
+            return ("Unable to complete operation","wrongwaysign.fill")
+        case .invalidData:
+            return ("Invalid data","checkmark.circle.badge.xmark.fill")
         default:
             return ("Unknown Error, Sorry","sparkles")
         }

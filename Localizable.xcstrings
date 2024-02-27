@@ -49,6 +49,12 @@
     "Forget password" : {
 
     },
+    "Link with Google" : {
+
+    },
+    "Move Forvard\nselection: %lld" : {
+
+    },
     "No available Cameras" : {
 
     },
@@ -85,6 +91,12 @@
     "Staff Here" : {
 
     },
+    "Tab Label 1" : {
+
+    },
+    "Tab Label 2" : {
+
+    },
     "thickMaterial" : {
 
     },
@@ -98,6 +110,9 @@
 
     },
     "Update %@" : {
+
+    },
+    "Welcome!\nselection: %lld" : {
 
     }
   },

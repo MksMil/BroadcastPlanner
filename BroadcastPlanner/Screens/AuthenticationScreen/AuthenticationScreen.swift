@@ -41,6 +41,7 @@ struct AuthenticationScreen: View {
                         .opacity(0.8)
                     
                     Divider()
+                    
                     // MARK: - Email/Password Textfields
                     VStack{
                         BPTextFieldWithIcon(text: $email,
@@ -78,7 +79,7 @@ struct AuthenticationScreen: View {
                                 globalStorage.currentFirebaseUser = try await AuthenticationManager.shared.signIn(withEmail: email, password: password)
                                 globalStorage.showSuccessMessage()
                             } catch {
-                                globalStorage.showError(error: error)
+                                globalStorage.showFirebaseError(error: error)
                             }
                         }
                     }, label: {
@@ -102,7 +103,7 @@ struct AuthenticationScreen: View {
                                     globalStorage.currentFirebaseUser = try await AuthenticationManager.shared.signWithGgl()
                                     globalStorage.showSuccessMessage()
                                 } catch {
-                                    globalStorage.showError(error: BPError.authError)
+                                    globalStorage.showBPError(error: BPError.authError)
                                     //debug
                                     print("\(error.localizedDescription)")
                                 }
@@ -122,10 +123,10 @@ struct AuthenticationScreen: View {
                             request.nonce = AuthenticationManager.shared.getSha256(globalStorage.applCurrentNonce)
                         } onCompletion: { result in
                             Task{
-                                do { globalStorage.currentFirebaseUser = try await AuthenticationManager.shared.handleResult(result, currentNonce: globalStorage.applCurrentNonce)
+                                do { globalStorage.currentFirebaseUser = try await AuthenticationManager.shared.signInWithAppleWithResult(result, currentNonce: globalStorage.applCurrentNonce)
                                     globalStorage.showSuccessMessage()
                                 } catch {
-                                    globalStorage.showError(error: BPError.authError)
+                                    globalStorage.showBPError(error: BPError.authError)
                                     //debug
                                     print("\(error.localizedDescription)")
                                 }
