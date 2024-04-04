@@ -7,8 +7,6 @@
 
 import SwiftUI
 
-
-
 struct WelcomeFlowScreen: View {
 
     @State var selection: Int = 1

@@ -1,5 +1,6 @@
 import SwiftUI
 import Firebase
+import FirebaseFirestore
 import GoogleSignIn
 
 
@@ -7,21 +8,26 @@ import GoogleSignIn
 @main
 struct BroadcastPlannerApp: App {
     var globalStorage = GlobalStorage()
+    
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    @State private var isUserLoaded: Bool = false
     
     var body: some Scene {
         WindowGroup {
-            StarterScreen()
-                .onAppear{
-                    Task{
-                        do{
-                            globalStorage.currentFirebaseUser = try AuthenticationManager.shared.getUser()
-                        } catch {
-                            print("no current user")
+            ZStack{
+                BackgroundTabItem()
+                    .onAppear{
+                        Task{
+                            globalStorage.currentFirebaseUser = AuthenticationManager.shared.getUser()
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1){ isUserLoaded = true}
                         }
                     }
-                }
-                .environmentObject(globalStorage)
+                
+                StarterScreen()
+                    .opacity(isUserLoaded ? 1 : 0)
+                    .animation(.easeIn(duration: 3), value: isUserLoaded)
+                    .environmentObject(globalStorage)
+            }
         }
     }
 }

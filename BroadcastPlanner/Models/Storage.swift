@@ -1,5 +1,6 @@
 import SwiftUI
 
+@MainActor
 final class Storage: ObservableObject {
     @Published var events: [Event]
     @Published var cameras: [Camera]
@@ -8,6 +9,7 @@ final class Storage: ObservableObject {
     @Published var possibleCameras: [Camera] =
         CameraPosition.allCases.map{Camera(position: $0)}
     
+    // TODO: Fetch Users from event
     @Published var users: [BPUser]
     @Published var selectedUserName: String = "Empty cam"
     

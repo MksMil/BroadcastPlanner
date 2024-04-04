@@ -1,8 +1,8 @@
 import Foundation
 import Firebase
 
-class NetworkManager{
-    static let shared = NetworkManager()
+class NetworkDataManager{
+    static let shared = NetworkDataManager()
     
     let baseURL = "http://127.0.0.1:8080"
     

@@ -7,6 +7,12 @@
     ":" : {
 
     },
+    "%@" : {
+
+    },
+    "10:30 AM" : {
+
+    },
     "Add Cam" : {
 
     },
@@ -34,10 +40,25 @@
     "Confirm" : {
 
     },
+    "Contacts" : {
+
+    },
+    "Creation date: %@" : {
+
+    },
     "Date" : {
 
     },
+    "Delete account" : {
+
+    },
+    "E-mail" : {
+
+    },
     "Email and Password" : {
+
+    },
+    "email: %@" : {
 
     },
     "ERROR" : {
@@ -46,10 +67,34 @@
     "Events" : {
 
     },
+    "FirstName" : {
+
+    },
     "Forget password" : {
 
     },
+    "Hello, World!" : {
+
+    },
+    "id: %@" : {
+
+    },
+    "Info" : {
+
+    },
+    "LastName" : {
+
+    },
+    "Link with Apple" : {
+
+    },
     "Link with Google" : {
+
+    },
+    "Messege" : {
+
+    },
+    "MiddleName" : {
 
     },
     "Move Forvard\nselection: %lld" : {
@@ -67,16 +112,28 @@
     "password" : {
 
     },
+    "Personal Info" : {
+
+    },
+    "PhoneNumber" : {
+
+    },
     "Press me" : {
+
+    },
+    "Private Info" : {
 
     },
     "regularMaterial" : {
 
     },
+    "Save" : {
+
+    },
     "Settings" : {
 
     },
-    "Settings here" : {
+    "sfdsfsdfds" : {
 
     },
     "Sign In" : {

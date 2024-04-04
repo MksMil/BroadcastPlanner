@@ -12,30 +12,22 @@ import Firebase
 
 struct UserAuthInfo {
     
-    let uid: String
-    
+    let id: String
     let email: String?
-    
-    let firstName: String?
-    let secondName: String?
+
     let displayName: String?
     
     let phoneNumber: String?
     
     let creationDate: Date?
     let lastSignInDate: Date?
+    
     let photoUrl: URL?
     
-    //computed
-    var fullName: String {
-        (secondName ?? "") + " " + (firstName ?? "")
-    }
     
-    init(uid: String, email: String?, firstName: String?, secondName: String?, displayName: String?, phoneNumber: String?, creationDate: Date?, lastSignInDate: Date?, photoUrl: URL?) {
-        self.uid = uid
+    init(id: String, email: String? = nil,  displayName: String? = nil, phoneNumber: String? = nil, creationDate: Date? = nil, lastSignInDate: Date? = nil, photoUrl: URL? = nil) {
+        self.id = id
         self.email = email
-        self.firstName = firstName
-        self.secondName = secondName
         self.displayName = displayName
         self.phoneNumber = phoneNumber
         self.creationDate = creationDate
@@ -44,14 +36,13 @@ struct UserAuthInfo {
     }
     
     init(user: User) {
-        self.uid = user.uid
-        self.email = user.email
-        self.firstName = ""
-        self.secondName = ""
-        self.displayName = user.displayName
-        self.phoneNumber = user.phoneNumber
+        self.id = user.uid
+        self.email = user.email ?? ""
+        self.displayName = user.displayName ?? ""
+        self.phoneNumber = user.phoneNumber ?? ""
         self.creationDate = user.metadata.creationDate
-        self.lastSignInDate = user.metadata.lastSignInDate
+        self.lastSignInDate = user.metadata.lastSignInDate ?? Date()
         self.photoUrl = user.photoURL
     }
 }
+

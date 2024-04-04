@@ -2,13 +2,13 @@ import Foundation
 
 //mock data for Previews only
 class MockData {
-    static var sampleEvent: Event = Event(id: UUID(),
+    static var sampleEvent: Event = Event(id: "",
                                           date: Date(),
                                           broadcaster: MockData.sampleBroadcaster,
                                           location: sampleStadium,
                                           cameras: MockData.sampleCameras)
     
-    static var sampleUser: BPUser = BPUser()
+    static var sampleUser: BPUser = BPUser(name: "Anatoliy Yangol jr.")
     static let sampleStadium: Stadium = Stadium(
         title: "ARENA - LVIV",
         city: "Lviv",

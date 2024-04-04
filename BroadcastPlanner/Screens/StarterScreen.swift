@@ -10,6 +10,9 @@ struct StarterScreen: View {
                     AuthenticationScreen()
                 } else {
                     MainTabView()
+                        .task {
+                            //load events and other network data
+                        }
                 }
             }
         }

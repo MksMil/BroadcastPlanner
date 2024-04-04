@@ -104,8 +104,9 @@ struct AuthenticationScreen: View {
                                     globalStorage.showSuccessMessage()
                                 } catch {
                                     globalStorage.showBPError(error: BPError.authError)
-                                    //debug
+                                    #if DEBUG
                                     print("\(error.localizedDescription)")
+                                    #endif
                                 }
                             }
                         }
@@ -127,8 +128,9 @@ struct AuthenticationScreen: View {
                                     globalStorage.showSuccessMessage()
                                 } catch {
                                     globalStorage.showBPError(error: BPError.authError)
-                                    //debug
+                                    #if DEBUG
                                     print("\(error.localizedDescription)")
+                                    #endif
                                 }
                             }
                         }

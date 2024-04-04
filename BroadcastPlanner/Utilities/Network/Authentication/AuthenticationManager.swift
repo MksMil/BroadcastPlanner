@@ -35,21 +35,17 @@ final class AuthenticationManager: BPAuthProvider {
     
     private init(){}
     
-    func getUser() throws -> UserAuthInfo{
-        guard let currentUser = Auth.auth().currentUser else { throw URLError(.badServerResponse) }
+    func getUser() -> UserAuthInfo?{
+        guard let currentUser = Auth.auth().currentUser else { return nil }
         return UserAuthInfo(user: currentUser)
     }
     
-    // MARK: - SU SI with Apple
+    func deleteUser() async throws{
+        guard let user = Auth.auth().currentUser else { throw BPError.authError }
+        try await user.delete()
+    }
     
-//    func makeRequest() -> ASAuthorizationAppleIDRequest{
-//        let provider = ASAuthorizationAppleIDProvider()
-//        let request = provider.createRequest()
-//        request.requestedScopes = [.fullName, .email]
-//        request.nonce = getSha256(getRandomNonceString())
-//        
-//        return request
-//    }
+    // MARK: - SU SI with Apple
     
     func signInWithAppleWithResult(_ result: Result<ASAuthorization,Error>, currentNonce: String) async throws -> UserAuthInfo{
         switch result {
@@ -104,7 +100,7 @@ final class AuthenticationManager: BPAuthProvider {
         return hashString
     }
     
-    func linkWithApple(credential: AuthCredential ){
+    func linkWithApple(credential: AuthCredential){
         guard let user = Auth.auth().currentUser else { return }
         user.link(with: credential)
     }
@@ -140,33 +136,6 @@ final class AuthenticationManager: BPAuthProvider {
                                                         accessToken: accesToken)
         return credentials
     }
-    // MARK: - Log Out
-    func logOut() throws{
-        try Auth.auth().signOut()
-    }
-    
-    // MARK: - UIApplication: TopViewController
-    @MainActor
-    func topViewController(controller: UIViewController? = nil) -> UIViewController? {
-        
-        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene else { return nil }
-        
-        guard let rootviewcontroller = windowScene.windows.first?.rootViewController else { return nil}
-        
-        if let navigationController = rootviewcontroller as? UINavigationController {
-            return topViewController(controller: navigationController.visibleViewController)
-        }
-        
-        if let tabController = rootviewcontroller as? UITabBarController {
-            if let selected = tabController.selectedViewController {
-                return topViewController(controller: selected)
-            }
-        }
-        if let presented = rootviewcontroller.presentedViewController {
-            return topViewController(controller: presented)
-        }
-        return rootviewcontroller
-    }
     
     func linkWithGoogle() async {
         guard let user = Auth.auth().currentUser else { return }
@@ -178,6 +147,10 @@ final class AuthenticationManager: BPAuthProvider {
         }
     }
     
+    // MARK: - Log Out
+    func logOut() throws{
+        try Auth.auth().signOut()
+    }
 }
 
 // MARK: - SU SI with Email/Password
@@ -198,7 +171,6 @@ extension AuthenticationManager {
     //link with e-mail
     func linkWithEmail(email: String, password: String) throws{
         let credential = EmailAuthProvider.credential(withEmail: email, password: password)
-        
         guard let user = Auth.auth().currentUser else { throw BPError.authError }
         user.link(with: credential)
     }

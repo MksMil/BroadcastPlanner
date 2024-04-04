@@ -12,7 +12,7 @@ final class GlobalStorage: ObservableObject{
     var applCurrentNonce: String = ""
     
     @Published var currentFirebaseUser: UserAuthInfo?
-    var password: String = ""
+    private(set) var password: String = ""
     
     // MARK: - Error Handling
     @Published var isErrorShow: Bool = false
@@ -68,5 +68,9 @@ final class GlobalStorage: ObservableObject{
             self.errorDescription = des
             self.isErrorShow = true
         }
+    }
+    
+    func changePassword(newPassword: String){
+        self.password = newPassword
     }
 }
