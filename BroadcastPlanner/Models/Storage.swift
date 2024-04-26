@@ -82,7 +82,7 @@ final class Storage: ObservableObject {
          !users.filter({!$0.reserved}).isEmpty
     }
     var possibleUsers: [BPUser] {
-        users.filter { !$0.reserved }
+      users.filter({!$0.reserved})
     }
  
     var isCamerasAvailable: Bool {

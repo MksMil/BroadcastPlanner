@@ -62,7 +62,7 @@ final class EventModelTest: XCTestCase {
     
     // MARK: - Helper section
     func makeSUT() -> Event{
-        return Event(id: UUID(),
+        return Event(id: UUID().uuidString,
                         date: Date(),
                         broadcaster: MockData.sampleBroadcaster,
                         location: MockData.sampleStadium,

@@ -9,10 +9,10 @@ import SwiftUI
 
 struct BPMainPersonalView: View {
     var body: some View {
-        ZStack{
-            Color.mainBackgroundColor.ignoresSafeArea()
-            Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-        }
+        
+        BPAccountInfoView(cells: [])
+            
+        
     }
 }
 

@@ -28,6 +28,7 @@ struct BroadcastPlannerApp: App {
                     .animation(.easeIn(duration: 3), value: isUserLoaded)
                     .environmentObject(globalStorage)
             }
+            .environment(\.managedObjectContext,BPCoreDataContainer().persistanceConteiner.viewContext)
         }
     }
 }

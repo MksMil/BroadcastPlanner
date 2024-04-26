@@ -52,11 +52,11 @@ struct AddCameraView: View {
                 // TODO: Make custom picker
                 if storage.isUsersAvailable{
                     Picker(
-                        viewModel.selectedUserName,
+                        "cameramen",
                         selection: $viewModel.selectedUserName
                     ){
-//                        Text("Empty").tag("Empty")
-                        ForEach(storage.possibleUsers) { Text($0.name).tag($0.name)
+                        ForEach(storage.possibleUsers) {
+                           Text($0.name)
                         }
                     }
                     .pickerStyle(.wheel)

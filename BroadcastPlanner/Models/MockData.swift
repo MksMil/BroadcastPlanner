@@ -2,7 +2,7 @@ import Foundation
 
 //mock data for Previews only
 class MockData {
-    static var sampleEvent: Event = Event(id: "",
+    static var sampleEvent: Event = Event(id: UUID().uuidString,
                                           date: Date(),
                                           broadcaster: MockData.sampleBroadcaster,
                                           location: sampleStadium,
@@ -15,7 +15,10 @@ class MockData {
         address: "Lviv. Striyska str. 199. 79031"
     )
     static var sampleUsers: [BPUser] = [
-        BPUser(name: "Viktor Kabkoff"),
+        BPUser(id: "ViktorID",
+               email: "Viktor@email.ua",
+               firstName: "Viktor",
+               creationDate: Date()),
         BPUser(name: "Valeriy Gozha"),
         BPUser(name: "Sergiy Maliovanniy"),
         BPUser(name: "Ihor Stepanovitch"),
@@ -27,5 +30,26 @@ class MockData {
     static let sampleCameras: [Camera] = CameraPosition.allCases.map{
         Camera(position: $0)
     }
-    
+    static var sampleEvents: [Event] = [
+        Event(id: UUID().uuidString,
+              date: Date(),
+              broadcaster: MockData.sampleBroadcaster,
+              location: sampleStadium,
+              cameras: MockData.sampleCameras),
+        Event(id: UUID().uuidString,
+              date: Date(),
+              broadcaster: MockData.sampleBroadcaster,
+              location: sampleStadium,
+              cameras: MockData.sampleCameras),
+        Event(id: UUID().uuidString,
+              date: Date(),
+              broadcaster: MockData.sampleBroadcaster,
+              location: sampleStadium,
+              cameras: MockData.sampleCameras),
+        Event(id: UUID().uuidString,
+              date: Date(),
+              broadcaster: MockData.sampleBroadcaster,
+              location: sampleStadium,
+              cameras: MockData.sampleCameras)
+    ]
 }

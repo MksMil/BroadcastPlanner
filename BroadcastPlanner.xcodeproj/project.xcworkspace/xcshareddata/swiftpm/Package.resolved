@@ -1,4 +1,5 @@
 {
+  "originHash" : "f26605caa55796c1b4a99e3dbcab289f7c209dffab4b967ad87d3789c478f7ee",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -143,16 +144,7 @@
         "revision" : "65e8f29b2d63c4e38e736b25c27b83e012159be8",
         "version" : "1.25.2"
       }
-    },
-    {
-      "identity" : "swiftfulfirebaseauth",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/SwiftfulThinking/SwiftfulFirebaseAuth.git",
-      "state" : {
-        "revision" : "39bf59683b113a27eb07c96b6c0f4b657ed18136",
-        "version" : "1.0.4"
-      }
     }
   ],
-  "version" : 2
+  "version" : 3
 }

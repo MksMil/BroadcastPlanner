@@ -53,6 +53,7 @@ struct HaptickEngine: View {
    }
     
     // MARK: triggerHapticFeedback
+    /// Triggers haptics
     private func triggerHapticFeedback() {
         guard let hapticEngine = try? CHHapticEngine() else { return }
         

@@ -17,7 +17,7 @@ struct StarterScreen: View {
             }
         }
         .bpError(isShown: $globalStorage.isErrorShow, errorDescription: $globalStorage.errorDescription)
-
+        
     }
 }
 

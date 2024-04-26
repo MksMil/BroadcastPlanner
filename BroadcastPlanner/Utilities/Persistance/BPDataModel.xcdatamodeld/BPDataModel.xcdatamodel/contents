@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22757" systemVersion="23E224" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+    <entity name="BPEventDataModel" representedClassName="BPEventDataModel" syncable="YES" codeGenerationType="class">
+        <attribute name="broadcasterID" optional="YES" attributeType="String"/>
+        <attribute name="eventDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" optional="YES" attributeType="String"/>
+        <attribute name="locationID" optional="YES" attributeType="String"/>
+        <relationship name="members" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="BPUserDataModel" inverseName="memberedEvents" inverseEntity="BPUserDataModel"/>
+        <relationship name="owner" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BPUserDataModel" inverseName="ownedEvents" inverseEntity="BPUserDataModel"/>
+    </entity>
+    <entity name="BPUserDataModel" representedClassName="BPUserDataModel" syncable="YES" codeGenerationType="class">
+        <attribute name="email" optional="YES" attributeType="String"/>
+        <attribute name="firstName" optional="YES" attributeType="String"/>
+        <attribute name="homeAddress" optional="YES" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="String"/>
+        <attribute name="lastName" optional="YES" attributeType="String"/>
+        <attribute name="phoneNumber" optional="YES" attributeType="String"/>
+        <attribute name="photoURL" optional="YES" attributeType="String"/>
+        <attribute name="speciaizations" optional="YES" attributeType="Transformable" customClassName="[String]"/>
+        <relationship name="memberedEvents" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="BPEventDataModel" inverseName="members" inverseEntity="BPEventDataModel"/>
+        <relationship name="ownedEvents" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="BPEventDataModel" inverseName="owner" inverseEntity="BPEventDataModel"/>
+    </entity>
+</model>

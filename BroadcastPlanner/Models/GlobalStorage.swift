@@ -41,14 +41,14 @@ final class GlobalStorage: ObservableObject{
     func showSuccessMessage(){
         errorDescription = ("Success!","checkmark")
         isErrorShow = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1){ /*[unowned self] in*/
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1){
             self.isErrorShow = false
         }
     }
     // MARK: - show Error
     func showFirebaseError(error: Error){
         let err: (String, String) = BPErrorHandleManager.handleFError(error: error)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25){ [unowned self] in
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25){
             self.errorDescription = err
             self.isErrorShow = true
         }
@@ -56,7 +56,7 @@ final class GlobalStorage: ObservableObject{
     
     func showBPError(error: BPError){
         let err: (String, String) = BPErrorHandleManager.handleBPError(error: error)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25){ [unowned self] in
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25){
             self.errorDescription = err
             self.isErrorShow = true
         }
@@ -64,7 +64,7 @@ final class GlobalStorage: ObservableObject{
     
     // MARK: - show custom Error
     func showErrorWithDescription(des: (String,String)){
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25){ [unowned self] in
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25){
             self.errorDescription = des
             self.isErrorShow = true
         }

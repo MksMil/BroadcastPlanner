@@ -19,6 +19,9 @@
     "Add Event" : {
 
     },
+    "Address" : {
+
+    },
     "Button" : {
 
     },
@@ -37,6 +40,12 @@
     "Change Password" : {
 
     },
+    "Choose" : {
+
+    },
+    "Choose specialization choise" : {
+
+    },
     "Confirm" : {
 
     },
@@ -52,16 +61,19 @@
     "Delete account" : {
 
     },
+    "Done" : {
+
+    },
     "E-mail" : {
+
+    },
+    "Edit" : {
 
     },
     "Email and Password" : {
 
     },
     "email: %@" : {
-
-    },
-    "ERROR" : {
 
     },
     "Events" : {
@@ -73,9 +85,6 @@
     "Forget password" : {
 
     },
-    "Hello, World!" : {
-
-    },
     "id: %@" : {
 
     },
@@ -83,6 +92,9 @@
 
     },
     "LastName" : {
+
+    },
+    "LineWidth: %@" : {
 
     },
     "Link with Apple" : {
@@ -107,9 +119,6 @@
 
     },
     "Not Registered?   Sign Up!" : {
-
-    },
-    "password" : {
 
     },
     "Personal Info" : {
