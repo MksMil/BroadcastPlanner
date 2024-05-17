@@ -1,43 +1,130 @@
+//
+//  NetworkManager.swift
+//  BroadcastPlanner
+//
+//  Created by Миляев Максим on 06.05.2024.
+//
+
 import Foundation
 import Firebase
+import FirebaseFirestoreSwift
+import FirebaseCore
 
-class NetworkDataManager{
-    static let shared = NetworkDataManager()
+protocol NetworkManagerProtocol: AnyObject {
+    func getCurrentSessionUserInfo()
+    func getCurrentUser() async
+    func getEvents() async
+    func getNewChatMessages() async
+    func createUser() async
+    func getUsers() async
+    func saveUser() async
+    func goOnline() async
+    func goOffline() async
+}
+
+
+final class NetworkManager: NetworkManagerProtocol {
     
-    let baseURL = "http://127.0.0.1:8080"
+    weak var globalStorage: GlobalStorage!
+    var db: Firestore
     
-    func getEvents() -> [Event]{
-        return [
-            MockData.sampleEvent,
-            MockData.sampleEvent,
-            MockData.sampleEvent
-        ]
+    
+    init(globalStorage: GlobalStorage) {
+        self.globalStorage = globalStorage
+        self.db = Firestore.firestore()
+        
     }
     
-    func getUsers() -> [BPUser]{
-        return MockData.sampleUsers
+    @MainActor
+    func getCurrentSessionUserInfo() {
+        guard let currentUser = Auth.auth().currentUser else { return }
+        self.globalStorage.currentSessionUser = SessionUser(user: currentUser)
+    }
+    @MainActor
+    func getUsers() async {
+        let usersRef = db.collection("users")
+        do {
+            let usersSnapshot = try await usersRef.getDocuments()
+            globalStorage.users = usersSnapshot.documents.compactMap{try? $0.data(as: BPUser.self)}
+            print(usersSnapshot.debugDescription)
+            print("users fetched")
+        } catch {
+#if DEBUG
+            print("DEBUG: getUsers flow error: \(error)")
+#endif
+        }
+    }
+    @MainActor
+    func getCurrentUser() async {
+        guard let id = globalStorage.currentSessionUser?.id else { return }
+        do{
+            globalStorage.currentUser = try await db.collection("users").document(id).getDocument(as: BPUser.self)
+        }catch {
+            print("error decoding: \(error)")
+        }
     }
     
-    func getUser(id: UUID) -> BPUser {
-        let resUser = BPUser()
-        guard let url = URL(string: baseURL + "/user/id/\(id.uuidString)" ) else {
-            //Error
-            return resUser
+    @MainActor
+    func createUser() async {
+        guard let id = globalStorage.currentSessionUser?.id else { return }
+        let userRef = db.collection("users")
+        let user = BPUser(id: id,name: "empty name")
+        do {
+            let data = try Firestore.Encoder().encode(user)
+            try await userRef.document(id).setData(data)
+        } catch {
+            #if DEBUG
+            print("DEBUG: save user error: \(error.localizedDescription)")
+            #endif
         }
-        
-        guard let data = try? Data(contentsOf: url) else {
-            //error
-            return resUser
+    }
+    
+    @MainActor
+    func saveUser() async{
+        guard let user = globalStorage.currentUser, let id = globalStorage.currentSessionUser?.id else { return }
+        let userRef = db.collection("users")
+        do {
+            let data = try Firestore.Encoder().encode(user)
+            try await userRef.document(id).setData(data)
+        } catch {
+            #if DEBUG
+            print("DEBUG: save user error: \(error.localizedDescription)")
+            #endif
         }
+    }
+    
+    func getEvents() async {
         
-        let jsonDecoder = JSONDecoder()
+    }
+    
+    func getNewChatMessages() async {
         
-        guard let user = try? jsonDecoder.decode(BPUser.self, from: data) else {
-            //error
-            return resUser
-        }
-        return user
     }
     
     
+    // MARK: - Online/Offline
+    @MainActor
+    func goOnline() async {
+        guard let id = globalStorage.currentSessionUser?.id else { return }
+        let userRef = db.collection("users").document(id)
+        do {
+            try await userRef.updateData(["isOnline":true])
+        } catch {
+            #if DEBUG
+            print("DEBUG: error going online: \(error.localizedDescription)")
+            #endif
+        }
+    }
+    @MainActor
+    func goOffline() async {
+        guard let id = globalStorage.currentSessionUser?.id else { return }
+        let userRef = db.collection("users").document(id)
+        do {
+            try await userRef.updateData(["isOnline":false])
+        } catch {
+            #if DEBUG
+            print("DEBUG: error going online: \(error.localizedDescription)")
+            #endif
+        }
+    }
 }

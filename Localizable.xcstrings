@@ -31,6 +31,9 @@
     "cam" : {
 
     },
+    "cameramen" : {
+
+    },
     "Cameras: %lld" : {
 
     },
@@ -40,16 +43,10 @@
     "Change Password" : {
 
     },
-    "Choose" : {
-
-    },
-    "Choose specialization choise" : {
+    "choose specialization" : {
 
     },
     "Confirm" : {
-
-    },
-    "Contacts" : {
 
     },
     "Creation date: %@" : {
@@ -85,6 +82,9 @@
     "Forget password" : {
 
     },
+    "Hello, %@" : {
+
+    },
     "id: %@" : {
 
     },
@@ -106,9 +106,6 @@
     "Messege" : {
 
     },
-    "MiddleName" : {
-
-    },
     "Move Forvard\nselection: %lld" : {
 
     },
@@ -121,7 +118,10 @@
     "Not Registered?   Sign Up!" : {
 
     },
-    "Personal Info" : {
+    "Offline" : {
+
+    },
+    "Online" : {
 
     },
     "PhoneNumber" : {

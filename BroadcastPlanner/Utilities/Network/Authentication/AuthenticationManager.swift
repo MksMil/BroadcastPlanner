@@ -6,112 +6,49 @@
 //
 
 import AuthenticationServices
-import CryptoKit
 import Firebase
 import GoogleSignIn
-import UIKit
 import FirebaseAuth
+import _AuthenticationServices_SwiftUI
 
 
-protocol BPAuthProvider {
-    
-    //    func createUser() throws
-    //
-    //    func signUp() throws
-    //    func logIn() throws
-    //    func logOut() throws
-    //
-    //    func deleteUser() throws
-}
-
-enum BPOuterStorage{
-    case firebase
-    //for more storage options
-}
-
-final class AuthenticationManager: BPAuthProvider {
+final class AuthenticationManager {
     
     static let shared: AuthenticationManager = AuthenticationManager()
     
-    private init(){}
-    
-    func getUser() -> UserAuthInfo?{
-        guard let currentUser = Auth.auth().currentUser else { return nil }
-        return UserAuthInfo(user: currentUser)
-    }
-    
-    func deleteUser() async throws{
-        guard let user = Auth.auth().currentUser else { throw BPError.authError }
-        try await user.delete()
+    init(){
+        
     }
     
     // MARK: - SU SI with Apple
     
-    func signInWithAppleWithResult(_ result: Result<ASAuthorization,Error>, currentNonce: String) async throws -> UserAuthInfo{
+    func signInWithAppleWithResult(_ result: Result<ASAuthorization,Error>, currentNonce: String) async throws -> SessionUser{
         switch result {
-        case .success(let auth):
-            switch auth.credential {
-            case let credential as ASAuthorizationAppleIDCredential:
-                
-                guard let appleIDToken = credential.identityToken else {  throw BPError.unableToComplete }
-                guard let idTokenString = String(data: appleIDToken, encoding: .utf8) else { throw BPError.unableToComplete }
-                
-                let credential = OAuthProvider.appleCredential(
-                    withIDToken: idTokenString,
-                    rawNonce: currentNonce,
-                    fullName: credential.fullName
-                )
-                
-                let currentUser = try await signIn(credential: credential)
-                return currentUser
-
-            default:
-                print("Error in retrieving auth info")
+            case .success(let auth):
+                switch auth.credential {
+                    case let credential as ASAuthorizationAppleIDCredential:
+                        let firCredential = try AppleHelper.makeCredentialFromAppleID(credential: credential, andNounce: currentNonce)
+                        let currentUserSession = try await signIn(credential: firCredential)
+                        return currentUserSession
+                        
+                    default:
+                        print("DEBUG: Error in retrieving auth info")
+                        throw BPError.unableToComplete
+                }
+            case .failure(let error):
+                print("DEBUG: Sign in with Apple failed: \(error.localizedDescription)")
                 throw BPError.unableToComplete
-            }
-        case .failure(let error):
-            print("Sign in with Apple failed: \(error.localizedDescription)")
-            throw BPError.unableToComplete
         }
-    }
-    
-    func getRandomNonceString(length: Int = 32) -> String {
-        precondition(length > 0)
-        var randomBytes = [UInt8](repeating: 0, count: length)
-        let errorCode = SecRandomCopyBytes(kSecRandomDefault, randomBytes.count, &randomBytes)
-        if errorCode != errSecSuccess {
-            fatalError("Unable to generate nonce. SecRandomCopyBytes failed with OSStatus \(errorCode)")
-        }
-        let charset: [Character] = Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
-        let nonce = randomBytes.map { byte in
-            // Pick a random character from the set, wrapping around if needed.
-            charset[Int(byte) % charset.count]
-        }
-        return String(nonce)
-    }
-    
-    func getSha256(_ input: String) -> String {
-        let inputData = Data(input.utf8)
-        let hashedData = SHA256.hash(data: inputData)
-        let hashString = hashedData.compactMap {
-            String(format: "%02x", $0)
-        }.joined()
-        
-        return hashString
-    }
-    
-    func linkWithApple(credential: AuthCredential){
-        guard let user = Auth.auth().currentUser else { return }
-        user.link(with: credential)
     }
     
     // MARK: - SU SI with Google
     
-    func signWithGgl() async throws -> UserAuthInfo{
+    func signWithGgl() async throws -> SessionUser{
         let credential = try await getGoogleCredential()
         return  try await signIn(credential: credential)
     }
     
+    //google credentials
     @MainActor
     func getGoogleCredential() async throws -> AuthCredential {
         guard let clientID = FirebaseApp.app()?.options.clientID else {
@@ -137,43 +74,25 @@ final class AuthenticationManager: BPAuthProvider {
         return credentials
     }
     
-    func linkWithGoogle() async {
-        guard let user = Auth.auth().currentUser else { return }
-        do{
-            let credential = try await getGoogleCredential()
-            try await user.link(with: credential)
-        } catch {
-            print("Error linked google account: \(error.localizedDescription)")
-        }
-    }
-    
-    // MARK: - Log Out
-    func logOut() throws{
-        try Auth.auth().signOut()
-    }
+
 }
 
 // MARK: - SU SI with Email/Password
 extension AuthenticationManager {
     
-    func createUser(email: String, password: String) async throws -> UserAuthInfo?{
+    func createUser(email: String, password: String) async throws -> SessionUser?{
         let result = try await Auth.auth().createUser(withEmail: email, password: password)
-        let currentUser = UserAuthInfo(user: result.user)
-        return currentUser
+        let currentUserSession = SessionUser(user: result.user)
+        return currentUserSession
     }
     
-    func signIn(withEmail email: String, password: String) async throws -> UserAuthInfo {
+    func signIn(withEmail email: String, password: String) async throws -> SessionUser {
         let result = try await Auth.auth().signIn(withEmail: email, password: password)
-        let currentUser = UserAuthInfo(user: result.user)
-        return currentUser
+        let currentUserSession = SessionUser(user: result.user)
+        return currentUserSession
     }
     
-    //link with e-mail
-    func linkWithEmail(email: String, password: String) throws{
-        let credential = EmailAuthProvider.credential(withEmail: email, password: password)
-        guard let user = Auth.auth().currentUser else { throw BPError.authError }
-        user.link(with: credential)
-    }
+    
     
     // MARK: change password
     func updatePass(pass: String) async throws {
@@ -187,14 +106,65 @@ extension AuthenticationManager {
     func forgetPass(){
         
     }
+    // MARK: - Delete user
+    func deleteUser() async throws{
+        guard let user = Auth.auth().currentUser else { throw BPError.authError }
+        try await user.delete()
+    }
+    // MARK: - Log Out
+    func logOut() throws{
+        try Auth.auth().signOut()
+    }
 }
 
 
 // MARK: - SI with Credential
 extension AuthenticationManager {
-    func signIn(credential: AuthCredential) async throws-> UserAuthInfo{
+    func signIn(credential: AuthCredential) async throws-> SessionUser{
         let result = try await Auth.auth().signIn(with: credential)
-        let currentUser = UserAuthInfo(user: result.user)
-        return currentUser
+        let currentUserSession = SessionUser(user: result.user)
+        return currentUserSession
+    }
+}
+
+// MARK: - Linking account
+extension AuthenticationManager {
+    func linkWith(credential: AuthCredential){
+        guard let user = Auth.auth().currentUser else { return }
+        user.link(with: credential)
+    }
+    
+    //link with e-mail
+    func linkWithEmail(email: String, password: String) throws{
+        let credential = EmailAuthProvider.credential(withEmail: email, password: password)
+        linkWith(credential: credential)
+    }
+    
+    // link with Google
+    func linkWithGoogle() async {
+        do{
+            let credential = try await getGoogleCredential()
+            linkWith(credential: credential)
+        } catch {
+#if DEBUG
+            print("DEBUG: Error linked google account: \(error.localizedDescription)")
+#endif
+        }
+    }
+    //link with Apple
+    func linkWithApple(result: ASAuthorizationResult, currentNonce: String){
+        switch result {
+            case .appleID(let credential):
+                do {
+                    let firCred = try AppleHelper.makeCredentialFromAppleID(credential: credential, andNounce: currentNonce)
+                    linkWith(credential: firCred)
+                } catch {
+#if DEBUG
+                    print(error.localizedDescription)
+#endif
+                }
+            default :
+                print("another result type received")
+        }
     }
 }

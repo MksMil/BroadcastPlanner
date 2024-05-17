@@ -4,4 +4,24 @@ extension Color{
     static let mainBackgroundColor = Color("MainBackgroundColor")
     static let lightBackgroundColor = Color("LightBackgroundColor")
     static let darkBackgroundColor = Color("DarkBackgroundColor")
+    
+    static func randomColor(opacity: Double = 0.4) -> Color {
+        Color(red: .random(in: 0...1), green: .random(in: 0...1), blue: .random(in: 0...1), opacity: opacity)
+        
+    }
+}
+
+struct RandomColor: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .background{
+                Color.randomColor()
+            }
+    }
+}
+
+extension View {
+    func randomColorBackground() -> some View{
+        self.modifier(RandomColor())
+    }
 }

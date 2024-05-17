@@ -11,7 +11,6 @@ enum UserSpecialization: String, CaseIterable, Identifiable {
     case producer
     case floorManager
     
-    
     case mainDirector
     case director
     
@@ -24,7 +23,6 @@ enum UserSpecialization: String, CaseIterable, Identifiable {
     case soundDirector
     
     case graphicsOperator
-    
     
     var id: Self { self }
 }

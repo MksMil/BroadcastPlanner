@@ -11,11 +11,9 @@ import FirebaseAuth
 
 
 final class AppleHelper {
-    
-    private var nounce: String = ""
-    
-    func makeFIRCredentialFromAppleID(credential: ASAuthorizationAppleIDCredential, andNounce nounce: String) throws-> AuthCredential{
-        guard let appleIDToken = credential.identityToken else {  throw BPError.unableToComplete }
+        
+   static func makeCredentialFromAppleID(credential: ASAuthorizationAppleIDCredential, andNounce nounce: String) throws-> AuthCredential{
+       guard let appleIDToken = credential.identityToken else {  throw BPError.unableToComplete }
         guard let idTokenString = String(data: appleIDToken, encoding: .utf8) else { throw BPError.unableToComplete }
         
         let newCredential = OAuthProvider.appleCredential(
@@ -25,13 +23,22 @@ final class AppleHelper {
         )
         return newCredential
     }
+    
+    //Request
+    @MainActor static func makeRequest(storage: GlobalStorage) -> ASAuthorizationAppleIDRequest{
+        let provider = ASAuthorizationAppleIDProvider()
+        let request = provider.createRequest()
+        request.requestedScopes = [.fullName, .email]
+        storage.applCurrentNonce = AppleHelper.getRandomNonceString()
+        let requestNounce = AppleHelper.getSha256(storage.applCurrentNonce)
+        request.nonce = requestNounce
+        return request
+    }
 }
-
-
 
 // MARK: - Crypto part
 extension AppleHelper{
-    func getRandomNonceString(length: Int = 32) -> String {
+   static func getRandomNonceString(length: Int = 32) -> String {
         precondition(length > 0)
         var randomBytes = [UInt8](repeating: 0, count: length)
         let errorCode = SecRandomCopyBytes(kSecRandomDefault, randomBytes.count, &randomBytes)
@@ -46,7 +53,7 @@ extension AppleHelper{
         return String(nonce)
     }
     
-    func getSha256(_ input: String) -> String {
+   static func getSha256(_ input: String) -> String {
         let inputData = Data(input.utf8)
         let hashedData = SHA256.hash(data: inputData)
         let hashString = hashedData.compactMap {

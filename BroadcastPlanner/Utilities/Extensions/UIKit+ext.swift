@@ -7,8 +7,6 @@
 
 import UIKit
 
-
-
 @MainActor
 func topViewController(controller: UIViewController? = nil) -> UIViewController? {
     
