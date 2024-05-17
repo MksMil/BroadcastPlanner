@@ -57,13 +57,15 @@ public struct AnyContentView<T: View,B:View,But: View,Prompt: View, SelectableCo
             }
         }
         .onAppear {
+            identableContent = []
+            selectedCases = []
             for (index, element) in sourceContent.enumerated(){
                 identableContent.append((element, index))
                 if selectedContent.contains(element){
                     selectedCases.append((element, index))
                 }
-                allCases = selectedCases
             }
+            allCases = isEdit ? identableContent:selectedCases
         }
         //need to improve
         .onChange(of: selectedContent, perform: { value in
@@ -74,7 +76,6 @@ public struct AnyContentView<T: View,B:View,But: View,Prompt: View, SelectableCo
                     } else {
                         return nil
                     }
-                    
                 })
                 allCases = selectedCases
             }
@@ -90,9 +91,8 @@ public struct AnyContentView<T: View,B:View,But: View,Prompt: View, SelectableCo
                     promptView()
                         .opacity((selectedCases.isEmpty && !isEdit) ? 1 : 0)
                     
-                    ForEach(allCases.indices, id: \.self) { index in
+                    ForEach(allCases.indices,id:\.self) { index in
                         cellView(allCases[index].0)
-                            .id(allCases[index].1)
                             .padding(.horizontal, horizontalPadding)
                             .padding(.vertical, verticalPadding)
                             .alignmentGuide(.leading, computeValue: { d in
@@ -115,10 +115,10 @@ public struct AnyContentView<T: View,B:View,But: View,Prompt: View, SelectableCo
                                 }
                                 return result
                             })
-                            .matchedGeometryEffect(id:allCases[index].1,
-                                                   in: tagPositionNameSpace,
-                                                   properties: [ .position,.frame],
-                                                   isSource: true)
+//                            .matchedGeometryEffect(id:allCases[index].1,
+//                                                   in: tagPositionNameSpace,
+//                                                   properties: [ .position,.frame],
+//                                                   isSource: false)
                             .onTapGesture {
                                 withAnimation {
                                     if isEdit{
@@ -157,17 +157,17 @@ public struct AnyContentView<T: View,B:View,But: View,Prompt: View, SelectableCo
         }
         .onChange(of: isEdit, perform: { _ in
             withAnimation(.easeInOut(duration: !isEdit ? 0.3: 0.5)){
-                allCases = isEdit ? identableContent : selectedCases
-                selectedContent = selectedCases.map { $0.0 }
+                allCases = isEdit ? identableContent : selectedCases.sorted{ $0.1 < $1.1}
+                selectedContent = selectedCases.sorted{ $0.1 < $1.1}.map { $0.0 }
             }
         })
     }
     
-    private func isSelected(element: (SelectableContent, Int)) -> Bool {
-        return selectedCases.contains { el in
-            el == element
-        }
-    }
+//    private func isSelected(element: (SelectableContent, Int)) -> Bool {
+//        return selectedCases.contains { el in
+//            el == element
+//        }
+//    }
     
     // MARK: - selection handler
     private func tap(element: (SelectableContent,Int)){
@@ -177,11 +177,10 @@ public struct AnyContentView<T: View,B:View,But: View,Prompt: View, SelectableCo
             selectedCases.removeAll { el in
                 el == element
             }
-            selectedContent = selectedCases.map { $0.0 }
         } else {
             self.selectedCases.append(element)
-            selectedContent = selectedCases.map { $0.0 }
         }
+        selectedContent = selectedCases.sorted{ $0.1 < $1.1}.map { $0.0 }
     }
 }
 

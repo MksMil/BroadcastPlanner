@@ -24,7 +24,6 @@ struct BPAccountInfoView: View {
             ZStack{
                 MainBackground()
                 Color.clear
-//                    .randomColorBackground()
                 VStack{
                     infoBlock()
                     specializationSection()
@@ -187,13 +186,10 @@ struct BPAccountInfoView: View {
                            selectedContent: $viewModel.specialization,
                            isEdit: $isEditSpec) {
                 RoundedRectangle(cornerRadius: 10.0).fill(.ultraThinMaterial).opacity(isEdit ? 0.5 : 0)
+//                                    .randomColorBackground()
+
             } cellView: { text in
-                Text(text)
-                    .padding(.horizontal,8)
-                    .padding(.vertical,4)
-                    .background {
-                        RoundedRectangle(cornerRadius: 5).fill(.thinMaterial)
-                    }
+                BPSpecializationCellView(text: text)
             } buttonView: {
                 Text("Done")
                     .fixedSize()

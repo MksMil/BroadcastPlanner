@@ -8,32 +8,24 @@
 import SwiftUI
 import PhotosUI
 
-struct BPSpecializationCellView: View {
-    
-    var specialization: UserSpecialization = .director
-    var backColor: Color = .mainBackgroundColor
-    var textColor: Color = .white
-    @State var added: Bool = true
+struct BPSpecializationCellView: View, Identifiable {
+    let id: UUID = UUID()
+    var text: String
     
     var body: some View {
         ZStack{
-            Text("\(specialization.rawValue)")
-                .font(.callout)//.bold()
-                .foregroundStyle(textColor)
-                .fixedSize()
-                .padding(12)
-//                .background {
-//                    RoundedRectangle(cornerRadius: 5).fill(backColor)
-//                }
+            Text(text)
+                .padding(.horizontal,8)
+                .padding(.vertical,4)
+                .background {
+                    RoundedRectangle(cornerRadius: 5).fill(.thinMaterial)
+                }
         }
     }
 }
 
 #Preview {
-    BPSpecializationCellView()
-        .frame(width: 200, height: 50)
-        .background {
-            Color.blue
-        }
+    BPSpecializationCellView(text: "Hello")
+        
 
 }

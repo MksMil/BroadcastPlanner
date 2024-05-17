@@ -62,12 +62,10 @@ struct BPUserProfileView: View {
                 
                     VStack(alignment: .trailing){
                         Text(viewModel.firstName)
-                            .multilineTextAlignment(.trailing)
                             .padding(.vertical,4)
                             .padding(.horizontal,5)
                         Divider()
                         Text(viewModel.lastName)
-                            .multilineTextAlignment(.trailing)
                             .padding(.vertical,4)
                             .padding(.horizontal,5)
                         Divider()
@@ -86,8 +84,7 @@ struct BPUserProfileView: View {
                             .frame(width: 30,height: 30)
                             .scaledToFill()
                         Spacer()
-                        Text(viewModel.phoneNumber)
-                            .multilineTextAlignment(.trailing)
+                        Link(viewModel.phoneNumber,destination: URL(string:"tel:\(viewModel.phoneNumber)")!)
                             .padding(.vertical,4)
                             .padding(.horizontal,5)
                     }
@@ -98,8 +95,7 @@ struct BPUserProfileView: View {
                             .frame(width: 30,height: 30)
                             .scaledToFill()
                         Spacer()
-                        Text(viewModel.email)
-                            .multilineTextAlignment(.trailing)
+                        Link(viewModel.email, destination: URL(string: "mailto:\(viewModel.email)")!)
                             .padding(.vertical,4)
                             .padding(.horizontal,5)
                     }
@@ -111,7 +107,6 @@ struct BPUserProfileView: View {
                             .scaledToFill()
                         Spacer()
                         Text(viewModel.homeAddress)
-                            .multilineTextAlignment(.trailing)
                             .padding(.vertical,4)
                             .padding(.horizontal,5)
                     }
@@ -147,7 +142,7 @@ struct BPUserProfileView: View {
     BPUserProfileView(user: BPUser(id: "",
                                    email: "денег@net.com",
                                    firstName: "Олег",
-                                   phNum: "0123456789",
+                                   phNum: "380951917323",
                                    homeAddress: "Kyiv city", specialization: [UserSpecialization.cameramen]))
         .environmentObject(GlobalStorage())
 }
