@@ -1,6 +1,6 @@
 import Foundation
 
-class Broadcaster {
+class Broadcaster: Codable {
     let name: String
     let cars: [BroadcasterCar]
     
@@ -10,7 +10,7 @@ class Broadcaster {
     }   
 }
 
-class BroadcasterCar {
+class BroadcasterCar: Codable {
     let name: String
     
     init(name: String) {

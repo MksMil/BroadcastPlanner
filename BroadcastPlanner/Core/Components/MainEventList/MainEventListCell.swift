@@ -13,63 +13,67 @@ struct MainEventListCell: View {
     
     var body: some View {
         GeometryReader { geo in
-            ZStack{
-                
-                Color.green
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
- 
-                HStack{
-                    Spacer()
-                    VStack{
-                        Text(event.date.formatted(date: .numeric, time: .omitted))
-                            .minimumScaleFactor(0.9)
-                        Text(event.date.formatted(date: .omitted, time: .shortened))
-                            .minimumScaleFactor(0.9)
-                    }
-                    .frame(width: geo.frame(in: .local).size.width / 3.5)
-                    Divider()
-                        .frame(width: 3)
-                        .background(Color.orange)
-                    VStack{
-                        Spacer()
-                        HStack{
-                            Image(systemName: "soccerball")
-                            Text(":")
-                            Image(systemName: "basketball")
-                        }
+            Rectangle().fill(.regularMaterial)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .overlay {
+                    HStack{
                         Spacer()
                         VStack{
-                            Text(event.eventLocation?.title ?? "")
-                                .font(.caption2)
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.35)
-                            Text(event.eventLocation?.city ?? "")
-                                .font(.caption)
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.35)
+                            Text(event.date.formatted(date: .numeric, time: .omitted))
+                                .minimumScaleFactor(0.9)
+                            Text(event.date.formatted(date: .omitted, time: .shortened))
+                                .minimumScaleFactor(0.9)
                         }
-                        .padding(.bottom,10)
-                    }
-                    .frame(width: geo.frame(in: .local).size.width / 3.5)
-                    Divider()
-                        .frame(width: 3)
-                        .background(Color.orange)
-                    
-                    VStack(spacing: 5){
+                        .frame(width: geo.frame(in: .local).size.width / 3.5)
                         
-                        Text("Staff Here")
+                        Divider()
+                        //                        .frame(width: 3)
+                            .background(.ultraThinMaterial)
                         
+                        VStack{
+                            Spacer()
+                            HStack{
+                                //home team logo
+                                Image(systemName: "soccerball")
+                                Text(":")
+                                //guest team logo
+                                Image(systemName: "basketball")
+                            }
+                            Spacer()
+                            VStack{
+                                Text(event.eventLocation?.title ?? "")
+                                    .font(.caption2)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.35)
+                                Text(event.eventLocation?.city ?? "")
+                                    .font(.caption)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.35)
+                            }
+                            .padding(.bottom,10)
+                        }
+                        .frame(width: geo.frame(in: .local).size.width / 3.5)
+                        
+                        Divider()
+                        //                        .frame(width: 3)
+                            .background(.ultraThinMaterial)
+                        
+                        VStack(spacing: 5){
+                            
+                            Text("Staff Here")
+                            
+                        }
+                        .frame(width: geo.frame(in: .local).size.width / 3.5)
+                        Spacer()
                     }
-                    .frame(width: geo.frame(in: .local).size.width / 3.5)
-                    Spacer()
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 8)
+                            .strokeBorder(.ultraThinMaterial, lineWidth: 2)
+                    }
                 }
-                .overlay {
-                    RoundedRectangle(cornerRadius: 8)
-                        .strokeBorder(Color.orange, lineWidth: 2)
-                }
-            }
+            
         }
-        .foregroundStyle(Color.white)
+        .foregroundStyle(Color.black)
     }
     
     func showCreativeGroupEdit(){

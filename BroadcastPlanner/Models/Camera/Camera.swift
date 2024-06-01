@@ -1,16 +1,13 @@
 import Foundation
 
-final class Camera: Identifiable, ObservableObject {
-    var id = UUID()
-    
-    @Published var cameraMan: BPUser = BPUser(id: "", name: "")
-    @Published var selected: Bool = false
-    @Published var number: String = ""
-    @Published var position: CameraPosition
+final class Camera: Identifiable, Codable {
+    var id : String
+    var position: CameraPosition
     
     //init
-    init(position: CameraPosition){
+    init(id: String = "" ,position: CameraPosition){
         self.position = position
+        self.id  = id.isEmpty ? UUID().uuidString: id
     }
     
     //

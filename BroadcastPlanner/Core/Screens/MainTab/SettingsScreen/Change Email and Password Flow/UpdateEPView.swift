@@ -34,7 +34,7 @@ struct UpdateEPView: View {
     var body: some View {
         
         ZStack{
-            Color.mainBackgroundColor.ignoresSafeArea()
+            MainBackground()
             
             VStack{
                 // MARK: - Header Text
@@ -89,7 +89,7 @@ struct UpdateEPView: View {
     }
     
     func updateEmail() async {
-        guard let currentUser = globalStorage.currentSessionUser else {
+        guard let currentUser = globalStorage.authVm.currentSessionUser else {
             return
         }
         if currentUser.email == oldValue{

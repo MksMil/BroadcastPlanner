@@ -12,7 +12,7 @@ import FirebaseCore
 
 protocol NetworkManagerProtocol: AnyObject {
     func getCurrentSessionUserInfo()
-    func getCurrentUser() async
+    func getCurrentUser() async -> Bool
     func getEvents() async
     func getNewChatMessages() async
     func createUser() async
@@ -38,7 +38,10 @@ final class NetworkManager: NetworkManagerProtocol {
     @MainActor
     func getCurrentSessionUserInfo() {
         guard let currentUser = Auth.auth().currentUser else { return }
-        self.globalStorage.currentSessionUser = SessionUser(user: currentUser)
+        self.globalStorage.authVm.currentSessionUser = SessionUser(user: currentUser)
+        Task{
+            await getCurrentUser()
+        }
     }
     @MainActor
     func getUsers() async {
@@ -55,18 +58,21 @@ final class NetworkManager: NetworkManagerProtocol {
         }
     }
     @MainActor
-    func getCurrentUser() async {
-        guard let id = globalStorage.currentSessionUser?.id else { return }
+    func getCurrentUser() async -> Bool {
+        guard let id = globalStorage.authVm.currentSessionUser?.id else { return false}
         do{
-            globalStorage.currentUser = try await db.collection("users").document(id).getDocument(as: BPUser.self)
+            print("fetch current user")
+            globalStorage.authVm.currentUser = try await db.collection("users").document(id).getDocument(as: BPUser.self)
+            globalStorage.accountInfoViewModel.user = globalStorage.authVm.currentUser
         }catch {
             print("error decoding: \(error)")
         }
+        return globalStorage.authVm.currentUser != nil
     }
     
     @MainActor
     func createUser() async {
-        guard let id = globalStorage.currentSessionUser?.id else { return }
+        guard let id = globalStorage.authVm.currentSessionUser?.id else { return }
         let userRef = db.collection("users")
         let user = BPUser(id: id,name: "empty name")
         do {
@@ -81,7 +87,7 @@ final class NetworkManager: NetworkManagerProtocol {
     
     @MainActor
     func saveUser() async{
-        guard let user = globalStorage.currentUser, let id = globalStorage.currentSessionUser?.id else { return }
+        guard let user = globalStorage.authVm.currentUser, let id = globalStorage.authVm.currentSessionUser?.id else { return }
         let userRef = db.collection("users")
         do {
             let data = try Firestore.Encoder().encode(user)
@@ -105,7 +111,7 @@ final class NetworkManager: NetworkManagerProtocol {
     // MARK: - Online/Offline
     @MainActor
     func goOnline() async {
-        guard let id = globalStorage.currentSessionUser?.id else { return }
+        guard let id = globalStorage.authVm.currentSessionUser?.id else { return }
         let userRef = db.collection("users").document(id)
         do {
             try await userRef.updateData(["isOnline":true])
@@ -117,7 +123,7 @@ final class NetworkManager: NetworkManagerProtocol {
     }
     @MainActor
     func goOffline() async {
-        guard let id = globalStorage.currentSessionUser?.id else { return }
+        guard let id = globalStorage.authVm.currentSessionUser?.id else { return }
         let userRef = db.collection("users").document(id)
         do {
             try await userRef.updateData(["isOnline":false])

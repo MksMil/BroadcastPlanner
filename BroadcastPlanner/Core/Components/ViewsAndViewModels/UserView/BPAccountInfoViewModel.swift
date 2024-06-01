@@ -6,19 +6,25 @@
 //
 
 import SwiftUI
-//import Combine
+import Combine
 
 @MainActor
-final class UserViewModel: ObservableObject {
+final class BPAccountInfoViewModel: ObservableObject {
     var user: BPUser? {
         didSet{
             setup()
         }
     }
+    
+    weak var globalStorage: GlobalStorage?
+    
+    @Published var isEdit: Bool = false
+    @Published var isEditSpec: Bool = false
+    
     @Published var isOnline: Bool = false
     @Published var id: String = ""
-    @Published var firstName: String = "empty name"
-    @Published var lastName: String = "empty lastName"
+    @Published var firstName: String = ""
+    @Published var lastName: String = ""
     @Published var phoneNumber: String = ""
     @Published var email: String = ""
     @Published var homeAddress: String = ""
@@ -36,8 +42,13 @@ final class UserViewModel: ObservableObject {
     @Published var userImage: Image = Image("Fedorok_zloy")//Image(systemName: "person.crop.circle")
     
 //     var cancelables: [AnyCancellable] = []
+    //computed
+   
+    
+    
     
     func setup(){
+        print("setup user")
         self.isOnline = user?.isOnline ?? false
         self.firstName = user?.firstName ?? ""
         self.lastName = user?.lastName ?? ""
@@ -52,13 +63,13 @@ final class UserViewModel: ObservableObject {
         self.photoURL = user?.photoURL
     }
     
-    func save(in globalStorage: GlobalStorage) async {
-        globalStorage.currentUser?.firstName = firstName
-        globalStorage.currentUser?.lastName = lastName
-        globalStorage.currentUser?.phoneNumber = phoneNumber
-        globalStorage.currentUser?.email = email
-        globalStorage.currentUser?.homeAddress = homeAddress
-        globalStorage.currentUser?.specialization = specialization
-        await globalStorage.saveUser()
+    func save() async {
+        globalStorage?.authVm.currentUser?.firstName = firstName
+        globalStorage?.authVm.currentUser?.lastName = lastName
+        globalStorage?.authVm.currentUser?.phoneNumber = phoneNumber
+        globalStorage?.authVm.currentUser?.email = email
+        globalStorage?.authVm.currentUser?.homeAddress = homeAddress
+        globalStorage?.authVm.currentUser?.specialization = specialization
+        await globalStorage?.saveUser()
     }
 }

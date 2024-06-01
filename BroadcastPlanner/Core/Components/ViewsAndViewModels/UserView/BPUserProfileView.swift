@@ -10,7 +10,7 @@ import SwiftUI
 struct BPUserProfileView: View {
     @EnvironmentObject var globalStorage: GlobalStorage
     @State var user: BPUser
-    @StateObject private var viewModel: UserViewModel = UserViewModel()
+    @StateObject private var viewModel: BPAccountInfoViewModel = BPAccountInfoViewModel()
     
     var body: some View {
         NavigationStack{
@@ -38,7 +38,6 @@ struct BPUserProfileView: View {
         }
         .onAppear {
             viewModel.user = user
-            viewModel.setup()
         }
     }
     
@@ -59,6 +58,7 @@ struct BPUserProfileView: View {
                             .opacity(0.3)
                             .frame(width: 110,height: 110)
                     }
+                    .padding(.trailing,15)
                 
                     VStack(alignment: .trailing){
                         Text(viewModel.firstName)
@@ -121,13 +121,8 @@ struct BPUserProfileView: View {
     @ViewBuilder func specializationSection() -> some View {
         VStack{
             SmartLayout(hSpacing: 5, vSpacing: 5){
-                ForEach(viewModel.specialization.indices, id:\.self) { index in
-                    Text(viewModel.specialization[index])
-                        .padding(.horizontal,8)
-                        .padding(.vertical,4)
-                        .background {
-                            RoundedRectangle(cornerRadius: 5).fill(.thinMaterial)
-                        }
+                ForEach(viewModel.specialization,id: \.self) { text in
+                    BPSpecializationCellView(text: text)
                 }
             }
             .padding(.horizontal,20)

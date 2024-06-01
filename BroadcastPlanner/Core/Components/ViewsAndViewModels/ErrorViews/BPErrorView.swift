@@ -17,6 +17,8 @@ struct BPErrorView: View {
                             .scaledToFit()
                             .frame(maxWidth: .infinity)
                             .frame(height: 100)
+                            .padding()
+                            .border(.white, width: 3)
                             .opacity(animatedOpacity)
                             .onAppear(perform: {
                                 Task{
@@ -25,9 +27,11 @@ struct BPErrorView: View {
                                     }
                                 }
                             })
+                        // TODO: vertical error text
                         // MARK: - Error Description
-                        if errorDescription.0.count > 0{
+                        if !errorDescription.0.isEmpty{
                             Text(errorDescription.0)
+                                .fixedSize()
                                 .font(.title3)
                                 .fontWeight(.medium)
                                 .multilineTextAlignment(.center)
@@ -46,5 +50,5 @@ struct BPErrorView: View {
 }
 
 #Preview {
-    BPErrorView(errorDescription: ("Error", "envelope.badge.shield.half.filled"))//"wifi.exclamationmark"))
+    BPErrorView(errorDescription: ("Error with very big descriptionError with very big descriptionError with very big descriptionError with very big descriptionError with very big descriptionError with very big description", "wifi.exclamationmark"))
 }

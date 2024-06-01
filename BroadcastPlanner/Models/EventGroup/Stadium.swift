@@ -1,6 +1,6 @@
 import Foundation
 
-class Stadium {
+class Stadium: Codable{
     var title: String
     var city: String
     var address: String

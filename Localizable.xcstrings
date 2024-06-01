@@ -1,25 +1,19 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "" : {
+    ":" : {
 
     },
-    ":" : {
+    "%@" : {
 
     },
     "10:30 AM" : {
 
     },
-    "Add Cam" : {
+    "ADD" : {
 
     },
-    "Add Event" : {
-
-    },
-    "Address" : {
-
-    },
-    "Button" : {
+    "All" : {
 
     },
     "ButtonName" : {
@@ -28,19 +22,10 @@
     "cam" : {
 
     },
-    "cameramen" : {
-
-    },
-    "Cameras: %lld" : {
-
-    },
     "Change E-mail" : {
 
     },
     "Change Password" : {
-
-    },
-    "choose specialization" : {
 
     },
     "Confirm" : {
@@ -49,19 +34,16 @@
     "Creation date: %@" : {
 
     },
-    "Date" : {
-
-    },
     "Delete account" : {
 
     },
     "Done" : {
 
     },
-    "E-mail" : {
+    "Edit" : {
 
     },
-    "Edit" : {
+    "EDIT" : {
 
     },
     "Email and Password" : {
@@ -73,13 +55,7 @@
     "Events" : {
 
     },
-    "FirstName" : {
-
-    },
     "Forget password" : {
-
-    },
-    "Hello, %@" : {
 
     },
     "id: %@" : {
@@ -88,10 +64,7 @@
     "Info" : {
 
     },
-    "LastName" : {
-
-    },
-    "LineWidth: %@" : {
+    "light" : {
 
     },
     "Link with Apple" : {
@@ -100,16 +73,19 @@
     "Link with Google" : {
 
     },
+    "LOGO" : {
+
+    },
     "Messege" : {
+
+    },
+    "mic" : {
 
     },
     "Move Forvard\nselection: %lld" : {
 
     },
-    "No available Cameras" : {
-
-    },
-    "No available users" : {
+    "My Info" : {
 
     },
     "Not Registered?   Sign Up!" : {
@@ -119,9 +95,6 @@
 
     },
     "Online" : {
-
-    },
-    "PhoneNumber" : {
 
     },
     "Press me" : {
@@ -134,6 +107,12 @@
 
     },
     "Save" : {
+
+    },
+    "select" : {
+
+    },
+    "Send" : {
 
     },
     "Settings" : {
@@ -158,6 +137,9 @@
 
     },
     "Tab Label 2" : {
+
+    },
+    "Tap to make choise of specialization" : {
 
     },
     "thickMaterial" : {

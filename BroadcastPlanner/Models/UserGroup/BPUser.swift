@@ -40,7 +40,7 @@ class BPUser: Identifiable, Codable {
     }
  
     //just for test functionality
-    init(id: String ,name: String = "Empty"){
+    init(id: String = UUID().uuidString,name: String = "Empty"){
         self.firstName = name
         self.uid = id
     }

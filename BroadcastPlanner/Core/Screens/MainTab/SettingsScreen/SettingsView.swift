@@ -16,7 +16,7 @@ struct SettingsView: View {
                 MainBackground()
                 ScrollView{
                     VStack{
-                        if let user = globalStorage.currentSessionUser{
+                        if let user = globalStorage.authVm.currentSessionUser{
                             Section{
                                 VStack(alignment: .leading){
                                     Text("id: \(user.id)")
@@ -118,7 +118,7 @@ struct SettingsView: View {
                             Task{
                                 do{
                                     try AuthenticationManager.shared.logOut()
-                                    globalStorage.currentSessionUser = nil
+                                    globalStorage.authVm.currentSessionUser = nil
                                 } catch {
                                     print("failed to signing out: \(error.localizedDescription)")
                                 }

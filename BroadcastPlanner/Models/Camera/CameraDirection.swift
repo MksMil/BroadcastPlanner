@@ -1,6 +1,6 @@
 import Foundation
 
-enum CameraDirection: Double {
+enum CameraDirection: Double, Codable {
     case up
     case down
     case left
@@ -15,7 +15,7 @@ enum CameraDirection: Double {
         case   .up          : 1.5 * .pi
         case   .down        : 0.5 * .pi
         case   .left        : 1.0 * .pi
-        case   .right       : 0 * .pi
+        case   .right       : 0 
         case   .oneOclock   : -.pi / 4
         case   .fiveOclock  :  .pi / 4
         case   .eightOclock : .pi * 3 / 4

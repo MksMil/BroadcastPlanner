@@ -24,7 +24,7 @@ struct BPMessengerView: View {
     
     var body: some View {
         ZStack{
-            Color.mainBackgroundColor.ignoresSafeArea()
+            MainBackground()
             VStack{
                 ScrollView {
                     LazyVStack(spacing: 10 ){

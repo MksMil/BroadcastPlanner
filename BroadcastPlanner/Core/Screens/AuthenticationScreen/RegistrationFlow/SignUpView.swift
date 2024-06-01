@@ -15,11 +15,10 @@ struct SignUpView: View {
     }
     @FocusState private var isFocused: FieldInFocus?
     
-    @EnvironmentObject var globalStorage: GlobalStorage
+//    @EnvironmentObject var globalStorage: GlobalStorage
     @Environment(\.dismiss) var dismiss
+    @StateObject var viewModel: AuthViewModel
     
-    @State private var email: String = ""
-    @State private var password: String = ""
     
     var body: some View {
         ZStack{
@@ -27,14 +26,14 @@ struct SignUpView: View {
             
             VStack{
                 // MARK: - Email/Password TF's
-                BPTextFieldWithIcon(text: $email,
+                BPTextFieldWithIcon(text: $viewModel.email,
                                     placeholder: "email",
                                     imageName: "envelope")
                     .keyboardType(.emailAddress)
                     .focused($isFocused,
                              equals: .firstField)
                 
-                BPTextFieldWithIcon(text: $password,
+                BPTextFieldWithIcon(text: $viewModel.password,
                                     placeholder: "password",
                                     imageName: "lock.fill",
                                     isSecureField: true)
@@ -47,7 +46,10 @@ struct SignUpView: View {
                     Task {
                         do{
                             isFocused = nil
-                            globalStorage.currentSessionUser = try await AuthenticationManager.shared.createUser(email: email, password: password)
+                            viewModel.currentSessionUser = try await AuthenticationManager.shared.createUser(
+                                email: viewModel.email,
+                                password: viewModel.password
+                            )
                             dismiss()
                         } catch {
 #if DEBUG
@@ -55,14 +57,13 @@ struct SignUpView: View {
 #endif
                         }
                     }
-                }, label: {
+                },
+                       label: {
                     Text("Sign Up")
                         .frame(maxWidth: .infinity)
                         .frame(height: 30)
                         .padding()
-                        .background {
-                            Color(.systemGray4)
-                        }
+                        .background(.ultraThickMaterial)
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                         .padding(.horizontal)
                 })
@@ -76,6 +77,5 @@ struct SignUpView: View {
 
 // MARK: - Preview
 #Preview {
-    SignUpView()
-        .environmentObject(GlobalStorage())
+    SignUpView(viewModel: GlobalStorage().authVm)
 }

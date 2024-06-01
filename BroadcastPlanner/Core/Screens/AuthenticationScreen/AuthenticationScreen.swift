@@ -1,10 +1,3 @@
-//
-//  StartScreen.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 10.01.2024.
-//
-
 import AuthenticationServices
 import Combine
 import Firebase
@@ -12,94 +5,74 @@ import GoogleSignIn
 import GoogleSignInSwift
 import SwiftUI
 
-
 struct AuthenticationScreen: View {
-    enum FieldInFocus: Hashable{
-        case firstField, secondField
-    }
-    
-    @FocusState private var isFocused: FieldInFocus?
-    @State private var email: String = ""
-    @State private var password: String = ""
-    
-    @EnvironmentObject var globalStorage: GlobalStorage
-    
-    
-    //viewModel here, viewModel contrlos data and delegates creating user to manager
+   
+    var globalStorage: GlobalStorage
     
     var body: some View {
         NavigationStack{
-            ZStack{
-                
-                Color.mainBackgroundColor.ignoresSafeArea()
-                
-                VStack{
-                    // MARK: - Logo
-                    //logo here. circle is just a placeholder
-                    Circle()
-                        .frame(width: 150, height: 150)
-                        .opacity(0.8)
-                    
-                    Divider()
-                    
-                    // MARK: - Email/Password Textfields
+            ScrollView{
                     VStack{
-                        BPTextFieldWithIcon(text: $email,
-                                            placeholder: "e-mail",
-                                            imageName: "envelope")
-                        .keyboardType(.emailAddress)
-                        .focused($isFocused,equals: .firstField)
-                        
-                        BPTextFieldWithIcon(text: $password,
-                                            placeholder: "password",
-                                            imageName: "lock.fill",
-                                            isSecureField: true)
-                        .keyboardType(.default)
-                        .focused($isFocused,equals: .secondField)
-                    }
-                    
-                    // MARK: - "Forget password" button
-                    HStack{
-                        Spacer()
-                        Button(action: {
-                            Task {
-                                
+                        // MARK: - Logo
+                        //logo here. circle is just a placeholder
+                        Circle()
+                            .frame(width: 150, height: 150)
+                            .opacity(0.8)
+                            .overlay {
+                                Text("LOGO")
+                                    .font(.title)
+                                    .bold()
+                                    .foregroundStyle(.white)
                             }
-                        }, label: {
-                            Text("Forget password")
-                        })
-                    }
-                    .padding(.horizontal)
-                    
-                    // MARK: - "Sign In"
-                    Button(action: {
-                        isFocused = nil
-                        Task{
-                            do {
-                                globalStorage.currentSessionUser = try await AuthenticationManager.shared.signIn(withEmail: email, password: password)
-                            } catch {
-#if DEBUG
-                                print("DEBUG:\(error.localizedDescription)")
-#endif
+                        Divider()
+                        
+                        // MARK: - Email/Password Textfields
+                        BPEmailPasswordStack(
+                            viewModel: globalStorage.authVm)
+                        
+                        // MARK: - "Forget password" button
+                        HStack{
+                            Spacer()
+                            NavigationLink {
+                                BPResetPasswordView()
+                            } label: {
+                                Text("Forget password")
                             }
                         }
-                    }, label: {
-                        Text("Sign In")
-                            .frame(height: 30)
-                            .frame(width: 200)
-                            .padding(.vertical,10)
-                            .background { Color(.systemGray4)}
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                            .padding(.horizontal)
-                    })
-                    .padding(.bottom,20)
-                    
-                    if isFocused == nil {
+                        .padding()
+                        
+                        // MARK: - "Sign In"
+                        Button(action: {
+                            Task{
+                                do {
+                                    globalStorage.authVm.currentSessionUser = try await AuthenticationManager.shared.signIn(
+                                        withEmail: globalStorage.authVm.email,
+                                        password: globalStorage.authVm.password
+                                    )
+                                } catch {
+#if DEBUG
+                                    print("DEBUG:\(error.localizedDescription)")
+#endif
+                                }
+                            }
+                        },
+                               label: {
+                            Text("Sign In")
+                                .frame(height: 30)
+                                .frame(width: 250)
+                                .padding(.vertical,10)
+                                .background(.ultraThickMaterial)
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                                .padding(.horizontal)
+                        })
+                        .padding(.bottom,50)
+                        .padding(.top,10)
+                        
                         // MARK: - "Sign in with Google"
                         GoogleSignInButton(viewModel: GoogleSignInButtonViewModel(scheme: .light, style: .wide, state: .normal)) {
                             Task{
                                 do {
-                                    globalStorage.currentSessionUser = try await AuthenticationManager.shared.signWithGgl()
+                                    globalStorage.authVm.currentSessionUser = try await AuthenticationManager.shared.signWithGgl()
                                 } catch {
 #if DEBUG
                                     print("DEBUG:\(error.localizedDescription)")
@@ -110,8 +83,6 @@ struct AuthenticationScreen: View {
                         .frame(height: 44)
                         .frame(width: 200)
                         .padding(.horizontal)
-                        .transition(.asymmetric(insertion: .opacity.animation(.easeInOut(duration: 0.3)),
-                                                removal: .opacity.animation(.easeInOut(duration: 0.3))))
                         .padding(.bottom,10)
                         
                         // MARK: - "Sign in with Apple"
@@ -121,7 +92,7 @@ struct AuthenticationScreen: View {
                             request.nonce = AppleHelper.getSha256(globalStorage.applCurrentNonce)
                         } onCompletion: { result in
                             Task{
-                                do { globalStorage.currentSessionUser = try await AuthenticationManager.shared.signInWithAppleWithResult(result, currentNonce: globalStorage.applCurrentNonce)
+                                do { globalStorage.authVm.currentSessionUser = try await AuthenticationManager.shared.signInWithAppleWithResult(result, currentNonce: globalStorage.applCurrentNonce)
                                 } catch {
 #if DEBUG
                                     print("DEBUG:\(error.localizedDescription)")
@@ -130,39 +101,66 @@ struct AuthenticationScreen: View {
                             }
                         }
                         .signInWithAppleButtonStyle(.black)
-                        .frame(height: 40)
+                        .frame(height: 44)
                         .frame(width: 200)
                         .padding(.horizontal)
-                        .transition(.asymmetric(insertion: .opacity.animation(.easeInOut(duration: 0.3)),
-                                                removal: .opacity.animation(.easeInOut(duration: 0.3))))
-                        
-                        Spacer()
+                        .padding(.bottom,50)
                         
                         // MARK: - "Sign Up" Link
                         NavigationLink {
-                            SignUpView()
-                        //  .navigationBarBackButtonHidden()
+                            SignUpView(viewModel: globalStorage.authVm)
                         } label: {
                             Text("Not Registered?   Sign Up!")
                                 .frame(maxWidth: .infinity)
                                 .padding()
-                                .background { Color(.systemGray4)}
-                                .clipShape(RoundedRectangle(cornerRadius: 8))
-                                .padding(.horizontal)
+                            //                                .background { Color(.systemGray4)}
+                            //                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                            //                                .padding(.horizontal)
                         }
-                        .transition(.asymmetric(insertion: .opacity.animation(.easeInOut(duration: 0.3)),
-                                                removal: .opacity.animation(.easeInOut(duration: 0.3))))
+                        Spacer()
                     }
-                    Spacer()
-                }
-                .padding(.top,20)
+                    .padding(.top,25)
             }
+            .background(content: {
+                MainBackground().ignoresSafeArea()
+            })
+            .scrollDisabled(true)
+        }
+        .accentColor(.black)
+    }
+}
+
+
+// MARK: - Email and password fields
+struct BPEmailPasswordStack: View {
+    enum FieldInFocus: Hashable{
+        case firstField, secondField
+    }
+    
+    @FocusState private var isFocused: FieldInFocus?
+    @StateObject var viewModel: AuthViewModel
+    
+    var body: some View {
+        VStack{
+            BPTextFieldWithIcon(text: $viewModel.email,
+                                placeholder: "e-mail",
+                                imageName: "envelope")
+            .keyboardType(.emailAddress)
+            .focused($isFocused,equals: .firstField)
+            
+            BPTextFieldWithIcon(text: $viewModel.password,
+                                placeholder: "password",
+                                imageName: "lock.fill",
+                                isSecureField: true)
+            .keyboardType(.default)
+            .focused($isFocused,equals: .secondField)
         }
     }
 }
 
+
 // MARK: - Preview
 #Preview {
-    AuthenticationScreen()
-        .environmentObject(GlobalStorage())
+    AuthenticationScreen(globalStorage: GlobalStorage())
+        
 }

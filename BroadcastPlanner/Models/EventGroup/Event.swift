@@ -7,24 +7,16 @@ class Event: Identifiable, Codable {
     var broadcaster: Broadcaster?
     var eventLocation: Stadium?
     
-    var cameras: [Camera] = []
+    var eventPlan: BPEventPlan
     var owners: [BPUser] = []
     
-    init(id: String, date: Date, broadcaster: Broadcaster, location: Stadium, cameras: [Camera]) {
+    init(id: String, date: Date, broadcaster: Broadcaster, location: Stadium, eventPlan: BPEventPlan) {
         self.id = id
         self.date = date
         
         self.broadcaster = broadcaster
         self.eventLocation = location
-        self.cameras = cameras
-    }
-    
-    required init(from decoder: any Decoder) throws {
-     
-    }
-    
-    func encode(to encoder: any Encoder) throws {
-        
+        self.eventPlan = eventPlan
     }
 }
 

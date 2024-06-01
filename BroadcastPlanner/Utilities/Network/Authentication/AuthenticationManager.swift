@@ -103,8 +103,16 @@ extension AuthenticationManager {
         //        try await Auth.auth().currentUser?.updateEmail(to: newEmail)
     }
     // MARK: forget password handler
-    func forgetPass(){
-        
+    func sendResetPassword(with email: String){
+        Auth.auth().sendPasswordReset(withEmail: email) { error in
+                   if let error = error {
+                       //show 'error received'
+                       print("Error: \(error.localizedDescription)")
+                   } else {
+                       //show confirmation
+                       print("Password reset email sent.")
+                   }
+               }
     }
     // MARK: - Delete user
     func deleteUser() async throws{

@@ -15,48 +15,42 @@ struct BroadcastPlannerApp: App {
     @State private var isUserLoaded: Bool = false
     
     var body: some Scene {
+        
+        // TODO: First Time Loading problem need to debug
+        
         WindowGroup {
             ZStack{
                 MainBackground()
                 
                 //loading animation ?
-                
-                StarterScreen()
-                    .opacity(isUserLoaded ? 1 : 0)
-                    .animation(.easeIn(duration: 1), value: isUserLoaded)
+                StarterScreen(isLogged: $isUserLoaded)
                     .environmentObject(globalStorage)
                 
             }
             .onAppear{
                 Task{
-                    await globalStorage.getCurrentUser()
-                }
-                Task{
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1){
-                        if globalStorage.currentSessionUser != nil && globalStorage.currentUser != nil{
-                            isUserLoaded = true
-                        }
-                    }
+                    print("try to fetch current user")
+                   isUserLoaded = await globalStorage.getCurrentUser()
                 }
             }
             .onChange(of: scenePhase, perform: { phase in
                 switch phase {
                     case .active:
                         //send online status
-//                        print("scene in foreground: send online status")
+                        print("scene in foreground: send online status")
                         Task {
                             await globalStorage.goOnline()
                         }
 
                     case .background:
                         //send offline status
-//                        print("scene in background: send offline status")
+                        print("scene in background: send offline status")
                         Task{
                             await globalStorage.goOffline()
                         }
 
                     case .inactive:
-//                        print("scene in inactive: send inactive status")
+                        print("scene in inactive: send inactive status")
                         Task {
                             await globalStorage.goOffline()
                         }

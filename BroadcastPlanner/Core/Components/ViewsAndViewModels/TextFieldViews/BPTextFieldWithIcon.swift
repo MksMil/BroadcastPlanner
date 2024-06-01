@@ -40,22 +40,17 @@ struct BPTextFieldWithIcon: View {
                     .frame(maxWidth: .infinity)
                     .frame(height: 40)
                     .padding(.horizontal)
-                    
-                //                .background(Color(.systemGray3))
-                //                .clipShape(RoundedRectangle(cornerRadius: 6))
             }
         }
         .frame(height: 30)
         .padding()
-        .background {
-            Color(.systemGray4)
-        }
-        .foregroundColor(.accentColor)//Color(.systemGray6))
+        .background(.ultraThinMaterial)
+        .foregroundColor(.accentColor)
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .padding(.horizontal)
     }
 }
 
 #Preview {
-    BPTextFieldWithIcon(text: .constant(""))//,imageName: "person")
+    BPTextFieldWithIcon(text: .constant(""))
 }

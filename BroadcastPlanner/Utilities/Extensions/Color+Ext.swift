@@ -1,9 +1,6 @@
 import SwiftUI
 
 extension Color{
-    static let mainBackgroundColor = Color("MainBackgroundColor")
-    static let lightBackgroundColor = Color("LightBackgroundColor")
-    static let darkBackgroundColor = Color("DarkBackgroundColor")
     
     static func randomColor(opacity: Double = 0.4) -> Color {
         Color(red: .random(in: 0...1), green: .random(in: 0...1), blue: .random(in: 0...1), opacity: opacity)

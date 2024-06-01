@@ -2,18 +2,21 @@
 //  Object for manage global data through the app
 
 import Foundation
+import Combine
 
 @MainActor
 final class GlobalStorage: ObservableObject{
 
     var networkManager: NetworkManagerProtocol?
- 
-    @Published var currentSessionUser: SessionUser?
-    @Published var events: [Event] = []
-    @Published var chats: [Chat] = []
-    @Published var currentUser: BPUser?
-    var users: [BPUser] = []
     
+    //vm's
+    var accountInfoViewModel: BPAccountInfoViewModel
+    var authVm: AuthViewModel
+    
+    var events: [Event] = MockData.sampleEvents
+    var chats: [Chat] = []
+    
+    var users: [BPUser] = []
     private(set) var password: String = ""
 
     // MARK: - Authentication
@@ -21,7 +24,14 @@ final class GlobalStorage: ObservableObject{
 
     // MARK: - Init
     init() {
+        self.accountInfoViewModel = BPAccountInfoViewModel()
+        self.authVm = AuthViewModel()
+        
+        self.accountInfoViewModel.globalStorage = self
+        self.authVm.globalStorage = self
+        
         self.networkManager = NetworkManager(globalStorage: self)
+        
         self.configure()
     }
     
@@ -37,8 +47,10 @@ final class GlobalStorage: ObservableObject{
     func createUser() async {
         await networkManager?.createUser()
     }
-    func getCurrentUser() async{
-        await networkManager?.getCurrentUser()
+    func getCurrentUser() async -> Bool{
+        guard let result = await networkManager?.getCurrentUser() else { return false }
+        return result
+        
     }
     func saveUser() async {
         await networkManager?.saveUser()
@@ -71,11 +83,4 @@ final class GlobalStorage: ObservableObject{
         await networkManager?.goOffline()
     }
     
-    func setUser(){
-        
-    }
-    
-    func updateUserData(){
-        
-    }
 }

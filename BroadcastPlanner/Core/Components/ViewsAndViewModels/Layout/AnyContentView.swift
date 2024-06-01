@@ -20,6 +20,7 @@ public struct AnyContentView<T: View,B:View,But: View,Prompt: View, SelectableCo
     @Binding private var isEdit: Bool
     
     @State private var totalHeight: Double = .zero
+//    @State private var isUpdating: Bool = false
     
     @ViewBuilder public var backgroundView: () -> B
     @ViewBuilder public var cellView: (SelectableContent) -> T
@@ -28,10 +29,10 @@ public struct AnyContentView<T: View,B:View,But: View,Prompt: View, SelectableCo
     
     public var horizontalPadding: Double = 4
     public var verticalPadding: Double = 4
-    public var promptPlaceholder: String = "Make choise  "
+    public var promptPlaceholder: String = "Tap to make choise of specialization"
     
     @Namespace var tagPositionNameSpace
- 
+    
     public init(sourceContent: [SelectableContent], selectedContent: Binding<[SelectableContent]>, selectedCases: [(SelectableContent, Int)] = [], allCases: [(SelectableContent, Int)] = [],isEdit: Binding<Bool>, backgroundView: @escaping () -> B, cellView: @escaping (SelectableContent) -> T, buttonView: @escaping ()->But, promptView: @escaping ()->Prompt) {
         self.sourceContent = sourceContent
         self._selectedContent = selectedContent
@@ -47,7 +48,7 @@ public struct AnyContentView<T: View,B:View,But: View,Prompt: View, SelectableCo
     
     public var body: some View {
         VStack{
-           makeContent()
+            makeContent()
             if isEdit{
                 Button(action: {
                     isEdit.toggle()
@@ -84,12 +85,18 @@ public struct AnyContentView<T: View,B:View,But: View,Prompt: View, SelectableCo
     
     @ViewBuilder func makeContent() -> some View{
         VStack {
+                                if selectedCases.isEmpty && !isEdit {
+                                    promptView()
+                                        .padding(.top,verticalPadding)
+            //                            .padding(.horizontal, horizontalPadding)
+            //                            .padding(.vertical, verticalPadding)
+            //                            .opacity((selectedCases.isEmpty && !isEdit) ? 1 : 0)
+                                }
             GeometryReader { g in
                 var width = Double.zero
                 var height = Double.zero
                 ZStack(alignment: .topLeading) {
-                    promptView()
-                        .opacity((selectedCases.isEmpty && !isEdit) ? 1 : 0)
+                    
                     
                     ForEach(allCases.indices,id:\.self) { index in
                         cellView(allCases[index].0)
@@ -115,10 +122,7 @@ public struct AnyContentView<T: View,B:View,But: View,Prompt: View, SelectableCo
                                 }
                                 return result
                             })
-//                            .matchedGeometryEffect(id:allCases[index].1,
-//                                                   in: tagPositionNameSpace,
-//                                                   properties: [ .position,.frame],
-//                                                   isSource: false)
+                        
                             .onTapGesture {
                                 withAnimation {
                                     if isEdit{
@@ -130,8 +134,7 @@ public struct AnyContentView<T: View,B:View,But: View,Prompt: View, SelectableCo
                             }
                             .opacity(selectedCases.contains(where: { $0 == allCases[index] }) ? 1: 0.4)
                     }
-                    
-                    
+
                 }
                 .background {
                     GeometryReader { geometry in
@@ -139,13 +142,14 @@ public struct AnyContentView<T: View,B:View,But: View,Prompt: View, SelectableCo
                     }
                 }
                 .onPreferenceChange(AnyContentViewSizePreferenceKey.self, perform: { val in
-                        withAnimation(.easeInOut(duration: isEdit ? 0.25: 0.55)) {
-                            self.totalHeight = val.height
-                        }
+
+                            withAnimation(.easeInOut(duration: isEdit ? 0.25: 0.55)) {
+                                self.totalHeight = val.height
+                            }
                 })
             }
         }
-        .frame(height: totalHeight)
+        .frame(height: (selectedCases.isEmpty && !isEdit) ? 30 :totalHeight)
         .padding(6)
         .background {
             backgroundView()
@@ -163,11 +167,11 @@ public struct AnyContentView<T: View,B:View,But: View,Prompt: View, SelectableCo
         })
     }
     
-//    private func isSelected(element: (SelectableContent, Int)) -> Bool {
-//        return selectedCases.contains { el in
-//            el == element
-//        }
-//    }
+    private func isSelected(element: (SelectableContent, Int)) -> Bool {
+        return selectedCases.contains { el in
+            el == element
+        }
+    }
     
     // MARK: - selection handler
     private func tap(element: (SelectableContent,Int)){
@@ -196,7 +200,6 @@ public struct AnyContentViewSizePreferenceKey: PreferenceKey{
 }
 
 #Preview {
-    BPAccountInfoView()
-        .environmentObject(GlobalStorage())
+    BPAccountInfoView(globalStorage: GlobalStorage())
 }
 
