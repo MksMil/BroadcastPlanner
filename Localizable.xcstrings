@@ -4,7 +4,7 @@
     ":" : {
 
     },
-    "%@" : {
+    "%lld" : {
 
     },
     "10:30 AM" : {
@@ -13,13 +13,7 @@
     "ADD" : {
 
     },
-    "All" : {
-
-    },
     "ButtonName" : {
-
-    },
-    "cam" : {
 
     },
     "Change E-mail" : {
@@ -32,6 +26,9 @@
 
     },
     "Creation date: %@" : {
+
+    },
+    "DELETE" : {
 
     },
     "Delete account" : {
@@ -64,9 +61,6 @@
     "Info" : {
 
     },
-    "light" : {
-
-    },
     "Link with Apple" : {
 
     },
@@ -77,9 +71,6 @@
 
     },
     "Messege" : {
-
-    },
-    "mic" : {
 
     },
     "Move Forvard\nselection: %lld" : {
@@ -109,7 +100,7 @@
     "Save" : {
 
     },
-    "select" : {
+    "SAVE" : {
 
     },
     "Send" : {

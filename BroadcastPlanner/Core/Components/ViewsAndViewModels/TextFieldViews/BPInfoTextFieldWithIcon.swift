@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct BPInfoTextFieldWithIcon: View {
-    @StateObject var viewModel: BPAccountInfoViewModel
+    @ObservedObject var viewModel: BPAccountInfoViewModel
     @Binding var text: String
     var iconName: String
     var promptText: String
@@ -29,7 +29,7 @@ struct BPInfoTextFieldWithIcon: View {
                 .multilineTextAlignment(.trailing)
                 .frame(height: 25)
                 .autocorrectionDisabled()
-                
+                .textInputAutocapitalization(.never)
                 .padding(.vertical,4)
                 .padding(.horizontal,5)
                 .background{
@@ -37,8 +37,6 @@ struct BPInfoTextFieldWithIcon: View {
                         .fill(.ultraThickMaterial)
                         .opacity(viewModel.isEdit ? 0.3: 0)
                 }
-                
-                
         }
         .disabled(!viewModel.isEdit)
         
@@ -47,7 +45,7 @@ struct BPInfoTextFieldWithIcon: View {
 
 #Preview {
     BPInfoTextFieldWithIcon(
-        viewModel: GlobalStorage().accountInfoViewModel,
+        viewModel: BPAccountInfoViewModel(),
         text: .constant("Text"),
         iconName: "map.circle.fill",
         promptText: "Address"

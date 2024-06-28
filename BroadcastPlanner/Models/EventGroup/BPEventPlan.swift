@@ -1,10 +1,3 @@
-//
-//  BPEventPlan.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 20.05.2024.
-//
-
 import Foundation
 
 class BPEventPlan: Identifiable, Codable {
@@ -27,21 +20,25 @@ class BPEventPlan: Identifiable, Codable {
                                             id: "1",
                                             coordinates: BPEventPlanPointCoordinate(
                                                 x: 0.25,
-                                                y: 0.25)),
+                                                y: 0.25),
+                                            user: BPUser(firstName: "Yaroslav", lastName: "Konoplya")),
                                             BPEventPlanPoint(
                                              id: "2",
                                              coordinates: BPEventPlanPointCoordinate(
                                                  x: 0.5,
-                                                 y: 0.5)),
+                                                 y: 0.5),
+                                             user: BPUser(firstName: "Anatoliy", lastName: "Smoktunovskiy")),
                                             BPEventPlanPoint(
                                              id: "3",
                                              coordinates: BPEventPlanPointCoordinate(
                                                  x: 0.75,
-                                                 y: 0.75)),
+                                                 y: 0.75),
+                                             user: BPUser(firstName: "Viktor", lastName: "Kabkov")),
                                             BPEventPlanPoint(
                                              id: "4",
                                              coordinates: BPEventPlanPointCoordinate(
                                                x: 0.9,
-                                                 y: 0.5))
+                                                 y: 0.5),
+                                             user: BPUser(firstName: "Aleksandr", lastName: "Chudnovskiy"))
                                            ])
 }

@@ -5,7 +5,6 @@ import FirebaseFirestoreSwift
 class BPUser: Identifiable, Codable {
     
     @DocumentID var id: String?
-    var uid: String
     
     var firstName : String = ""
     var lastName: String = ""
@@ -22,12 +21,8 @@ class BPUser: Identifiable, Codable {
     var leaveDateConverted: Date? {
         leaveDate?.dateValue()
     }
-    var ownedEvents = [Event]()
-    var memberEvents = [Event]()
-    
-    
-    //fetched after load
-//    var image: Image = Image(systemName: "person.crop.circle")
+    var ownedEventIds = [String]()
+    var memberEventIds = [String]()
     
     // TODO: Refactor reserved to [Events]
     var reserved: Bool = false
@@ -35,23 +30,41 @@ class BPUser: Identifiable, Codable {
 
     // MARK: - Initialization
     init(authInfo: SessionUser){
-        self.uid = authInfo.id
+
         //fetch data from firebase and fill all fields
     }
  
     //just for test functionality
-    init(id: String = UUID().uuidString,name: String = "Empty"){
-        self.firstName = name
-        self.uid = id
+    init(id: String = UUID().uuidString,firstName: String = "Empty", lastName: String = "NoName",specialization: [String] = []){
+        self.firstName = firstName
+        self.lastName = lastName
+        self.specialization = specialization
     }
     
     init(id: String,email: String, firstName: String, phNum: String, homeAddress: String, specialization: [UserSpecialization]){
-        self.uid = id
         self.email = email
         self.firstName = firstName
         self.phoneNumber = phNum
         self.homeAddress = homeAddress
         self.specialization = specialization.map{$0.rawValue}
+    }
+    
+    init(user: BPUserLocalData){
+        
+        self.firstName = user.firstName
+        self.lastName = user.lastName
+        self.isOnline = user.isOnline
+        self.phoneNumber = user.phoneNumber
+        self.email = user.email
+        self.homeAddress = user.homeAddress
+        self.specialization =  user.specialization
+        self.photoURL = user.photoURL
+        
+        self.creationDate = user.creationDate
+        self.leaveDate =  Timestamp(date: user.leaveDate ?? Date())
+        
+        self.ownedEventIds = user.ownedEventIds
+        self.memberEventIds = user.memberEventIds
     }
 }
 
@@ -64,6 +77,11 @@ extension BPUser: Hashable, Equatable{
     //hashable conformance
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
+    }
+    
+    // MARK: - computed compactFullName
+    var fullCompactName: String {
+        firstName.prefix(1) + "." + lastName
     }
 }
 

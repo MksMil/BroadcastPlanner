@@ -22,10 +22,12 @@ struct UpdateEPView: View {
     }
     
     @Environment(\.dismiss) var dismiss
+    
+    // TODO: must remove globalStorage dependency
     @EnvironmentObject var globalStorage: GlobalStorage
     
     @FocusState private var isFocus: FieldInFocus?
-    
+    var currentValue: String
     @State private var oldValue: String = ""
     @State private var newValue: String = ""
     
@@ -89,7 +91,7 @@ struct UpdateEPView: View {
     }
     
     func updateEmail() async {
-        guard let currentUser = globalStorage.authVm.currentSessionUser else {
+        guard let currentUser = globalStorage.currentSessionUser else {
             return
         }
         if currentUser.email == oldValue{
@@ -125,7 +127,7 @@ struct UpdateEPView: View {
 }
 
 #Preview {
-    UpdateEPView(updEP: .password)
+    UpdateEPView(currentValue: "", updEP: .password)
         .environmentObject(GlobalStorage())
     
 }

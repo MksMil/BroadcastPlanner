@@ -9,10 +9,8 @@ import GoogleSignIn
 struct BroadcastPlannerApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @Environment(\.scenePhase) var scenePhase
-
-    @StateObject private var globalStorage = GlobalStorage()
     
-    @State private var isUserLoaded: Bool = false
+    @StateObject private var globalStorage = GlobalStorage()
     
     var body: some Scene {
         
@@ -21,18 +19,14 @@ struct BroadcastPlannerApp: App {
         WindowGroup {
             ZStack{
                 MainBackground()
-                
-                //loading animation ?
-                StarterScreen(isLogged: $isUserLoaded)
-                    .environmentObject(globalStorage)
-                
-            }
-            .onAppear{
-                Task{
-                    print("try to fetch current user")
-                   isUserLoaded = await globalStorage.getCurrentUser()
+              
+                if globalStorage.currentSessionUser == nil{
+                    AuthenticationScreen(globalStorage: globalStorage)
+                } else {
+                    MainTabView(selection: 1)
                 }
             }
+            .environmentObject(globalStorage)
             .onChange(of: scenePhase, perform: { phase in
                 switch phase {
                     case .active:
@@ -44,6 +38,7 @@ struct BroadcastPlannerApp: App {
 
                     case .background:
                         //send offline status
+                        //save local cache: images + data( events, users, messages)
                         print("scene in background: send offline status")
                         Task{
                             await globalStorage.goOffline()

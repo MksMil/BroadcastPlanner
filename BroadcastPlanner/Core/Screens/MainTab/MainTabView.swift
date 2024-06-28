@@ -26,15 +26,11 @@ struct MainTabView: View {
                 .tag(2)
                 .padding(.bottom,1)
             //Settings Screen
-            SettingsView()
+            SettingsView(selection: $selection)
                 .tabItem { Label("Settings", systemImage: "gear") }
                 .tag(3)
                 .padding(.bottom,1)
-                
         }
-        .tint(Color.black)
-        .environmentObject(globalStorage)
-        
     }
 }
 

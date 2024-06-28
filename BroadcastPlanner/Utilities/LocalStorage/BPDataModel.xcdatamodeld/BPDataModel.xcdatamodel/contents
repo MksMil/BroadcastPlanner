@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22758" systemVersion="23F79" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+    <entity name="BroadcasterCarEntity" representedClassName="BroadcasterCarEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="imageUrl" optional="YES" attributeType="String"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <relationship name="broadcaster" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BroadcasterEntity" inverseName="cars" inverseEntity="BroadcasterEntity"/>
+    </entity>
+    <entity name="BroadcasterEntity" representedClassName="BroadcasterEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="host" optional="YES" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="String"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <relationship name="cars" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="BroadcasterCarEntity" inverseName="broadcaster" inverseEntity="BroadcasterCarEntity"/>
+    </entity>
+    <entity name="EventEntity" representedClassName="EventEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" optional="YES" attributeType="String"/>
+        <relationship name="owners" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="UserEntity"/>
+    </entity>
+    <entity name="EventPointEntity" representedClassName="EventPointEntity" syncable="YES" codeGenerationType="class"/>
+    <entity name="StadiumEntity" representedClassName="StadiumEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="address" optional="YES" attributeType="String"/>
+        <attribute name="city" optional="YES" attributeType="String"/>
+        <attribute name="title" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="UserEntity" representedClassName="UserEntity" syncable="YES" codeGenerationType="class"/>
+</model>

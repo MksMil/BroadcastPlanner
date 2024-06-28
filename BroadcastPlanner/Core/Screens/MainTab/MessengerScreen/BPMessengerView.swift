@@ -64,7 +64,7 @@ struct GetMessageItemView: View {
                         }
                         VStack{
                             Text("10:30 AM")
-                                .foregroundColor(.white)
+                                .foregroundColor(.gray)
                                 .font(.system(size: 12))
                                 .padding(.top,1)
                                 .padding(.bottom)
@@ -72,7 +72,7 @@ struct GetMessageItemView: View {
                         
                     }
                     .padding(.horizontal, 10)
-                    .background(Color.orange)
+                    .background(.ultraThickMaterial)
                     .clipShape(RoundedRectangle(cornerRadius: 10))
                     .overlay{
                         RoundedRectangle(cornerRadius: 10)
@@ -96,7 +96,7 @@ struct TF: View{
         TextField("sfdsfsdfds", text: $message, axis: .vertical)
             .padding()
             .background {
-                RoundedRectangle(cornerRadius: 8).fill(.orange)
+                RoundedRectangle(cornerRadius: 8).fill(.ultraThinMaterial)
             }
             .padding(.horizontal)
     }

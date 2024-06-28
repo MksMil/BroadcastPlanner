@@ -72,26 +72,26 @@ public struct AnyContentView<T: View,B:View,But: View,Prompt: View, SelectableCo
         .onChange(of: selectedContent, perform: { value in
             if !isEdit{
                 selectedCases = identableContent.compactMap({ (el, index) in
-                    if selectedContent.contains(el) {
+                    if value.contains(el) {
                         return (el,index)
                     } else {
                         return nil
                     }
                 })
-                allCases = selectedCases
+                withAnimation(.easeInOut(duration: 1)) {
+                    allCases = selectedCases
+                }
             }
         })
     }
     
     @ViewBuilder func makeContent() -> some View{
         VStack {
-                                if selectedCases.isEmpty && !isEdit {
-                                    promptView()
-                                        .padding(.top,verticalPadding)
-            //                            .padding(.horizontal, horizontalPadding)
-            //                            .padding(.vertical, verticalPadding)
-            //                            .opacity((selectedCases.isEmpty && !isEdit) ? 1 : 0)
-                                }
+            if selectedCases.isEmpty && !isEdit {
+                promptView()
+                    .transition(.opacity)
+                    .padding(.top,verticalPadding)
+            }
             GeometryReader { g in
                 var width = Double.zero
                 var height = Double.zero
@@ -200,6 +200,6 @@ public struct AnyContentViewSizePreferenceKey: PreferenceKey{
 }
 
 #Preview {
-    BPAccountInfoView(globalStorage: GlobalStorage())
+    BPAccountInfoView(globalStorage: GlobalStorage(currentUser: MockData.sampleUser))
 }
 

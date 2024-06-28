@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct MainEventListCell: View {
-    @Binding var isShowCreativeGroupEdit: Bool
+    
     var event: Event
     
     var body: some View {
@@ -75,13 +75,8 @@ struct MainEventListCell: View {
         }
         .foregroundStyle(Color.black)
     }
-    
-    func showCreativeGroupEdit(){
-        print("button pressed")
-        isShowCreativeGroupEdit = true
-    }
 }
 
 #Preview {
-    MainEventListCell(isShowCreativeGroupEdit: .constant(false), event: MockData.sampleEvent)
+    MainEventListCell(event: MockData.sampleEvent)
 }

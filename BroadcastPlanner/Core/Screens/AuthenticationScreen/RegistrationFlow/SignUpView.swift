@@ -15,9 +15,9 @@ struct SignUpView: View {
     }
     @FocusState private var isFocused: FieldInFocus?
     
-//    @EnvironmentObject var globalStorage: GlobalStorage
+    @EnvironmentObject var globalStorage: GlobalStorage
     @Environment(\.dismiss) var dismiss
-    @StateObject var viewModel: AuthViewModel
+    @StateObject var viewModel: AuthViewModel = AuthViewModel()
     
     
     var body: some View {
@@ -46,7 +46,7 @@ struct SignUpView: View {
                     Task {
                         do{
                             isFocused = nil
-                            viewModel.currentSessionUser = try await AuthenticationManager.shared.createUser(
+                            globalStorage.currentSessionUser = try await AuthenticationManager.shared.createUser(
                                 email: viewModel.email,
                                 password: viewModel.password
                             )
@@ -77,5 +77,5 @@ struct SignUpView: View {
 
 // MARK: - Preview
 #Preview {
-    SignUpView(viewModel: GlobalStorage().authVm)
+    SignUpView(viewModel: AuthViewModel())
 }

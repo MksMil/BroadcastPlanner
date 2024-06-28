@@ -1,18 +1,15 @@
-//
-//  BPEventPlanView.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 20.05.2024.
-//
-
 import SwiftUI
 
 struct BPEditEventPlanPointsView: View {
     
     @State var scaleFactor: Double = 1
-    @Binding var eventPlan: BPEventPlan
-    @Binding var selectedPoint: BPEventPlanPoint?
-    var pointSize: Double = 10
+    @ObservedObject var vm: BPEventViewModel
+    @Binding var filter: BPEventPlanPointFilter
+    @State var currentPinch: Double = 0
+    
+    
+    
+    var isEditState: Bool = false
     
     var body: some View {
         VStack{
@@ -21,9 +18,21 @@ struct BPEditEventPlanPointsView: View {
                 .overlay(content: {
                     RoundedRectangle(cornerRadius: 20).stroke(.black, lineWidth: 5)
                 })
-            makeButtonControlView()
-                .padding(.top,8)
-                
+                .gesture(MagnificationGesture().onChanged({ newValue in
+                    print(newValue)
+                    if abs(newValue - currentPinch) > 0.2 {
+                        if newValue > currentPinch {
+                            increaseScale()
+                        } else {
+                            decreaseScale()
+                        }
+                        currentPinch = newValue
+                    }
+                }))
+            if isEditState {
+                makeButtonControlView()
+                    .padding(.top,8)
+            }
         }
         .padding(.horizontal)
     }
@@ -32,6 +41,8 @@ struct BPEditEventPlanPointsView: View {
     @ViewBuilder func makeStadView() -> some View {
         GeometryReader{ geometry in
             let size = geometry.size
+            let pointSize = geometry.size.width / 20
+            
             ScrollViewReader{ proxy in
                 ScrollView([.horizontal,.vertical]) {
                         ZStack{
@@ -40,22 +51,20 @@ struct BPEditEventPlanPointsView: View {
                                        height: size.height * scaleFactor)
                                 .id("back")
                             
-                            ForEach(eventPlan.points) { point in
+                            ForEach(vm.filterWith(filter)) { point in
                                 
-                                Circle()
-                                    .fill(/*selectedPoint?.id == point.id ? .blue:*/.red)
-                                    .animation(.easeInOut, value: selectedPoint)
+                                BPEventPlanPointImage()
                                     .id(point.id)
                                     .frame(width: pointSize * scaleFactor,
                                            height: pointSize * scaleFactor)
+                                    .scaleEffect(point.selected ? 1.5: 1)
+                                    .rotationEffect(Angle.degrees(point.coordinates.rotation))
                                     .position(x: point.coordinates.x * size.width * scaleFactor,
                                               y: point.coordinates.y * size.height * scaleFactor)
                                     .onTapGesture {
-                                        withAnimation {
-                                            if selectedPoint?.id == point.id {
-                                                selectedPoint = nil
-                                            } else{
-                                                selectedPoint = point
+                                        if !vm.isEdit{
+                                            withAnimation {
+                                                vm.select(point: point)
                                             }
                                         }
                                     }
@@ -63,9 +72,8 @@ struct BPEditEventPlanPointsView: View {
                         }
                         .id("stack")
                 }
-                .onChange(of: selectedPoint){ value in
-                    
-                    guard let value  else {
+                .onChange(of: vm.update, perform: { _ in
+                    guard let value = vm.selectedEventPoint  else {
                         withAnimation{
                             proxy.scrollTo("stack", anchor: .center)
                         }
@@ -77,13 +85,13 @@ struct BPEditEventPlanPointsView: View {
                                        y: value.coordinates.y)
                         )
                     }
-                }
+                })
                 .scrollBounceBehavior(.basedOnSize, axes: [.vertical,.horizontal])
             }
         }
     }
     
-    //zoom control
+    // MARK: - add/edit point + zoom control
     @ViewBuilder func makeButtonControlView() -> some View{
         HStack {
             RoundedRectangle(cornerRadius: 10)
@@ -93,10 +101,21 @@ struct BPEditEventPlanPointsView: View {
                 .overlay {
                     Button(action: {
                         withAnimation {
-                            //add point
+                            //add / delete   point
+                            if !vm.isEdit {
+                                let point = BPEventPlanPoint(id: UUID().uuidString,
+                                                             coordinates: .init(x: 0.5, y: 0.7),
+                                                             eventPlanPointNumber: (vm.event.eventPlan.points.last?.eventPlanPointNumber ?? 0) + 1)
+                                vm.deselect()
+                                vm.event.eventPlan.points.append(point)
+                                vm.select(point: point)
+                                vm.isEdit = true
+                            } else {
+                                vm.removeSelectedPoint()
+                            }
                         }
                     }, label: {
-                        Text("ADD")
+                        Text(vm.isEdit ? "DELETE":"ADD")
                     })
                 }
             Spacer()
@@ -108,9 +127,15 @@ struct BPEditEventPlanPointsView: View {
                     Button(action: {
                         withAnimation {
                             //edit point
+                            if vm.selectedEventPoint != nil {
+                                if vm.isEdit{
+                                    vm.deselect()
+                                }
+                                vm.isEdit.toggle()
+                            }
                         }
                     }, label: {
-                        Text("EDIT")
+                        Text(vm.isEdit ?  "SAVE":"EDIT")
                     })
                 }
             Spacer()
@@ -122,30 +147,19 @@ struct BPEditEventPlanPointsView: View {
                     HStack(spacing: 16){
                         
                         Button(action: {
-                            withAnimation {
-                                if scaleFactor > 1 {
-                                    scaleFactor += -0.25
-                                }
-                            }
+                           decreaseScale()
                         }, label: {
                             Image(systemName: "minus.magnifyingglass")
                         })
                         
                         Button(action: {
-                            withAnimation {
-                                
-                                scaleFactor = 1
-                                
-                            }
+                            resetScale()
                         }, label: {
                             Image(systemName: "square.arrowtriangle.4.outward")
                         })
+                        
                         Button(action: {
-                            withAnimation {
-                                if scaleFactor < 2 {
-                                    scaleFactor += 0.25
-                                }
-                            }
+                           increaseScale()
                         }, label: {
                             Image(systemName: "plus.magnifyingglass")
                         })
@@ -159,10 +173,31 @@ struct BPEditEventPlanPointsView: View {
         .foregroundStyle(.black)
         .bold()
     }
+    
+    func increaseScale(){
+        withAnimation {
+            if scaleFactor < 3 {
+                scaleFactor += 0.25
+            }
+        }
+    }
+    
+    func decreaseScale(){
+        withAnimation {
+            if scaleFactor > 1 {
+                scaleFactor += -0.25
+            }
+        }
+    }
+    
+    func resetScale(){
+        withAnimation {
+            scaleFactor = 1
+        }
+    }
 }
 
 #Preview {
-    BPEditEventPlanView(eventIndex: 0)
-//        .environmentObject(GlobalStorage())
+    BPEditEventPlanView(vm: BPEventViewModel(event: MockData.sampleEvent))
 }
 

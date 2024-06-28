@@ -1,10 +1,3 @@
-//
-//  MainEventsList.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 12.10.2023.
-//
-
 import SwiftUI
 
 enum FilterEventCases: String, CaseIterable {
@@ -18,7 +11,7 @@ struct MainEventsList: View {
     
     @State private var filter: FilterEventCases = .notFiltered
     @State private var isShowCreativeGroupEdit: Bool = false
-    @State var  selectedEventIndex: Int = 0
+    @State var  selectedEvent: Event? = nil
     @State var selectedFilter: FilterEventCases = .notFiltered
     
     var body: some View {
@@ -31,20 +24,21 @@ struct MainEventsList: View {
 //                    Text("List filters here")
                     Rectangle().fill(.ultraThinMaterial)
                         .frame(maxWidth: .infinity)
-                        .frame(height: 70)
+                        .frame(height: 50)
                         .overlay {
                             BPEventFilterCaseTabView(selectedTab: $selectedFilter)
                                 .padding(.horizontal,20)
                         }
+                    
+                    
                     List {
-                        ForEach(globalStorage.events.indices, id: \.self) { index in
+                        ForEach(globalStorage.events) { event in
                             Button {
                                 isShowCreativeGroupEdit = true
-                                selectedEventIndex = index
+                                selectedEvent = event
                             } label: {
-                                MainEventListCell(isShowCreativeGroupEdit: $isShowCreativeGroupEdit, event: globalStorage.events[index])
+                                MainEventListCell(event: event)
                                     .frame(height: 70)
-//                                    .shadow(radius: 5)
                             }
                             .listRowBackground(Color.clear)
                         }
@@ -77,7 +71,7 @@ struct MainEventsList: View {
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
             .navigationDestination(isPresented: $isShowCreativeGroupEdit) {
-                BPEditEventPlanView(eventIndex: selectedEventIndex )
+                BPCreateEditEventView()
             }
         }
     }

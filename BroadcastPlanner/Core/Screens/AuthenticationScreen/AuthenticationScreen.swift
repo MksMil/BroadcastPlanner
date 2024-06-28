@@ -8,6 +8,7 @@ import SwiftUI
 struct AuthenticationScreen: View {
    
     var globalStorage: GlobalStorage
+    @StateObject private var authVm = AuthViewModel()
     
     var body: some View {
         NavigationStack{
@@ -28,7 +29,7 @@ struct AuthenticationScreen: View {
                         
                         // MARK: - Email/Password Textfields
                         BPEmailPasswordStack(
-                            viewModel: globalStorage.authVm)
+                            viewModel: authVm)
                         
                         // MARK: - "Forget password" button
                         HStack{
@@ -45,9 +46,9 @@ struct AuthenticationScreen: View {
                         Button(action: {
                             Task{
                                 do {
-                                    globalStorage.authVm.currentSessionUser = try await AuthenticationManager.shared.signIn(
-                                        withEmail: globalStorage.authVm.email,
-                                        password: globalStorage.authVm.password
+                                    globalStorage.currentSessionUser = try await AuthenticationManager.shared.signIn(
+                                        withEmail: authVm.email,
+                                        password: authVm.password
                                     )
                                 } catch {
 #if DEBUG
@@ -72,7 +73,7 @@ struct AuthenticationScreen: View {
                         GoogleSignInButton(viewModel: GoogleSignInButtonViewModel(scheme: .light, style: .wide, state: .normal)) {
                             Task{
                                 do {
-                                    globalStorage.authVm.currentSessionUser = try await AuthenticationManager.shared.signWithGgl()
+                                    globalStorage.currentSessionUser = try await AuthenticationManager.shared.signWithGgl()
                                 } catch {
 #if DEBUG
                                     print("DEBUG:\(error.localizedDescription)")
@@ -92,7 +93,7 @@ struct AuthenticationScreen: View {
                             request.nonce = AppleHelper.getSha256(globalStorage.applCurrentNonce)
                         } onCompletion: { result in
                             Task{
-                                do { globalStorage.authVm.currentSessionUser = try await AuthenticationManager.shared.signInWithAppleWithResult(result, currentNonce: globalStorage.applCurrentNonce)
+                                do { globalStorage.currentSessionUser = try await AuthenticationManager.shared.signInWithAppleWithResult(result, currentNonce: globalStorage.applCurrentNonce)
                                 } catch {
 #if DEBUG
                                     print("DEBUG:\(error.localizedDescription)")
@@ -108,14 +109,11 @@ struct AuthenticationScreen: View {
                         
                         // MARK: - "Sign Up" Link
                         NavigationLink {
-                            SignUpView(viewModel: globalStorage.authVm)
+                            SignUpView()
                         } label: {
                             Text("Not Registered?   Sign Up!")
                                 .frame(maxWidth: .infinity)
                                 .padding()
-                            //                                .background { Color(.systemGray4)}
-                            //                                .clipShape(RoundedRectangle(cornerRadius: 8))
-                            //                                .padding(.horizontal)
                         }
                         Spacer()
                     }
@@ -138,7 +136,7 @@ struct BPEmailPasswordStack: View {
     }
     
     @FocusState private var isFocused: FieldInFocus?
-    @StateObject var viewModel: AuthViewModel
+    @ObservedObject var viewModel: AuthViewModel
     
     var body: some View {
         VStack{

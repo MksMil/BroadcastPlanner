@@ -59,3 +59,8 @@ struct SessionUser {
 //    }
 //}
 
+extension SessionUser: Equatable{
+    static func == (lhs: SessionUser, rhs: SessionUser) -> Bool {
+        return lhs.id == rhs.id
+    }
+}

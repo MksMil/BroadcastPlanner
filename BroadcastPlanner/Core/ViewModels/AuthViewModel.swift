@@ -8,8 +8,7 @@
 import SwiftUI
 
 final class AuthViewModel: ObservableObject{
-    @Published var currentSessionUser: SessionUser?
-    @Published var currentUser: BPUser?
+    
     
     @Published var email: String = ""
     @Published var password: String = ""

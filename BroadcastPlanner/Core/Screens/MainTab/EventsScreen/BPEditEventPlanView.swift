@@ -1,90 +1,183 @@
-//
-//  BPEditEventView.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 18.05.2024.
-//
-
 import SwiftUI
 
 struct BPEditEventPlanView: View {
-//    @EnvironmentObject var globalStorage: GlobalStorage
+    //    @EnvironmentObject var globalStorage: GlobalStorage
     @Environment(\.dismiss) var dismiss
     
-    @State var eventIndex: Int
-    @State var eventPlan: BPEventPlan = BPEventPlan.MockEventPlan
-    @State var selectedPoint: BPEventPlanPoint? 
-    @State var selectedPickerValue: String = "cam"
+    @ObservedObject var vm: BPEventViewModel
+    
+    @State var pointFilter: BPEventPlanPointFilter = .all
+    
     var body: some View {
         ZStack{
             
             MainBackground()
+            
             //event plan view + filter
             VStack{
-                Picker(
-                    "select",
-                    selection:$selectedPickerValue) {
-                        Text("All").tag("All")
-                        Text("cam").tag("cam")
-                        Text("mic").tag("mic")
-                        Text("light").tag("light")
+               
+                Rectangle().fill(.ultraThinMaterial)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 40)
+                    .overlay {
+                        BPEventFilterCaseTabView(selectedTab: $pointFilter)
+//                            .padding(.horizontal,20)
                     }
-                    .pickerStyle(.segmented)
-                
+            
                 BPEditEventPlanPointsView(
                     scaleFactor: 1,
-                    eventPlan: $eventPlan,
-                    selectedPoint: $selectedPoint)
-                .frame(height: 350)
-               
-                VStack {
-                    List{
-                        ForEach(eventPlan.points) { point in
-                            Text(point.id)
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 40)
-                                .background(content: {
-                                    Color.blue.opacity(selectedPoint?.id == point.id ?  0.8 : 0.1)
-                                })
-                                .onTapGesture {
-                                    withAnimation {
-                                        if point.id == selectedPoint?.id{
-                                            selectedPoint = nil
-                                        } else {
-                                            selectedPoint = point
+                    vm: vm,
+                    filter: $pointFilter,
+                    isEditState: true
+                )
+                .frame(height: 300)
+            
+                
+                if !vm.isEdit{
+                    ScrollView{
+                        SmartLayout(hSpacing: 5, vSpacing: 5){
+                            ForEach(vm.event.eventPlan.points) { point in
+                                Text("\(point.eventPlanPointNumber)")
+                                    .fixedSize()
+                                    .padding(10)
+                                    .frame(width: 115, height: 50)
+                                    .background(vm.selectedEventPoint?.id == point.id ?  .ultraThickMaterial : .ultraThinMaterial
+                                    )
+                                    .onTapGesture {
+                                        withAnimation {
+                                            vm.select(point: point)
                                         }
                                     }
-                                }
-                                .listRowBackground(Color.clear)
+                            }
                         }
-                        .onDelete { indexSet in
-                            eventPlan.points.remove(atOffsets: indexSet)
+                        .scrollContentBackground(.hidden)
+                        .listStyle(.inset)
+                        .padding()
+                    }
+                } else {
+                    
+                    HStack{
+                        ScrollView {
+                            VStack{
+                                HStack{
+                                    VStack(alignment: .leading,spacing: 3){
+                                        BPUserCompactCell(user: vm.selectedEventPoint?.user)
+                                        BPPositionCompactCell(pointPositionName: vm.selectedEventPoint?.coordinates.description)
+                                    }
+                                    Spacer()
+                                    Circle()
+                                        .frame(width: 45)
+                                        .padding(.vertical,10)
+                                        .overlay {
+                                            Text(String(vm.selectedEventPoint?.eventPlanPointNumber ?? Int.random(in: 1..<20)))
+                                                .font(.title)
+                                                .bold()
+                                                .foregroundStyle(.white)
+                                        }
+                                }
+                                VStack(alignment: .leading,spacing: 3){
+                                    Divider()
+                                    BPCameraCompactCell(camDescription: "---")
+                                    BPMicCompactCell(micDescription: "---")
+                                    BPLightCompactCell(lightDescription: "---")
+                                    BPEnvCompactCell(envDescription: "---")
+                                }
+                            .frame(maxWidth: .infinity,alignment: .leading)
+                            }
+                            .padding(.horizontal,10)
+                        }
+//                        .scrollDisabled(true)
+                        .background(RoundedRectangle(cornerRadius: 15).fill(.ultraThinMaterial))
+                        .padding(.leading)
+                        .padding(.bottom)
+                        
+                        Spacer()
+                        
+                        VStack{
+                            
+                            BPJoystick(
+                                upAction: upAction,
+                                downAction: downAction,
+                                leftAction: leftAction,
+                                rightAction: rightAction,
+                                rotationLeft: rotateLeft,
+                                rotationRight: rotateRight
+                            )
+                            .frame(width: 100, height: 100)
+                            .padding(.top)
+                            .padding(.trailing)
+                            BPEventPlanPointImage()
+                                .frame(width: 75, height: 75)
+                                .border(.ultraThickMaterial, width: 1)
+                                .padding(.trailing)
+//                                .padding(.top)
+                            Spacer()
                         }
                     }
-                    .scrollContentBackground(.hidden)
-                    .listStyle(.inset)
-                    .padding()
                 }
                 Spacer()
             }
             .padding(.top)
-            //date
-            
-            //location
-            
-            //broadcaster
-            
-            //info
-            
-            //staff
-            
-            
-            
         }
     }
 }
+ 
+// MARK: - move/rotate Points
+extension BPEditEventPlanView {
+        func upAction(){
+            //        print(vm.selectedEventPoint?.coordinates.description ?? "")
+            withAnimation{
+                vm.moveUp()
+            }
+        }
+        func downAction(){
+            //        print(vm.selectedEventPoint?.coordinates.description ?? "")
+            withAnimation{
+                vm.moveDown()
+            }
+        }
+        func leftAction(){
+            //        print(vm.selectedEventPoint?.coordinates.description ?? "")
+            withAnimation{
+                vm.moveLeft()
+            }
+        }
+        func rightAction(){
+            //        print(vm.selectedEventPoint?.coordinates.description ?? "")
+            withAnimation{
+                vm.moveRight()
+            }
+        }
+        
+        func rotateLeft(){
+//            if vm.selectedEventPoint?.coordinates.rotation == 360{
+//                vm.selectedEventPoint?.coordinates.rotation = 0
+//            }
+            withAnimation{
+                vm.rotateLeft()
+            }
+        }
+        
+        func rotateRight(){
+//            if vm.selectedEventPoint?.coordinates.rotation == -360{
+//                vm.selectedEventPoint?.coordinates.rotation = 0
+//            }
+            withAnimation{
+                vm.rotateRight()
+            }
+        }
+    
+}
+
+
+
 
 #Preview {
-    BPEditEventPlanView( eventIndex: 0)
-//        .environmentObject(GlobalStorage())
+    BPEditEventPlanView(vm: BPEventViewModel(event: MockData.sampleEvent))
 }
+
+//#Preview {
+//    MainTabView()
+//        .environmentObject(GlobalStorage())
+//    
+//}

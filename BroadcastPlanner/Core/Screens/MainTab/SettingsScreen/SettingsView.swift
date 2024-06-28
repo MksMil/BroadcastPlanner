@@ -7,6 +7,8 @@ struct SettingsView: View {
     @EnvironmentObject var globalStorage: GlobalStorage
     @Environment(\.authorizationController) private var authorizationController
     
+    @Binding var selection: Int
+    
     @State var newEmail: String = ""
     @State var newPassword: String = ""
     
@@ -16,7 +18,7 @@ struct SettingsView: View {
                 MainBackground()
                 ScrollView{
                     VStack{
-                        if let user = globalStorage.authVm.currentSessionUser{
+                        if let user = globalStorage.currentSessionUser{
                             Section{
                                 VStack(alignment: .leading){
                                     Text("id: \(user.id)")
@@ -41,7 +43,10 @@ struct SettingsView: View {
                         Section {
                             VStack(spacing: 15){
                                 NavigationLink {
-                                    UpdateEPView(updEP: .email)
+                                    UpdateEPView(
+                                        currentValue: globalStorage.currentUser?.email ?? "",
+                                        updEP: .email
+                                    )
                                 } label: {
                                     Text("Change E-mail")
                                         .frame(maxWidth: .infinity)
@@ -52,7 +57,10 @@ struct SettingsView: View {
                                 }
                                 
                                 NavigationLink {
-                                    UpdateEPView(updEP: .password)
+                                    UpdateEPView(
+                                        currentValue: globalStorage.password,
+                                        updEP: .password
+                                    )
                                 } label: {
                                     Text("Change Password")
                                         .frame(maxWidth: .infinity)
@@ -118,7 +126,8 @@ struct SettingsView: View {
                             Task{
                                 do{
                                     try AuthenticationManager.shared.logOut()
-                                    globalStorage.authVm.currentSessionUser = nil
+                                    globalStorage.currentSessionUser = nil
+                                    selection = 1
                                 } catch {
                                     print("failed to signing out: \(error.localizedDescription)")
                                 }
@@ -139,6 +148,7 @@ struct SettingsView: View {
                             Task{
                                 do{
                                     try await AuthenticationManager.shared.deleteUser()
+                                    globalStorage.currentSessionUser = nil
                                 } catch {
 #if DEBUG
                                     print("DEBUG:\(error.localizedDescription)")
@@ -162,6 +172,6 @@ struct SettingsView: View {
 }
 
 #Preview {
-    SettingsView()
+    SettingsView(selection: .constant(3))
         .environmentObject(GlobalStorage())
 }
