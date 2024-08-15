@@ -1,19 +1,8 @@
-//
-//  UpdateEPView.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 24.01.2024.
-//
-
 import SwiftUI
-import Combine
 
 enum UpdatedEP: String,Identifiable {
     case email, password
-    
-    var id: String {
-        return self.rawValue
-    }
+    var id: Self { self }
 }
 
 struct UpdateEPView: View {
@@ -22,16 +11,15 @@ struct UpdateEPView: View {
     }
     
     @Environment(\.dismiss) var dismiss
-    
-    // TODO: must remove globalStorage dependency
-    @EnvironmentObject var globalStorage: GlobalStorage
-    
     @FocusState private var isFocus: FieldInFocus?
+    
     var currentValue: String
+    
     @State private var oldValue: String = ""
     @State private var newValue: String = ""
     
     var updEP: UpdatedEP
+    let updateAction: (String) -> Void
     
     var body: some View {
         
@@ -64,9 +52,11 @@ struct UpdateEPView: View {
                     
                     // MARK: - Confirm Button
                     Button{
+                        print("Confirm Button tapped")
                         Task{
                             isFocus = nil
-                            updEP == .email ? await updateEmail(): await updatePassword()
+                            updateAction(newValue)
+                            dismiss()
                         }
                     } label: {
                         Text("Confirm")
@@ -86,53 +76,17 @@ struct UpdateEPView: View {
                 }
                 .padding(.top,100)
             }
-        }
-        
-    }
-    
-    func updateEmail() async {
-        guard let currentUser = globalStorage.currentSessionUser else {
-            return
-        }
-        if currentUser.email == oldValue{
-            do{
-                try await AuthenticationManager.shared.updateEmail(newEmail: newValue)
-                //email chnged
-                dismiss()
-            } catch {
-#if DEBUG
-                print("DEBUG:\(error.localizedDescription)")
-#endif
-            }
-        } else {
-          //wrong old email value
-        }
-    }
-    
-    func updatePassword() async{
-        guard oldValue == globalStorage.password else {
-            //wrong password conformance
-            return
-        }
-        do{
-            try await AuthenticationManager.shared.updatePass(pass: newValue)
-            //password changed
-            dismiss()
-        } catch {
-#if DEBUG
-            print("DEBUG:\(error.localizedDescription)")
-#endif
+            .navigationBarBackButtonHidden()
         }
     }
 }
 
 #Preview {
-    UpdateEPView(currentValue: "", updEP: .password)
+    UpdateEPView(currentValue: "", updEP: .password, updateAction: {_ in })
         .environmentObject(GlobalStorage())
     
 }
-//#Preview {
-//        UpdateEPView(updEP: .email)
-//        .environmentObject(GlobalStorage())
-//
-//}
+#Preview {
+    UpdateEPView(currentValue: "", updEP: .email, updateAction: {_ in })
+        .environmentObject(GlobalStorage())
+}

@@ -1,10 +1,3 @@
-//
-//  BPAccountInfoView.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 04.04.2024.
-//
-
 import SwiftUI
 import UIKit
 
@@ -21,7 +14,7 @@ struct BPAccountInfoView: View {
     }
     
     var body: some View {
-        NavigationStack{
+        NavigationStack(){
             ZStack{
                 MainBackground()
                 VStack{

@@ -1,24 +1,15 @@
-//
-//  SignUpView.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 12.01.2024.
-//
-
 import SwiftUI
-//import Combine
-
 
 struct SignUpView: View {
     enum FieldInFocus: Hashable{
-        case firstField, secondField
+        case firstField,
+             secondField
     }
     @FocusState private var isFocused: FieldInFocus?
-    
     @EnvironmentObject var globalStorage: GlobalStorage
     @Environment(\.dismiss) var dismiss
     @StateObject var viewModel: AuthViewModel = AuthViewModel()
-    
+    let createAction: ( String, String) -> Void 
     
     var body: some View {
         ZStack{
@@ -43,20 +34,10 @@ struct SignUpView: View {
                 
                 // MARK: - Sign Up button
                 Button(action: {
-                    Task {
-                        do{
                             isFocused = nil
-                            globalStorage.currentSessionUser = try await AuthenticationManager.shared.createUser(
-                                email: viewModel.email,
-                                password: viewModel.password
-                            )
+                            createAction(viewModel.email,
+                                         viewModel.password)
                             dismiss()
-                        } catch {
-#if DEBUG
-                            print("DEBUG:\(error.localizedDescription)")
-#endif
-                        }
-                    }
                 },
                        label: {
                     Text("Sign Up")
@@ -77,5 +58,6 @@ struct SignUpView: View {
 
 // MARK: - Preview
 #Preview {
-    SignUpView(viewModel: AuthViewModel())
+    SignUpView(viewModel: AuthViewModel()){_,_  in}
+        
 }

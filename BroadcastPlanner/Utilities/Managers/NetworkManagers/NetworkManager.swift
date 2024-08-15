@@ -5,26 +5,55 @@ import FirebaseFirestoreSwift
 import FirebaseCore
 
 protocol NetworkManagerProtocol: AnyObject {
-    func getCurrentSessionUserInfo() async
+    
+    //get firebase auth status
+    func getCurrentSessionUserInfo() async -> SessionUser?
+    
+    //get current user data
+    func getCurrentUserData(id: String) async -> BPUser?
+    
+    //create user in users directory in db
     func createUser() async
+    
+    //save user data in users directory in db
     func saveUser(image: UIImage?) async
     
-    func getEvents() async
-    func addEvent() async
+    //get events fron db
+    func getEvents() async -> [Event]?
     
-    func getUsers() async
+    //update
+    func saveEvent(_ event: Event) async
+    
+    //get users from users directory from db
+    func getUsers() async -> [BPUser]?
 
     func getNewChatMessages() async
 
+    //send online-status to user data
     func goOnline() async
+    
+    //send offline-status to user data
     func goOffline() async
     
+    //save image to firestore
     func saveImageToGlobalStorage(id: String, path: ImagePath,image: UIImage) async -> String
+    
+    //load image from firestore
     func loadImageFromGlobalStorage(id: String, path: ImagePath, completion: @escaping (UIImage?) -> () ) async
-
+    
+    func removeEvent(_ event: Event) async
+    
+    //event templates
+    func getEventteamplates() async -> [BPEventPlan]?
+    func appendEventTemolate(plan: BPEventPlan) async
+    func removeEventPlan(plan: BPEventPlan) async
+    
+        
+    
 }
 
 final class NetworkManager: NetworkManagerProtocol {
+    
     weak var globalStorage: GlobalStorage!
     var db: Firestore
     var storage: Storage
@@ -36,32 +65,33 @@ final class NetworkManager: NetworkManagerProtocol {
     }
     
     @MainActor
-    func getCurrentSessionUserInfo() async{
-        guard let currentUser = Auth.auth().currentUser else { return }
-        globalStorage.currentSessionUser = SessionUser(user: currentUser)
+    func getCurrentSessionUserInfo() async -> SessionUser?{
+        guard let currentUser = Auth.auth().currentUser else { return nil }
+        return SessionUser(user: currentUser)
     }
     
     @MainActor
-    func getUsers()  async{
-        let usersRef = db.collection("users")
+    func getCurrentUserData(id: String) async -> BPUser? {
+        let userRef = db.collection("users").document(id)
         do {
-            let usersSnapshot = try await usersRef.getDocuments()
-            let users = usersSnapshot.documents.compactMap{try? $0.data(as: BPUser.self)}
-            globalStorage.users = users.map{ BPUserLocalData(user: $0) }
-            print(usersSnapshot.debugDescription)
-            print("users fetched")
+            let userData = try await userRef.getDocument(as: BPUser.self)
+            return userData
         } catch {
 #if DEBUG
-            print("DEBUG: getUsers flow error: \(error)")
+            print("DEBUG: load user error locdes: \(error.localizedDescription)")
+            print("DEBUG: load user error: \(error)")
 #endif
         }
+        return nil
     }
     
     @MainActor
     func createUser() async {
-        guard let id = globalStorage.currentSessionUser?.id else { return }
+        guard let id = globalStorage.currentSessionUser?.id, let email = globalStorage.currentSessionUser?.email else { return }
         
-        let user = BPUser(id: id)
+        let user = BPUser()
+        user.id = id
+        user.email = email
         
         let userRef = db.collection("users")
         do {
@@ -78,8 +108,6 @@ final class NetworkManager: NetworkManagerProtocol {
     func saveUser(image: UIImage?) async {
         guard let userLocal = globalStorage.currentUser,
               let id = userLocal.id else { return }
-        print(userLocal)
-        print(id)
         if let image = image{
             userLocal.photoURL = await saveImageToGlobalStorage(id: id,path: .userImage, image: image)
         }
@@ -97,6 +125,21 @@ final class NetworkManager: NetworkManagerProtocol {
         
     }
     
+    @MainActor
+    func getUsers()  async -> [BPUser]?{
+        let usersRef = db.collection("users")
+        do {
+            let usersSnapshot = try await usersRef.getDocuments()
+            let users = usersSnapshot.documents.compactMap{try? $0.data(as: BPUser.self)}
+            return users
+        } catch {
+#if DEBUG
+            print("DEBUG: getUsers flow error: \(error)")
+#endif
+        }
+        return nil
+    }
+
     // MARK: - Save/Load Images
     
     func saveImageToGlobalStorage(id: String, path: ImagePath,image: UIImage) async -> String {
@@ -172,21 +215,45 @@ final class NetworkManager: NetworkManagerProtocol {
         return path
     }
     
-   
-    
     // MARK: - Events
-    func getEvents() async {
-        
+    
+    func saveEvent(_ event: Event) async {
+//        guard let id = event.id else { return }
+        let eventRef = db.collection("events")
+        do {
+            let data = try Firestore.Encoder().encode(event)
+            try await eventRef.document(event.id).setData(data)
+        } catch {
+#if DEBUG
+            print("DEBUG: save event error: \(error.localizedDescription)")
+#endif
+        }
     }
     
-    func addEvent() async {
-        
+    func removeEvent(_ event: Event) async {
+//        guard let id = event.id else { return }
+        do{
+            try await db.collection("events").document(event.id).delete()
+        } catch {
+#if DEBUG
+            print("DEBUG: remove event error: \(error.localizedDescription)")
+#endif
+        }
     }
     
-    func removeEvent(){
-        
-    }
-    
+    func getEvents() async -> [Event]? {
+            let usersRef = db.collection("events")
+            do {
+                let usersSnapshot = try await usersRef.getDocuments()
+                let events = usersSnapshot.documents.compactMap{try? $0.data(as: Event.self)}
+                return events
+            } catch {
+    #if DEBUG
+                print("DEBUG: getUsers flow error: \(error)")
+    #endif
+            }
+            return nil
+        }
     // MARK: - Messages
     func getNewChatMessages() async {
         
@@ -200,6 +267,7 @@ final class NetworkManager: NetworkManagerProtocol {
         let userRef = db.collection("users").document(id)
         do {
             try await userRef.updateData(["isOnline":true])
+            
         } catch {
             #if DEBUG
             print("DEBUG: error going online: \(error.localizedDescription)")
@@ -210,12 +278,53 @@ final class NetworkManager: NetworkManagerProtocol {
     func goOffline() async {
         guard let id = globalStorage.currentSessionUser?.id else { return }
         let userRef = db.collection("users").document(id)
+        
         do {
             try await userRef.updateData(["isOnline":false])
+            try await userRef.updateData(["leaveDate":Date()])
         } catch {
             #if DEBUG
             print("DEBUG: error going online: \(error.localizedDescription)")
             #endif
+        }
+    }
+}
+// MARK: - eventPlan managment
+extension NetworkManager{
+    func getEventteamplates() async -> [BPEventPlan]?{
+        let usersRef = db.collection("eventTeamplates")
+        do {
+            let usersSnapshot = try await usersRef.getDocuments()
+            let eventTeamplates = usersSnapshot.documents.compactMap{try? $0.data(as: BPEventPlan.self)}
+            return eventTeamplates
+        } catch {
+#if DEBUG
+            print("DEBUG: getEventPlans flow error: \(error)")
+#endif
+        }
+        return nil
+    }
+    
+    func appendEventTemolate(plan: BPEventPlan) async{
+        let id = plan.id
+        let eventRef = db.collection("eventTeamplates")
+        do {
+            let data = try Firestore.Encoder().encode(plan)
+            try await eventRef.document(id).setData(data)
+        } catch {
+#if DEBUG
+            print("DEBUG: save event error: \(error.localizedDescription)")
+#endif
+        }
+    }
+    
+    func removeEventPlan(plan: BPEventPlan) async{
+        do{
+            try await db.collection("eventTeamplates").document(plan.id).delete()
+        } catch {
+#if DEBUG
+            print("DEBUG: remove event error: \(error.localizedDescription)")
+#endif
         }
     }
 }

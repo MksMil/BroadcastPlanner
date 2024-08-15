@@ -1,12 +1,23 @@
 import SwiftUI
 
-struct BPEditEventPlanView: View {
-    //    @EnvironmentObject var globalStorage: GlobalStorage
+struct BPEditEventCarView: View {
     @Environment(\.dismiss) var dismiss
+
+// MARK: - Actions
+    let select: (BPEventPlanPoint) -> Void = { _ in }
+    let upAction: () -> Void = {}
+    let downAction: () -> Void = {}
+    let leftAction: () -> Void = {}
+    let rightAction: () -> Void = {}
+    let rotationLeftAction: () -> Void = {}
+    let rotationRightAction: () -> Void = {}
     
-    @ObservedObject var vm: BPEventViewModel
+
+    var isEdit: Bool = false
+    var event: Event
+    var selectedEventPoint: BPEventPlanPoint?
     
-    @State var pointFilter: BPEventPlanPointFilter = .all
+    @State var pointFilter: BPEventPlanPointStadiumFilter = .all
     
     var body: some View {
         ZStack{
@@ -24,28 +35,28 @@ struct BPEditEventPlanView: View {
 //                            .padding(.horizontal,20)
                     }
             
-                BPEditEventPlanPointsView(
-                    scaleFactor: 1,
-                    vm: vm,
-                    filter: $pointFilter,
-                    isEditState: true
-                )
-                .frame(height: 300)
-            
+//                BPEditEventPlanPointsView(
+//                    scaleFactor: 1,
+//                    filter: pointFilter,
+//                    type: .car,
+//                    isEditState: true
+//                    
+//                )
+//                .frame(height: 300)
                 
-                if !vm.isEdit{
+                if !isEdit{
                     ScrollView{
                         SmartLayout(hSpacing: 5, vSpacing: 5){
-                            ForEach(vm.event.eventPlan.points) { point in
+                            ForEach(event.eventPlan.carPoints) { point in
                                 Text("\(point.eventPlanPointNumber)")
                                     .fixedSize()
                                     .padding(10)
                                     .frame(width: 115, height: 50)
-                                    .background(vm.selectedEventPoint?.id == point.id ?  .ultraThickMaterial : .ultraThinMaterial
+                                    .background(selectedEventPoint?.id == point.id ?  .ultraThickMaterial : .ultraThinMaterial
                                     )
                                     .onTapGesture {
                                         withAnimation {
-                                            vm.select(point: point)
+                                            select(point)
                                         }
                                     }
                             }
@@ -61,15 +72,15 @@ struct BPEditEventPlanView: View {
                             VStack{
                                 HStack{
                                     VStack(alignment: .leading,spacing: 3){
-                                        BPUserCompactCell(user: vm.selectedEventPoint?.user)
-                                        BPPositionCompactCell(pointPositionName: vm.selectedEventPoint?.coordinates.description)
+                                        BPUserImageNameCompactCell(user: selectedEventPoint?.user)
+                                        BPPositionCompactCell(pointPositionName: selectedEventPoint?.coordinates.description)
                                     }
                                     Spacer()
                                     Circle()
                                         .frame(width: 45)
                                         .padding(.vertical,10)
                                         .overlay {
-                                            Text(String(vm.selectedEventPoint?.eventPlanPointNumber ?? Int.random(in: 1..<20)))
+                                            Text(String(selectedEventPoint?.eventPlanPointNumber ?? Int.random(in: 1..<20)))
                                                 .font(.title)
                                                 .bold()
                                                 .foregroundStyle(.white)
@@ -100,8 +111,8 @@ struct BPEditEventPlanView: View {
                                 downAction: downAction,
                                 leftAction: leftAction,
                                 rightAction: rightAction,
-                                rotationLeft: rotateLeft,
-                                rotationRight: rotateRight
+                                rotationLeft: rotationLeftAction,
+                                rotationRight: rotationRightAction
                             )
                             .frame(width: 100, height: 100)
                             .padding(.top)
@@ -122,62 +133,9 @@ struct BPEditEventPlanView: View {
     }
 }
  
-// MARK: - move/rotate Points
-extension BPEditEventPlanView {
-        func upAction(){
-            //        print(vm.selectedEventPoint?.coordinates.description ?? "")
-            withAnimation{
-                vm.moveUp()
-            }
-        }
-        func downAction(){
-            //        print(vm.selectedEventPoint?.coordinates.description ?? "")
-            withAnimation{
-                vm.moveDown()
-            }
-        }
-        func leftAction(){
-            //        print(vm.selectedEventPoint?.coordinates.description ?? "")
-            withAnimation{
-                vm.moveLeft()
-            }
-        }
-        func rightAction(){
-            //        print(vm.selectedEventPoint?.coordinates.description ?? "")
-            withAnimation{
-                vm.moveRight()
-            }
-        }
-        
-        func rotateLeft(){
-//            if vm.selectedEventPoint?.coordinates.rotation == 360{
-//                vm.selectedEventPoint?.coordinates.rotation = 0
-//            }
-            withAnimation{
-                vm.rotateLeft()
-            }
-        }
-        
-        func rotateRight(){
-//            if vm.selectedEventPoint?.coordinates.rotation == -360{
-//                vm.selectedEventPoint?.coordinates.rotation = 0
-//            }
-            withAnimation{
-                vm.rotateRight()
-            }
-        }
-    
-}
-
-
 
 
 #Preview {
-    BPEditEventPlanView(vm: BPEventViewModel(event: MockData.sampleEvent))
+    BPEditEventCarView(event: MockData.sampleEvent)
+        
 }
-
-//#Preview {
-//    MainTabView()
-//        .environmentObject(GlobalStorage())
-//    
-//}

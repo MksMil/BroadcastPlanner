@@ -8,11 +8,7 @@
 import SwiftUI
 
 final class AuthViewModel: ObservableObject{
-    
-    
     @Published var email: String = ""
     @Published var password: String = ""
     @Published var confirmPassword: String = ""
-    
-    weak var globalStorage: GlobalStorage?
 }

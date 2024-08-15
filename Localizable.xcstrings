@@ -1,10 +1,16 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "" : {
+
+    },
     ":" : {
 
     },
     "%lld" : {
+
+    },
+    "1" : {
 
     },
     "10:30 AM" : {
@@ -13,7 +19,13 @@
     "ADD" : {
 
     },
+    "BP" : {
+
+    },
     "ButtonName" : {
+
+    },
+    "Cancel" : {
 
     },
     "Change E-mail" : {
@@ -26,6 +38,9 @@
 
     },
     "Creation date: %@" : {
+
+    },
+    "Delete" : {
 
     },
     "DELETE" : {
@@ -70,6 +85,12 @@
     "LOGO" : {
 
     },
+    "Match Day" : {
+
+    },
+    "Messages" : {
+
+    },
     "Messege" : {
 
     },
@@ -86,6 +107,12 @@
 
     },
     "Online" : {
+
+    },
+    "password: %@" : {
+
+    },
+    "position" : {
 
     },
     "Press me" : {
@@ -121,7 +148,7 @@
     "Sign Up" : {
 
     },
-    "Staff Here" : {
+    "Status" : {
 
     },
     "Tab Label 1" : {

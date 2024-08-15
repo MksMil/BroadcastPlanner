@@ -1,74 +1,84 @@
-//
-//  BPEventHeaderView.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 09.06.2024.
-//
-
 import SwiftUI
 
 struct BPEventHeaderView: View {
+    @EnvironmentObject var settings: GlobalSettings
+    
+//    @ObservedObject var viewModel: BPEventViewModel
     
     
-    @State var logoHome: GlobalStorage.TeamLogos = .Dynamo
-    @State var logoGuest: GlobalStorage.TeamLogos = .Shakhtar
-    @State var location: GlobalStorage.Stadiums = .Krivbass_1_stad
+    @State var newDate: Date = Date()
     
-    @State var  eventDate: Date = Date()
+    @State private var backImage: String = "neitral"
 
-    var logoSize: Double = 75
+    @Binding var event: Event
     
+    @State var homeImageString: String = ""
+    @State var guestImageString: String = ""
+    
+    @State var eventDate: Date = Date()
+
+    @State var title: String = "empty"
+    
+    @State private var isPresentedLogosSheet: Bool = false
+    @State private var isPresentedLocationSheet: Bool = false
+    @State private var isPresentedDatePicker: Bool = false
+    
+    @State private var iSelectedHomeTeamLogo: Bool = false
+ 
     var body: some View {
-        VStack(spacing: 15){
+            VStack(spacing: 15){
                 HStack{
                     Spacer()
-                    Image(logoHome.rawValue)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: logoSize, height: logoSize)
-                        .padding(10)
-                        .background(
-                            Circle().fill( .ultraThinMaterial)
-                                .overlay {
-                                    Circle().stroke(Color.white, lineWidth: 3)
-                                })
+                    LogoImageView(imageString: homeImageString,isBackground: true)
+                        .onTapGesture {
+                            iSelectedHomeTeamLogo = true
+                            isPresentedLogosSheet = true
+                        }
+                        .transition(.scale)
                     
                     Spacer()
                     
-                    Image(logoGuest.rawValue)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: logoSize, height: logoSize)
-                        .padding(10)
-                        .background(Circle().fill( .ultraThinMaterial).overlay {
-                            Circle().stroke(Color.white, lineWidth: 3)
-                        })
+                    LogoImageView(imageString: guestImageString,isBackground: true)
+                        .onTapGesture {
+                            iSelectedHomeTeamLogo = false
+                            isPresentedLogosSheet = true
+                        }
                     Spacer()
                 }
                 .padding(.horizontal)
                 .padding(.top,60)
                 
-                Text(eventDate.formatted())
+                Text(eventDate.formatted(date: .abbreviated, time: .shortened))
                     .fixedSize()
                     .font(.title)
+                    .frame(minWidth: 200)
                     .padding(5)
                     .background {
                         RoundedRectangle(cornerRadius: 5).fill(.ultraThinMaterial).overlay{RoundedRectangle(cornerRadius: 5).stroke(.white, lineWidth: 1)}
                     }
+                    .onTapGesture {
+                        isPresentedDatePicker = true
+                    }
                 
-                Text(location.description)
+                Text(title)
                     .font(.title3)
                     .fixedSize()
                     .padding(5)
                     .background(RoundedRectangle(cornerRadius: 5).fill(.ultraThinMaterial).overlay{RoundedRectangle(cornerRadius: 5).stroke(.white, lineWidth: 1)})
                     .padding(.bottom,12)
+                    .onTapGesture {
+                        isPresentedLocationSheet = true
+                    }
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical,40)
             .background {
-                Image(location.rawValue)
+                // TODO: if many photos - change it with timer
+                Image(backImage)
                     .resizable()
                     .scaledToFill()
+                    .animation(.easeInOut(duration: 1),
+                               value: backImage)
                     .mask {Rectangle().fill(
                         LinearGradient(
                             colors: [
@@ -85,14 +95,107 @@ struct BPEventHeaderView: View {
                     )
                     }
             }
+            // TODO: add new team and logo button and flow
+            .sheet(isPresented: $isPresentedLogosSheet, content: {
+                SmartLayout(hSpacing: 15, vSpacing: 15) {
+                    ForEach(TeamLogos.allCases){ logo in
+                        Image(logo.rawValue)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 75, height: 75)
+                            .onTapGesture {
+                                if iSelectedHomeTeamLogo {
+                                    event.homeImageString = logo.rawValue
+                                    withAnimation{
+                                        homeImageString = logo.rawValue
+                                    }
+                                } else {
+                                    event.guestImageString = logo.rawValue
+                                    withAnimation{
+                                        guestImageString = logo.rawValue
+                                    }
+                                }
+                                
+                                isPresentedLogosSheet = false
+                            }
+                    }
+                }
+                .padding(20)
+                .presentationDetents([.fraction(0.6)])
+            })
+            // TODO: add new location button and flow
+            .sheet(isPresented: $isPresentedLocationSheet, content: {
+                ScrollView{
+                    
+                    ForEach(settings.eventLocations, id: \.title){ location in
+                        Text(location.title)
+                            .font(.title)
+                            .padding(5)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .onTapGesture {
+                                event.eventLocation = location
+                                title = location.title
+                                setBackgroundImage()
+                                isPresentedLocationSheet = false
+                            }
+                    }
+                }
+                .padding()
+                .presentationDetents([.fraction(0.6)])
+            })
+            //date picker sheet
+            .sheet(isPresented: $isPresentedDatePicker, content: {
+                VStack{
+                    HStack{
+                        Button("Cancel") {
+                            isPresentedDatePicker = false
+                        }
+                        .buttonStyle(.bordered)
+                        .padding(.top, 20)
+                        .foregroundStyle(.blue)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        
+                        Button("Save") {
+                            event.date = newDate
+                            eventDate = newDate
+                            isPresentedDatePicker = false
+                            
+                        }
+                        .buttonStyle(.bordered)
+                        .padding(.top, 20)
+                        .foregroundStyle(.blue)
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                    }
+                    DatePicker("Match Day", selection: $newDate, displayedComponents: [.date, .hourAndMinute])
+                        .datePickerStyle(.graphical)
+                    
+                }
+                .padding(.horizontal)
+                .presentationDetents([.fraction(0.65)])
+            })
+            .onAppear{
+                homeImageString = event.homeImageString
+                guestImageString = event.guestImageString
+                eventDate = event.date
+            }
+        }
+    
+    
+    func setBackgroundImage(){
+        if event.eventLocation.imageStrings.isEmpty{
+            backImage = "neitral"
+        } else {
+            backImage = event.eventLocation.imageStrings[0]
+        }
     }
 }
 
-//#Preview {
-//    BPEventHeaderView()
-//}
-
 #Preview {
-    MainEventsList()
-        .environmentObject(GlobalStorage())
+    
+    
+    BPEventHeaderView(event: .constant(MockData.sampleEvent)
+    )
+        .environmentObject(GlobalSettings())
 }
+
+

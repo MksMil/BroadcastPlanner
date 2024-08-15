@@ -1,7 +1,29 @@
 import Foundation
 
-//globals settings for UI can be fetched from network
+//globals settings for UI and all standart cases (images, eventLocations, etc.)can be fetched from network
 
-struct GlobalSettings {
+class GlobalSettings: ObservableObject {
+    var eventLocations: [EventLocation]
+    var staiumImages: [String]
+    var carImages: [String]
+    //crete location
+    //edit location
+    //fetch locations
     
+    // MARK: - Initialization
+    init(eventLocations: [EventLocation] = [],
+         stadiumImages: [String] = [],
+         carImages: [String] = []) {
+        self.eventLocations = eventLocations
+        self.staiumImages = stadiumImages
+        self.carImages = carImages
+    
+        self.fetchData()
+    }
+    
+    // MARK: - load data
+    func fetchData(){
+        //load mock
+        self.eventLocations = MockData.sampleLocations
+    }
 }

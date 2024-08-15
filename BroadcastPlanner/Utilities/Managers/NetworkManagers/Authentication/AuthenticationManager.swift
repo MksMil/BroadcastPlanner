@@ -1,10 +1,3 @@
-//
-//  AuthenticationManager.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 11.01.2024.
-//
-
 import AuthenticationServices
 import Firebase
 import GoogleSignIn
@@ -14,14 +7,10 @@ import _AuthenticationServices_SwiftUI
 
 final class AuthenticationManager {
     
-    static let shared: AuthenticationManager = AuthenticationManager()
-    
-    init(){
-        
-    }
+   static let shared: AuthenticationManager = AuthenticationManager()
     
     // MARK: - SU SI with Apple
-    
+    @MainActor
     func signInWithAppleWithResult(_ result: Result<ASAuthorization,Error>, currentNonce: String) async throws -> SessionUser{
         switch result {
             case .success(let auth):
@@ -42,13 +31,13 @@ final class AuthenticationManager {
     }
     
     // MARK: - SU SI with Google
-    
+    @MainActor
     func signWithGgl() async throws -> SessionUser{
         let credential = try await getGoogleCredential()
         return  try await signIn(credential: credential)
     }
     
-    //google credentials
+    //MARK: - Google credentials
     @MainActor
     func getGoogleCredential() async throws -> AuthCredential {
         guard let clientID = FirebaseApp.app()?.options.clientID else {
@@ -73,35 +62,49 @@ final class AuthenticationManager {
                                                         accessToken: accesToken)
         return credentials
     }
-    
-
 }
 
 // MARK: - SU SI with Email/Password
 extension AuthenticationManager {
-    
+    @MainActor
     func createUser(email: String, password: String) async throws -> SessionUser?{
-        let result = try await Auth.auth().createUser(withEmail: email, password: password)
+        let result = try await Auth.auth().createUser(withEmail: email,
+                                                      password: password)
         let currentUserSession = SessionUser(user: result.user)
         return currentUserSession
     }
-    
+    @MainActor
     func signIn(withEmail email: String, password: String) async throws -> SessionUser {
-        let result = try await Auth.auth().signIn(withEmail: email, password: password)
+        let result = try await Auth.auth().signIn(withEmail: email,
+                                                  password: password)
         let currentUserSession = SessionUser(user: result.user)
         return currentUserSession
     }
     
-    
-    
-    // MARK: change password
-    func updatePass(pass: String) async throws {
-        try await Auth.auth().currentUser?.updatePassword(to: pass)
-    }
-    // MARK: change email
-    func updateEmail(newEmail: String) async throws {
-        //        try await Auth.auth().currentUser?.updateEmail(to: newEmail)
-    }
+    // MARK: change email / password
+    func update(email: String, 
+                password: String,
+                updEp: UpdatedEP,
+                newValue: String)  {
+        let credential: AuthCredential = EmailAuthProvider.credential(withEmail: email,
+                                                                      password: password)
+        let user = Auth.auth().currentUser
+        user?.reauthenticate(with: credential){ result, error  in
+            if let error = error{
+                print(error.localizedDescription)
+                return
+            } else {
+                switch updEp {
+                case .email:
+                        user?.sendEmailVerification(beforeUpdatingEmail: newValue)
+                case .password:
+                        user?.updatePassword(to: newValue){ error in
+                            print("password update error: \(String(describing: error?.localizedDescription))")
+                        }
+                }
+            }
+        }
+}
     // MARK: forget password handler
     func sendResetPassword(with email: String){
         Auth.auth().sendPasswordReset(withEmail: email) { error in

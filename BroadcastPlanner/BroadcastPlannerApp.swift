@@ -2,6 +2,7 @@ import SwiftUI
 import Firebase
 import FirebaseFirestore
 import GoogleSignIn
+import NavigationTransitions
 
 
 // MARK: - Main App
@@ -9,24 +10,38 @@ import GoogleSignIn
 struct BroadcastPlannerApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @Environment(\.scenePhase) var scenePhase
-    
+    @StateObject private var globalTimer = GlobalTimer()
     @StateObject private var globalStorage = GlobalStorage()
+    @StateObject private var globalSettings = GlobalSettings()
+    
+    @State var isStarted: Bool = false
     
     var body: some Scene {
         
         // TODO: First Time Loading problem need to debug
         
         WindowGroup {
-            ZStack{
-                MainBackground()
-              
-                if globalStorage.currentSessionUser == nil{
-                    AuthenticationScreen(globalStorage: globalStorage)
-                } else {
-                    MainTabView(selection: 1)
+                ZStack{
+                    MainBackground()
+                    if !isStarted {
+                        AnimatedStart(isStarted: $isStarted)
+                            .transition(.opacity)
+                    } else {
+                        if globalStorage.isLogged {
+                            let  _ = print("isLogged")
+                            Home()
+                                .transition(.opacity)
+                        } else {
+                            let _ = print("current user == nil")
+                            AuthenticationScreen(globalStorage: globalStorage)
+                                .transition(.opacity)
+                        }
+                    }
                 }
-            }
+            .scrollContentBackground(.hidden)
             .environmentObject(globalStorage)
+            .environmentObject(globalSettings)
+            .environmentObject(globalTimer)
             .onChange(of: scenePhase, perform: { phase in
                 switch phase {
                     case .active:
@@ -54,6 +69,7 @@ struct BroadcastPlannerApp: App {
                         print("scene in unknown phase: send unknown status")
                 }
             })
+            
         }
         
     }

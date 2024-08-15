@@ -1,10 +1,3 @@
-//
-//  Messege.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 01.05.2024.
-//
-
 import Foundation
 import Firebase
 
@@ -36,5 +29,6 @@ extension Message: Hashable, Equatable{
         hasher.combine(id)
         hasher.combine(messageOwnerId)
         hasher.combine(creationDate)
+        let _ = hasher.finalize()
     }
 }

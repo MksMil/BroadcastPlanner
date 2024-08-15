@@ -1,10 +1,3 @@
-//
-//  BPEventPlanPoint.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 20.05.2024.
-//
-
 import SwiftUI
 
 class BPEventPlanPoint: Identifiable, Equatable,Hashable, Codable {

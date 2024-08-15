@@ -3,21 +3,30 @@ import FirebaseFirestore
 
 class Event: Identifiable, Codable {
     var id: String
+    
     var date: Date = Date()
     var broadcaster: Broadcaster
-    var eventLocation: Stadium?
+    var eventLocation: EventLocation
     
     var eventPlan: BPEventPlan
-    var owners: [BPUser] = []
+    var owners: [String] = []
     
-    init(id: String = UUID().uuidString, date: Date = Date(), eventPlan: BPEventPlan = BPEventPlan()) {
+    //team logos
+    var homeImageString: String = "Dynamo"
+    var guestImageString: String = "Shakhtar"
+   
+    
+    
+    // MARK: - Initialization
+    init( id: String = UUID().uuidString,date: Date = Date(), eventPlan: BPEventPlan = BPEventPlan()) {
         self.id = id
         self.date = date
         self.broadcaster = Broadcaster()
         self.eventPlan = eventPlan
+        self.eventLocation = EventLocation()
     }
     
-    init(id: String = UUID().uuidString, date: Date = Date(), broadcaster: Broadcaster, location: Stadium,eventPlan: BPEventPlan = BPEventPlan()) {
+    init( id: String = UUID().uuidString, date: Date = Date(), broadcaster: Broadcaster, location: EventLocation,eventPlan: BPEventPlan = BPEventPlan()) {
         self.id = id
         self.date = date
         self.broadcaster = broadcaster

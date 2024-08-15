@@ -40,7 +40,7 @@ struct BPUserProfileView: View {
         VStack{
             //photo here
             HStack {
-                WebImage(url: URL(string: viewModel.user.photoURL ?? "")) { image in
+                WebImage(url: URL(string: viewModel.user.photoURL)) { image in
                     image
                         .resizable()
                         .scaledToFill()
@@ -92,8 +92,8 @@ struct BPUserProfileView: View {
                             .frame(width: 30,height: 30)
                             .scaledToFill()
                         Spacer()
-                        Link(viewModel.user.phoneNumber ?? "",
-                             destination: URL(string:"tel:\(viewModel.user.phoneNumber ?? "")")!)
+                        Link(viewModel.user.phoneNumber,
+                             destination: URL(string:"tel:\(viewModel.user.phoneNumber)")!)
                             .padding(.vertical,4)
                             .padding(.horizontal,5)
                     }
@@ -104,8 +104,8 @@ struct BPUserProfileView: View {
                             .frame(width: 30,height: 30)
                             .scaledToFill()
                         Spacer()
-                        Link(viewModel.user.email ?? "",
-                             destination: URL(string: "mailto:\(viewModel.user.email ?? "")")!)
+                        Link(viewModel.user.email,
+                             destination: URL(string: "mailto:\(viewModel.user.email)")!)
                             .padding(.vertical,4)
                             .padding(.horizontal,5)
                     }
@@ -116,7 +116,7 @@ struct BPUserProfileView: View {
                             .frame(width: 30,height: 30)
                             .scaledToFill()
                         Spacer()
-                        Text(viewModel.user.homeAddress ?? "")
+                        Text(viewModel.user.homeAddress)
                             .padding(.vertical,4)
                             .padding(.horizontal,5)
                     }
@@ -144,5 +144,6 @@ struct BPUserProfileView: View {
 }
 
 #Preview {
-    BPUserProfileView(globalStorage: GlobalStorage(), user: MockData.sampleUser)
+    BPUserProfileView(globalStorage: GlobalStorage(), 
+                      user: MockData.sampleUser)
 }

@@ -10,14 +10,14 @@ final class BPUserLocalData : Identifiable {
     var lastName: String = ""
     var isOnline: Bool = false
     
-    var phoneNumber: String?
-    var email: String?
-    var homeAddress: String?
+    var phoneNumber: String = ""
+    var email: String = ""
+    var homeAddress: String = ""
     var specialization = [String]()
-    var photoURL: String?
+    var photoURL: String = ""
     
-    var creationDate: Date?
-    var leaveDate: Date?
+    var creationDate: Date = Date()
+    var leaveDate: Date = Date()
     
     var ownedEventIds = [String]()
     var memberEventIds = [String]()

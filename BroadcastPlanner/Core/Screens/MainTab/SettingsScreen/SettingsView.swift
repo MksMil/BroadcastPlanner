@@ -7,13 +7,14 @@ struct SettingsView: View {
     @EnvironmentObject var globalStorage: GlobalStorage
     @Environment(\.authorizationController) private var authorizationController
     
-    @Binding var selection: Int
     
     @State var newEmail: String = ""
     @State var newPassword: String = ""
     
+    @State private var updEP: UpdatedEP?
+    
     var body: some View {
-        NavigationStack{
+//        NavigationStack{
             ZStack{
                 MainBackground()
                 ScrollView{
@@ -23,6 +24,7 @@ struct SettingsView: View {
                                 VStack(alignment: .leading){
                                     Text("id: \(user.id)")
                                     Text("email: \(user.email ?? "empty")")
+                                    Text("password: \(globalStorage.password)")
                                     Text("Creation date: \(user.creationDate?.formatted() ?? "no date")")
                                 }
                                 .foregroundStyle(Color.accent)
@@ -42,11 +44,8 @@ struct SettingsView: View {
                     VStack{
                         Section {
                             VStack(spacing: 15){
-                                NavigationLink {
-                                    UpdateEPView(
-                                        currentValue: globalStorage.currentUser?.email ?? "",
-                                        updEP: .email
-                                    )
+                                Button {
+                                    updEP = .email
                                 } label: {
                                     Text("Change E-mail")
                                         .frame(maxWidth: .infinity)
@@ -56,11 +55,8 @@ struct SettingsView: View {
                                         .padding(.horizontal)
                                 }
                                 
-                                NavigationLink {
-                                    UpdateEPView(
-                                        currentValue: globalStorage.password,
-                                        updEP: .password
-                                    )
+                                Button {
+                                    updEP = .password
                                 } label: {
                                     Text("Change Password")
                                         .frame(maxWidth: .infinity)
@@ -125,10 +121,11 @@ struct SettingsView: View {
                         Button(action: {
                             Task{
                                 do{
+                                    print("try to log out")
                                     try AuthenticationManager.shared.logOut()
                                     globalStorage.currentSessionUser = nil
-                                    selection = 1
-                                } catch {
+                                    globalStorage.isLogged = false
+                                }catch {
                                     print("failed to signing out: \(error.localizedDescription)")
                                 }
                             }
@@ -167,11 +164,37 @@ struct SettingsView: View {
                     }.foregroundStyle(Color.accent)
                 }
             }
-        }
+            .fullScreenCover(item: $updEP, content: { state in
+                switch state {
+                    case .email:
+                        UpdateEPView(
+                            currentValue: globalStorage.currentUser?.email ?? "",
+                            updEP: .email){ value in
+                                Task{
+                                    await globalStorage.updateEmailPassword(newValue: value, updEp: .email)
+                                    updEP = nil
+                                }
+                            }
+                    case .password:
+                        UpdateEPView(
+                            currentValue: globalStorage.password,
+                            updEP: .password){ value in
+                                Task{
+                                    await globalStorage.updateEmailPassword(newValue: value, updEp: .password)
+                                    updEP = nil
+                                }
+                            }
+                }
+                
+            })
+            .navigationBarBackButtonHidden()
+//        }
     }
 }
 
 #Preview {
-    SettingsView(selection: .constant(3))
+    SettingsView()
         .environmentObject(GlobalStorage())
 }
+
+

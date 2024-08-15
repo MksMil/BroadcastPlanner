@@ -27,14 +27,14 @@ struct BPInfoTextFieldWithIcon: View {
                 axis: .vertical
             )
                 .multilineTextAlignment(.trailing)
-                .frame(height: 25)
+                .frame(minHeight: 25)
                 .autocorrectionDisabled()
                 .textInputAutocapitalization(.never)
                 .padding(.vertical,4)
                 .padding(.horizontal,5)
                 .background{
                     RoundedRectangle(cornerRadius: 8)
-                        .fill(.ultraThickMaterial)
+                        .fill(.ultraThinMaterial)
                         .opacity(viewModel.isEdit ? 0.3: 0)
                 }
         }

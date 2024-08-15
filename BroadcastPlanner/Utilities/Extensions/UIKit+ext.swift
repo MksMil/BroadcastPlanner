@@ -28,3 +28,12 @@ func topViewController(controller: UIViewController? = nil) -> UIViewController?
     }
     return rootviewcontroller
 }
+
+
+// MARK: - .navigationBarBackButtonHidden() backSwipe fix
+extension UINavigationController {
+    override open func viewDidLoad() {
+        super.viewDidLoad()
+        interactivePopGestureRecognizer?.delegate = nil
+    }
+}

@@ -2,25 +2,33 @@ import SwiftUI
 
 struct StadiumView: View {
     
-    var fieldImageName: String = "football_stadium"
-    var carImageName: String = "OBVAN_v1"
+    var imageName: String = "football_stadium"
     
     var body: some View {
         
         HStack(spacing: 0){
-                Image(fieldImageName)
+                Image(imageName)
                     .resizable()
-
-                Image(carImageName)
-                    .resizable()
-                    .aspectRatio(0.35, contentMode: .fit)
         }
     }
 }
 
-#Preview {
-    StadiumView()
+struct CarView: View {
     
+    var imageName: String = "OBVAN_v1"
+    
+    var body: some View {
+        Image(imageName)
+            .resizable()
+            .frame(width: 100,height: 300)
+            .rotationEffect(.degrees(90))
+            .frame(width: 300,height: 100)
+    }
 }
 
+#Preview {
+//    StadiumView()
+    CarView()
+    
+}
 

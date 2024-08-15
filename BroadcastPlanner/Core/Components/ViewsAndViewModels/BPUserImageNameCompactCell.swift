@@ -9,7 +9,7 @@ import SwiftUI
 import SDWebImageSwiftUI
 
 
-struct BPUserCompactCell: View {
+struct BPUserImageNameCompactCell: View {
     
     @State var user: BPUser?
     
