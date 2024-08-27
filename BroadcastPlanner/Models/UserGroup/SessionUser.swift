@@ -1,9 +1,3 @@
-//
-//  AuthDataResultModel.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 17.01.2024.
-//
 // Data model for authenticated user
 
 import Foundation
@@ -15,7 +9,6 @@ struct SessionUser {
     let id: String
     
     let displayName: String?
-    let photoUrl: URL?
     let email: String?
     let phoneNumber: String?
 
@@ -41,23 +34,9 @@ struct SessionUser {
         self.phoneNumber = user.phoneNumber
         self.creationDate = user.metadata.creationDate
         self.lastSignInDate = user.metadata.lastSignInDate
-        self.photoUrl = user.photoURL
         self.startSessionDate = Date()
     }
 }
-
-// MARK: - for TDD init version
-//extension SessionUser {
-//    init(id: String = UUID().uuidString, email: String? = nil,  displayName: String? = nil, phoneNumber: String? = nil, creationDate: Date? = nil, lastSignInDate: Date? = nil, photoUrl: URL? = nil) {
-//        self.id = id
-//        self.email = email
-//        self.displayName = displayName
-//        self.phoneNumber = phoneNumber
-//        self.creationDate = creationDate
-//        self.lastSignInDate = lastSignInDate
-//        self.photoUrl = photoUrl
-//    }
-//}
 
 extension SessionUser: Equatable{
     static func == (lhs: SessionUser, rhs: SessionUser) -> Bool {

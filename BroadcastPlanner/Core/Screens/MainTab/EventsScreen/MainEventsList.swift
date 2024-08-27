@@ -4,6 +4,7 @@ import Combine
 struct MainEventsList: View {
     @EnvironmentObject var globalStorage: GlobalStorage
     @StateObject private var eventRouter = EventTabRouter()
+    
     @State var filter: FilterEventCases = .notFiltered
     @State var selectedEvent: Event?
     @State var events: [Event] = []

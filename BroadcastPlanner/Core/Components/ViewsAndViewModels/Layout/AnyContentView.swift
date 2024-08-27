@@ -1,12 +1,7 @@
-//
-//  GenericTagView.swift
-//  MMTagView
-//
-//  Created by Миляев Максим on 08.04.2024.
-//
-
 import SwiftUI
 
+
+// MARK: - Generic tag view
 @available(iOS 15.0, *)
 public struct AnyContentView<T: View,B:View,But: View,Prompt: View, SelectableContent: Hashable>: View {
     
@@ -20,7 +15,6 @@ public struct AnyContentView<T: View,B:View,But: View,Prompt: View, SelectableCo
     @Binding private var isEdit: Bool
     
     @State private var totalHeight: Double = .zero
-//    @State private var isUpdating: Bool = false
     
     @ViewBuilder public var backgroundView: () -> B
     @ViewBuilder public var cellView: (SelectableContent) -> T
@@ -68,7 +62,8 @@ public struct AnyContentView<T: View,B:View,But: View,Prompt: View, SelectableCo
             }
             allCases = isEdit ? identableContent:selectedCases
         }
-        //need to improve
+        
+        // TODO: need to improve
         .onChange(of: selectedContent, perform: { value in
             if !isEdit{
                 selectedCases = identableContent.compactMap({ (el, index) in
@@ -200,6 +195,6 @@ public struct AnyContentViewSizePreferenceKey: PreferenceKey{
 }
 
 #Preview {
-    BPAccountInfoView(globalStorage: GlobalStorage(currentUser: MockData.sampleUser))
+    BPAccountInfoView(user: BPUser(), saveAction: {user, image in})
 }
 

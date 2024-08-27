@@ -1,10 +1,3 @@
-//
-//  SmartLayout.swift
-//  MMTagView
-//
-//  Created by Миляев Максим on 09.04.2024.
-//
-
 import SwiftUI
 
 // MARK: - Any View and Size Grid Layout

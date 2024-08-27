@@ -2,20 +2,20 @@ import Foundation
 import FirebaseFirestore
 
 class EventLocation: Identifiable,Codable{
-    
-    @DocumentID var id: String?
+    var id: String
     
     var title: String
     var city: String
     var address: String
     var imageStrings: [String]
     
-    init(
+    init(id: String = UUID().uuidString,
         title: String = "empty",
         city: String = "empty city",
         address: String = "empty address",
         imageStrings: [String] = []
     ) {
+        self.id = id
         self.title = title
         self.city = city
         self.address = address

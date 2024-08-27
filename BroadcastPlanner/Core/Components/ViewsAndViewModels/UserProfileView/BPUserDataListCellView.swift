@@ -1,15 +1,9 @@
-//
-//  BPUserDataListCellView.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 05.07.2024.
-//
-
 import SwiftUI
 
 struct BPUserDataListCellView: View {
     
-    var  user : BPUserLocalData
+    var user : BPUser
+    var image: UIImage?
     
     var body: some View {
         HStack{
@@ -51,8 +45,8 @@ struct BPUserDataListCellView: View {
     }
     
     func makeImage() -> Image{
-        if let uiimage = user.image {
-            return Image(uiImage: uiimage)
+        if let image  {
+            return Image(uiImage: image)
         } else {
             return Image(systemName: "person")
         }
@@ -62,9 +56,4 @@ struct BPUserDataListCellView: View {
 #Preview {
     BPUserDataListCellView(user: MockData.sampleUser)
 }
-//#Preview {
-//    BPCreateEditEventView()
-//        .environmentObject(BPEventViewModel(event: Event()))
-//        .environmentObject(GlobalSettings())
-//        .environmentObject(GlobalStorage())
-//}
+

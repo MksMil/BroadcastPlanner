@@ -1,31 +1,22 @@
 import Foundation
+import Firebase
+import FirebaseStorage
+import FirebaseFirestoreSwift
+import FirebaseCore
 
 class UserDataManager {
-    
-    
-    
-    // MARK: - Users array control?
-    func addUser(user: BPUserLocalData){
+
+    func getUsers() -> [BPUser]{
         
+        return []
     }
     
     /// function that removes uesr
-    func removeUser(){
+    func removeUser(user: BPUser){
         
     }
     
-    func updateUser(user: BPUserLocalData){
+    func updateUser(user: BPUser){
         
     }
-    
-    // MARK: - Migration
-    
-    func migrateToLocal(user: BPUser) -> BPUserLocalData?{
-        return nil
-    }
-    
-    func migrateToGlobal(user: BPUserLocalData) -> BPUser?{
-        return nil
-    }
-    
 }

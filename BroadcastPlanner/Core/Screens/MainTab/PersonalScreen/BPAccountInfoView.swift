@@ -3,23 +3,21 @@ import UIKit
 
 struct BPAccountInfoView: View {
     
-    var globalStorage: GlobalStorage
-    @ObservedObject var viewModel: BPAccountInfoViewModel
+    @State private var isEdit: Bool = false
+    @State private var isEditSpecialization: Bool = false
     
-    init(globalStorage: GlobalStorage) {
-        self.globalStorage = globalStorage
-        self.viewModel = BPAccountInfoViewModel()
-        self.viewModel.globalStorage = globalStorage
-        self.viewModel.user = globalStorage.currentUser
-    }
+    @State var user: BPUser
+    @State var image: UIImage?
+    
+    let saveAction: (BPUser, UIImage?) -> Void
     
     var body: some View {
         NavigationStack(){
             ZStack{
                 MainBackground()
                 VStack{
-                    InfoBlock(viewModel: viewModel)
-                    SpecializationSection(viewModel: viewModel)
+                    InfoBlock(userImage: $image, user: $user, isEdit: isEdit)
+                    SpecializationSection(specialization: $user.specialization, isEditSpecialization: $isEditSpecialization, isEdit: isEdit)
                     Spacer()
                 }
             }
@@ -29,18 +27,18 @@ struct BPAccountInfoView: View {
                 ToolbarItem(placement: .primaryAction) {
                     Button{
                         withAnimation {
-                            viewModel.isEdit.toggle()
-                            if viewModel.isEditSpec {
-                                viewModel.isEditSpec.toggle()
+                            isEdit.toggle()
+                            if isEditSpecialization {
+                                isEditSpecialization.toggle()
                             }
                         }
-                        if !viewModel.isEdit {
+                        if !isEdit {
                             Task{
-                                await viewModel.save()
+                               saveAction(user,image)
                             }
                         }
                     }label: {
-                        EditButtonText(vm: viewModel)
+                        Text( isEdit ? "Save":"Edit")
                     }
                     .frame(alignment: .center)
                     .font(.headline)
@@ -55,57 +53,47 @@ struct BPAccountInfoView: View {
     }
 }
 
-struct EditButtonText: View {
-    @ObservedObject var vm: BPAccountInfoViewModel
-    var body: some View {
-        Text(vm.isEdit ? "Save":"Edit")
-    }
-}
 
 struct InfoBlock: View {
     
-    @ObservedObject var viewModel: BPAccountInfoViewModel
+    @Binding var userImage: UIImage?
+    @Binding var user: BPUser
+    
+    @State var showedImage: Image = Image(systemName: "person.circle")
+    
+    var isEdit: Bool
     @State var inputImage: UIImage?
     @State var showImagePicker: Bool = false
     
     var body: some View {
         VStack{
             HStack {
-                //makeImage()
-                
-                viewModel.userImage
+                showedImage
                     .resizable()
                     .scaledToFill()
                     .frame(width: 100,height: 100)
                     .clipShape(Circle())
-//                    .animation(.easeIn(duration: 0.5), value: viewModel.userImage)
+//                    .animation(.easeIn(duration: 0.5), value: showedImage)
                     .background{
                         Circle()
                             .fill(.ultraThickMaterial)
-                            .opacity(viewModel.isEdit ? 0.8: 0.3)
+                            .opacity(isEdit ? 0.8: 0.3)
                             .frame(width: 110,height: 110)
                     }
                     .padding(.trailing,15)
                     .onTapGesture {
                         showImagePicker.toggle()
                     }
-                    .disabled(!viewModel.isEdit)
-                
+                    .disabled(!isEdit)
                 
                 VStack{
-                    BPInfoTextFieldWithIcon(
-                        viewModel: viewModel,
-                        text: $viewModel.firstName,
-                        iconName: "",
-                        promptText: "First Name"
-                    )
+                    
+                    UserInfoTextField(text: $user.firstName, isEdit: isEdit, imageName: "", prompt: "first name", axis: .vertical)
+                    
                     Divider()
-                    BPInfoTextFieldWithIcon(
-                        viewModel: viewModel,
-                        text: $viewModel.lastName,
-                        iconName: "",
-                        promptText: "Last Name"
-                    )
+                    
+                    UserInfoTextField(text: $user.lastName, isEdit: isEdit, imageName: "", prompt: "last name", axis: .vertical)
+                    
                     Divider()
                 }
                 .font(.title2)
@@ -116,27 +104,16 @@ struct InfoBlock: View {
             .padding(.vertical)
             Section {
                 VStack{
-                    BPInfoTextFieldWithIcon(
-                        viewModel: viewModel,
-                        text: $viewModel.phoneNumber,
-                        iconName: "phone.circle.fill",
-                        promptText: "PhoneNumber"
-                    )
-                    Divider()
-                    BPInfoTextFieldWithIcon(
-                        viewModel: viewModel,
-                        text: $viewModel.email,
-                        iconName: "envelope.circle.fill",
-                        promptText: "E-mail"
-                    )
+                    
+                    UserInfoTextField(text: $user.phoneNumber, isEdit: isEdit, imageName: "phone.circle.fill", prompt: "phone number", axis: .vertical)
                     
                     Divider()
-                    BPInfoTextFieldWithIcon(
-                        viewModel: viewModel,
-                        text: $viewModel.homeAddress,
-                        iconName: "map.circle.fill",
-                        promptText: "Address"
-                    )
+                    
+                    UserInfoTextField(text: $user.email, isEdit: isEdit, imageName: "envelope.circle.fill", prompt: "E-mail", axis: .vertical)
+                    
+                    Divider()
+                    UserInfoTextField(text: $user.homeAddress, isEdit: isEdit, imageName: "map.circle.fill", prompt: "Address", axis: .vertical)
+                    
                     Divider()
                 }
             }
@@ -150,8 +127,8 @@ struct InfoBlock: View {
         .onChange(of: inputImage, perform: { _ in
             if let image = inputImage {
                 withAnimation(.easeIn(duration: 0.2)) {
-                    viewModel.userImage = Image(uiImage: image)
-                    viewModel.uiimage = image
+                    showedImage = Image(uiImage: image)
+                    userImage = image
                 }
             }
         })
@@ -159,16 +136,44 @@ struct InfoBlock: View {
     }
 }
 
+struct UserInfoTextField: View {
+    
+    @Binding var text: String
+    var isEdit: Bool
+    var imageName: String
+    var prompt: String
+    var axis: Axis
+    
+    var body: some View {
+        HStack(alignment: .center){
+            Label("", systemImage: imageName)
+                .labelStyle(.iconOnly)
+                .font(.title)
+            
+            TextField("", text: $text, prompt: Text(prompt), axis: axis)
+                .font(.title3)
+                .padding(5)
+                .background {
+                    RoundedRectangle(cornerRadius: 10.0).fill(.ultraThinMaterial).opacity(isEdit ? 0.5 : 0)
+                }
+
+        }
+    }
+}
+
+
 struct SpecializationSection: View {
     
-    @ObservedObject var viewModel: BPAccountInfoViewModel
+    @Binding var specialization: [String]
+    @Binding var isEditSpecialization: Bool
+    var isEdit: Bool
     
     var body: some View {
         VStack{
             AnyContentView(sourceContent: UserSpecialization.allCases.map{ $0.rawValue},
-                           selectedContent: $viewModel.specialization,
-                           isEdit: $viewModel.isEditSpec) {
-                RoundedRectangle(cornerRadius: 10.0).fill(.ultraThinMaterial).opacity(viewModel.isEdit ? 0.5 : 0)
+                           selectedContent: $specialization,
+                           isEdit: $isEditSpecialization) {
+                RoundedRectangle(cornerRadius: 10.0).fill(.ultraThinMaterial).opacity(isEdit ? 0.5 : 0)
             } cellView: { text in
                 BPSpecializationCellView(text: text)
             } buttonView: {
@@ -189,11 +194,12 @@ struct SpecializationSection: View {
             Divider()
                 .padding(.horizontal,20)
         }
-        .disabled(!viewModel.isEdit)
+        .disabled(!isEdit)
     }
 }
 
 #Preview {
-    BPAccountInfoView(globalStorage: GlobalStorage(currentUser: MockData.sampleUser))
+    BPAccountInfoView(user: BPUser(), saveAction: { user, image in print("\(user.firstName) saved")
+        print("specialization: \(user.specialization)")})
 }
 

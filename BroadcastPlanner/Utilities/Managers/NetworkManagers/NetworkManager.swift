@@ -13,10 +13,10 @@ protocol NetworkManagerProtocol: AnyObject {
     func getCurrentUserData(id: String) async -> BPUser?
     
     //create user in users directory in db
-    func createUser() async
+    func createUser(id: String, email: String) async
     
     //save user data in users directory in db
-    func saveUser(image: UIImage?) async
+    func saveUser(user: BPUser,image: UIImage?) async
     
     //get events fron db
     func getEvents() async -> [Event]?
@@ -30,36 +30,31 @@ protocol NetworkManagerProtocol: AnyObject {
     func getNewChatMessages() async
 
     //send online-status to user data
-    func goOnline() async
+    func goOnline(id: String) async
     
     //send offline-status to user data
-    func goOffline() async
+    func goOffline(id: String) async
     
     //save image to firestore
     func saveImageToGlobalStorage(id: String, path: ImagePath,image: UIImage) async -> String
     
     //load image from firestore
     func loadImageFromGlobalStorage(id: String, path: ImagePath, completion: @escaping (UIImage?) -> () ) async
-    
     func removeEvent(_ event: Event) async
     
     //event templates
     func getEventteamplates() async -> [BPEventPlan]?
     func appendEventTemolate(plan: BPEventPlan) async
     func removeEventPlan(plan: BPEventPlan) async
-    
-        
-    
+  
 }
 
 final class NetworkManager: NetworkManagerProtocol {
-    
-    weak var globalStorage: GlobalStorage!
+        
     var db: Firestore
     var storage: Storage
     
-    init(globalStorage: GlobalStorage) {
-        self.globalStorage = globalStorage
+    init() {
         self.db = Firestore.firestore()
         self.storage = Storage.storage()
     }
@@ -86,8 +81,9 @@ final class NetworkManager: NetworkManagerProtocol {
     }
     
     @MainActor
-    func createUser() async {
-        guard let id = globalStorage.currentSessionUser?.id, let email = globalStorage.currentSessionUser?.email else { return }
+    func createUser(id: String, email: String) async {
+//        guard let id = globalStorage.currentSessionUser?.id,
+//              let email = globalStorage.currentSessionUser?.email else { return }
         
         let user = BPUser()
         user.id = id
@@ -105,13 +101,9 @@ final class NetworkManager: NetworkManagerProtocol {
     }
     
     @MainActor
-    func saveUser(image: UIImage?) async {
-        guard let userLocal = globalStorage.currentUser,
-              let id = userLocal.id else { return }
-        if let image = image{
-            userLocal.photoURL = await saveImageToGlobalStorage(id: id,path: .userImage, image: image)
-        }
-        let user = BPUser(user: userLocal)
+    func saveUser(user: BPUser, image: UIImage?) async {
+
+        guard let id = user.id else { return }
         
         let userRef = db.collection("users")
         do {
@@ -262,8 +254,8 @@ final class NetworkManager: NetworkManagerProtocol {
     
     // MARK: - Online/Offline
     @MainActor
-    func goOnline() async {
-        guard let id = globalStorage.currentSessionUser?.id else { return }
+    func goOnline(id: String ) async {
+//        guard let id =  else { return }
         let userRef = db.collection("users").document(id)
         do {
             try await userRef.updateData(["isOnline":true])
@@ -275,8 +267,8 @@ final class NetworkManager: NetworkManagerProtocol {
         }
     }
     @MainActor
-    func goOffline() async {
-        guard let id = globalStorage.currentSessionUser?.id else { return }
+    func goOffline(id: String) async {
+//        guard let id = globalStorage.currentSessionUser?.id else { return }
         let userRef = db.collection("users").document(id)
         
         do {

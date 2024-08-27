@@ -18,7 +18,10 @@ struct Home: View {
                     .transition(.opacity)
                 
                 // MyInfo Screen
-                BPAccountInfoView(globalStorage: globalStorage)
+                BPAccountInfoView(user: globalStorage.currentUser ?? BPUser(), saveAction: { user, image in
+                    globalStorage.currentUser = user
+                    globalStorage.userProfileImage = image
+                })
                     .tabItem { Label("Info", systemImage: "figure.mind.and.body") }
                     .tag(1)
                     .padding(.bottom,1)

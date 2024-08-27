@@ -3,9 +3,12 @@ import Foundation
 class BPEventPlan: Identifiable, Codable {
     var id: String
     var title: String
+    
     var background: String
+    
     var fieldPoints: [BPEventPlanPoint]
     var carPoints: [BPEventPlanPoint]
+    
     var fieldBackground: String
     var carBackground: String
     

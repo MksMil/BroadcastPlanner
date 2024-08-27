@@ -4,7 +4,10 @@ import Foundation
 
 class GlobalSettings: ObservableObject {
     var eventLocations: [EventLocation]
-    var staiumImages: [String]
+    
+    //locationId: [imageName]
+    var staiumImages: [String: [String]]
+    
     var carImages: [String]
     //crete location
     //edit location
@@ -12,7 +15,7 @@ class GlobalSettings: ObservableObject {
     
     // MARK: - Initialization
     init(eventLocations: [EventLocation] = [],
-         stadiumImages: [String] = [],
+         stadiumImages: [String: [String]] = [:],
          carImages: [String] = []) {
         self.eventLocations = eventLocations
         self.staiumImages = stadiumImages

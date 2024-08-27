@@ -2,17 +2,12 @@ import SwiftUI
 import SDWebImageSwiftUI
 
 struct BPUserProfileView: View {
-    var globalStorage: GlobalStorage
     
-    @State var viewModel: BPUserProfileViewModel
-   
-    init(globalStorage: GlobalStorage, user: BPUserLocalData) {
-        self.globalStorage = globalStorage
-        self.viewModel = BPUserProfileViewModel(user: user)
-        self.viewModel.globalStorage = globalStorage
-    }
+    var user: BPUser
+    var image: UIImage?
+    
     var body: some View {
-        NavigationStack{
+        
             
             ZStack{
                 MainBackground()
@@ -23,7 +18,7 @@ struct BPUserProfileView: View {
                     Spacer()
                 }
             }
-            .navigationTitle(Text(viewModel.user.isOnline ? "Online": "Offline"))
+            .navigationTitle(Text(user.isOnline ? "Online": "Offline"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
@@ -31,17 +26,14 @@ struct BPUserProfileView: View {
             }
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
-        }
+        
     }
-    
-    
-    
+   
     @ViewBuilder func infoBlock() -> some View{
         VStack{
             //photo here
             HStack {
-                WebImage(url: URL(string: viewModel.user.photoURL)) { image in
-                    image
+                    makeImage()
                         .resizable()
                         .scaledToFill()
                         .frame(width: 100,height: 100)
@@ -53,27 +45,13 @@ struct BPUserProfileView: View {
                                 .frame(width: 110,height: 110)
                         }
                         .padding(.trailing,15)
-                } placeholder: {
-                    Image(systemName: "person.crop.circle")
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 100,height: 100)
-                        .clipShape(Circle())
-                        .background{
-                            Circle()
-                                .fill(.ultraThickMaterial)
-                                .opacity(0.3)
-                                .frame(width: 110,height: 110)
-                        }
-                        .padding(.trailing,15)
-                }
                 
                     VStack(alignment: .trailing){
-                        Text(viewModel.user.firstName)
+                        Text(user.firstName)
                             .padding(.vertical,4)
                             .padding(.horizontal,5)
                         Divider()
-                        Text(viewModel.user.lastName)
+                        Text(user.lastName)
                             .padding(.vertical,4)
                             .padding(.horizontal,5)
                         Divider()
@@ -92,8 +70,8 @@ struct BPUserProfileView: View {
                             .frame(width: 30,height: 30)
                             .scaledToFill()
                         Spacer()
-                        Link(viewModel.user.phoneNumber,
-                             destination: URL(string:"tel:\(viewModel.user.phoneNumber)")!)
+                        Link(user.phoneNumber,
+                             destination: URL(string:"tel:\(user.phoneNumber)")!)
                             .padding(.vertical,4)
                             .padding(.horizontal,5)
                     }
@@ -104,8 +82,8 @@ struct BPUserProfileView: View {
                             .frame(width: 30,height: 30)
                             .scaledToFill()
                         Spacer()
-                        Link(viewModel.user.email,
-                             destination: URL(string: "mailto:\(viewModel.user.email)")!)
+                        Link(user.email,
+                             destination: URL(string: "mailto:\(user.email)")!)
                             .padding(.vertical,4)
                             .padding(.horizontal,5)
                     }
@@ -116,7 +94,7 @@ struct BPUserProfileView: View {
                             .frame(width: 30,height: 30)
                             .scaledToFill()
                         Spacer()
-                        Text(viewModel.user.homeAddress)
+                        Text(user.homeAddress)
                             .padding(.vertical,4)
                             .padding(.horizontal,5)
                     }
@@ -131,7 +109,7 @@ struct BPUserProfileView: View {
     @ViewBuilder func specializationSection() -> some View {
         VStack{
             SmartLayout(hSpacing: 5, vSpacing: 5){
-                ForEach(viewModel.user.specialization,id: \.self) { text in
+                ForEach(user.specialization,id: \.self) { text in
                     BPSpecializationCellView(text: text)
                 }
             }
@@ -141,9 +119,17 @@ struct BPUserProfileView: View {
                 .padding(.horizontal,20)
         }
     }
+    
+    
+    // MARK: - Image loader
+    func makeImage() -> Image{
+        guard let image else {
+            return Image(systemName: "person.crop.circle")
+        }
+        return Image(uiImage: image)
+    }
 }
 
 #Preview {
-    BPUserProfileView(globalStorage: GlobalStorage(), 
-                      user: MockData.sampleUser)
+    BPUserProfileView(user: MockData.sampleUser)
 }

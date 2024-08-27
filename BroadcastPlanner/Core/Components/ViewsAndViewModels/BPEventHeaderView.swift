@@ -3,8 +3,9 @@ import SwiftUI
 struct BPEventHeaderView: View {
     @EnvironmentObject var settings: GlobalSettings
     
-//    @ObservedObject var viewModel: BPEventViewModel
-    
+    @EnvironmentObject var timer: GlobalTimer
+    @State private var timerCounter: Int = 0
+    @State private var imageIndex: Int = 0
     
     @State var newDate: Date = Date()
     
@@ -17,16 +18,28 @@ struct BPEventHeaderView: View {
     
     @State var eventDate: Date = Date()
 
-    @State var title: String = "empty"
+    @State var stadium: String = "stadium"
+    @State private var city: String = "city"
     
     @State private var isPresentedLogosSheet: Bool = false
     @State private var isPresentedLocationSheet: Bool = false
     @State private var isPresentedDatePicker: Bool = false
     
     @State private var iSelectedHomeTeamLogo: Bool = false
+    
+    init(event: Binding<Event>) {
+        self._event = Binding(projectedValue: event)
+        self.homeImageString = event.homeImageString.wrappedValue
+        self.guestImageString = event.guestImageString.wrappedValue
+        self.eventDate = event.date.wrappedValue
+        self.stadium = event.eventLocation.title.wrappedValue
+        self.city = event.eventLocation.city.wrappedValue
+        setBackgroundImage()
+    }
  
     var body: some View {
             VStack(spacing: 15){
+                //team logos section
                 HStack{
                     Spacer()
                     LogoImageView(imageString: homeImageString,isBackground: true)
@@ -48,19 +61,18 @@ struct BPEventHeaderView: View {
                 .padding(.horizontal)
                 .padding(.top,60)
                 
-                Text(eventDate.formatted(date: .abbreviated, time: .shortened))
-                    .fixedSize()
+               
+                
+                Text(stadium)
                     .font(.title)
-                    .frame(minWidth: 200)
+                    .fixedSize()
                     .padding(5)
-                    .background {
-                        RoundedRectangle(cornerRadius: 5).fill(.ultraThinMaterial).overlay{RoundedRectangle(cornerRadius: 5).stroke(.white, lineWidth: 1)}
-                    }
+                    .background(RoundedRectangle(cornerRadius: 5).fill(.ultraThinMaterial).overlay{RoundedRectangle(cornerRadius: 5).stroke(.white, lineWidth: 1)})
                     .onTapGesture {
-                        isPresentedDatePicker = true
+                        isPresentedLocationSheet = true
                     }
                 
-                Text(title)
+                Text(city)
                     .font(.title3)
                     .fixedSize()
                     .padding(5)
@@ -69,11 +81,21 @@ struct BPEventHeaderView: View {
                     .onTapGesture {
                         isPresentedLocationSheet = true
                     }
+                
+                Text(eventDate.formatted(date: .abbreviated, time: .shortened))
+                    .fixedSize()
+                    .font(.subheadline)
+                    .padding(5)
+                    .background {
+                        RoundedRectangle(cornerRadius: 5).fill(.ultraThinMaterial).overlay{RoundedRectangle(cornerRadius: 5).stroke(.white, lineWidth: 1)}
+                    }
+                    .onTapGesture {
+                        isPresentedDatePicker = true
+                    }
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical,40)
             .background {
-                // TODO: if many photos - change it with timer
                 Image(backImage)
                     .resizable()
                     .scaledToFill()
@@ -134,7 +156,7 @@ struct BPEventHeaderView: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .onTapGesture {
                                 event.eventLocation = location
-                                title = location.title
+                                stadium = location.title
                                 setBackgroundImage()
                                 isPresentedLocationSheet = false
                             }
@@ -173,13 +195,34 @@ struct BPEventHeaderView: View {
                 .padding(.horizontal)
                 .presentationDetents([.fraction(0.65)])
             })
-            .onAppear{
-                homeImageString = event.homeImageString
-                guestImageString = event.guestImageString
-                eventDate = event.date
+//            .onAppear{
+//                homeImageString = event.homeImageString
+//                guestImageString = event.guestImageString
+//                eventDate = event.date
+//                title = event.eventLocation.title
+//                setBackgroundImage()
+//            }
+            .onReceive(timer.timer) { _ in
+                timerCounter += 1
+                if timerCounter > 5 {
+                    timerCounter = 0
+                    updateBackground()
+                }
             }
         }
-    
+    func updateBackground(){
+        if event.eventLocation.imageStrings.isEmpty{
+            backImage = "neitral"
+        } else {
+            imageIndex += 1
+            if imageIndex < event.eventLocation.imageStrings.count{
+                backImage = event.eventLocation.imageStrings[imageIndex]
+            } else {
+                imageIndex = 0
+                backImage = event.eventLocation.imageStrings[imageIndex]
+            }
+        }
+    }
     
     func setBackgroundImage(){
         if event.eventLocation.imageStrings.isEmpty{
@@ -196,6 +239,7 @@ struct BPEventHeaderView: View {
     BPEventHeaderView(event: .constant(MockData.sampleEvent)
     )
         .environmentObject(GlobalSettings())
+        .environmentObject(GlobalTimer())
 }
 
 

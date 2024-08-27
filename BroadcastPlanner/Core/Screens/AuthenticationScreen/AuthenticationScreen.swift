@@ -57,7 +57,7 @@ struct AuthenticationScreen: View {
                                 password: password
                             )
                             globalStorage.password = password
-                            globalStorage.provider = .email
+                            
                         } catch {
 #if DEBUG
                             print("DEBUG:\(error.localizedDescription)")
@@ -82,7 +82,7 @@ struct AuthenticationScreen: View {
                     Task{
                         do {
                             globalStorage.currentSessionUser = try await AuthenticationManager.shared.signWithGgl()
-                            globalStorage.provider = .google
+                            
                         }
                         catch {
 #if DEBUG
@@ -104,7 +104,7 @@ struct AuthenticationScreen: View {
                 } onCompletion: { result in
                     Task{
                         do { globalStorage.currentSessionUser = try await AuthenticationManager.shared.signInWithAppleWithResult(result, currentNonce: globalStorage.applCurrentNonce)
-                            globalStorage.provider = .apple
+                            
                         } catch {
 #if DEBUG
                             print("DEBUG:\(error.localizedDescription)")
@@ -137,7 +137,7 @@ struct AuthenticationScreen: View {
                                                password: password
                     )
                     globalStorage.password = password
-                    globalStorage.provider = .email
+                    
                 }
             }
         }

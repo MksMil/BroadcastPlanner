@@ -10,20 +10,20 @@ class MockData {
         eventPlan: BPEventPlan()
     )
     
-    static var sampleUser: BPUserLocalData =  BPUserLocalData(user: BPUser())
+    static var sampleUser: BPUser =  BPUser()
     static let sampleStadium: EventLocation = EventLocation(
         title: "ARENA - LVIV",
         city: "Lviv",
         address: "Lviv. Striyska str. 199. 79031"
     )
-    static var sampleUsers: [BPUserLocalData] = [
+    static var sampleUsers: [BPUser] = [
 //        BPUser( firstName: "Viktor"),
 //        BPUser( firstName: "Vadim"),
 //        BPUser( firstName: "Alexander"),
 //        BPUser( firstName: "Valera"),
 //        BPUser( firstName: "Anatoliy")
        
-    ].map{BPUserLocalData(user: $0)}
+    ]
     static let sampleBroadcaster: Broadcaster  = Broadcaster(name: "SG", cars: [BroadcasterCar(name: "SG SUPER CAR")])
     
     static let sampleCameras: [Camera] = CameraPosition.allCases.map{ Camera(position: $0) }

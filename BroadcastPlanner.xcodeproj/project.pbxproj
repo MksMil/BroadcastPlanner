@@ -22,7 +22,6 @@
 		2916E60E2C4E875B0025DCC6 /* BPPlanDelegateProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2916E60D2C4E875B0025DCC6 /* BPPlanDelegateProtocol.swift */; };
 		2916E6112C4E8FB20025DCC6 /* BPEditEventBottomGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2916E6102C4E8FB20025DCC6 /* BPEditEventBottomGroup.swift */; };
 		2916E6132C4E9AEF0025DCC6 /* BPEditEventPointLinks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2916E6122C4E9AEF0025DCC6 /* BPEditEventPointLinks.swift */; };
-		2916E6152C4F90A50025DCC6 /* EventListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2916E6142C4F90A50025DCC6 /* EventListViewModel.swift */; };
 		2916E6182C4F97C60025DCC6 /* NavigationTransitions in Frameworks */ = {isa = PBXBuildFile; productRef = 2916E6172C4F97C60025DCC6 /* NavigationTransitions */; };
 		2916E6202C4FA6E10025DCC6 /* UserDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2916E61F2C4FA6E00025DCC6 /* UserDataManager.swift */; };
 		2916E6222C4FA6FD0025DCC6 /* EventDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2916E6212C4FA6FD0025DCC6 /* EventDataManager.swift */; };
@@ -39,6 +38,7 @@
 		292D66572BD7BFAC009A2187 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 292D66562BD7BFAC009A2187 /* ImagePicker.swift */; };
 		293752A82BF8C4FE0044924D /* BPEditEventPlanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 293752A72BF8C4FE0044924D /* BPEditEventPlanView.swift */; };
 		293752AA2BF8CD950044924D /* BPEventFilterCaseTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 293752A92BF8CD950044924D /* BPEventFilterCaseTabView.swift */; };
+		29379F2C2C74EEA1009289F7 /* ImageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29379F2B2C74EEA1009289F7 /* ImageManager.swift */; };
 		29389C3A2B8EE2EB003EF60C /* AppleHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29389C392B8EE2EB003EF60C /* AppleHelper.swift */; };
 		29389C3C2B8EE62F003EF60C /* UIKit+ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29389C3B2B8EE62F003EF60C /* UIKit+ext.swift */; };
 		29418D8F2C6639D7007CC6F3 /* GlobalTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29418D8E2C6639D7007CC6F3 /* GlobalTimer.swift */; };
@@ -65,7 +65,6 @@
 		2967DF1B2B639A90003956FD /* Error+Modifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2967DF1A2B639A90003956FD /* Error+Modifier.swift */; };
 		2967DF212B64F69B003956FD /* KeyboardAdaptiveModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2967DF202B64F69B003956FD /* KeyboardAdaptiveModifier.swift */; };
 		29778E012C098D88006EF6CE /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29778E002C098D88006EF6CE /* AuthViewModel.swift */; };
-		29778E032C09B822006EF6CE /* BPInfoTextFieldWithIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29778E022C09B822006EF6CE /* BPInfoTextFieldWithIcon.swift */; };
 		29778E242C0B85FC006EF6CE /* BPResetPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29778E232C0B85FC006EF6CE /* BPResetPasswordView.swift */; };
 		298932682AE24D7000BD93CA /* BPError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 298932672AE24D7000BD93CA /* BPError.swift */; };
 		299277982B7629FD00B8F892 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 299277972B7629FD00B8F892 /* GoogleService-Info.plist */; };
@@ -93,8 +92,6 @@
 		29C041E72AC69A11008B3E1F /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041E62AC69A11008B3E1F /* Camera.swift */; };
 		29C041E92AC69A5D008B3E1F /* MockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041E82AC69A5D008B3E1F /* MockData.swift */; };
 		29C041F22ACBF45B008B3E1F /* Color+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041F12ACBF45B008B3E1F /* Color+Ext.swift */; };
-		29C2A47D2C2AFA6700866C5D /* BPUserProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C2A47C2C2AFA6700866C5D /* BPUserProfileViewModel.swift */; };
-		29C2A4992C2D9C2900866C5D /* BPUserLocalData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C2A4982C2D9C2900866C5D /* BPUserLocalData.swift */; };
 		29D1697A2B85D4F800A70638 /* HaptickEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29D169792B85D4F800A70638 /* HaptickEngine.swift */; };
 		29D169802B86188B00A70638 /* BPValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29D1697F2B86188B00A70638 /* BPValidator.swift */; };
 		29D169832B86303C00A70638 /* EventModelTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29D169822B86303C00A70638 /* EventModelTest.swift */; };
@@ -138,7 +135,6 @@
 		2916E60D2C4E875B0025DCC6 /* BPPlanDelegateProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPPlanDelegateProtocol.swift; sourceTree = "<group>"; };
 		2916E6102C4E8FB20025DCC6 /* BPEditEventBottomGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPEditEventBottomGroup.swift; sourceTree = "<group>"; };
 		2916E6122C4E9AEF0025DCC6 /* BPEditEventPointLinks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPEditEventPointLinks.swift; sourceTree = "<group>"; };
-		2916E6142C4F90A50025DCC6 /* EventListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventListViewModel.swift; sourceTree = "<group>"; };
 		2916E61F2C4FA6E00025DCC6 /* UserDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDataManager.swift; sourceTree = "<group>"; };
 		2916E6212C4FA6FD0025DCC6 /* EventDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventDataManager.swift; sourceTree = "<group>"; };
 		2916E6232C4FA71B0025DCC6 /* MessageDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageDataManager.swift; sourceTree = "<group>"; };
@@ -154,6 +150,7 @@
 		292D66562BD7BFAC009A2187 /* ImagePicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		293752A72BF8C4FE0044924D /* BPEditEventPlanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPEditEventPlanView.swift; sourceTree = "<group>"; };
 		293752A92BF8CD950044924D /* BPEventFilterCaseTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPEventFilterCaseTabView.swift; sourceTree = "<group>"; };
+		29379F2B2C74EEA1009289F7 /* ImageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageManager.swift; sourceTree = "<group>"; };
 		29389C392B8EE2EB003EF60C /* AppleHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleHelper.swift; sourceTree = "<group>"; };
 		29389C3B2B8EE62F003EF60C /* UIKit+ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIKit+ext.swift"; sourceTree = "<group>"; };
 		29418D8E2C6639D7007CC6F3 /* GlobalTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalTimer.swift; sourceTree = "<group>"; };
@@ -177,7 +174,6 @@
 		2967DF1A2B639A90003956FD /* Error+Modifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Error+Modifier.swift"; sourceTree = "<group>"; };
 		2967DF202B64F69B003956FD /* KeyboardAdaptiveModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardAdaptiveModifier.swift; sourceTree = "<group>"; };
 		29778E002C098D88006EF6CE /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
-		29778E022C09B822006EF6CE /* BPInfoTextFieldWithIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPInfoTextFieldWithIcon.swift; sourceTree = "<group>"; };
 		29778E232C0B85FC006EF6CE /* BPResetPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPResetPasswordView.swift; sourceTree = "<group>"; };
 		298932672AE24D7000BD93CA /* BPError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPError.swift; sourceTree = "<group>"; };
 		299277972B7629FD00B8F892 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -209,8 +205,6 @@
 		29C041E62AC69A11008B3E1F /* Camera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
 		29C041E82AC69A5D008B3E1F /* MockData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockData.swift; sourceTree = "<group>"; };
 		29C041F12ACBF45B008B3E1F /* Color+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Ext.swift"; sourceTree = "<group>"; };
-		29C2A47C2C2AFA6700866C5D /* BPUserProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPUserProfileViewModel.swift; sourceTree = "<group>"; };
-		29C2A4982C2D9C2900866C5D /* BPUserLocalData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPUserLocalData.swift; sourceTree = "<group>"; };
 		29D169792B85D4F800A70638 /* HaptickEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HaptickEngine.swift; sourceTree = "<group>"; };
 		29D1697F2B86188B00A70638 /* BPValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPValidator.swift; sourceTree = "<group>"; };
 		29D169822B86303C00A70638 /* EventModelTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventModelTest.swift; sourceTree = "<group>"; };
@@ -299,7 +293,6 @@
 			isa = PBXGroup;
 			children = (
 				2915AD1B2BF4A2AA0038239A /* BPUserProfileView.swift */,
-				29C2A47C2C2AFA6700866C5D /* BPUserProfileViewModel.swift */,
 				290056C52C37DF6400CBA472 /* BPUserDataListCellView.swift */,
 			);
 			path = UserProfileView;
@@ -348,6 +341,7 @@
 			isa = PBXGroup;
 			children = (
 				2916E61F2C4FA6E00025DCC6 /* UserDataManager.swift */,
+				29379F2B2C74EEA1009289F7 /* ImageManager.swift */,
 				2916E6212C4FA6FD0025DCC6 /* EventDataManager.swift */,
 				2916E6232C4FA71B0025DCC6 /* MessageDataManager.swift */,
 			);
@@ -390,7 +384,6 @@
 			isa = PBXGroup;
 			children = (
 				29C041CF2AC557E0008B3E1F /* BPUser.swift */,
-				29C2A4982C2D9C2900866C5D /* BPUserLocalData.swift */,
 				2955C9812B57C1BE003F9ADC /* SessionUser.swift */,
 				291E72C82BBEC7B0008092D7 /* UserSpecialization.swift */,
 			);
@@ -570,7 +563,6 @@
 			isa = PBXGroup;
 			children = (
 				2955C96C2B4ECB05003F9ADC /* BPTextFieldWithIcon.swift */,
-				29778E022C09B822006EF6CE /* BPInfoTextFieldWithIcon.swift */,
 			);
 			path = TextFieldViews;
 			sourceTree = "<group>";
@@ -642,7 +634,6 @@
 			isa = PBXGroup;
 			children = (
 				290FF3B42B5E5E180096D655 /* GlobalStorage.swift */,
-				2916E6142C4F90A50025DCC6 /* EventListViewModel.swift */,
 				29C041E82AC69A5D008B3E1F /* MockData.swift */,
 				29E10F632C21696B00A35A4B /* GlobalSettings.swift */,
 				29E10F652C2169C400A35A4B /* GlobalProperties.swift */,
@@ -946,9 +937,8 @@
 				293752AA2BF8CD950044924D /* BPEventFilterCaseTabView.swift in Sources */,
 				295114332C4E73F5005E4BF8 /* BPEditConteinerView.swift in Sources */,
 				292D66572BD7BFAC009A2187 /* ImagePicker.swift in Sources */,
-				29778E032C09B822006EF6CE /* BPInfoTextFieldWithIcon.swift in Sources */,
+				29379F2C2C74EEA1009289F7 /* ImageManager.swift in Sources */,
 				291E72CF2BBEEBDD008092D7 /* BPSpecializationCellView.swift in Sources */,
-				29C2A4992C2D9C2900866C5D /* BPUserLocalData.swift in Sources */,
 				292D664F2BD7998A009A2187 /* SmartLayout.swift in Sources */,
 				2916E6112C4E8FB20025DCC6 /* BPEditEventBottomGroup.swift in Sources */,
 				2994DE6A2C157EF400DF9060 /* BPEventViewModel.swift in Sources */,
@@ -1013,7 +1003,6 @@
 				291E72C32BBE859F008092D7 /* BPMessengerView.swift in Sources */,
 				29BF35872BFB288D00113946 /* BPEventPlanPoint.swift in Sources */,
 				2994DE6E2C16F18E00DF9060 /* BPJoystick.swift in Sources */,
-				29C2A47D2C2AFA6700866C5D /* BPUserProfileViewModel.swift in Sources */,
 				2916E6222C4FA6FD0025DCC6 /* EventDataManager.swift in Sources */,
 				29C041DB2AC5620A008B3E1F /* StadiumView.swift in Sources */,
 				290B816B2AD7F01100B858F1 /* CameraDirection.swift in Sources */,
@@ -1024,7 +1013,6 @@
 				29C041D02AC557E1008B3E1F /* BPUser.swift in Sources */,
 				29389C3C2B8EE62F003EF60C /* UIKit+ext.swift in Sources */,
 				2967DF212B64F69B003956FD /* KeyboardAdaptiveModifier.swift in Sources */,
-				2916E6152C4F90A50025DCC6 /* EventListViewModel.swift in Sources */,
 				293752A82BF8C4FE0044924D /* BPEditEventPlanView.swift in Sources */,
 				2967DF192B61109B003956FD /* UpdateEPView.swift in Sources */,
 				2955C97C2B518715003F9ADC /* SettingsView.swift in Sources */,

@@ -59,10 +59,10 @@ struct BPCreateEditEventView: View {
                             .overlay {
                                 HStack{
                                     Text("Delete")
-                                    Image(systemName: "xmark")
                                 }
-                                .foregroundStyle(.red)
                             }
+                            .shadow(color: .red.opacity(0.4),
+                                    radius: 4)
                     }
                     Button {
                         Task{
@@ -75,10 +75,10 @@ struct BPCreateEditEventView: View {
                             .overlay {
                                 HStack{
                                     Text("Save")
-                                    Image(systemName: "checkmark")
                                 }
-                                .foregroundStyle(.green)
                             }
+                            .shadow(color: .green.opacity(0.4),
+                                    radius: 4)
                     }
                 }
                 .font(.title2)
@@ -95,4 +95,5 @@ struct BPCreateEditEventView: View {
         .environmentObject(GlobalSettings())
         .environmentObject(GlobalStorage())
         .environmentObject(EventTabRouter())
+        .environmentObject(GlobalTimer())
 }

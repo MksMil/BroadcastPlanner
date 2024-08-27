@@ -3,7 +3,7 @@ import Combine
 
 @MainActor
 final class BPAccountInfoViewModel: ObservableObject {
-    var user: BPUserLocalData? { didSet { setup() } }
+    var user: BPUser? { didSet { setup() } }
     weak var globalStorage: GlobalStorage?
     
     @Published var isEdit: Bool = false
@@ -38,12 +38,11 @@ final class BPAccountInfoViewModel: ObservableObject {
         self.email = user?.email ?? ""
         self.homeAddress = user?.homeAddress ?? ""
         self.creationDate = user?.creationDate
-        self.leaveDate = user?.leaveDate
+//        self.leaveDate = user?.leaveDate
         self.ownedEventIds = user?.ownedEventIds ?? []
         self.memberEventIds = user?.memberEventIds ?? []
         self.specialization = user?.specialization ?? []
-        self.photoUrl = user?.photoURL ?? ""
-        if let image = user?.image{
+        if let image = globalStorage?.userProfileImage{
             self.userImage = Image(uiImage: image)
         }
     }

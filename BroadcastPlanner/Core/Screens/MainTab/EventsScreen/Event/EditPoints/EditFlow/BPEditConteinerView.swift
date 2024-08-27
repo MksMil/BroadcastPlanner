@@ -3,10 +3,10 @@ import SpriteKit
 
 struct BPEditConteinerView: View {
     
-    
     @Environment(\.dismiss) var dismiss
     var event: Event
     var type: PlanSectionType = .car
+    
     @State var isEditState: Bool = false
     @State private var stadiumFilter: BPEventPlanPointStadiumFilter = .all
     @State private var carFilter: BPEventPlanPointCarFilter = .all
