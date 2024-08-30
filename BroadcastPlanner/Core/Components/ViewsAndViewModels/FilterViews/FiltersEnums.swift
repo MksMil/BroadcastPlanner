@@ -16,7 +16,7 @@ enum BPEventPlanPointStadiumFilter: String, Customfilter //CaseIterable,Identifi
 enum BPEventPlanPointCarFilter: String, Customfilter//CaseIterable,Identifiable, Codable
 {
     case all = "square.grid.3x3.fill"
-    case dir = "brain"//"crown" //movieclapper //brain
+    case dir = "brain.head.profile"//"crown" //movieclapper //brain
     case rep = "arcade.stick.console"
     case grf = "photo.tv"
     case sou = "headphones"

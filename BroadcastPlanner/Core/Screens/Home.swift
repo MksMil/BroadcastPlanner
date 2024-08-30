@@ -5,22 +5,25 @@ struct Home: View {
     
     @EnvironmentObject var globalStorage: GlobalStorage
     @State private var selection: Int = 1
+    
    
     var body: some View {
         ZStack(alignment:.bottom){
             
             TabView(selection: $selection) {
                 MainEventsList(events: globalStorage.events,
-                               userID: globalStorage.currentSessionUser?.id ?? "")
+                               userID: globalStorage.id)
                     .tabItem { Label("Events", systemImage: "calendar")}
                     .tag(0)
                     .padding(.bottom,1)
                     .transition(.opacity)
                 
                 // MyInfo Screen
-                BPAccountInfoView(user: globalStorage.currentUser ?? BPUser(), saveAction: { user, image in
-                    globalStorage.currentUser = user
-                    globalStorage.userProfileImage = image
+                BPAccountInfoView(user: globalStorage.currentUser ?? BPUser(),
+                                  image: globalStorage.userProfileImage,
+                                  saveAction: { user, image in
+                    await globalStorage.saveUser(user: user,
+                                                 userImage: image)
                 })
                     .tabItem { Label("Info", systemImage: "figure.mind.and.body") }
                     .tag(1)
@@ -47,4 +50,5 @@ struct Home: View {
 #Preview {
     Home()
         .environmentObject(GlobalStorage())
+        
 }

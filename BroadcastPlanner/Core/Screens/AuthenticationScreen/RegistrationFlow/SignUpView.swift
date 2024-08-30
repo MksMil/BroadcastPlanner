@@ -6,10 +6,12 @@ struct SignUpView: View {
              secondField
     }
     @FocusState private var isFocused: FieldInFocus?
-    @EnvironmentObject var globalStorage: GlobalStorage
     @Environment(\.dismiss) var dismiss
-    @StateObject var viewModel: AuthViewModel = AuthViewModel()
-    let createAction: ( String, String) -> Void 
+    @Binding var email: String
+    @Binding var password: String
+//    @EnvironmentObject var globalStorage: GlobalStorage
+    
+    let createAction: () -> Void
     
     var body: some View {
         ZStack{
@@ -17,14 +19,14 @@ struct SignUpView: View {
             
             VStack{
                 // MARK: - Email/Password TF's
-                BPTextFieldWithIcon(text: $viewModel.email,
+                BPTextFieldWithIcon(text: $email,
                                     placeholder: "email",
                                     imageName: "envelope")
                     .keyboardType(.emailAddress)
                     .focused($isFocused,
                              equals: .firstField)
                 
-                BPTextFieldWithIcon(text: $viewModel.password,
+                BPTextFieldWithIcon(text: $password,
                                     placeholder: "password",
                                     imageName: "lock.fill",
                                     isSecureField: true)
@@ -35,8 +37,7 @@ struct SignUpView: View {
                 // MARK: - Sign Up button
                 Button(action: {
                             isFocused = nil
-                            createAction(viewModel.email,
-                                         viewModel.password)
+                            createAction()
                             dismiss()
                 },
                        label: {
@@ -58,6 +59,6 @@ struct SignUpView: View {
 
 // MARK: - Preview
 #Preview {
-    SignUpView(viewModel: AuthViewModel()){_,_  in}
+    SignUpView(email: .constant(""), password: .constant("")){}
         
 }

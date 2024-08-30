@@ -25,7 +25,7 @@ final class AppleHelper {
     }
     
     //Request
-    @MainActor static func makeRequest(storage: GlobalStorage) -> ASAuthorizationAppleIDRequest{
+    @MainActor static func makeRequest(storage: GlobalSessionStorage) -> ASAuthorizationAppleIDRequest{
         let provider = ASAuthorizationAppleIDProvider()
         let request = provider.createRequest()
         request.requestedScopes = [.fullName, .email]

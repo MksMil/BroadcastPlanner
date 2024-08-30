@@ -5,6 +5,7 @@ import AuthenticationServices
 struct SettingsView: View {
     
     @EnvironmentObject var globalStorage: GlobalStorage
+    @EnvironmentObject var sessionStorage: GlobalSessionStorage
     @Environment(\.authorizationController) private var authorizationController
     
     
@@ -19,12 +20,12 @@ struct SettingsView: View {
                 MainBackground()
                 ScrollView{
                     VStack{
-                        if let user = globalStorage.currentSessionUser{
+                        if let user = sessionStorage.userSession{
                             Section{
                                 VStack(alignment: .leading){
                                     Text("id: \(user.id)")
                                     Text("email: \(user.email ?? "empty")")
-                                    Text("password: \(globalStorage.password)")
+                                    Text("password: \(sessionStorage.password)")
                                     Text("Creation date: \(user.creationDate?.formatted() ?? "no date")")
                                 }
                                 .foregroundStyle(Color.accent)
@@ -85,12 +86,12 @@ struct SettingsView: View {
                                     Task{
                                         do {
                                             // Create the authorization request.
-                                            let request = AppleHelper.makeRequest(storage: globalStorage)
+                                            let request = AppleHelper.makeRequest(storage: sessionStorage)
                                             
                                             // Perform the request and await its result.
                                             let result = try await authorizationController
                                                 .performRequest(request)
-                                            AuthenticationManager.shared.linkWithApple(result: result, currentNonce: globalStorage.applCurrentNonce)
+                                            AuthenticationManager.shared.linkWithApple(result: result, currentNonce: sessionStorage.applCurrentNonce)
                                         } catch {
 #if DEBUG
                                             print("DEBUG: Error linking with Apple")
@@ -123,8 +124,8 @@ struct SettingsView: View {
                                 do{
                                     print("try to log out")
                                     try AuthenticationManager.shared.logOut()
-                                    globalStorage.currentSessionUser = nil
-                                    globalStorage.isLogged = false
+                                    sessionStorage.userSession = nil
+//                                    globalStorage.isLogged = false
                                 }catch {
                                     print("failed to signing out: \(error.localizedDescription)")
                                 }
@@ -145,7 +146,7 @@ struct SettingsView: View {
                             Task{
                                 do{
                                     try await AuthenticationManager.shared.deleteUser()
-                                    globalStorage.currentSessionUser = nil
+                                    sessionStorage.userSession = nil
                                 } catch {
 #if DEBUG
                                     print("DEBUG:\(error.localizedDescription)")
@@ -171,16 +172,16 @@ struct SettingsView: View {
                             currentValue: globalStorage.currentUser?.email ?? "",
                             updEP: .email){ value in
                                 Task{
-                                    await globalStorage.updateEmailPassword(newValue: value, updEp: .email)
+                                    await sessionStorage.updateEmailPassword(newValue: value, updEp: .email)
                                     updEP = nil
                                 }
                             }
                     case .password:
                         UpdateEPView(
-                            currentValue: globalStorage.password,
+                            currentValue: sessionStorage.password,
                             updEP: .password){ value in
                                 Task{
-                                    await globalStorage.updateEmailPassword(newValue: value, updEp: .password)
+                                    await sessionStorage.updateEmailPassword(newValue: value, updEp: .password)
                                     updEP = nil
                                 }
                             }
@@ -195,6 +196,7 @@ struct SettingsView: View {
 #Preview {
     SettingsView()
         .environmentObject(GlobalStorage())
+        .environmentObject(GlobalSessionStorage())
 }
 
 

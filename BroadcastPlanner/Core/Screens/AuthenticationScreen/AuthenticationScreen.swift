@@ -6,15 +6,7 @@ import GoogleSignInSwift
 import SwiftUI
 
 struct AuthenticationScreen: View {
-    
-    var globalStorage: GlobalStorage
-    
-//    @StateObject private var authVm = AuthViewModel()
-    
-    @State var email: String = ""
-    @State var password: String = ""
-    @State var confirmPassword: String = ""
-    
+    @EnvironmentObject var sessionStorage: GlobalSessionStorage
     @State private var isSignUp: Bool = false
     
     var body: some View {
@@ -34,8 +26,8 @@ struct AuthenticationScreen: View {
                 Divider()
                 
                 // MARK: - Email/Password Textfields
-                BPEmailPasswordStack(email: $email,
-                                     password: $password)
+                EmailPasswordStack(email: $sessionStorage.email,
+                                     password: $sessionStorage.password)
                 
                 // MARK: - "Forget password" button
                 HStack{
@@ -51,18 +43,7 @@ struct AuthenticationScreen: View {
                 // MARK: - "Sign In"
                 Button(action: {
                     Task{
-                        do {
-                            globalStorage.currentSessionUser = try await AuthenticationManager.shared.signIn(
-                                withEmail: email,
-                                password: password
-                            )
-                            globalStorage.password = password
-                            
-                        } catch {
-#if DEBUG
-                            print("DEBUG:\(error.localizedDescription)")
-#endif
-                        }
+                        await sessionStorage.signInWithEmailAndPassword()
                     }
                 },
                        label: {
@@ -80,15 +61,7 @@ struct AuthenticationScreen: View {
                 // MARK: - "Sign in with Google"
                 GoogleSignInButton(viewModel: GoogleSignInButtonViewModel(scheme: .light, style: .wide, state: .normal)) {
                     Task{
-                        do {
-                            globalStorage.currentSessionUser = try await AuthenticationManager.shared.signWithGgl()
-                            
-                        }
-                        catch {
-#if DEBUG
-                            print("DEBUG:\(error.localizedDescription)")
-#endif
-                        }
+                        await sessionStorage.signInWithGoogle()
                     }
                 }
                 .frame(height: 44)
@@ -99,15 +72,14 @@ struct AuthenticationScreen: View {
                 // MARK: - "Sign in with Apple"
                 SignInWithAppleButton { request in
                     request.requestedScopes = [.fullName, .email]
-                    globalStorage.applCurrentNonce = AppleHelper.getRandomNonceString()
-                    request.nonce = AppleHelper.getSha256(globalStorage.applCurrentNonce)
+                    sessionStorage.applCurrentNonce = AppleHelper.getRandomNonceString()
+                    request.nonce = AppleHelper.getSha256(sessionStorage.applCurrentNonce)
                 } onCompletion: { result in
                     Task{
-                        do { globalStorage.currentSessionUser = try await AuthenticationManager.shared.signInWithAppleWithResult(result, currentNonce: globalStorage.applCurrentNonce)
-                            
+                        do { sessionStorage.userSession = try await AuthenticationManager.shared.signInWithAppleWithResult(result, currentNonce: sessionStorage.applCurrentNonce)
                         } catch {
 #if DEBUG
-                            print("DEBUG:\(error.localizedDescription)")
+                            print("DEBUG: AuthenticationScreen/signInWithApple failed: \(error.localizedDescription)")
 #endif
                         }
                     }
@@ -131,57 +103,24 @@ struct AuthenticationScreen: View {
             .padding(.top,25)
         }
         .fullScreenCover(isPresented: $isSignUp){
-            SignUpView {email, password in
+            SignUpView(email: $sessionStorage.email, password: $sessionStorage.password) {
                 Task{
-                    await globalStorage.signUp(email: email,
-                                               password: password
-                    )
-                    globalStorage.password = password
-                    
+                    await sessionStorage.signUp()
                 }
             }
         }
-        .background(content: {
+        .background{
             MainBackground().ignoresSafeArea()
-        })
+        }
         .scrollDisabled(true)
         .navigationBarBackButtonHidden()
         .accentColor(.black)
     }
 }
 
-
-// MARK: - Email and password fields
-struct BPEmailPasswordStack: View {
-    enum FieldInFocus: Hashable{
-        case firstField, secondField
-    }
-    
-    @FocusState private var isFocused: FieldInFocus?
-    @Binding var email: String
-    @Binding var password: String
-    
-    var body: some View {
-        VStack{
-            BPTextFieldWithIcon(text: $email,
-                                placeholder: "e-mail",
-                                imageName: "envelope")
-            .keyboardType(.emailAddress)
-            .focused($isFocused,equals: .firstField)
-            
-            BPTextFieldWithIcon(text: $password,
-                                placeholder: "password",
-                                imageName: "lock.fill",
-                                isSecureField: true)
-            .keyboardType(.default)
-            .focused($isFocused,equals: .secondField)
-        }
-    }
-}
-
-
 // MARK: - Preview
 #Preview {
-    AuthenticationScreen(globalStorage: GlobalStorage())
+    AuthenticationScreen()
+        .environmentObject(GlobalSessionStorage())
     
 }

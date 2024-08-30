@@ -2,7 +2,7 @@ import SwiftUI
 import Firebase
 import FirebaseFirestore
 import GoogleSignIn
-import NavigationTransitions
+
 
 
 // MARK: - Main App
@@ -10,68 +10,50 @@ import NavigationTransitions
 struct BroadcastPlannerApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @Environment(\.scenePhase) var scenePhase
-    @StateObject private var globalTimer = GlobalTimer()
+    
+    @StateObject private var sessionStorage: GlobalSessionStorage = GlobalSessionStorage()
     @StateObject private var globalStorage = GlobalStorage()
     @StateObject private var globalSettings = GlobalSettings()
-    
-    @State var isStarted: Bool = false
+    @StateObject private var globalTimer = GlobalTimer()
     
     var body: some Scene {
-        
-        // TODO: First Time Loading problem need to debug
-        
+                
         WindowGroup {
-                ZStack{
-                    MainBackground()
-                    if !isStarted {
-                        AnimatedStart(isStarted: $isStarted)
-                            .transition(.opacity)
-                    } else {
-                        if globalStorage.isLogged {
-                            let  _ = print("isLogged")
-                            Home()
-                                .transition(.opacity)
-                        } else {
-                            let _ = print("current user == nil")
-                            AuthenticationScreen(globalStorage: globalStorage)
-                                .transition(.opacity)
+            RootView()
+                .onChange(of: scenePhase, perform: { phase in
+                    if !globalStorage.id.isEmpty{
+                        switch phase {
+                            case .active:
+                                //send online status
+                                print("scene in foreground: send online status")
+                                Task {
+                                    await globalStorage.goOnline()
+                                }
+                                
+                            case .background:
+                                //send offline status
+                                //save local cache: images + data( events, users, messages)
+                                print("scene in background: send offline status")
+                                Task{
+                                    await globalStorage.goOffline()
+                                }
+                                
+                            case .inactive:
+                                print("scene in inactive: send inactive status")
+                                Task {
+                                    await globalStorage.goOffline()
+                                }
+                                
+                            @unknown default:
+                                print("scene in unknown phase: send unknown status")
                         }
                     }
-                }
-            .scrollContentBackground(.hidden)
-            .environmentObject(globalStorage)
-            .environmentObject(globalSettings)
-            .environmentObject(globalTimer)
-            .onChange(of: scenePhase, perform: { phase in
-                switch phase {
-                    case .active:
-                        //send online status
-                        print("scene in foreground: send online status")
-                        Task {
-                            await globalStorage.goOnline()
-                        }
-
-                    case .background:
-                        //send offline status
-                        //save local cache: images + data( events, users, messages)
-                        print("scene in background: send offline status")
-                        Task{
-                            await globalStorage.goOffline()
-                        }
-
-                    case .inactive:
-                        print("scene in inactive: send inactive status")
-                        Task {
-                            await globalStorage.goOffline()
-                        }
-
-                    @unknown default:
-                        print("scene in unknown phase: send unknown status")
-                }
-            })
-            
+                })
+                .environmentObject(sessionStorage)
+                .environmentObject(globalStorage)
+                .environmentObject(globalSettings)
+                .environmentObject(globalTimer)
         }
-        
     }
 }
 

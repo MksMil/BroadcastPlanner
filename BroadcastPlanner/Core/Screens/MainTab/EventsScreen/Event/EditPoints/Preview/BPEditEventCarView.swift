@@ -17,7 +17,7 @@ struct BPEditEventCarView: View {
     var event: Event
     var selectedEventPoint: BPEventPlanPoint?
     
-    @State var pointFilter: BPEventPlanPointStadiumFilter = .all
+    @State var pointFilter: BPEventPlanPointCarFilter = .all
     
     var body: some View {
         ZStack{

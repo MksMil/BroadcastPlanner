@@ -1,7 +1,10 @@
 import SwiftUI
 import UIKit
+import Combine
 
 struct BPAccountInfoView: View {
+    
+    @EnvironmentObject var globalStorage: GlobalStorage
     
     @State private var isEdit: Bool = false
     @State private var isEditSpecialization: Bool = false
@@ -9,18 +12,29 @@ struct BPAccountInfoView: View {
     @State var user: BPUser
     @State var image: UIImage?
     
-    let saveAction: (BPUser, UIImage?) -> Void
+    let saveAction: (BPUser, UIImage?) async -> Void
     
     var body: some View {
         NavigationStack(){
             ZStack{
                 MainBackground()
                 VStack{
-                    InfoBlock(userImage: $image, user: $user, isEdit: isEdit)
+                    InfoBlock(userImage: $image, user: $user, isEdit: $isEdit)
                     SpecializationSection(specialization: $user.specialization, isEditSpecialization: $isEditSpecialization, isEdit: isEdit)
                     Spacer()
                 }
+                
             }
+            .onReceive(globalStorage.$currentUser, perform: { user in
+                guard let user else {
+                    self.user = BPUser()
+                    return
+                }
+                self.user = user
+            })
+            .onReceive(globalStorage.$userProfileImage, perform: { image in
+                self.image = image
+            })
             .navigationTitle(Text("My Info"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -34,7 +48,7 @@ struct BPAccountInfoView: View {
                         }
                         if !isEdit {
                             Task{
-                               saveAction(user,image)
+                              await saveAction(user,image)
                             }
                         }
                     }label: {
@@ -55,13 +69,13 @@ struct BPAccountInfoView: View {
 
 
 struct InfoBlock: View {
-    
+
     @Binding var userImage: UIImage?
     @Binding var user: BPUser
     
     @State var showedImage: Image = Image(systemName: "person.circle")
     
-    var isEdit: Bool
+    @Binding var isEdit: Bool
     @State var inputImage: UIImage?
     @State var showImagePicker: Bool = false
     
@@ -73,7 +87,6 @@ struct InfoBlock: View {
                     .scaledToFill()
                     .frame(width: 100,height: 100)
                     .clipShape(Circle())
-//                    .animation(.easeIn(duration: 0.5), value: showedImage)
                     .background{
                         Circle()
                             .fill(.ultraThickMaterial)
@@ -84,19 +97,18 @@ struct InfoBlock: View {
                     .onTapGesture {
                         showImagePicker.toggle()
                     }
-                    .disabled(!isEdit)
-                
-                VStack{
+                  
+                VStack(alignment: .leading, spacing: 3){
                     
                     UserInfoTextField(text: $user.firstName, isEdit: isEdit, imageName: "", prompt: "first name", axis: .vertical)
-                    
+                
                     Divider()
                     
                     UserInfoTextField(text: $user.lastName, isEdit: isEdit, imageName: "", prompt: "last name", axis: .vertical)
                     
                     Divider()
                 }
-                .font(.title2)
+                .font(.title3)
                 .bold()
                 .frame(maxWidth: .infinity)
                 
@@ -105,15 +117,17 @@ struct InfoBlock: View {
             Section {
                 VStack{
                     
-                    UserInfoTextField(text: $user.phoneNumber, isEdit: isEdit, imageName: "phone.circle.fill", prompt: "phone number", axis: .vertical)
+                    UserInfoTextField(text: $user.phoneNumber, isEdit: isEdit, imageName: "phone.circle.fill", prompt: "phone number", axis: .horizontal)
+                       
                     
                     Divider()
                     
-                    UserInfoTextField(text: $user.email, isEdit: isEdit, imageName: "envelope.circle.fill", prompt: "E-mail", axis: .vertical)
+                    UserInfoTextField(text: $user.email, isEdit: isEdit, imageName: "envelope.circle.fill", prompt: "E-mail", axis: .horizontal)
+                       
                     
                     Divider()
                     UserInfoTextField(text: $user.homeAddress, isEdit: isEdit, imageName: "map.circle.fill", prompt: "Address", axis: .vertical)
-                    
+                  
                     Divider()
                 }
             }
@@ -126,18 +140,21 @@ struct InfoBlock: View {
         }
         .onChange(of: inputImage, perform: { _ in
             if let image = inputImage {
-                withAnimation(.easeIn(duration: 0.2)) {
-                    showedImage = Image(uiImage: image)
                     userImage = image
+            }
+        })
+        .onChange(of: userImage, perform: { _ in
+            if let image = userImage {
+                withAnimation(.easeIn(duration: 0.3)){
+                    showedImage = Image(uiImage: image)
                 }
             }
         })
-        
+        .disabled(!isEdit)
     }
 }
 
 struct UserInfoTextField: View {
-    
     @Binding var text: String
     var isEdit: Bool
     var imageName: String
@@ -145,16 +162,19 @@ struct UserInfoTextField: View {
     var axis: Axis
     
     var body: some View {
-        HStack(alignment: .center){
-            Label("", systemImage: imageName)
-                .labelStyle(.iconOnly)
-                .font(.title)
+        HStack{
+            if !imageName.isEmpty{
+                Image(systemName: imageName)
+                    .resizable()
+                    .frame(width: 30,height: 30)
+                    .scaledToFill()
+            }
             
             TextField("", text: $text, prompt: Text(prompt), axis: axis)
-                .font(.title3)
-                .padding(5)
+                .padding(.vertical,4)
+                .padding(.horizontal,5)
                 .background {
-                    RoundedRectangle(cornerRadius: 10.0).fill(.ultraThinMaterial).opacity(isEdit ? 0.5 : 0)
+                    RoundedRectangle(cornerRadius: 5.0).fill(.ultraThinMaterial).opacity(isEdit ? 0.5 : 0)
                 }
 
         }
@@ -190,10 +210,15 @@ struct SpecializationSection: View {
                     .fontWeight(.light)
                     .foregroundStyle(Color(.systemGray))
             }
+            .padding(.vertical,0)
             .padding(.horizontal)
             Divider()
+                .padding(.vertical,0)
                 .padding(.horizontal,20)
         }
+        
+//        .border(Color.black)
+        
         .disabled(!isEdit)
     }
 }
@@ -201,5 +226,6 @@ struct SpecializationSection: View {
 #Preview {
     BPAccountInfoView(user: BPUser(), saveAction: { user, image in print("\(user.firstName) saved")
         print("specialization: \(user.specialization)")})
+    .environmentObject(GlobalStorage())
 }
 

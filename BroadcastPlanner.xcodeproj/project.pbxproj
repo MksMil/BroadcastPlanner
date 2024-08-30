@@ -14,7 +14,6 @@
 		290B81752AD9149800B858F1 /* MotionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 290B81742AD9149800B858F1 /* MotionManager.swift */; };
 		290FF3B52B5E5E180096D655 /* GlobalStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 290FF3B42B5E5E180096D655 /* GlobalStorage.swift */; };
 		290FF3B72B5E90240096D655 /* BPErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 290FF3B62B5E90240096D655 /* BPErrorView.swift */; };
-		2915AD1A2BF34CED0038239A /* BPAccountInfoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2915AD192BF34CED0038239A /* BPAccountInfoViewModel.swift */; };
 		2915AD1C2BF4A2AA0038239A /* BPUserProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2915AD1B2BF4A2AA0038239A /* BPUserProfileView.swift */; };
 		2916E6072C4E82690025DCC6 /* BPEditEventStuffListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2916E6062C4E82690025DCC6 /* BPEditEventStuffListView.swift */; };
 		2916E6092C4E83650025DCC6 /* BPEditEventJoystickInfoPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2916E6082C4E83650025DCC6 /* BPEditEventJoystickInfoPanel.swift */; };
@@ -27,7 +26,6 @@
 		2916E6222C4FA6FD0025DCC6 /* EventDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2916E6212C4FA6FD0025DCC6 /* EventDataManager.swift */; };
 		2916E6242C4FA71B0025DCC6 /* MessageDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2916E6232C4FA71B0025DCC6 /* MessageDataManager.swift */; };
 		2916E6262C57C3930025DCC6 /* Home.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2916E6252C57C3930025DCC6 /* Home.swift */; };
-		2916E62A2C57E5740025DCC6 /* BPTabBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2916E6292C57E5740025DCC6 /* BPTabBarView.swift */; };
 		2916E62C2C58B83E0025DCC6 /* AnimatedStart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2916E62B2C58B83E0025DCC6 /* AnimatedStart.swift */; };
 		291E72C32BBE859F008092D7 /* BPMessengerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 291E72C22BBE859F008092D7 /* BPMessengerView.swift */; };
 		291E72C92BBEC7B0008092D7 /* UserSpecialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 291E72C82BBEC7B0008092D7 /* UserSpecialization.swift */; };
@@ -60,11 +58,11 @@
 		295943062C60DBB800C2B27C /* EventTabRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 295943052C60DBB800C2B27C /* EventTabRouter.swift */; };
 		295943082C61088700C2B27C /* BPEditConteinerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 295943072C61088700C2B27C /* BPEditConteinerViewModel.swift */; };
 		295943292C64EA8700C2B27C /* BPDateFormater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 295943282C64EA8700C2B27C /* BPDateFormater.swift */; };
+		2963DDBF2C81B51C0030DAC6 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2963DDBE2C81B51C0030DAC6 /* RootView.swift */; };
 		29656CD42B17600A0093A19A /* BroadcastPlannerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29656CD32B17600A0093A19A /* BroadcastPlannerTests.swift */; };
 		2967DF192B61109B003956FD /* UpdateEPView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2967DF182B61109B003956FD /* UpdateEPView.swift */; };
 		2967DF1B2B639A90003956FD /* Error+Modifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2967DF1A2B639A90003956FD /* Error+Modifier.swift */; };
 		2967DF212B64F69B003956FD /* KeyboardAdaptiveModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2967DF202B64F69B003956FD /* KeyboardAdaptiveModifier.swift */; };
-		29778E012C098D88006EF6CE /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29778E002C098D88006EF6CE /* AuthViewModel.swift */; };
 		29778E242C0B85FC006EF6CE /* BPResetPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29778E232C0B85FC006EF6CE /* BPResetPasswordView.swift */; };
 		298932682AE24D7000BD93CA /* BPError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 298932672AE24D7000BD93CA /* BPError.swift */; };
 		299277982B7629FD00B8F892 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 299277972B7629FD00B8F892 /* GoogleService-Info.plist */; };
@@ -92,6 +90,9 @@
 		29C041E72AC69A11008B3E1F /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041E62AC69A11008B3E1F /* Camera.swift */; };
 		29C041E92AC69A5D008B3E1F /* MockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041E82AC69A5D008B3E1F /* MockData.swift */; };
 		29C041F22ACBF45B008B3E1F /* Color+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041F12ACBF45B008B3E1F /* Color+Ext.swift */; };
+		29CCF2EC2C807FE000BCEF34 /* GlobalSessionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29CCF2EB2C807FE000BCEF34 /* GlobalSessionStorage.swift */; };
+		29CCF2F12C80895100BCEF34 /* EmailPasswordStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29CCF2F02C80895100BCEF34 /* EmailPasswordStackView.swift */; };
+		29CCF2F32C80BDD800BCEF34 /* MainRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29CCF2F22C80BDD800BCEF34 /* MainRouter.swift */; };
 		29D1697A2B85D4F800A70638 /* HaptickEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29D169792B85D4F800A70638 /* HaptickEngine.swift */; };
 		29D169802B86188B00A70638 /* BPValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29D1697F2B86188B00A70638 /* BPValidator.swift */; };
 		29D169832B86303C00A70638 /* EventModelTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29D169822B86303C00A70638 /* EventModelTest.swift */; };
@@ -127,7 +128,6 @@
 		290B81742AD9149800B858F1 /* MotionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionManager.swift; sourceTree = "<group>"; };
 		290FF3B42B5E5E180096D655 /* GlobalStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalStorage.swift; sourceTree = "<group>"; };
 		290FF3B62B5E90240096D655 /* BPErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPErrorView.swift; sourceTree = "<group>"; };
-		2915AD192BF34CED0038239A /* BPAccountInfoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPAccountInfoViewModel.swift; sourceTree = "<group>"; };
 		2915AD1B2BF4A2AA0038239A /* BPUserProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPUserProfileView.swift; sourceTree = "<group>"; };
 		2916E6062C4E82690025DCC6 /* BPEditEventStuffListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPEditEventStuffListView.swift; sourceTree = "<group>"; };
 		2916E6082C4E83650025DCC6 /* BPEditEventJoystickInfoPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPEditEventJoystickInfoPanel.swift; sourceTree = "<group>"; };
@@ -139,7 +139,6 @@
 		2916E6212C4FA6FD0025DCC6 /* EventDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventDataManager.swift; sourceTree = "<group>"; };
 		2916E6232C4FA71B0025DCC6 /* MessageDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageDataManager.swift; sourceTree = "<group>"; };
 		2916E6252C57C3930025DCC6 /* Home.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Home.swift; sourceTree = "<group>"; };
-		2916E6292C57E5740025DCC6 /* BPTabBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPTabBarView.swift; sourceTree = "<group>"; };
 		2916E62B2C58B83E0025DCC6 /* AnimatedStart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedStart.swift; sourceTree = "<group>"; };
 		291E72C22BBE859F008092D7 /* BPMessengerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPMessengerView.swift; sourceTree = "<group>"; };
 		291E72C82BBEC7B0008092D7 /* UserSpecialization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSpecialization.swift; sourceTree = "<group>"; };
@@ -168,12 +167,12 @@
 		295943052C60DBB800C2B27C /* EventTabRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventTabRouter.swift; sourceTree = "<group>"; };
 		295943072C61088700C2B27C /* BPEditConteinerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPEditConteinerViewModel.swift; sourceTree = "<group>"; };
 		295943282C64EA8700C2B27C /* BPDateFormater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPDateFormater.swift; sourceTree = "<group>"; };
+		2963DDBE2C81B51C0030DAC6 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		29656CD12B17600A0093A19A /* BroadcastPlannerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BroadcastPlannerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		29656CD32B17600A0093A19A /* BroadcastPlannerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BroadcastPlannerTests.swift; sourceTree = "<group>"; };
 		2967DF182B61109B003956FD /* UpdateEPView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateEPView.swift; sourceTree = "<group>"; };
 		2967DF1A2B639A90003956FD /* Error+Modifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Error+Modifier.swift"; sourceTree = "<group>"; };
 		2967DF202B64F69B003956FD /* KeyboardAdaptiveModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardAdaptiveModifier.swift; sourceTree = "<group>"; };
-		29778E002C098D88006EF6CE /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
 		29778E232C0B85FC006EF6CE /* BPResetPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPResetPasswordView.swift; sourceTree = "<group>"; };
 		298932672AE24D7000BD93CA /* BPError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPError.swift; sourceTree = "<group>"; };
 		299277972B7629FD00B8F892 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -205,6 +204,9 @@
 		29C041E62AC69A11008B3E1F /* Camera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
 		29C041E82AC69A5D008B3E1F /* MockData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockData.swift; sourceTree = "<group>"; };
 		29C041F12ACBF45B008B3E1F /* Color+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Ext.swift"; sourceTree = "<group>"; };
+		29CCF2EB2C807FE000BCEF34 /* GlobalSessionStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalSessionStorage.swift; sourceTree = "<group>"; };
+		29CCF2F02C80895100BCEF34 /* EmailPasswordStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailPasswordStackView.swift; sourceTree = "<group>"; };
+		29CCF2F22C80BDD800BCEF34 /* MainRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainRouter.swift; sourceTree = "<group>"; };
 		29D169792B85D4F800A70638 /* HaptickEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HaptickEngine.swift; sourceTree = "<group>"; };
 		29D1697F2B86188B00A70638 /* BPValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPValidator.swift; sourceTree = "<group>"; };
 		29D169822B86303C00A70638 /* EventModelTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventModelTest.swift; sourceTree = "<group>"; };
@@ -352,6 +354,7 @@
 			isa = PBXGroup;
 			children = (
 				295943052C60DBB800C2B27C /* EventTabRouter.swift */,
+				29CCF2F22C80BDD800BCEF34 /* MainRouter.swift */,
 			);
 			path = Routers;
 			sourceTree = "<group>";
@@ -374,7 +377,6 @@
 		291E72C42BBE8961008092D7 /* PersonalScreen */ = {
 			isa = PBXGroup;
 			children = (
-				2915AD192BF34CED0038239A /* BPAccountInfoViewModel.swift */,
 				291E72CA2BBEDF23008092D7 /* BPAccountInfoView.swift */,
 			);
 			path = PersonalScreen;
@@ -468,7 +470,6 @@
 		2955C9682B4E4157003F9ADC /* AuthenticationScreen */ = {
 			isa = PBXGroup;
 			children = (
-				29778E002C098D88006EF6CE /* AuthViewModel.swift */,
 				2955C9692B4E416D003F9ADC /* AuthenticationScreen.swift */,
 				29778E042C0A36AC006EF6CE /* ForgetPasswordFlow */,
 				2955C9702B4EE217003F9ADC /* RegistrationFlow */,
@@ -480,6 +481,7 @@
 		2955C96B2B4ECADA003F9ADC /* ViewsAndViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				29CCF2EF2C80891100BCEF34 /* AuthenticationGroup */,
 				29418D902C6CCD8B007CC6F3 /* FilterViews */,
 				292D66462BD79989009A2187 /* Layout */,
 				2967DF152B5FD507003956FD /* ErrorViews */,
@@ -508,7 +510,6 @@
 		2955C9712B4EE717003F9ADC /* MainTab */ = {
 			isa = PBXGroup;
 			children = (
-				2916E6292C57E5740025DCC6 /* BPTabBarView.swift */,
 				290B816E2AD7FCBC00B858F1 /* EventsScreen */,
 				291E72C42BBE8961008092D7 /* PersonalScreen */,
 				291E72C12BBE8575008092D7 /* MessengerScreen */,
@@ -633,11 +634,12 @@
 		29AE68782BE2567D00DE8FAB /* EnvStorageGroup */ = {
 			isa = PBXGroup;
 			children = (
+				29CCF2EB2C807FE000BCEF34 /* GlobalSessionStorage.swift */,
 				290FF3B42B5E5E180096D655 /* GlobalStorage.swift */,
-				29C041E82AC69A5D008B3E1F /* MockData.swift */,
 				29E10F632C21696B00A35A4B /* GlobalSettings.swift */,
 				29E10F652C2169C400A35A4B /* GlobalProperties.swift */,
 				29418D8E2C6639D7007CC6F3 /* GlobalTimer.swift */,
+				29C041E82AC69A5D008B3E1F /* MockData.swift */,
 			);
 			path = EnvStorageGroup;
 			sourceTree = "<group>";
@@ -742,6 +744,7 @@
 				2955C9712B4EE717003F9ADC /* MainTab */,
 				2955C9682B4E4157003F9ADC /* AuthenticationScreen */,
 				2916E6252C57C3930025DCC6 /* Home.swift */,
+				2963DDBE2C81B51C0030DAC6 /* RootView.swift */,
 			);
 			path = Screens;
 			sourceTree = "<group>";
@@ -753,6 +756,14 @@
 				29389C3B2B8EE62F003EF60C /* UIKit+ext.swift */,
 			);
 			path = Extensions;
+			sourceTree = "<group>";
+		};
+		29CCF2EF2C80891100BCEF34 /* AuthenticationGroup */ = {
+			isa = PBXGroup;
+			children = (
+				29CCF2F02C80895100BCEF34 /* EmailPasswordStackView.swift */,
+			);
+			path = AuthenticationGroup;
 			sourceTree = "<group>";
 		};
 		29D1697E2B86182900A70638 /* Validators */ = {
@@ -934,10 +945,12 @@
 				290B81752AD9149800B858F1 /* MotionManager.swift in Sources */,
 				2955C9822B57C1BE003F9ADC /* SessionUser.swift in Sources */,
 				2916E6202C4FA6E10025DCC6 /* UserDataManager.swift in Sources */,
+				29CCF2F12C80895100BCEF34 /* EmailPasswordStackView.swift in Sources */,
 				293752AA2BF8CD950044924D /* BPEventFilterCaseTabView.swift in Sources */,
 				295114332C4E73F5005E4BF8 /* BPEditConteinerView.swift in Sources */,
 				292D66572BD7BFAC009A2187 /* ImagePicker.swift in Sources */,
 				29379F2C2C74EEA1009289F7 /* ImageManager.swift in Sources */,
+				29CCF2EC2C807FE000BCEF34 /* GlobalSessionStorage.swift in Sources */,
 				291E72CF2BBEEBDD008092D7 /* BPSpecializationCellView.swift in Sources */,
 				292D664F2BD7998A009A2187 /* SmartLayout.swift in Sources */,
 				2916E6112C4E8FB20025DCC6 /* BPEditEventBottomGroup.swift in Sources */,
@@ -949,6 +962,8 @@
 				2916E6092C4E83650025DCC6 /* BPEditEventJoystickInfoPanel.swift in Sources */,
 				2967DF1B2B639A90003956FD /* Error+Modifier.swift in Sources */,
 				2994DE672C157C9F00DF9060 /* BPCreateEditEventView.swift in Sources */,
+				2963DDBF2C81B51C0030DAC6 /* RootView.swift in Sources */,
+				29CCF2F32C80BDD800BCEF34 /* MainRouter.swift in Sources */,
 				29C041D22AC55C7A008B3E1F /* Event.swift in Sources */,
 				29AE68762BE24F9A00DE8FAB /* Message.swift in Sources */,
 				2994DE6C2C15A2D900DF9060 /* BPEventHeaderView.swift in Sources */,
@@ -963,7 +978,6 @@
 				29C041E92AC69A5D008B3E1F /* MockData.swift in Sources */,
 				2916E6242C4FA71B0025DCC6 /* MessageDataManager.swift in Sources */,
 				2915AD1C2BF4A2AA0038239A /* BPUserProfileView.swift in Sources */,
-				2915AD1A2BF34CED0038239A /* BPAccountInfoViewModel.swift in Sources */,
 				29BF35852BFB281600113946 /* BPEventPlan.swift in Sources */,
 				290B81702AD7FCE700B858F1 /* MainEventsList.swift in Sources */,
 				2916E6262C57C3930025DCC6 /* Home.swift in Sources */,
@@ -991,13 +1005,11 @@
 				29389C3A2B8EE2EB003EF60C /* AppleHelper.swift in Sources */,
 				2955C96D2B4ECB05003F9ADC /* BPTextFieldWithIcon.swift in Sources */,
 				29C041E72AC69A11008B3E1F /* Camera.swift in Sources */,
-				2916E62A2C57E5740025DCC6 /* BPTabBarView.swift in Sources */,
 				29418D922C6CCDAE007CC6F3 /* FiltersEnums.swift in Sources */,
 				290FF3B72B5E90240096D655 /* BPErrorView.swift in Sources */,
 				29D169802B86188B00A70638 /* BPValidator.swift in Sources */,
 				29778E242C0B85FC006EF6CE /* BPResetPasswordView.swift in Sources */,
 				29E10F662C2169C400A35A4B /* GlobalProperties.swift in Sources */,
-				29778E012C098D88006EF6CE /* AuthViewModel.swift in Sources */,
 				290B816D2AD7F03900B858F1 /* CameraPosition.swift in Sources */,
 				29C041C02AC556CE008B3E1F /* BroadcastPlannerApp.swift in Sources */,
 				291E72C32BBE859F008092D7 /* BPMessengerView.swift in Sources */,

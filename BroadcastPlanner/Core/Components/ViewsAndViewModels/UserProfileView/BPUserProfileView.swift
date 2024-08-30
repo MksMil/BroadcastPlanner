@@ -46,7 +46,7 @@ struct BPUserProfileView: View {
                         }
                         .padding(.trailing,15)
                 
-                    VStack(alignment: .trailing){
+                    VStack(alignment: .leading){
                         Text(user.firstName)
                             .padding(.vertical,4)
                             .padding(.horizontal,5)
@@ -69,11 +69,12 @@ struct BPUserProfileView: View {
                             .resizable()
                             .frame(width: 30,height: 30)
                             .scaledToFill()
-                        Spacer()
+                        
                         Link(user.phoneNumber,
                              destination: URL(string:"tel:\(user.phoneNumber)")!)
                             .padding(.vertical,4)
                             .padding(.horizontal,5)
+                        Spacer()
                     }
                     Divider()
                     HStack{
@@ -81,11 +82,12 @@ struct BPUserProfileView: View {
                             .resizable()
                             .frame(width: 30,height: 30)
                             .scaledToFill()
-                        Spacer()
+                        
                         Link(user.email,
                              destination: URL(string: "mailto:\(user.email)")!)
                             .padding(.vertical,4)
                             .padding(.horizontal,5)
+                        Spacer()
                     }
                     Divider()
                     HStack{
@@ -93,10 +95,11 @@ struct BPUserProfileView: View {
                             .resizable()
                             .frame(width: 30,height: 30)
                             .scaledToFill()
-                        Spacer()
+
                         Text(user.homeAddress)
                             .padding(.vertical,4)
                             .padding(.horizontal,5)
+                        Spacer()
                     }
                     Divider()
 

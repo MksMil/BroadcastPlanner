@@ -48,7 +48,7 @@ struct BPUserDataListCellView: View {
         if let image  {
             return Image(uiImage: image)
         } else {
-            return Image(systemName: "person")
+            return Image(systemName: "person.circle")
         }
     }
 }

@@ -2,6 +2,7 @@
 //  Object for manage global data through the app
 
 import SwiftUI
+import UIKit
 import Combine
 
 @MainActor
@@ -10,20 +11,13 @@ final class GlobalStorage: ObservableObject{
     var networkManager: NetworkManagerProtocol?
     var settings: GlobalSettings
     
-    // MARK: - Authentication
-    var applCurrentNonce: String = ""
+    @Published var id: String = ""
     
-    // TODO: Safety
-    @AppStorage("password") var password: String = ""
-    
-    @Published var currentEmail: String = ""
-    @Published var isLogged: Bool = false
-    
-    @Published var currentSessionUser: SessionUser?
     @Published var currentUser: BPUser?
     @Published var userProfileImage: UIImage?
-    var usersImages: [String : UIImage] = [:]
+    
     //data
+    var usersImages: [String : UIImage] = [:]
     @Published var users: [BPUser] = []
     @Published var events: [Event] = []
 
@@ -32,13 +26,11 @@ final class GlobalStorage: ObservableObject{
     var eventTemplates: [BPEventPlan] = []
     var cancellables: Set<AnyCancellable> = []
     
-    
     // MARK: - Init
     
     init()  {
         self.settings = GlobalSettings()
         self.networkManager = NetworkManager()
-        self.configure()
     }
     
     convenience init(currentUser: BPUser) {
@@ -48,127 +40,62 @@ final class GlobalStorage: ObservableObject{
     
     func configure() {
         //set current session and fetch cache and network newData
-        $currentSessionUser
-            .sink { [weak self] sessionUser in
-                guard let self else { return }
-                if let sessionUser{
-                    Task{
-                        await self.getCurrentUserData()
-                        
-                        if self.currentUser == nil{
-                            await self.createUser(id: sessionUser.id, email: sessionUser.email ?? "")
-                        }
-                        await self.getUsers()
-                        self.currentUser = self.users.first(where: { user in
-                            user.id == sessionUser.id
-                        })
-                        self.isLogged = true
-                    }
-                } else {
-                    self.currentUser = nil
-                }
-            }
-            .store(in: &cancellables)
-        
-        $users
-            .sink { [weak self] users in
-                guard let self else { return}
-                for user in users {
-                    guard let id = user.id else { return }
-                    Task{
-                        await self.loadImage(id: id) { image in
-                            self.usersImages[id] = image
-                        }
-                    }
-                }
-            }
-            .store(in: &cancellables)
-        
-        getCurrentSession()
-    }
-    
-    func loadImage(){
-        //load from local storage
-        if let path = FileManager
-            .default
-            .urls(for: .documentDirectory,
-                  in: .userDomainMask)
-                .first?
-            .appending(path: "\(ImagePath.userImage.rawValue)/\(currentUser?.id ?? "").jpeg",directoryHint: .notDirectory)
-          {
-            if let data = FileManager.default.contents(atPath: path.relativePath){
-                userProfileImage = (UIImage(data: data))
-            }
-        }
-    }
-    
-    func getCurrentSession() {
         Task{
-            currentSessionUser = await networkManager?.getCurrentSessionUserInfo()
+            await self.getUsers()
+            await self.loadImages()
+//            await self.getUserData()
+            await self.getEvents()
+            await self.getChats()
+            await self.getEventTemplates()
+            
         }
     }
     
-    func getCurrentUserData() async {
-        guard let id = currentSessionUser?.id,
-              let user = await networkManager?.getCurrentUserData(id: id)
-        else { return }
-        
+    
+    // MARK: - user upload
+    func saveUser(user: BPUser, userImage: UIImage?) async {
         currentUser = user
-        await getEvents()
-    }
-    
-    func createUser(id: String, email: String) async {
-        await networkManager?.createUser(id: id, email: email)
-//        self.password
-    }
-    
-    func signUp(email: String, password: String) async{
-        do { currentSessionUser = try await AuthenticationManager.shared.createUser(
-            email: email,
-            password: password
-        )
-        } catch{
-#if DEBUG
-                            print("DEBUG:\(error.localizedDescription)")
-#endif
-        }
-    }
-    
-    func saveUser(userImage: UIImage?) async {
-        guard let currentUser else { return }
-        await networkManager?.saveUser(user: currentUser, image: userImage)
+        userProfileImage = userImage
+        await networkManager?.saveUser(user: user, image: userImage)
     }
     
     //-------------------
-    
-    
-    
-    func updateEmailPassword(newValue: String, updEp: UpdatedEP) async{
-        guard let currentSessionUser,
-              let oldValue = currentSessionUser.email 
-        else {
-            print("wrong userSession")
-            //alert?
-            return
-        }
-        AuthenticationManager.shared.update(email: oldValue,
-                                            password: password,
-                                            updEp:updEp == .email ? .email: .password,
-                                            newValue: newValue)
-    }
-    //
-    //    func saveImage(image: UIImage) async{
-    //        guard let id = currentUser?.id else { return }
-    //        await networkManager?.saveImageToGlobalStorage(id: id,image: image)
-    //    }
-    
-    
-    func loadImage(id: String, completion: @escaping (UIImage?)->() ) async {
-        await networkManager?.loadImageFromGlobalStorage(id: id, path: .userImage) {
-            completion($0)
-        }
-    }
+
+
+
 }
+
+// MARK: - load images from storage
+extension GlobalStorage {
+    
+    
+    //        //load from local storage
+    //        if let path = FileManager
+    //            .default
+    //            .urls(for: .documentDirectory,
+    //                  in: .userDomainMask)
+    //                .first?
+    //            .appending(path: "\(ImagePath.userImage.rawValue)/\(currentUser?.id ?? "").jpeg",directoryHint: .notDirectory)
+    //          {
+    //            if let data = FileManager.default.contents(atPath: path.relativePath){
+    //                userProfileImage = (UIImage(data: data))
+    //            }
+    //        }
+    
+    
+    func loadImages() async{
+        await networkManager?.loadImagesFromGlobalStorage(path: .userImage,
+                                                          completion: {  key, image in
+//            guard let self else { return }
+            self.usersImages[key] = image
+            if key == self.id {
+                self.userProfileImage = image
+            }
+        })
+    }
+    
+}
+
 
 
 // MARK: - load data section
@@ -176,7 +103,13 @@ extension GlobalStorage{
     func getUsers() async {
         guard let globUsers = await networkManager?.getUsers() else { return }
         users = globUsers
+        currentUser = users.first(where: { user in
+            user.id == self.id
+        })
+        
     }
+    
+
     
     func getEvents() async {
         guard let events = await networkManager?.getEvents() else { return }
@@ -191,7 +124,9 @@ extension GlobalStorage{
         guard let templates = await networkManager?.getEventteamplates() else { return }
         self.eventTemplates = templates
     }
-    
+}
+    // MARK: - Event Teamplates managment section
+    extension GlobalStorage{
     func appendEventPlanTeamplate(plan: BPEventPlan) async {
         self.eventTemplates.append(plan)
         await networkManager?.appendEventTemolate(plan: plan)
@@ -203,15 +138,15 @@ extension GlobalStorage{
     }
 }
 
-// MARK: - Onlain / Offlain managment for messenger usability
+// MARK: - Online / Offline managment for messenger usability
 extension GlobalStorage{
     func goOnline() async {
-        guard let id = currentSessionUser?.id else { return }
+//        guard let id = currentSessionUser?.id else { return }
         await networkManager?.goOnline(id: id)
     }
     
     func goOffline()async {
-        guard let id = currentSessionUser?.id else { return }
+//        guard let id = currentSessionUser?.id else { return }
         await networkManager?.goOffline(id: id)
     }
     

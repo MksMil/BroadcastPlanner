@@ -36,10 +36,12 @@ protocol NetworkManagerProtocol: AnyObject {
     func goOffline(id: String) async
     
     //save image to firestore
-    func saveImageToGlobalStorage(id: String, path: ImagePath,image: UIImage) async -> String
+    func saveImageToGlobalStorage(id: String, path: ImagePath,image: UIImage) async
     
     //load image from firestore
-    func loadImageFromGlobalStorage(id: String, path: ImagePath, completion: @escaping (UIImage?) -> () ) async
+    func loadImagesFromGlobalStorage( path: ImagePath, completion: @escaping (String, UIImage) -> () ) async
+    
+    //events managment
     func removeEvent(_ event: Event) async
     
     //event templates
@@ -52,16 +54,16 @@ protocol NetworkManagerProtocol: AnyObject {
 final class NetworkManager: NetworkManagerProtocol {
         
     var db: Firestore
-    var storage: Storage
     
     init() {
         self.db = Firestore.firestore()
-        self.storage = Storage.storage()
     }
     
     @MainActor
     func getCurrentSessionUserInfo() async -> SessionUser?{
+        print("networkmanager start to receive current user")
         guard let currentUser = Auth.auth().currentUser else { return nil }
+        print("networkmanager received curret user")
         return SessionUser(user: currentUser)
     }
     
@@ -102,13 +104,14 @@ final class NetworkManager: NetworkManagerProtocol {
     
     @MainActor
     func saveUser(user: BPUser, image: UIImage?) async {
-
         guard let id = user.id else { return }
         
         let userRef = db.collection("users")
         do {
             let data = try Firestore.Encoder().encode(user)
             try await userRef.document(id).setData(data)
+            guard let image else { return }
+            await saveImageToGlobalStorage(id: id, path: .userImage, image: image)
         } catch {
 #if DEBUG
             print("DEBUG: save user error: \(error.localizedDescription)")
@@ -123,6 +126,7 @@ final class NetworkManager: NetworkManagerProtocol {
         do {
             let usersSnapshot = try await usersRef.getDocuments()
             let users = usersSnapshot.documents.compactMap{try? $0.data(as: BPUser.self)}
+            print("network manager finish get Users")
             return users
         } catch {
 #if DEBUG
@@ -133,10 +137,11 @@ final class NetworkManager: NetworkManagerProtocol {
     }
 
     // MARK: - Save/Load Images
-    
-    func saveImageToGlobalStorage(id: String, path: ImagePath,image: UIImage) async -> String {
+//    @MainActor
+    // TODO: thread problem
+    func saveImageToGlobalStorage(id: String, path: ImagePath,image: UIImage) async {
         guard let imageData = image.jpegData(compressionQuality: 1) else {
-            return ""
+            return
         }
         
         //save to local
@@ -155,30 +160,46 @@ final class NetworkManager: NetworkManagerProtocol {
         }
         
         //save to global
-        let storageRef = storage.reference()
+        let storageRef = Storage.storage().reference()
         let imageRef = storageRef.child("\(ImagePath.userImage.rawValue)/\(id)")
-        do{
-            let _ = imageRef.putData(imageData)
-            let url = try await imageRef.downloadURL().absoluteString
-            return url
-        }catch{
-#if DEBUG
-            print("DEBUG: upload image error: \(error)")
-            print("DEBUG: upload image error locdes: \(error.localizedDescription)")
-#endif
-            return ""
-        }
+        imageRef.putData(imageData)
     }
     
     @MainActor
-    func loadImageFromGlobalStorage(id: String, path: ImagePath, completion: @escaping (UIImage?) -> () ) async {
+    func loadImagesFromGlobalStorage(path: ImagePath, completion: @escaping (String, UIImage) -> () ) async {
         
         //load from local
-        if let url = getPath(name: path)?.appending(path: "\(id).jpeg", directoryHint: .notDirectory) {
-            if let data = FileManager.default.contents(atPath: url.relativePath){
-                completion(UIImage(data: data))
+//        if let url = getPath(name: path)?.appending(path: "\(id).jpeg", directoryHint: .notDirectory) {
+//            if let data = FileManager.default.contents(atPath: url.relativePath){
+//                completion(UIImage(data: data))
+//            }
+//        }
+        
+        //load from firebase
+        let storageRef = Storage.storage().reference()
+        let imagesRef = storageRef.child("\(ImagePath.userImage.rawValue)")
+        do {
+            let result = try await imagesRef.listAll()
+
+            for item in result.items {
+                item.getData(maxSize: 3 * 1024 * 1024) { data, error in
+                    if error != nil {
+                        print("download error occured")
+                    }
+                    if let data {
+                        print("data loaded item: \(item.name)")
+                        if let image = UIImage(data: data){
+                            completion(item.name, image)
+                        } else {
+                            print("decoding image problem")
+                        }
+                    }
+                }
             }
+        } catch {
+            print("download error catched")
         }
+        
     }
     //sync image between local and global
     func syncImage(id: String, path: ImagePath){

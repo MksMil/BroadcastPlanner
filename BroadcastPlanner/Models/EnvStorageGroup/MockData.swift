@@ -10,7 +10,11 @@ class MockData {
         eventPlan: BPEventPlan()
     )
     
-    static var sampleUser: BPUser =  BPUser()
+    static var sampleUser: BPUser {
+       let user = BPUser()
+        user.specialization = [UserSpecialization.director.rawValue, UserSpecialization.cameramen.rawValue]
+        return user
+    }
     static let sampleStadium: EventLocation = EventLocation(
         title: "ARENA - LVIV",
         city: "Lviv",

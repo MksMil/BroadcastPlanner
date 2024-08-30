@@ -6,34 +6,32 @@
 //
 
 import SwiftUI
+import Combine
 
 struct AnimatedStart: View {
     
     @State private var animate: Bool = false
-    @Binding var isStarted: Bool
-    
     
     var body: some View {
         Text("BP")
             .font(.system(size: 200))
-            .opacity(animate ? 1 : 0)
+            .opacity(animate ? 1 : 0.5)
             .background {
                 Circle()
                     .stroke (Color.black, lineWidth: 20)
                     .padding(-30)
-                    .opacity(animate ? 1 : 0)
+                    .opacity(animate ? 1 : 0.5)
             }
-            .task{
-                withAnimation(.easeIn(duration: 2)){
-                    animate = true
-                }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2){
-                    isStarted = true
-                }
+            .onAppear{
+                withAnimation(
+                    .linear(duration: 1)
+                    .repeatForever()) {
+                        animate.toggle()
+                    }
             }
     }
 }
 
 #Preview {
-    AnimatedStart(isStarted: .constant(false))
+    AnimatedStart()
 }

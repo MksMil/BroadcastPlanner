@@ -195,13 +195,6 @@ struct BPEventHeaderView: View {
                 .padding(.horizontal)
                 .presentationDetents([.fraction(0.65)])
             })
-//            .onAppear{
-//                homeImageString = event.homeImageString
-//                guestImageString = event.guestImageString
-//                eventDate = event.date
-//                title = event.eventLocation.title
-//                setBackgroundImage()
-//            }
             .onReceive(timer.timer) { _ in
                 timerCounter += 1
                 if timerCounter > 5 {
@@ -210,6 +203,7 @@ struct BPEventHeaderView: View {
                 }
             }
         }
+    //circular background
     func updateBackground(){
         if event.eventLocation.imageStrings.isEmpty{
             backImage = "neitral"
@@ -233,13 +227,20 @@ struct BPEventHeaderView: View {
     }
 }
 
+//#Preview {
+//    BPEventHeaderView(event: .constant(MockData.sampleEvent)
+//    )
+//        .environmentObject(GlobalSettings())
+//        .environmentObject(GlobalTimer())
+//}
+
 #Preview {
-    
-    
-    BPEventHeaderView(event: .constant(MockData.sampleEvent)
-    )
+    NavigationStack{
+        BPCreateEditEventView( event: MockData.sampleEvent)
+    }
         .environmentObject(GlobalSettings())
+        .environmentObject(GlobalStorage())
+        .environmentObject(EventTabRouter())
         .environmentObject(GlobalTimer())
 }
-
 

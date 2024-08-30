@@ -10,6 +10,13 @@ struct BPCreateEditEventView: View {
         
     @State private var type: PlanSectionType?
     
+    var editable: Bool {
+//        event.owners.contains { id in
+//            id == globalStorage.id
+//        }
+        return true
+    }
+    
     var body: some View {
         
             ZStack(alignment: .bottomTrailing){
@@ -20,7 +27,8 @@ struct BPCreateEditEventView: View {
                     BPEventHeaderView(event: $event)
                         .frame(maxWidth: .infinity)
                         .frame(height: 300)
-                        .padding(.top,30)
+                        .padding(.top,-30)
+                        .disabled(!editable)
                     GeometryReader{ geo in
                         BPEditEventPointLinks(event: event){
                             type = .stadium
@@ -42,56 +50,49 @@ struct BPCreateEditEventView: View {
                     Spacer()
                 }
                 .frame(maxWidth: .infinity)
-                .ignoresSafeArea()
-                
-                // MARK: - save / delete hstack
-                
-                HStack{
-                    Button {
-                        Task{
-                            globalStorage.removeEvent(event)
-                            eventRouter.routeStepBack()
-                        }
-                    } label: {
-                        Capsule()
-                            .fill(.ultraThickMaterial)
-                            .frame( height: 30)
-                            .overlay {
-                                HStack{
-                                    Text("Delete")
-                                }
-                            }
-                            .shadow(color: .red.opacity(0.4),
-                                    radius: 4)
-                    }
-                    Button {
-                        Task{
-                            await  globalStorage.updateEvent(event)
-                        }
-                    } label: {
-                        Capsule()
-                            .fill(.ultraThickMaterial)
-                            .frame( height: 30)
-                            .overlay {
-                                HStack{
-                                    Text("Save")
-                                }
-                            }
-                            .shadow(color: .green.opacity(0.4),
-                                    radius: 4)
-                    }
-                }
-                .font(.title2)
-                .padding()
+//                .ignoresSafeArea()
             }
             .fullScreenCover(item: $type) { type in
                 BPEditConteinerView(event: event, type: type)
             }
+            .navigationTitle("Event")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarBackground(.ultraThinMaterial.opacity(0.1), for: .navigationBar)
+            .toolbar(content: {
+                if editable{
+                    HStack{
+                        Button(action: {
+                            Task{
+                                globalStorage.removeEvent(event)
+                                eventRouter.routeStepBack()
+                            }
+                        }, label: {
+                            Image(systemName: "trash")
+                            
+                        })
+                        
+                        Divider()
+                        
+                        Button(action: {
+                            Task{
+                                await  globalStorage.updateEvent(event)
+                                eventRouter.routeStepBack()
+                            }
+                        }, label: {
+                            Image(systemName: "checkmark.circle")
+                            
+                        })
+                    }
+                }
+            })
         }
 }
 
 #Preview {
-    BPCreateEditEventView( event: MockData.sampleEvent)
+    NavigationStack{
+        BPCreateEditEventView( event: MockData.sampleEvent)
+    }
         .environmentObject(GlobalSettings())
         .environmentObject(GlobalStorage())
         .environmentObject(EventTabRouter())
