@@ -50,5 +50,7 @@ struct Home: View {
 #Preview {
     Home()
         .environmentObject(GlobalStorage())
-        
+        .environmentObject(GlobalTimer())
+        .environmentObject(GlobalSettings())
+        .environmentObject(GlobalSessionStorage())
 }

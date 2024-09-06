@@ -1,21 +1,24 @@
 import SwiftUI
 
 struct BPEditEventJoystickInfoPanel: View {
+    @EnvironmentObject var editManager: EditPlanPointsManager
     
     // MARK: - Actions
     
-    let moveUp: () -> Void = {}
-    let moveDown: () -> Void = {}
-    let moveLeft: () -> Void = {}
-    let moveRight: () -> Void = {}
-    let rotateLeft: () -> Void = {}
-    let rotateRight: () -> Void = {}
+    let moveUp: () -> Void
+    let moveDown: () -> Void
+    let moveLeft: () -> Void
+    let moveRight: () -> Void
+    let rotateLeft: () -> Void
+    let rotateRight: () -> Void 
     
     
-    var selectedEventPoint: BPEventPlanPoint?
+   @State var selectedEventPoint: BPEventPlanPoint?
     
     var body: some View {
         HStack{
+            // TODO: More useful customize
+            //InfoPanel
             ScrollView {
                 VStack{
                     HStack{
@@ -55,6 +58,7 @@ struct BPEditEventJoystickInfoPanel: View {
             
             Spacer()
             
+            //joystick
             VStack{
                 BPJoystick(
                     upAction: moveUp,
@@ -76,9 +80,15 @@ struct BPEditEventJoystickInfoPanel: View {
                 Spacer()
             }
         }
+        .onReceive(editManager.$selectedEventPoint, perform: { _ in
+            if let point = editManager.selectedEventPoint{
+                self.selectedEventPoint = point
+            }
+        })
     }
 }
 
 #Preview {
-    BPEditEventJoystickInfoPanel()
+    BPEditEventJoystickInfoPanel(moveUp: {}, moveDown: {}, moveLeft: {}, moveRight: {}, rotateLeft: {}, rotateRight: {})
+        .environmentObject(EditPlanPointsManager())
 }

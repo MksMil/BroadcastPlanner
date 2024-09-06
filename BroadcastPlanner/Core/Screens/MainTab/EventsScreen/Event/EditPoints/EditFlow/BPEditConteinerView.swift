@@ -4,10 +4,15 @@ import SpriteKit
 struct BPEditConteinerView: View {
     
     @Environment(\.dismiss) var dismiss
-    var event: Event
+    @EnvironmentObject var editManager: EditPlanPointsManager
+    
+    @Binding var event: Event
     var type: PlanSectionType = .car
+    var editable: Bool
+    
     
     @State var isEditState: Bool = false
+    
     @State private var stadiumFilter: BPEventPlanPointStadiumFilter = .all
     @State private var carFilter: BPEventPlanPointCarFilter = .all
     
@@ -64,7 +69,6 @@ struct BPEditConteinerView: View {
     var body: some View {
         ZStack{
             MainBackground()
-//                .opacity(0.2)
             VStack{
                 //filter
                 Rectangle().fill(.ultraThinMaterial)
@@ -89,35 +93,45 @@ struct BPEditConteinerView: View {
                             Spacer()
                         }
                     }
+                
                 //SKView
                 
-                BPEditEventPlanPointsView(event: event,
-                                          type: type,
-                                          isEditState: isEditState,
-                                          isCarEdit: type == .car)
-                    .aspectRatio(1.5, contentMode: .fit)
-                    .frame(maxWidth: .infinity)
-                    .padding(.horizontal)
+                    SpriteView(scene: editManager.renderScene)
+                        .aspectRatio(1.5, contentMode: .fit)
+                        .frame(maxWidth: .infinity)
+                        .padding(.horizontal)
+                
                   
                 //control panel
-                BPEditEventControlPanel()
+                BPEditEventControlPanel(addAction: {editManager.addPoint()},
+                                        deleteAction: {editManager.deletePoint()},
+                                        saveAction: {editManager.save()},
+                                        scaleUpAction: {editManager.scaleUp()},
+                                        scaleDownAction: {editManager.scaleDown()},
+                                        resetScaleAction: {editManager.resetScale()},
+                                        isEdit: $isEditState)
                     .padding(.horizontal)
-//                    .randomColorBackground()
                 //users collection
                 
                 BPEditEventBottomGroup(type: type,
-                                       eventPlan: event.eventPlan)
-//                    .randomColorBackground()
+                                       eventPlan: event.eventPlan,
+                                       isEdit: $isEditState)
                 .padding(.horizontal)
             }
-            
+//            .environmentObject(editManager)
         }
-//        .randomColorBackground()
+        .onReceive(editManager.$selectedEventPoint, perform: { _ in
+            if let point = editManager.selectedEventPoint{
+                isEditState = true
+            }
+        })
     }
 }
 
 #Preview {
-    BPEditConteinerView(event: MockData.sampleEvent,
-                        type: .car) 
+    BPEditConteinerView(event: .constant(MockData.sampleEvent),
+                        type: .stadium,
+                        editable: true)
+    .environmentObject(EditPlanPointsManager())
     
 }

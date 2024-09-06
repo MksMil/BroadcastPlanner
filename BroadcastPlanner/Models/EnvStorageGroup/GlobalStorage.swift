@@ -16,14 +16,17 @@ final class GlobalStorage: ObservableObject{
     @Published var currentUser: BPUser?
     @Published var userProfileImage: UIImage?
     
+    //new event flag
+    var newEvent: Bool = false
+    
     //data
-    var usersImages: [String : UIImage] = [:]
+    @Published var usersImages: [String : UIImage] = [:]
     @Published var users: [BPUser] = []
     @Published var events: [Event] = []
 
     @Published var chats: [Chat] = []
-
-    var eventTemplates: [BPEventPlan] = []
+    @Published var eventTemplates: [BPEventPlan] = []
+    
     var cancellables: Set<AnyCancellable> = []
     
     // MARK: - Init
@@ -39,35 +42,34 @@ final class GlobalStorage: ObservableObject{
     }
     
     func configure() {
-        //set current session and fetch cache and network newData
+        //fetch cache and network newData
         Task{
             await self.getUsers()
             await self.loadImages()
-//            await self.getUserData()
             await self.getEvents()
             await self.getChats()
             await self.getEventTemplates()
-            
         }
     }
     
-    
     // MARK: - user upload
     func saveUser(user: BPUser, userImage: UIImage?) async {
+        guard let id = user.id else { return }
+        
         currentUser = user
         userProfileImage = userImage
+        
+        usersImages[id] = userImage
+//        users.removeAll { $0.id == id }
+//        users.append(user)
+        users.replace([users.first(where: {$0.id == id})!], with: [user])
+        
         await networkManager?.saveUser(user: user, image: userImage)
     }
-    
-    //-------------------
-
-
-
 }
 
 // MARK: - load images from storage
 extension GlobalStorage {
-    
     
     //        //load from local storage
     //        if let path = FileManager
@@ -96,20 +98,13 @@ extension GlobalStorage {
     
 }
 
-
-
 // MARK: - load data section
 extension GlobalStorage{
     func getUsers() async {
         guard let globUsers = await networkManager?.getUsers() else { return }
         users = globUsers
-        currentUser = users.first(where: { user in
-            user.id == self.id
-        })
-        
+        currentUser = users.first(where: { $0.id == self.id })
     }
-    
-
     
     func getEvents() async {
         guard let events = await networkManager?.getEvents() else { return }
@@ -141,46 +136,63 @@ extension GlobalStorage{
 // MARK: - Online / Offline managment for messenger usability
 extension GlobalStorage{
     func goOnline() async {
-//        guard let id = currentSessionUser?.id else { return }
         await networkManager?.goOnline(id: id)
     }
     
     func goOffline()async {
-//        guard let id = currentSessionUser?.id else { return }
         await networkManager?.goOffline(id: id)
     }
-    
 }
 
 // MARK: - Events CRUD managment
 extension GlobalStorage {
-    func addEvent(_ event: Event) async {
-        await networkManager?.saveEvent(event)
+    func unMarkNewEvent(){
+        newEvent = false
+    }
+    
+    func createEvent() -> Event {
+        let event = Event()
+        event.owners.append(id)
+        currentUser?.ownedEventIds.append(event.id)
         events.append(event)
+        newEvent = true
+        return event
     }
     
     func updateEvent(_ event: Event) async {
         removeEvent(event)
-        guard let id = currentUser?.id else { return }
         
-        if !event.owners.contains(where: { uid in
-            uid == id
-        }){
+        if !event.owners.contains(where: { uid in uid == id })
+        {
             event.owners.append(id)
+            currentUser?.ownedEventIds.append(event.id)
         }
-        await addEvent(event)
+        events.append(event)
         await networkManager?.saveEvent(event)
+        unMarkNewEvent()
     }
     
     func removeEvent(at indexSet: IndexSet) async{
         let event = events[indexSet.first! as Int]
         events.remove(atOffsets: indexSet)
-      await networkManager?.removeEvent(event)
+        currentUser?.ownedEventIds.removeAll{ event.id == $0}
+        await removeEventFromGlobal(event: event)
     }
     
     func removeEvent(_ event: Event){
         events.removeAll {
             $0.id == event.id
         }
+        currentUser?.ownedEventIds.removeAll{ event.id == $0 }
+        if !newEvent {
+            Task{
+              await removeEventFromGlobal(event: event)
+                unMarkNewEvent()
+            }
+        }
+    }
+    
+    func removeEventFromGlobal(event: Event) async{
+        await networkManager?.removeEvent(event)
     }
 }

@@ -2,7 +2,8 @@ import SwiftUI
 
 struct BPUserDataListCellView: View {
     
-    var user : BPUser
+//    var user : BPUser
+    var text: String
     var image: UIImage?
     
     var body: some View {
@@ -17,7 +18,7 @@ struct BPUserDataListCellView: View {
                 .clipShape(Circle())
            
             VStack(alignment: .leading, spacing: 0){
-                Text(user.fullCompactName)
+                Text(text)//user.fullCompactName)
                     .font(.system(size: 10))
                     .bold()
                 
@@ -53,7 +54,7 @@ struct BPUserDataListCellView: View {
     }
 }
 
-#Preview {
-    BPUserDataListCellView(user: MockData.sampleUser)
-}
+//#Preview {
+//    BPUserDataListCellView(user: MockData.sampleUser)
+//}
 

@@ -12,8 +12,8 @@ class Event: Identifiable, Codable {
     var owners: [String] = []
     
     //team logos
-    var homeImageString: String = "Dynamo"
-    var guestImageString: String = "Shakhtar"
+    var homeImageString: String = ""
+    var guestImageString: String = ""
    
     
     

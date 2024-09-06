@@ -1,10 +1,3 @@
-//
-//  BPMessengerView.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 04.04.2024.
-//
-
 import SwiftUI
 
 struct BPMessengerView: View {

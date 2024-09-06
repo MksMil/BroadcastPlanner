@@ -14,7 +14,11 @@ struct RootView: View {
     var body: some View {
         ZStack{
             if !isAuth {
-                AuthenticationScreen()
+                AuthenticationScreen(){ user in
+                    Task{
+                        await globalStorage.saveUser(user: user, userImage: nil)
+                    }
+                }
             } else {
                 Home()
             }

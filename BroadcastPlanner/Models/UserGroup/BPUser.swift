@@ -26,6 +26,10 @@ class BPUser: Identifiable, Codable {
     init(){
         
     }
+    convenience init(id: String?){
+        self.init()
+        self.id = id
+    }
     
    required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)

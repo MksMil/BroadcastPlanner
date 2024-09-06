@@ -9,7 +9,7 @@ struct MainEventListCell: View {
     @State private var homeImageString: String
     @State private var guestImageString: String
     @State private var title: String
-    @State private var city: String
+    @State private var address: String
     
     var timeRemaining: TimeInterval {
         max(event.date.timeIntervalSinceNow, 0)
@@ -20,7 +20,7 @@ struct MainEventListCell: View {
         self._homeImageString = State(initialValue: event.homeImageString)
         self._guestImageString = State(initialValue: event.guestImageString)
         self._title = State(initialValue: event.eventLocation.title)
-        self._city = State(initialValue: event.eventLocation.city)
+        self._address = State(initialValue: event.eventLocation.address)
         self.eventDate = getDate(date: event.date)
     }
     
@@ -48,7 +48,7 @@ struct MainEventListCell: View {
         homeImageString =  event.homeImageString
         guestImageString = event.guestImageString
         title = event.eventLocation.title
-        city = event.eventLocation.city
+        address = event.eventLocation.address
        eventDate = getDate(date: event.date)
     }
     
@@ -103,7 +103,7 @@ struct MainEventListCell: View {
                                         .font(.caption2)
                                         .lineLimit(1)
                                         .minimumScaleFactor(0.35)
-                                    Text(city)
+                                    Text(address)
                                         .font(.caption2)
                                         .lineLimit(1)
                                         .minimumScaleFactor(0.35)

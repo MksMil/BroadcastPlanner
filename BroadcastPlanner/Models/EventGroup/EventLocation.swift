@@ -5,19 +5,16 @@ class EventLocation: Identifiable,Codable{
     var id: String
     
     var title: String
-    var city: String
     var address: String
     var imageStrings: [String]
     
     init(id: String = UUID().uuidString,
         title: String = "empty",
-        city: String = "empty city",
         address: String = "empty address",
         imageStrings: [String] = []
     ) {
         self.id = id
         self.title = title
-        self.city = city
         self.address = address
         self.imageStrings = imageStrings
     }

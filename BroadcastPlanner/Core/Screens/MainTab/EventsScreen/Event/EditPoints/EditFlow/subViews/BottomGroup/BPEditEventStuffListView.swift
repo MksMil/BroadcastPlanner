@@ -1,9 +1,11 @@
 import SwiftUI
 
 struct BPEditEventStuffListView: View {
+    @EnvironmentObject var editManager: EditPlanPointsManager
+    
     var type: PlanSectionType
     var eventPlan: BPEventPlan
-    var selectedEventPoint: BPEventPlanPoint?
+    @State var selectedEventPoint: BPEventPlanPoint?
     let selectAction: (BPEventPlanPoint) -> Void = { _ in }
     
     var body: some View {
@@ -43,4 +45,5 @@ struct BPEditEventStuffListView: View {
 
 #Preview {
     BPEditEventStuffListView(type: .stadium, eventPlan: MockData.sampleEvent.eventPlan)
+        .environmentObject(EditPlanPointsManager())
 }

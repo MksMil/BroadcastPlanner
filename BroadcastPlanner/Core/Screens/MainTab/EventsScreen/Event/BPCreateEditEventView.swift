@@ -5,88 +5,109 @@ struct BPCreateEditEventView: View {
     
     @EnvironmentObject var globalStorage: GlobalStorage
     @EnvironmentObject var eventRouter: EventTabRouter
+    @StateObject var editManager: EditPlanPointsManager = EditPlanPointsManager()
     
     @State var event: Event
-        
-    @State private var type: PlanSectionType?
     
+    @State private var type: PlanSectionType?
     var editable: Bool {
-//        event.owners.contains { id in
-//            id == globalStorage.id
-//        }
-        return true
+        event.owners.contains { $0 == globalStorage.id }
+    }
+    
+    var listUsers: [String: UIImage?] {
+        var result = [String: UIImage?]()
+        for user in globalStorage.users{
+            guard let id = user.id else { continue }
+            result[user.fullCompactName] = globalStorage.usersImages[id]
+        }
+        return result
+    }
+    
+    var layoutList: [String] {
+        listUsers.keys.map{$0}.sorted(by: <)
     }
     
     var body: some View {
         
-            ZStack(alignment: .bottomTrailing){
+            ZStack(){
                 MainBackground()
                 
-                VStack(alignment: .leading){
-                    //date
+                VStack(alignment: .leading, spacing: 0){
                     BPEventHeaderView(event: $event)
-                        .frame(maxWidth: .infinity)
                         .frame(height: 300)
-                        .padding(.top,-30)
                         .disabled(!editable)
+                    
                     GeometryReader{ geo in
                         BPEditEventPointLinks(event: event){
+                            editManager.renderScene.type = .stadium
                             type = .stadium
                         } actionRight: {
+                            editManager.renderScene.type = .car
                             type = .car
                         }
                         .frame(height: geo.size.width / 2)
                     }
-                    .padding()
+                    .padding(.horizontal)
                     //staff list
+//                    EventUsersGridView(users: users,
+//                                       images: globalStorage.usersImages)
+                    // TODO: (struct: Hashable, id: comb(name+num)) for the grid !?!
                     ScrollView{
-                        LazyVGrid(columns: [GridItem(.flexible()),GridItem(.flexible())], content: {
-                            ForEach(globalStorage.users, id: \.id){ user in
-                                BPUserDataListCellView(user: user)
+                        SmartLayout(hSpacing: 5, vSpacing: 5){
+                            ForEach(layoutList, id: \.self){ user in
+                                if let image = listUsers[user]{
+                                    BPUserDataListCellView(text: user,
+                                                           image: image)
+                                } else {
+                                    BPUserDataListCellView(text: user)
+                                }
                             }
-                        })
+                        }
                     }
                     .padding(.horizontal,10)
                     Spacer()
                 }
-                .frame(maxWidth: .infinity)
-//                .ignoresSafeArea()
             }
             .fullScreenCover(item: $type) { type in
-                BPEditConteinerView(event: event, type: type)
+                BPEditConteinerView(event: $event, 
+                                    type: type,
+                                    editable: editable )
             }
             .navigationTitle("Event")
             .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden(editable)
             .toolbarBackground(.visible, for: .navigationBar)
-            .toolbarBackground(.ultraThinMaterial.opacity(0.1), for: .navigationBar)
-            .toolbar(content: {
-                if editable{
-                    HStack{
-                        Button(action: {
-                            Task{
-                                globalStorage.removeEvent(event)
-                                eventRouter.routeStepBack()
-                            }
-                        }, label: {
-                            Image(systemName: "trash")
-                            
-                        })
-                        
-                        Divider()
-                        
-                        Button(action: {
-                            Task{
-                                await  globalStorage.updateEvent(event)
-                                eventRouter.routeStepBack()
-                            }
-                        }, label: {
-                            Image(systemName: "checkmark.circle")
-                            
-                        })
+            .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
+            .toolbar {
+                                if editable{
+                ToolbarItem(placement: .confirmationAction) {
+                    Button{
+                        Task{
+                            await  globalStorage.updateEvent(event)
+                            eventRouter.routeStepBack()
+                        }
+                    }label: {
+                        Image(systemName: "checkmark.circle")
                     }
                 }
-            })
+                ToolbarItem(placement: .cancellationAction) {
+                    // TODO: Delete Confirmation (Alert?)
+                    Button{
+                        Task{
+                            globalStorage.removeEvent(event)
+                            eventRouter.routeStepBack()
+                        }
+                    } label: {
+                        Image(systemName: "trash")
+                    }
+                }
+            }
         }
+            .onAppear{
+                editManager.configureWith(event: event)
+            }
+            .environmentObject(editManager)
+    }
 }
 
 #Preview {

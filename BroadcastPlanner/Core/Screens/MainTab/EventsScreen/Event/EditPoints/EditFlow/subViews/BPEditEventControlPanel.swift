@@ -3,14 +3,16 @@ import SwiftUI
 struct BPEditEventControlPanel: View {
     
     //Actions
-    let addDeleteAction: () -> Void = {}
-    let saveEditAction: () -> Void = {}
-    let scaleUpAction: () -> Void = {}
-    let scaleDownAction: () -> Void = {}
-    let resetScaleAction: () -> Void = {}
+    let addAction: () -> Void
+    let deleteAction: () -> Void
+    let saveAction: () -> Void
+    
+    let scaleUpAction: () -> Void
+    let scaleDownAction: () -> Void
+    let resetScaleAction: () -> Void
     
     //Binding?
-    var isEdit: Bool = false
+    @Binding var isEdit: Bool 
     
     
     var body: some View {
@@ -22,8 +24,14 @@ struct BPEditEventControlPanel: View {
                     .frame(width: 80, height: 45)
                     .overlay {
                         Button(action: {
+                            
                             withAnimation{
-                                addDeleteAction()
+                                if isEdit {
+                                    deleteAction()
+                                } else {
+                                    addAction()
+                                }
+                                isEdit.toggle()
                             }
                         }, label: {
                             Text(isEdit ? "DELETE":"ADD")
@@ -37,7 +45,13 @@ struct BPEditEventControlPanel: View {
                     .overlay {
                         Button(action: {
                             withAnimation {
-                                saveEditAction()
+                                if isEdit {
+                                    saveAction()
+                                    
+                                } else {
+                                    
+                                }
+                                isEdit.toggle()
                             }
                         }, label: {
                             Text(isEdit ?  "SAVE":"EDIT")
@@ -99,5 +113,11 @@ struct BPEditEventControlPanel: View {
 }
 
 #Preview {
-    BPEditEventControlPanel()
+    BPEditEventControlPanel(addAction: {},
+                            deleteAction: {},
+                            saveAction: {}, 
+                            scaleUpAction: {},
+                            scaleDownAction: {},
+                            resetScaleAction: {},
+                            isEdit: .constant(true))
 }

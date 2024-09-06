@@ -19,20 +19,20 @@ class BPEventPlanPoint: Identifiable, Equatable,Hashable, Codable {
     var cam: Cam
     var mic: Mic
     var light: Light
-    var env: Env
+    var env: ReplayHardware
     
     var eventPlanPointNumber: Int = 0
     var description: String = ""
     var tasks: String = ""
     
     init(
-        id: String,
+        id: String = UUID().uuidString,
         coordinates: BPEventPlanPointCoordinate = BPEventPlanPointCoordinate(x: 0.5, y: 0.5),
         user: BPUser? = nil,
         cam: Cam = Cam(),
         mic: Mic = Mic(),
         light: Light = Light(),
-        env: Env = Env(),
+        env: ReplayHardware = ReplayHardware(),
         eventPlanPointNumber: Int = 0,
         description: String = "",
         tasks: String = ""
@@ -133,9 +133,9 @@ struct Light: Codable {
     var lightType: LightType = .none
 }
 
-// MARK: - Environment
-struct Env: Codable {
-    enum EnvironmentType: String, Codable, CaseIterable, Identifiable{
+// MARK: - ReplayHardware
+struct ReplayHardware: Codable {
+    enum ReplayType: String, Codable, CaseIterable, Identifiable{
         var id: Self { self }
         
         case none = "---"
@@ -146,6 +146,6 @@ struct Env: Codable {
         case vmix = "V-MIX"
     }
     
-    var envType: EnvironmentType = .none
+    var envType: ReplayType = .none
     var chanels: Int = 0
 }

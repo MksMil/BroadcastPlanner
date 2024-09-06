@@ -1,7 +1,7 @@
 import SwiftUI
 
 enum EventTabPath: Hashable{
-    case create
+    case create(Event)
     case edit(Event)
     case stadPointsEdit
     case carPointsEdit
@@ -15,8 +15,8 @@ final class EventTabRouter: ObservableObject {
         path.removeLast()
     }
     
-    func routeToCreate(){
-        path.append(EventTabPath.create)
+    func routeToCreate(event: Event){
+        path.append(EventTabPath.create(event))
     }
     
     func routeToEdit(event: Event){

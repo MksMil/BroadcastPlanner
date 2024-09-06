@@ -26,9 +26,9 @@ protocol NetworkManagerProtocol: AnyObject {
     
     //get users from users directory from db
     func getUsers() async -> [BPUser]?
-
+    
     func getNewChatMessages() async
-
+    
     //send online-status to user data
     func goOnline(id: String) async
     
@@ -48,11 +48,11 @@ protocol NetworkManagerProtocol: AnyObject {
     func getEventteamplates() async -> [BPEventPlan]?
     func appendEventTemolate(plan: BPEventPlan) async
     func removeEventPlan(plan: BPEventPlan) async
-  
+    
 }
 
 final class NetworkManager: NetworkManagerProtocol {
-        
+    
     var db: Firestore
     
     init() {
@@ -84,8 +84,6 @@ final class NetworkManager: NetworkManagerProtocol {
     
     @MainActor
     func createUser(id: String, email: String) async {
-//        guard let id = globalStorage.currentSessionUser?.id,
-//              let email = globalStorage.currentSessionUser?.email else { return }
         
         let user = BPUser()
         user.id = id
@@ -96,9 +94,9 @@ final class NetworkManager: NetworkManagerProtocol {
             let data = try Firestore.Encoder().encode(user)
             try await userRef.document(id).setData(data)
         } catch {
-            #if DEBUG
+#if DEBUG
             print("DEBUG: save user error: \(error.localizedDescription)")
-            #endif
+#endif
         }
     }
     
@@ -135,7 +133,7 @@ final class NetworkManager: NetworkManagerProtocol {
         }
         return nil
     }
-
+    
     // MARK: - Save/Load Images
 //    @MainActor
     // TODO: thread problem
@@ -145,42 +143,49 @@ final class NetworkManager: NetworkManagerProtocol {
         }
         
         //save to local
-        if let url = getPath(name: path){
-            if !FileManager.default.fileExists(atPath: url.relativePath){
-                do {
-                    try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
-                }catch{
-#if DEBUG
-                    print("DEBUG: directory creation to saving image to local storage error: \(error)")
-#endif
-                }
-            }
-            FileManager.default.createFile(atPath: url.appendingPathComponent("\(id).jpeg").relativePath,
-                                           contents: imageData)
-        }
+        //        if let url = getPath(name: path){
+        //            if !FileManager.default.fileExists(atPath: url.relativePath){
+        //                do {
+        //                    try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
+        //                }catch{
+        //#if DEBUG
+        //                    print("DEBUG: NetworkManager/saveImageToGlobalStorage:  directory creation to saving image to local storage error: \(error)")
+        //#endif
+        //                }
+        //            }
+        //            FileManager.default.createFile(atPath: url.appendingPathComponent("\(id).jpeg").relativePath,
+        //                                           contents: imageData)
+        //        }
         
         //save to global
         let storageRef = Storage.storage().reference()
         let imageRef = storageRef.child("\(ImagePath.userImage.rawValue)/\(id)")
-        imageRef.putData(imageData)
+        //        imageRef.putData(imageData)
+        do {
+            let _ = try await imageRef.putDataAsync(imageData)
+        }catch{
+#if DEBUG
+            print("DEBUG: NetworkManager/saveImagetoGlobalStorage : error upload image: \(error)")
+#endif
+        }
     }
     
     @MainActor
     func loadImagesFromGlobalStorage(path: ImagePath, completion: @escaping (String, UIImage) -> () ) async {
         
         //load from local
-//        if let url = getPath(name: path)?.appending(path: "\(id).jpeg", directoryHint: .notDirectory) {
-//            if let data = FileManager.default.contents(atPath: url.relativePath){
-//                completion(UIImage(data: data))
-//            }
-//        }
+        //        if let url = getPath(name: path)?.appending(path: "\(id).jpeg", directoryHint: .notDirectory) {
+        //            if let data = FileManager.default.contents(atPath: url.relativePath){
+        //                completion(UIImage(data: data))
+        //            }
+        //        }
         
         //load from firebase
         let storageRef = Storage.storage().reference()
         let imagesRef = storageRef.child("\(ImagePath.userImage.rawValue)")
         do {
             let result = try await imagesRef.listAll()
-
+            
             for item in result.items {
                 item.getData(maxSize: 3 * 1024 * 1024) { data, error in
                     if error != nil {
@@ -204,15 +209,15 @@ final class NetworkManager: NetworkManagerProtocol {
     //sync image between local and global
     func syncImage(id: String, path: ImagePath){
         //try to load from global storage
-//            let storageRef = storage.reference()
-//            let imageRef = storageRef.child("\(path.rawValue)/\(id)")
-//            let _ = imageRef.getData(maxSize: 3 * 1024 * 1024) { data, error in
-//                if let error {
-//                    print("error: \(error)")
-//                    completion(nil)
-//                }
-//                completion(UIImage(data: data!))
-//            }
+        //            let storageRef = storage.reference()
+        //            let imageRef = storageRef.child("\(path.rawValue)/\(id)")
+        //            let _ = imageRef.getData(maxSize: 3 * 1024 * 1024) { data, error in
+        //                if let error {
+        //                    print("error: \(error)")
+        //                    completion(nil)
+        //                }
+        //                completion(UIImage(data: data!))
+        //            }
     }
     // local directory path for save image
     func getPath(name: ImagePath) -> URL? {
@@ -231,7 +236,7 @@ final class NetworkManager: NetworkManagerProtocol {
     // MARK: - Events
     
     func saveEvent(_ event: Event) async {
-//        guard let id = event.id else { return }
+        //        guard let id = event.id else { return }
         let eventRef = db.collection("events")
         do {
             let data = try Firestore.Encoder().encode(event)
@@ -244,7 +249,6 @@ final class NetworkManager: NetworkManagerProtocol {
     }
     
     func removeEvent(_ event: Event) async {
-//        guard let id = event.id else { return }
         do{
             try await db.collection("events").document(event.id).delete()
         } catch {
@@ -255,18 +259,18 @@ final class NetworkManager: NetworkManagerProtocol {
     }
     
     func getEvents() async -> [Event]? {
-            let usersRef = db.collection("events")
-            do {
-                let usersSnapshot = try await usersRef.getDocuments()
-                let events = usersSnapshot.documents.compactMap{try? $0.data(as: Event.self)}
-                return events
-            } catch {
-    #if DEBUG
-                print("DEBUG: getUsers flow error: \(error)")
-    #endif
-            }
-            return nil
+        let usersRef = db.collection("events")
+        do {
+            let usersSnapshot = try await usersRef.getDocuments()
+            let events = usersSnapshot.documents.compactMap{try? $0.data(as: Event.self)}
+            return events
+        } catch {
+#if DEBUG
+            print("DEBUG: getUsers flow error: \(error)")
+#endif
         }
+        return nil
+    }
     // MARK: - Messages
     func getNewChatMessages() async {
         
@@ -276,29 +280,29 @@ final class NetworkManager: NetworkManagerProtocol {
     // MARK: - Online/Offline
     @MainActor
     func goOnline(id: String ) async {
-//        guard let id =  else { return }
+        //        guard let id =  else { return }
         let userRef = db.collection("users").document(id)
         do {
             try await userRef.updateData(["isOnline":true])
             
         } catch {
-            #if DEBUG
+#if DEBUG
             print("DEBUG: error going online: \(error.localizedDescription)")
-            #endif
+#endif
         }
     }
     @MainActor
     func goOffline(id: String) async {
-//        guard let id = globalStorage.currentSessionUser?.id else { return }
+        //        guard let id = globalStorage.currentSessionUser?.id else { return }
         let userRef = db.collection("users").document(id)
         
         do {
             try await userRef.updateData(["isOnline":false])
             try await userRef.updateData(["leaveDate":Date()])
         } catch {
-            #if DEBUG
+#if DEBUG
             print("DEBUG: error going online: \(error.localizedDescription)")
-            #endif
+#endif
         }
     }
 }

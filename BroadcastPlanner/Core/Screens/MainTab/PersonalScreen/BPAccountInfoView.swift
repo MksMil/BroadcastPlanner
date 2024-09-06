@@ -47,7 +47,7 @@ struct BPAccountInfoView: View {
                             }
                         }
                         if !isEdit {
-                            Task{
+                            Task(priority: .userInitiated){
                               await saveAction(user,image)
                             }
                         }
@@ -170,7 +170,9 @@ struct UserInfoTextField: View {
                     .scaledToFill()
             }
             
+            // TODO: Text content type?
             TextField("", text: $text, prompt: Text(prompt), axis: axis)
+                .autocorrectionDisabled()
                 .padding(.vertical,4)
                 .padding(.horizontal,5)
                 .background {

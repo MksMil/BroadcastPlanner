@@ -8,6 +8,7 @@ import SwiftUI
 struct AuthenticationScreen: View {
     @EnvironmentObject var sessionStorage: GlobalSessionStorage
     @State private var isSignUp: Bool = false
+    let signUpHandler: (BPUser)->()
     
     var body: some View {
         ScrollView{
@@ -106,6 +107,7 @@ struct AuthenticationScreen: View {
             SignUpView(email: $sessionStorage.email, password: $sessionStorage.password) {
                 Task{
                     await sessionStorage.signUp()
+                    signUpHandler(BPUser(id:sessionStorage.userSession?.id))
                 }
             }
         }
@@ -115,12 +117,16 @@ struct AuthenticationScreen: View {
         .scrollDisabled(true)
         .navigationBarBackButtonHidden()
         .accentColor(.black)
+        .onDisappear{
+            sessionStorage.email = ""
+            sessionStorage.password = ""
+        }
     }
 }
 
 // MARK: - Preview
 #Preview {
-    AuthenticationScreen()
+    AuthenticationScreen(){_ in}
         .environmentObject(GlobalSessionStorage())
     
 }

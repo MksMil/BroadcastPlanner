@@ -24,18 +24,22 @@ struct MainEventsList: View {
     var filteredEvents: [Event] {
         switch filter {
             case .notFiltered:
-                events
+                return events
                     .sorted{ $0.date < $1.date }
             case .userOwned:
-                events
+               return events
                     .filter({ event in
-                        event.owners.contains { userId in
-                            userId == globalStorage.currentUser?.id
+                        event.owners.contains { $0 == globalStorage.id
                         }
                     })
-//                    .sorted{ $0.date < $1.date }
+                    .sorted{ $0.date < $1.date }
             case .userPartisipation:
-                events
+                guard let currentUser = globalStorage.currentUser else { return []}
+                return events
+                    .filter{ event in
+                        currentUser.memberEventIds.contains(where: { id in
+                        event.id == id})
+                    }
                     .sorted{ $0.date > $1.date }
         }
     }
@@ -62,11 +66,7 @@ struct MainEventsList: View {
                                 .onTapGesture {
                                     selectedEvent = event
                                     if let selectedEvent {
-                                        print("selected event")
                                         eventRouter.routeToEdit(event: selectedEvent)
-                                    } else {
-                                        print("new event")
-                                        eventRouter.routeToEdit(event: Event())
                                     }
                                 }
                                 .listRowBackground(Color.clear)
@@ -96,27 +96,28 @@ struct MainEventsList: View {
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button{
-                        eventRouter.routeToCreate()
+//                        let event = globalStorage.createEvent()
+                        eventRouter.routeToCreate(event: globalStorage.createEvent())//event)
                     }label: {
-                        Image(systemName: "plus.app")
+                        Image(systemName: "calendar.badge.plus")
                             .resizable()
                             .frame(width: 30, height: 30)
                     }
                     .frame(alignment: .center)
                     .font(.headline)
-                    .foregroundStyle(.blue)
+//                    .foregroundStyle(.blue)
                 }
             }
             .navigationDestination(for: EventTabPath.self) { path in
                 switch path{
-                    case .create:
-                        BPCreateEditEventView(event: Event())
-                    case .edit(let event):
+                    case .create(let event):
                         BPCreateEditEventView(event: event)
+                    case .edit(let event):
+                         BPCreateEditEventView(event: event)
                     case .stadPointsEdit:
-                        Text("")
+                         Text("")
                     case .carPointsEdit:
-                        Text("")
+                         Text("")
                 }
             }
             
@@ -129,4 +130,6 @@ struct MainEventsList: View {
     MainEventsList(userID: "")
         .environmentObject(GlobalStorage())
         .environmentObject(GlobalSettings())
+        .environmentObject(GlobalTimer())
+        .environmentObject(GlobalSessionStorage())
 }

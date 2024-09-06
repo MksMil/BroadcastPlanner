@@ -9,7 +9,7 @@ struct BPEventHeaderView: View {
     
     @State var newDate: Date = Date()
     
-    @State private var backImage: String = "neitral"
+    @State private var backImage: String
 
     @Binding var event: Event
     
@@ -19,7 +19,7 @@ struct BPEventHeaderView: View {
     @State var eventDate: Date = Date()
 
     @State var stadium: String = "stadium"
-    @State private var city: String = "city"
+    @State private var address: String = "address"
     
     @State private var isPresentedLogosSheet: Bool = false
     @State private var isPresentedLocationSheet: Bool = false
@@ -29,20 +29,36 @@ struct BPEventHeaderView: View {
     
     init(event: Binding<Event>) {
         self._event = Binding(projectedValue: event)
-        self.homeImageString = event.homeImageString.wrappedValue
-        self.guestImageString = event.guestImageString.wrappedValue
-        self.eventDate = event.date.wrappedValue
-        self.stadium = event.eventLocation.title.wrappedValue
-        self.city = event.eventLocation.city.wrappedValue
-        setBackgroundImage()
+        self._homeImageString = State(initialValue: event.homeImageString.wrappedValue)
+        self._guestImageString = State(initialValue: event.guestImageString.wrappedValue)
+        self._eventDate = State(initialValue: event.date.wrappedValue)
+        self._stadium = State(initialValue: event.eventLocation.title.wrappedValue)
+        self._address = State(initialValue: event.eventLocation.address.wrappedValue)
+        self._backImage = State(initialValue: (event.eventLocation.imageStrings.wrappedValue.isEmpty ?
+                                               "neitral" : event.eventLocation.imageStrings[0].wrappedValue)
+        )
     }
  
     var body: some View {
-            VStack(spacing: 15){
+            VStack(spacing: 10){
+                Text(eventDate.formatted(date: .abbreviated, time: .omitted))
+                    .fixedSize()
+                    .font(.subheadline)
+                    .padding(5)
+                    .background {
+                        RoundedRectangle(cornerRadius: 5).fill(.ultraThinMaterial).overlay{RoundedRectangle(cornerRadius: 5).stroke(.white, lineWidth: 1)}
+                    }
+                    .offset(y:10)
+                    .onTapGesture {
+                        isPresentedDatePicker = true
+                    }
+                
                 //team logos section
                 HStack{
                     Spacer()
-                    LogoImageView(imageString: homeImageString,isBackground: true)
+                    
+                    LogoImageView(imageString: homeImageString,
+                                  isBackground: true)
                         .onTapGesture {
                             iSelectedHomeTeamLogo = true
                             isPresentedLogosSheet = true
@@ -50,8 +66,20 @@ struct BPEventHeaderView: View {
                         .transition(.scale)
                     
                     Spacer()
+                    Text(eventDate.formatted(date: .omitted, time: .shortened))
+                        .fixedSize()
+                        .font(.title)
+                        .padding(5)
+                        .background {
+                            RoundedRectangle(cornerRadius: 5).fill(.ultraThinMaterial).overlay{RoundedRectangle(cornerRadius: 5).stroke(.white, lineWidth: 1)}
+                        }
+                        .onTapGesture {
+                            isPresentedDatePicker = true
+                        }
+                    Spacer()
                     
-                    LogoImageView(imageString: guestImageString,isBackground: true)
+                    LogoImageView(imageString: guestImageString,
+                                  isBackground: true)
                         .onTapGesture {
                             iSelectedHomeTeamLogo = false
                             isPresentedLogosSheet = true
@@ -59,48 +87,39 @@ struct BPEventHeaderView: View {
                     Spacer()
                 }
                 .padding(.horizontal)
-                .padding(.top,60)
                 
-               
-                
+                // stadium name
                 Text(stadium)
-                    .font(.title)
-                    .fixedSize()
-                    .padding(5)
-                    .background(RoundedRectangle(cornerRadius: 5).fill(.ultraThinMaterial).overlay{RoundedRectangle(cornerRadius: 5).stroke(.white, lineWidth: 1)})
-                    .onTapGesture {
-                        isPresentedLocationSheet = true
-                    }
-                
-                Text(city)
                     .font(.title3)
                     .fixedSize()
                     .padding(5)
                     .background(RoundedRectangle(cornerRadius: 5).fill(.ultraThinMaterial).overlay{RoundedRectangle(cornerRadius: 5).stroke(.white, lineWidth: 1)})
-                    .padding(.bottom,12)
                     .onTapGesture {
                         isPresentedLocationSheet = true
                     }
                 
-                Text(eventDate.formatted(date: .abbreviated, time: .shortened))
-                    .fixedSize()
-                    .font(.subheadline)
-                    .padding(5)
-                    .background {
-                        RoundedRectangle(cornerRadius: 5).fill(.ultraThinMaterial).overlay{RoundedRectangle(cornerRadius: 5).stroke(.white, lineWidth: 1)}
-                    }
-                    .onTapGesture {
-                        isPresentedDatePicker = true
-                    }
+                //address
+                    Text(address)
+                        .font(.footnote)
+                        .lineLimit(2)
+//                        .fixedSize()
+                        .padding(5)
+                        .background(RoundedRectangle(cornerRadius: 5).fill(.ultraThinMaterial).overlay{RoundedRectangle(cornerRadius: 5).stroke(.white, lineWidth: 1)})
+                        .padding(.horizontal,20)
+                        .onTapGesture {
+                            isPresentedLocationSheet = true
+                        }
+                Spacer()
             }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical,40)
+            .padding(.vertical)
+//            .frame(maxWidth: .infinity)
             .background {
+                // TODO: change image animation problem
                 Image(backImage)
                     .resizable()
                     .scaledToFill()
-                    .animation(.easeInOut(duration: 1),
-                               value: backImage)
+//                    .animation(.easeInOut(duration: 1),
+//                               value: backImage)
                     .mask {Rectangle().fill(
                         LinearGradient(
                             colors: [
@@ -155,10 +174,15 @@ struct BPEventHeaderView: View {
                             .padding(5)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .onTapGesture {
-                                event.eventLocation = location
-                                stadium = location.title
-                                setBackgroundImage()
-                                isPresentedLocationSheet = false
+                                withAnimation{
+                                    event.eventLocation = location
+                                    stadium = location.title
+                                    address = location.address
+                                    imageIndex = 0
+                                    timerCounter = 0
+                                    updateBackground()
+                                    isPresentedLocationSheet = false
+                                }
                             }
                     }
                 }
@@ -197,7 +221,7 @@ struct BPEventHeaderView: View {
             })
             .onReceive(timer.timer) { _ in
                 timerCounter += 1
-                if timerCounter > 5 {
+                if timerCounter > 8 {
                     timerCounter = 0
                     updateBackground()
                 }
@@ -205,42 +229,36 @@ struct BPEventHeaderView: View {
         }
     //circular background
     func updateBackground(){
-        if event.eventLocation.imageStrings.isEmpty{
-            backImage = "neitral"
-        } else {
-            imageIndex += 1
-            if imageIndex < event.eventLocation.imageStrings.count{
-                backImage = event.eventLocation.imageStrings[imageIndex]
+        withAnimation(.linear(duration: 2)){
+            if event.eventLocation.imageStrings.isEmpty{
+                backImage = "neitral"
             } else {
-                imageIndex = 0
-                backImage = event.eventLocation.imageStrings[imageIndex]
+                imageIndex += 1
+                if imageIndex < event.eventLocation.imageStrings.count{
+                    backImage = event.eventLocation.imageStrings[imageIndex]
+                } else {
+                    imageIndex = 0
+                    backImage = event.eventLocation.imageStrings[imageIndex]
+                }
             }
         }
     }
-    
-    func setBackgroundImage(){
-        if event.eventLocation.imageStrings.isEmpty{
-            backImage = "neitral"
-        } else {
-            backImage = event.eventLocation.imageStrings[0]
-        }
-    }
+}
+
+#Preview {
+    BPEventHeaderView(event: .constant(MockData.sampleEvent)
+    )
+        .environmentObject(GlobalSettings())
+        .environmentObject(GlobalTimer())
 }
 
 //#Preview {
-//    BPEventHeaderView(event: .constant(MockData.sampleEvent)
-//    )
+//    NavigationStack{
+//        BPCreateEditEventView( event: MockData.sampleEvent)
+//    }
 //        .environmentObject(GlobalSettings())
+//        .environmentObject(GlobalStorage())
+//        .environmentObject(EventTabRouter())
 //        .environmentObject(GlobalTimer())
 //}
-
-#Preview {
-    NavigationStack{
-        BPCreateEditEventView( event: MockData.sampleEvent)
-    }
-        .environmentObject(GlobalSettings())
-        .environmentObject(GlobalStorage())
-        .environmentObject(EventTabRouter())
-        .environmentObject(GlobalTimer())
-}
 

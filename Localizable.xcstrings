@@ -40,9 +40,6 @@
     "Creation date: %@" : {
 
     },
-    "Delete" : {
-
-    },
     "DELETE" : {
 
     },
@@ -62,6 +59,9 @@
 
     },
     "email: %@" : {
+
+    },
+    "Event" : {
 
     },
     "Events" : {

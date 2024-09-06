@@ -42,7 +42,7 @@
 		29418D8F2C6639D7007CC6F3 /* GlobalTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29418D8E2C6639D7007CC6F3 /* GlobalTimer.swift */; };
 		29418D922C6CCDAE007CC6F3 /* FiltersEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29418D912C6CCDAE007CC6F3 /* FiltersEnums.swift */; };
 		294D97A72B3B2AEC00057F70 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 294D97A62B3B2AEC00057F70 /* FirebaseAuth */; };
-		2951142D2C4E39D0005E4BF8 /* BPSpriteEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2951142C2C4E39D0005E4BF8 /* BPSpriteEditView.swift */; };
+		2951142D2C4E39D0005E4BF8 /* BPSpriteEditScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2951142C2C4E39D0005E4BF8 /* BPSpriteEditScene.swift */; };
 		295114332C4E73F5005E4BF8 /* BPEditConteinerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 295114322C4E73F5005E4BF8 /* BPEditConteinerView.swift */; };
 		29553BFB2B9073C100C7FE6A /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 29553BFA2B9073C100C7FE6A /* FirebaseFirestore */; };
 		29553BFD2B9073C100C7FE6A /* FirebaseFirestoreCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 29553BFC2B9073C100C7FE6A /* FirebaseFirestoreCombine-Community */; };
@@ -56,18 +56,20 @@
 		2955C97C2B518715003F9ADC /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2955C97B2B518714003F9ADC /* SettingsView.swift */; };
 		2955C9822B57C1BE003F9ADC /* SessionUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2955C9812B57C1BE003F9ADC /* SessionUser.swift */; };
 		295943062C60DBB800C2B27C /* EventTabRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 295943052C60DBB800C2B27C /* EventTabRouter.swift */; };
-		295943082C61088700C2B27C /* BPEditConteinerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 295943072C61088700C2B27C /* BPEditConteinerViewModel.swift */; };
 		295943292C64EA8700C2B27C /* BPDateFormater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 295943282C64EA8700C2B27C /* BPDateFormater.swift */; };
 		2963DDBF2C81B51C0030DAC6 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2963DDBE2C81B51C0030DAC6 /* RootView.swift */; };
+		2963DDC12C8758A10030DAC6 /* EventUsersGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2963DDC02C8758A10030DAC6 /* EventUsersGridView.swift */; };
+		2963DDC32C8848F00030DAC6 /* EditPlanPointsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2963DDC22C8848F00030DAC6 /* EditPlanPointsManager.swift */; };
 		29656CD42B17600A0093A19A /* BroadcastPlannerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29656CD32B17600A0093A19A /* BroadcastPlannerTests.swift */; };
 		2967DF192B61109B003956FD /* UpdateEPView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2967DF182B61109B003956FD /* UpdateEPView.swift */; };
 		2967DF1B2B639A90003956FD /* Error+Modifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2967DF1A2B639A90003956FD /* Error+Modifier.swift */; };
 		2967DF212B64F69B003956FD /* KeyboardAdaptiveModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2967DF202B64F69B003956FD /* KeyboardAdaptiveModifier.swift */; };
 		29778E242C0B85FC006EF6CE /* BPResetPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29778E232C0B85FC006EF6CE /* BPResetPasswordView.swift */; };
 		298932682AE24D7000BD93CA /* BPError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 298932672AE24D7000BD93CA /* BPError.swift */; };
+		299190272C899BA000D2CDDC /* KeyPoints.swift in Sources */ = {isa = PBXBuildFile; fileRef = 299190262C899BA000D2CDDC /* KeyPoints.swift */; };
+		299190292C8A064400D2CDDC /* String+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 299190282C8A064400D2CDDC /* String+Ext.swift */; };
 		299277982B7629FD00B8F892 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 299277972B7629FD00B8F892 /* GoogleService-Info.plist */; };
 		2994DE672C157C9F00DF9060 /* BPCreateEditEventView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2994DE662C157C9F00DF9060 /* BPCreateEditEventView.swift */; };
-		2994DE6A2C157EF400DF9060 /* BPEventViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2994DE692C157EF400DF9060 /* BPEventViewModel.swift */; };
 		2994DE6C2C15A2D900DF9060 /* BPEventHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2994DE6B2C15A2D900DF9060 /* BPEventHeaderView.swift */; };
 		2994DE6E2C16F18E00DF9060 /* BPJoystick.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2994DE6D2C16F18D00DF9060 /* BPJoystick.swift */; };
 		2994DE702C17196300DF9060 /* BPEventPlanPointImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2994DE6F2C17196300DF9060 /* BPEventPlanPointImage.swift */; };
@@ -154,7 +156,7 @@
 		29389C3B2B8EE62F003EF60C /* UIKit+ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIKit+ext.swift"; sourceTree = "<group>"; };
 		29418D8E2C6639D7007CC6F3 /* GlobalTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalTimer.swift; sourceTree = "<group>"; };
 		29418D912C6CCDAE007CC6F3 /* FiltersEnums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FiltersEnums.swift; sourceTree = "<group>"; };
-		2951142C2C4E39D0005E4BF8 /* BPSpriteEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPSpriteEditView.swift; sourceTree = "<group>"; };
+		2951142C2C4E39D0005E4BF8 /* BPSpriteEditScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPSpriteEditScene.swift; sourceTree = "<group>"; };
 		295114322C4E73F5005E4BF8 /* BPEditConteinerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPEditConteinerView.swift; sourceTree = "<group>"; };
 		2955C9622B4B8C8C003F9ADC /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		2955C9692B4E416D003F9ADC /* AuthenticationScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationScreen.swift; sourceTree = "<group>"; };
@@ -165,9 +167,10 @@
 		2955C97B2B518714003F9ADC /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		2955C9812B57C1BE003F9ADC /* SessionUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionUser.swift; sourceTree = "<group>"; };
 		295943052C60DBB800C2B27C /* EventTabRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventTabRouter.swift; sourceTree = "<group>"; };
-		295943072C61088700C2B27C /* BPEditConteinerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPEditConteinerViewModel.swift; sourceTree = "<group>"; };
 		295943282C64EA8700C2B27C /* BPDateFormater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPDateFormater.swift; sourceTree = "<group>"; };
 		2963DDBE2C81B51C0030DAC6 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		2963DDC02C8758A10030DAC6 /* EventUsersGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventUsersGridView.swift; sourceTree = "<group>"; };
+		2963DDC22C8848F00030DAC6 /* EditPlanPointsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditPlanPointsManager.swift; sourceTree = "<group>"; };
 		29656CD12B17600A0093A19A /* BroadcastPlannerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BroadcastPlannerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		29656CD32B17600A0093A19A /* BroadcastPlannerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BroadcastPlannerTests.swift; sourceTree = "<group>"; };
 		2967DF182B61109B003956FD /* UpdateEPView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateEPView.swift; sourceTree = "<group>"; };
@@ -175,10 +178,11 @@
 		2967DF202B64F69B003956FD /* KeyboardAdaptiveModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardAdaptiveModifier.swift; sourceTree = "<group>"; };
 		29778E232C0B85FC006EF6CE /* BPResetPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPResetPasswordView.swift; sourceTree = "<group>"; };
 		298932672AE24D7000BD93CA /* BPError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPError.swift; sourceTree = "<group>"; };
+		299190262C899BA000D2CDDC /* KeyPoints.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyPoints.swift; sourceTree = "<group>"; };
+		299190282C8A064400D2CDDC /* String+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Ext.swift"; sourceTree = "<group>"; };
 		299277972B7629FD00B8F892 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		299277992B762A4100B8F892 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		2994DE662C157C9F00DF9060 /* BPCreateEditEventView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPCreateEditEventView.swift; sourceTree = "<group>"; };
-		2994DE692C157EF400DF9060 /* BPEventViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPEventViewModel.swift; sourceTree = "<group>"; };
 		2994DE6B2C15A2D900DF9060 /* BPEventHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPEventHeaderView.swift; sourceTree = "<group>"; };
 		2994DE6D2C16F18D00DF9060 /* BPJoystick.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPJoystick.swift; sourceTree = "<group>"; };
 		2994DE6F2C17196300DF9060 /* BPEventPlanPointImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPEventPlanPointImage.swift; sourceTree = "<group>"; };
@@ -303,7 +307,7 @@
 		2916E6032C4E79170025DCC6 /* subViews */ = {
 			isa = PBXGroup;
 			children = (
-				2951142C2C4E39D0005E4BF8 /* BPSpriteEditView.swift */,
+				2951142C2C4E39D0005E4BF8 /* BPSpriteEditScene.swift */,
 				2916E60A2C4E85400025DCC6 /* BPEditEventControlPanel.swift */,
 				2916E6102C4E8FB20025DCC6 /* BPEditEventBottomGroup.swift */,
 				2916E60F2C4E8F760025DCC6 /* BottomGroup */,
@@ -430,7 +434,6 @@
 			isa = PBXGroup;
 			children = (
 				295114322C4E73F5005E4BF8 /* BPEditConteinerView.swift */,
-				295943072C61088700C2B27C /* BPEditConteinerViewModel.swift */,
 				2916E6032C4E79170025DCC6 /* subViews */,
 			);
 			path = EditFlow;
@@ -452,7 +455,6 @@
 				2916E60C2C4E871A0025DCC6 /* Protocols */,
 				2994DE662C157C9F00DF9060 /* BPCreateEditEventView.swift */,
 				2916E6122C4E9AEF0025DCC6 /* BPEditEventPointLinks.swift */,
-				2994DE682C157EDC00DF9060 /* ViewModel */,
 				2951142E2C4E71A9005E4BF8 /* EditPoints */,
 			);
 			path = Event;
@@ -495,6 +497,7 @@
 				2994DE6D2C16F18D00DF9060 /* BPJoystick.swift */,
 				2994DE6F2C17196300DF9060 /* BPEventPlanPointImage.swift */,
 				29E8CD772C352E82002EB11A /* LogoImageView.swift */,
+				2963DDC02C8758A10030DAC6 /* EventUsersGridView.swift */,
 			);
 			path = ViewsAndViewModels;
 			sourceTree = "<group>";
@@ -592,14 +595,6 @@
 			path = Error;
 			sourceTree = "<group>";
 		};
-		2994DE682C157EDC00DF9060 /* ViewModel */ = {
-			isa = PBXGroup;
-			children = (
-				2994DE692C157EF400DF9060 /* BPEventViewModel.swift */,
-			);
-			path = ViewModel;
-			sourceTree = "<group>";
-		};
 		29AE68712BE24EFE00DE8FAB /* EventGroup */ = {
 			isa = PBXGroup;
 			children = (
@@ -609,6 +604,7 @@
 				29C041D12AC55C7A008B3E1F /* Event.swift */,
 				29BF35842BFB281600113946 /* BPEventPlan.swift */,
 				29BF35862BFB288D00113946 /* BPEventPlanPoint.swift */,
+				299190262C899BA000D2CDDC /* KeyPoints.swift */,
 			);
 			path = EventGroup;
 			sourceTree = "<group>";
@@ -640,6 +636,7 @@
 				29E10F652C2169C400A35A4B /* GlobalProperties.swift */,
 				29418D8E2C6639D7007CC6F3 /* GlobalTimer.swift */,
 				29C041E82AC69A5D008B3E1F /* MockData.swift */,
+				2963DDC22C8848F00030DAC6 /* EditPlanPointsManager.swift */,
 			);
 			path = EnvStorageGroup;
 			sourceTree = "<group>";
@@ -754,6 +751,7 @@
 			children = (
 				29C041F12ACBF45B008B3E1F /* Color+Ext.swift */,
 				29389C3B2B8EE62F003EF60C /* UIKit+ext.swift */,
+				299190282C8A064400D2CDDC /* String+Ext.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -954,9 +952,9 @@
 				291E72CF2BBEEBDD008092D7 /* BPSpecializationCellView.swift in Sources */,
 				292D664F2BD7998A009A2187 /* SmartLayout.swift in Sources */,
 				2916E6112C4E8FB20025DCC6 /* BPEditEventBottomGroup.swift in Sources */,
-				2994DE6A2C157EF400DF9060 /* BPEventViewModel.swift in Sources */,
 				29C041D82AC55D4A008B3E1F /* EventLocation.swift in Sources */,
 				29AE687E2BE8DA3700DE8FAB /* NetworkManager.swift in Sources */,
+				2963DDC32C8848F00030DAC6 /* EditPlanPointsManager.swift in Sources */,
 				292D664E2BD7998A009A2187 /* AnyContentView.swift in Sources */,
 				295943292C64EA8700C2B27C /* BPDateFormater.swift in Sources */,
 				2916E6092C4E83650025DCC6 /* BPEditEventJoystickInfoPanel.swift in Sources */,
@@ -968,7 +966,6 @@
 				29AE68762BE24F9A00DE8FAB /* Message.swift in Sources */,
 				2994DE6C2C15A2D900DF9060 /* BPEventHeaderView.swift in Sources */,
 				29AE68742BE24F9300DE8FAB /* Chat.swift in Sources */,
-				295943082C61088700C2B27C /* BPEditConteinerViewModel.swift in Sources */,
 				2994DE702C17196300DF9060 /* BPEventPlanPointImage.swift in Sources */,
 				29E10F582C1845DE00A35A4B /* BPUserImageNameCompactCell.swift in Sources */,
 				29C041F22ACBF45B008B3E1F /* Color+Ext.swift in Sources */,
@@ -982,7 +979,9 @@
 				290B81702AD7FCE700B858F1 /* MainEventsList.swift in Sources */,
 				2916E6262C57C3930025DCC6 /* Home.swift in Sources */,
 				29FFDAB82ADBC2F1005AD50F /* MainBackground.swift in Sources */,
+				299190272C899BA000D2CDDC /* KeyPoints.swift in Sources */,
 				2955C9772B4FECDE003F9ADC /* AuthenticationManager.swift in Sources */,
+				2963DDC12C8758A10030DAC6 /* EventUsersGridView.swift in Sources */,
 				29AE68802BE901D900DE8FAB /* Properties.swift in Sources */,
 				2916E62C2C58B83E0025DCC6 /* AnimatedStart.swift in Sources */,
 				29418D8F2C6639D7007CC6F3 /* GlobalTimer.swift in Sources */,
@@ -995,6 +994,7 @@
 				29D1697A2B85D4F800A70638 /* HaptickEngine.swift in Sources */,
 				2916E60E2C4E875B0025DCC6 /* BPPlanDelegateProtocol.swift in Sources */,
 				2916E6132C4E9AEF0025DCC6 /* BPEditEventPointLinks.swift in Sources */,
+				299190292C8A064400D2CDDC /* String+Ext.swift in Sources */,
 				29FFDAAD2AD945EC005AD50F /* MainEventListCell.swift in Sources */,
 				29B8B6DE2C4D3CB100AC414A /* BPEditEventCarView.swift in Sources */,
 				2916E6072C4E82690025DCC6 /* BPEditEventStuffListView.swift in Sources */,
@@ -1018,7 +1018,7 @@
 				2916E6222C4FA6FD0025DCC6 /* EventDataManager.swift in Sources */,
 				29C041DB2AC5620A008B3E1F /* StadiumView.swift in Sources */,
 				290B816B2AD7F01100B858F1 /* CameraDirection.swift in Sources */,
-				2951142D2C4E39D0005E4BF8 /* BPSpriteEditView.swift in Sources */,
+				2951142D2C4E39D0005E4BF8 /* BPSpriteEditScene.swift in Sources */,
 				29FFDAB22ADA7F6F005AD50F /* Sport.swift in Sources */,
 				295943062C60DBB800C2B27C /* EventTabRouter.swift in Sources */,
 				290056C62C37DF6400CBA472 /* BPUserDataListCellView.swift in Sources */,
