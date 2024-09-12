@@ -30,9 +30,19 @@ final class EditPlanPointsManager: ObservableObject {
 //        }
 //        editManager.renderDelegate = scene
 //        return scene
-        scene.selectAction = {[weak self] point in
+        scene.selectAction =  { [weak self] id in
             guard let self else { return }
-            self.selectedEventPoint = point
+            if let point = self.eventPlan?.fieldPoints.first(where: {$0.id == id}){
+                self.selectedEventPoint = point} else {
+                    self.selectedEventPoint = BPEventPlanPoint()
+                }
+        }
+        scene.deselectAction = { [weak self] in
+            guard let self else { return }
+            self.selectedEventPoint = nil
+        }
+        
+        scene.updatePointCoordinatesAction = { id, coord in
             
         }
         renderScene = scene
@@ -40,6 +50,11 @@ final class EditPlanPointsManager: ObservableObject {
     
     func configureWith(event: Event){
         self.eventPlan = event.eventPlan
+    }
+    
+    func update(type: PlanSectionType){
+        guard let eventPlan else { return }
+        renderScene.points = type == .stadium ? eventPlan.fieldPoints: eventPlan.carPoints
     }
     
     func addPoint(){

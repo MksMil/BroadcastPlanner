@@ -6,7 +6,7 @@ class BPEventPlanPoint: Identifiable, Equatable,Hashable, Codable {
     var coordinates: BPEventPlanPointCoordinate
     var imageString: String = "dog"
     
-    var selected: Bool = false
+//    var selected: Bool = false
     //music.mic
     //dog
     //lamp.desk.fill
@@ -87,6 +87,10 @@ struct Cam: Codable {
         case x76 = "x76"
         case x86 = "x86"
         case x95 = "x95"
+        case poleCam = "pole cam"
+        case spider = "spider"
+        case drone = "drone"
+        case helic = "helicopter"
         case blackHawk = "Black Hawk"
         case Archer2 = "Archer 2"
         

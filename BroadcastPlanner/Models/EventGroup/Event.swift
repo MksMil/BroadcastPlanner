@@ -5,6 +5,7 @@ class Event: Identifiable, Codable {
     var id: String
     
     var date: Date = Date()
+    
     var broadcaster: Broadcaster
     var eventLocation: EventLocation
     
@@ -21,7 +22,7 @@ class Event: Identifiable, Codable {
     init( id: String = UUID().uuidString,date: Date = Date(), eventPlan: BPEventPlan = BPEventPlan()) {
         self.id = id
         self.date = date
-        self.broadcaster = Broadcaster()
+        self.broadcaster = Broadcaster(name: "brName")
         self.eventPlan = eventPlan
         self.eventLocation = EventLocation()
     }

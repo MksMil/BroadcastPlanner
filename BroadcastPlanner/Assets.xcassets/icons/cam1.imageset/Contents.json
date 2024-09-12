@@ -1,6 +1,7 @@
 {
   "images" : [
     {
+      "filename" : "cam1.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
@@ -9,7 +10,6 @@
       "scale" : "2x"
     },
     {
-      "filename" : "OBVAN_v1 @3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

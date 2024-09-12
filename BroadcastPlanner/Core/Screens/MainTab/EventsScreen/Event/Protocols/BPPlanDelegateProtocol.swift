@@ -3,9 +3,11 @@ import Foundation
 protocol BPPlanDelegateProtocol: AnyObject {
     
     var type: PlanSectionType {get set}
+    var points: [BPEventPlanPoint] {get set}
     
     func addPoint(point: BPEventPlanPoint)
     
+    func updateScene()
     func select(point: BPEventPlanPoint)
     func deselect()
     func removeSelectedPoint()

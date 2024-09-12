@@ -2,7 +2,7 @@ import SwiftUI
 import SpriteKit
 
 enum SceneState{
-    case active, unactive
+    case idle, movingPoint, movingCam
 }
 
 // camera : move, scale
@@ -10,10 +10,17 @@ enum SceneState{
 //points: move, rotate, scale, color, add, remove
 
 class BPSpriteEditScene: SKScene{
-    var sceneState: SceneState = .active
-    var selectAction: (BPEventPlanPoint)->Void = {_ in}
+    //point and cam movement control
+    var sceneState: SceneState = .idle
+    
+    //crud and selectPoint actions
+    var selectAction: (String)->Void = {_ in}
+    var deselectAction: ()->Void = {}
+    
+    var updatePointCoordinatesAction: (String, BPEventPlanPointCoordinate) -> Void = { _,_ in }
+    
     //for test
-    var step: Double = 20
+    var step: Double = 5
     var angle: Double = .pi / 8
     var animationDuration: Double = 0.3
     
@@ -22,33 +29,17 @@ class BPSpriteEditScene: SKScene{
     
     let cameraNode = SKCameraNode()
     var backGroundNode = SKSpriteNode(imageNamed: "football_stadium")
-    var startPoint: CGPoint = CGPoint.zero
-    //pan gesture control
+    
     var lastPanLocation: CGPoint?
     
     var points: [BPEventPlanPoint] = []
     
-    var type: PlanSectionType = .stadium
+    var type: PlanSectionType = .car
     var selectedPointNode: SKNode?
-    var selectedPointName: String = ""
+    var editedNode: SKNode?
     
     var pointNodes: [SKSpriteNode] = []
     
-    //computed properties
-    var maxVertCam: Double {
-        self.size.height * (1 - cameraNode.xScale / 2)
-    }
-    var minVertCam: Double{
-        self.size.height * (cameraNode.xScale / 2)
-    }
-    
-    var maxHorCam: Double{
-        self.size.width * (1 - cameraNode.xScale / 2)
-    }
-    
-    var minHorCam: Double{
-        self.size.width * (cameraNode.xScale / 2)
-    }
     var centerPoint: CGPoint {
         CGPoint(x: self.frame.width / 2,
                 y: self.frame.height / 2)
@@ -63,33 +54,46 @@ class BPSpriteEditScene: SKScene{
             blue: 255 / 256,
             alpha: 1
         )
-        removeAllChildren()
-        setupCamera()
-        setupBackground()
-        setupPoints()
-        // Добавление распознавателей жестов
-//        let panGesture = UIPanGestureRecognizer(target: self,
-//                                                action: #selector(handlePan(_:)))
+        updateScene()
+        
+        // Scale pinch control
         let pinchGesture = UIPinchGestureRecognizer(target: self,
                                                     action: #selector(handlePinch(_:)))
-//        view.addGestureRecognizer(panGesture)
         view.addGestureRecognizer(pinchGesture)
     }
     
-    
     func setupPoints(){
-       
         for point in points {
             addPoint(point: point)
         }
     }
     
+    func configurePointNode(node: SKSpriteNode,
+                            point: BPEventPlanPoint)
+    {
+        node.name = point.id
+        node.position = CGPoint(x:  size.width * point.coordinates.x,
+                                y:  size.height * point.coordinates.y)
+//        if let texture = textureFromSFSymbol(named: "video.fill"){
+            node.texture = SKTexture(imageNamed: "cam1")//texture
+//        }
+        node.zRotation = point.coordinates.rotation
+    }
+    
+    func textureFromSFSymbol(named symbolName: String, pointSize: CGFloat = 10, weight: UIImage.SymbolWeight = .regular) -> SKTexture? {
+            let config = UIImage.SymbolConfiguration(pointSize: pointSize, weight: weight)
+            if let image = UIImage(systemName: symbolName, withConfiguration: config) {
+                return SKTexture(image: image)
+            }
+            return nil
+        }
+    
     func setupBackground(){
         switch type {
             case .stadium:
-                backGroundNode = SKSpriteNode(imageNamed: "football_stadium")
+                backGroundNode = SKSpriteNode(imageNamed: "stadium")
             case .car:
-                backGroundNode = SKSpriteNode(imageNamed: "OBVAN_v1")
+                backGroundNode = SKSpriteNode(imageNamed: "empty_babybird")//empty_babybird, empty_starbird
             case .none:
                 backGroundNode = SKSpriteNode(imageNamed: "neitral")
         }
@@ -97,83 +101,111 @@ class BPSpriteEditScene: SKScene{
         addChild(backGroundNode)
         backGroundNode.position = CGPoint(x: size.width / 2,
                                           y: size.height / 2)
-        if type == .car && !isPreview{
-            backGroundNode.zRotation = .pi / 2
-            backGroundNode.scale(to: CGSize(width: frame.height / 2, height: frame.width))
-        } else {
-            backGroundNode.scale(to: frame.size)
-        }
         
+        
+        
+        
+        if type == .car && isPreview{
+            backGroundNode.zRotation = .pi / 2
+            backGroundNode.scale(to: CGSize(width: frame.height , height: frame.width))
+        } else if type == .car{
+            backGroundNode.scale(to: CGSize(width: frame.width,
+                                            height: frame.height / 2))
+        } else {
+            backGroundNode.scale(to: size)
+        }
     }
     
     func setupCamera(){
         addChild(cameraNode)
         camera = cameraNode
         cameraNode.position = CGPoint(x: size.width / 2,
-                               y: size.height / 2)
+                                      y: size.height / 2)
     }
-   
-   
+    
+    
 }
 // MARK: - Touches
 extension BPSpriteEditScene{
-    
-    func optimalCamPosition(newLocation: CGPoint) -> CGPoint {
-        CGPoint(x:(max( minHorCam,min(maxHorCam,newLocation.x))),
-                                     y: max(minVertCam,min(maxVertCam,newLocation.y)))
+    // diff - for the scale animation operation, not used for cam movement
+    func maxVertCam(diff: Double) -> Double {
+        self.size.height * (1 - (cameraNode.xScale + diff) / 2)
+    }
+    func minVertCam(diff: Double) -> Double{
+        self.size.height * ((cameraNode.xScale + diff) / 2)
     }
     
-      // MARK: - Масштабирование камеры
-      @objc func handlePinch(_ sender: UIPinchGestureRecognizer) {
-          if sender.state == .changed {
-              // Изменяем масштаб камеры в зависимости от жеста пинча
-              let newScale = cameraNode.xScale / sender.scale
-
-              // Ограничиваем минимальный и максимальный масштаб
-              cameraNode.setScale(clamp(value: newScale, lower: 0.1, upper: 1.0))
-
-              // Сбрасываем масштаб жеста, чтобы изменения были плавными
-              sender.scale = 1.0
-          }
-      }
-
-      // Функция для ограничения значений масштаба
-      func clamp<T: Comparable>(value: T, lower: T, upper: T) -> T {
-          return min(max(value, lower), upper)
-      }
- 
+    func maxHorCam(diff: Double) -> Double{
+        self.size.width * (1 - (cameraNode.xScale + diff) / 2)
+    }
+    
+    func minHorCam(diff: Double) -> Double{
+        self.size.width * ((cameraNode.xScale + diff) / 2)
+    }
+    //constraints to camera node
+    func optimalCamPosition(newLocation: CGPoint, diff: Double = 0) -> CGPoint {
+        CGPoint(x:(max( minHorCam(diff: diff),min(maxHorCam(diff: diff),newLocation.x))),
+                y: max(minVertCam(diff: diff),min(maxVertCam(diff: diff),newLocation.y)))
+    }
+    //constraints to node position
+    func optimalPositionForNode(_ node: SKNode,location: CGPoint) -> CGPoint{
+        let optimalPosition: CGPoint = CGPoint(
+            x: max(min(self.frame.width - node.frame.width, location.x),node.frame.width ),
+            y: max(min(self.frame.height - node.frame.height,location.y), node.frame.height))
+        return optimalPosition
+    }
+    
+    // MARK: - Масштабирование камеры
+    @objc func handlePinch(_ sender: UIPinchGestureRecognizer) {
+        if sender.state == .changed {
+            // Изменяем масштаб камеры в зависимости от жеста пинча
+            let newScale = cameraNode.xScale / sender.scale
+            
+            // Ограничиваем минимальный и максимальный масштаб
+            cameraNode.setScale(clamp(value: newScale, lower: 0.1, upper: 1.0))
+            
+            // Сбрасываем масштаб жеста, чтобы изменения были плавными
+            sender.scale = 1.0
+        }
+    }
+    
+    // Функция для ограничения значений масштаба
+    func clamp<T: Comparable>(value: T, lower: T, upper: T) -> T {
+        return min(max(value, lower), upper)
+    }
+    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
         guard let touch = touches.first else { return }
         let location = touch.location(in: self)
         let node = atPoint(location)
         selectedPointNode = node
-        if node.name != "background"{
-            print("not background")
+        
+        if let name = selectedPointNode?.name, name != "background"{
             selectedPointNode?.zPosition += 10
-            
-            if let point = points.first(where: {$0.id == node.name}){
-                selectAction(point)
-            }
+            editedNode = selectedPointNode
+            selectAction(name)
+            sceneState = .movingPoint
         } else {
-//            deselect()
-            selectedPointNode?.name = "background"
+            sceneState = .idle
             lastPanLocation = touch.location(in: view)
         }
         //selected point animation start
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        //        super.touchesMoved(touches, with: event)
+        super.touchesMoved(touches, with: event)
         guard let touch = touches.first else { return }
         
         
-        if selectedPointNode?.name != "background"{
+        if sceneState == .movingPoint, let selectedPointNode {
             let location = touch.location(in: self)
-            //        let locationInScene = convertPoint(fromView: location)
-            selectedPointNode?.position = location
-            //point location = ...
+            let optimalLocation = optimalPositionForNode(selectedPointNode,
+                                                         location: location)
+            self.selectedPointNode?.position = optimalLocation
+            //eventManager closure: point location = ...
         } else {
+            sceneState = .movingCam
             let location = touch.location(in: view)
             if let lastLocation = lastPanLocation {
                 let newLocation = CGPoint(x: cameraNode.position.x + (lastLocation.x - location.x) * cameraNode.xScale,
@@ -181,121 +213,179 @@ extension BPSpriteEditScene{
                 cameraNode.position = optimalCamPosition(newLocation: newLocation)
                 lastPanLocation = location
             }
+            
+        }
+    }
+    
+    func updateData(){
+        if let selectedPointNode, let name = selectedPointNode.name{
+            let coordinates = BPEventPlanPointCoordinate(x: selectedPointNode.position.x / size.width,
+                                                         y: selectedPointNode.position.y / size.height, rotation: selectedPointNode.zRotation)
+            updatePointCoordinatesAction(name, coordinates)
         }
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesEnded(touches, with: event)
-        //selected point animation stop
-        selectedPointNode?.zPosition -= 10
+        if sceneState == .movingPoint{
+            selectedPointNode?.zPosition -= 10
+            sceneState = .idle
+            updateData()
+        } else if sceneState == .idle{
+            deselectAction()
+        } else {
+            selectedPointNode = editedNode
+            sceneState = .idle
+        }
     }
     
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesCancelled(touches, with: event)
-        
+        sceneState = .idle
     }
 }
 
 
 // MARK: - BPPlanDelegateProtocol
 extension BPSpriteEditScene: BPPlanDelegateProtocol{
+    func updateScene(){
+        removeAllChildren()
+        setupCamera()
+        setupBackground()
+        setupPoints()
+    }
+    
     func select(point: BPEventPlanPoint){
-        selectedPointName = point.id
-        if let node = childNode(withName: selectedPointName){
+        if let node = childNode(withName: point.id){
             selectedPointNode = node
-            selectedPointNode?.run(SKAction.scale(to: 1.5, duration: 1))
+            if node.name != "background"{
+                selectedPointNode?.run(SKAction.scale(to: 1.5, duration: 1))
+                editedNode = selectedPointNode
+            }
         } else {
+#if DEBUG
             print("not found")
+#endif
         }
     }
-   
+    
     
     func deselect(){
-        selectedPointNode?.run(SKAction.scale(to: 1, duration: animationDuration))
+        selectedPointNode?.run(SKAction.scale(to: 1,
+                                              duration: animationDuration))
+        editedNode = nil
         selectedPointNode = nil
+        
     }
     
     func removeSelectedPoint(){
-        pointNodes.removeAll(where: {$0.name == selectedPointNode?.name})
-        if let node = selectedPointNode {
-            node.removeFromParent()
+        if selectedPointNode?.name != "background"{
+            pointNodes.removeAll(where: {$0.name == selectedPointNode?.name})
+            if let node = selectedPointNode {
+                node.removeFromParent()
+            }
+            selectedPointNode?.removeFromParent()
+            editedNode = nil
+            selectedPointNode = nil
         }
-        selectedPointNode?.removeFromParent()
-        selectedPointNode = nil
     }
     
     func addPoint(point: BPEventPlanPoint){
-        let node = SKSpriteNode(color: .blue, size: CGSize(width: step,
-                                                           height: step))
-        node.name = point.id
-        node.position = CGPoint(x:  size.width * point.coordinates.x,
-                                y:  size.height * point.coordinates.y)
-        node.zRotation = point.coordinates.rotation
+        let node = SKSpriteNode(color: .blue, size: CGSize(width: 4 * step,
+                                                           height: 4 * step ))
+        configurePointNode(node: node,
+                           point: point)
         pointNodes.append(node)
         self.addChild(node)
         select(point: point)
     }
-    
+
     func saveSelectedPoint(){
-        
+        updateData()
     }
     
     func moveUP(){
-        selectedPointNode?.run(SKAction.moveBy(x: 0, y: step, duration: animationDuration))
+        guard let selectedPointNode else { return }
+        let newPoint = CGPoint(x: selectedPointNode.position.x, y: selectedPointNode.position.y + step)
+        selectedPointNode.run(SKAction.move(to: optimalPositionForNode(selectedPointNode, location: newPoint), duration: animationDuration))
+        updateData()
     }
     
     func moveDown(){
-                selectedPointNode?.run(SKAction.moveBy(x: 0, y: -step, duration: animationDuration))
+        guard let selectedPointNode else { return }
+        let newPoint = CGPoint(x: selectedPointNode.position.x, y: selectedPointNode.position.y - step)
+        selectedPointNode.run(SKAction.move(to: optimalPositionForNode(selectedPointNode, location: newPoint), duration: animationDuration))
+        updateData()
     }
     
     func moveLeft(){
-                selectedPointNode?.run(SKAction.moveBy(x: -step, y: 0, duration: animationDuration))
-
+        guard let selectedPointNode else { return }
+        let newPoint = CGPoint(x: selectedPointNode.position.x - step, y: selectedPointNode.position.y)
+        selectedPointNode.run(SKAction.move(to: optimalPositionForNode(selectedPointNode, location: newPoint), duration: animationDuration))
+        updateData()
+        
     }
     
     func moveRight(){
-        selectedPointNode?.run(SKAction.moveBy(x: step, y: 0, duration: animationDuration))
+        guard let selectedPointNode else { return }
+        let newPoint = CGPoint(x: selectedPointNode.position.x + step, y: selectedPointNode.position.y)
+        selectedPointNode.run(SKAction.move(to: optimalPositionForNode(selectedPointNode, location: newPoint), duration: animationDuration))
+        updateData()
     }
     
     func rotateClockwise(){
-        selectedPointNode?.run(SKAction.rotate(byAngle: angle, duration: animationDuration))
+        if selectedPointNode?.name != "background"{
+            selectedPointNode?.run(SKAction.rotate(byAngle: angle, duration: animationDuration))
+            updateData()
+        }
     }
     
     func rotateCounterClockwise(){
-        selectedPointNode?.run(SKAction.rotate(byAngle: -angle, duration: animationDuration))
+        if selectedPointNode?.name != "background"{
+            selectedPointNode?.run(SKAction.rotate(byAngle: -angle, duration: animationDuration))
+            updateData()
+        }
     }
     
     func scaleUp(){
         if self.cameraNode.xScale > 0.1{
-            cameraNode.run(SKAction.scale(by: 0.9, duration: animationDuration))
+            let newScale = cameraNode.xScale - 0.1
+            cameraNode.run(SKAction.scale(to: newScale, duration: animationDuration))
         }
     }
     
     func scaleDown(){
         if cameraNode.xScale < 1 {
-            cameraNode.run(SKAction.group([SKAction.scale(by: 1.1, duration: animationDuration),
-                                           SKAction.move(to: optimalCamPosition(newLocation: cameraNode.position), duration: animationDuration)]))
+            let newScale = cameraNode.xScale + 0.1
+            if newScale < 1{
+                cameraNode.run(SKAction.group([SKAction.scale(to: newScale, duration: animationDuration),
+                                               SKAction.move(to: optimalCamPosition(newLocation: cameraNode.position,diff: 0.1), duration: animationDuration)]))
+            } else {
+                resetScale()
+            }
         }
     }
     
     func resetScale(){
-        cameraNode.run(SKAction.group([SKAction.scale(to: 1.0, duration: animationDuration),
-                                SKAction.move(to: centerPoint, duration: animationDuration)]))
+        cameraNode.run(SKAction.group([SKAction.scale(to: 1, duration: animationDuration),
+                                       SKAction.move(to: centerPoint, duration: animationDuration)]))
     }
-    
 }
 
-//
 //#Preview {
-//    BPCreateEditEventView( event: MockData.sampleEvent)
-//        .environmentObject(GlobalSettings())
-//        .environmentObject(GlobalStorage())
-//        .environmentObject(EventTabRouter())
+//    BPEditConteinerView(event: .constant(MockData.sampleEvent),
+//                        type: .car,
+//                        editable: true)
+//    .environmentObject(EditPlanPointsManager())
+//    .environmentObject(GlobalSettings())
 //}
 
 #Preview {
-    BPEditConteinerView(event: .constant(MockData.sampleEvent),
-                        type: .car,
-                        editable: true)
-    .environmentObject(EditPlanPointsManager())
+    NavigationStack{
+        BPCreateEditEventView( event: MockData.sampleEvent)
+    }
+        .environmentObject(GlobalSettings())
+        .environmentObject(GlobalStorage())
+        .environmentObject(EventTabRouter())
+        .environmentObject(GlobalTimer())
 }

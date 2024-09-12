@@ -4,10 +4,12 @@ import Foundation
 
 class GlobalSettings: ObservableObject {
     var eventLocations: [EventLocation]
+    var planPointsTemlates: [BPEventPlan] = []
+    
     
     //locationId: [imageName]
     var staiumImages: [String: [String]]
-    
+    var broadcasters: [Broadcaster] = []
     var carImages: [String]
     //crete location
     //edit location

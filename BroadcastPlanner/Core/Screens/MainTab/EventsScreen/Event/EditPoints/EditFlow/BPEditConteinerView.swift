@@ -5,11 +5,18 @@ struct BPEditConteinerView: View {
     
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var editManager: EditPlanPointsManager
+    @EnvironmentObject var settings: GlobalSettings
     
     @Binding var event: Event
+    @State var title: String = ""
+    
     var type: PlanSectionType = .car
     var editable: Bool
-    
+        
+    //templates control
+    var addTemplate: () -> Void = {}
+    var updateTemplate: () -> Void = {}
+    var removeTemplate: () -> Void = {}
     
     @State var isEditState: Bool = false
     
@@ -79,6 +86,11 @@ struct BPEditConteinerView: View {
                             
                             Button {
                                 dismiss()
+                                editManager.resetScale()
+                                // TODO: selected point = nil!!!!
+                                editManager.selectedEventPoint = nil
+                                editManager.renderScene.deselect()
+                                isEditState = false
                             } label: {
                                 Image(systemName: "chevron.down")
                                     .font(.title)
@@ -93,11 +105,124 @@ struct BPEditConteinerView: View {
                             Spacer()
                         }
                     }
-                
+                //templates choise
+                if type == .stadium{
+                    HStack {
+                        Button {
+                            
+                        } label: {
+                            Image(systemName: "trash")
+                                .padding(.horizontal,15)
+                                .background{
+                                    RoundedRectangle(cornerRadius: 10).fill(.ultraThinMaterial)
+                                        .frame(height: 45)
+                                }
+                        }
+                        Divider()
+                            .frame(height: 30)
+                        Menu {
+                            ScrollView{
+                                ForEach(settings.planPointsTemlates) { plan in
+                                    Button("\(plan.title)") {
+                                        print("chosen plan: \(plan.title) ")
+                                        editManager.eventPlan = plan
+                                        editManager.update(type: type)
+                                        title = plan.title
+                                    }
+                                }
+                            }
+                        } label: {
+                            Text(title)
+                                .frame(maxWidth: .infinity)
+                                .padding(.horizontal,15)
+                                .background {
+                                    RoundedRectangle(cornerRadius: 10).fill(.ultraThinMaterial)
+                                        .frame(height: 45)
+                                }
+                        }
+                        .onAppear{
+                            title = event.eventPlan.title
+                        }
+                        
+                        Spacer()
+                        
+                        Button {
+                            print("new schema")
+                        } label: {
+                            Image(systemName: "plus")
+                                .padding(.horizontal,15)
+                                .background{
+                                    RoundedRectangle(cornerRadius: 10).fill(.ultraThinMaterial)
+                                        .frame(height: 45)
+                                }
+                        }
+                        Button {
+                            print("save schema")
+                        } label: {
+                            Image(systemName: "checkmark")
+                                .padding(.horizontal,15)
+                                .background{
+                                    RoundedRectangle(cornerRadius: 10).fill(.ultraThinMaterial)
+                                        .frame(height: 45)
+                                }
+                        }
+                        
+                    }
+                    .padding(.horizontal,15)
+                    .padding(.vertical,15)
+                } else {
+                    //bradcast car view
+                    HStack {
+                        Menu {
+                            ScrollView{
+                                ForEach(settings.planPointsTemlates) { plan in
+                                    Button("broadcaster here") {
+                                        print("broadcaster choosen")
+                                    }
+                                }
+                            }
+                        } label: {
+                            Text("broadcaster")
+                                .frame(maxWidth: .infinity)
+                                .padding(.horizontal,15)
+                                .background {
+                                    RoundedRectangle(cornerRadius: 10).fill(.ultraThinMaterial)
+                                        .frame(height: 45)
+                                }
+                        }
+                        Menu {
+                            ScrollView{
+                                ForEach(settings.planPointsTemlates) { plan in
+                                    Button("Car here") {
+                                        
+                                    }
+                                }
+                            }
+                        } label: {
+                            HStack{
+                                Text("car name")
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.horizontal,15)
+                                    .background {
+                                        RoundedRectangle(cornerRadius: 10).fill(.ultraThinMaterial)
+                                            .frame(height: 45)
+                                    }
+                                Image(systemName: "")
+                            }
+                        }
+                        
+                        Spacer()
+                        
+                      
+                        
+                    }
+                    .padding(.horizontal,15)
+                    .padding(.vertical,15)
+                }
                 //SKView
                 
                     SpriteView(scene: editManager.renderScene)
-                        .aspectRatio(1.5, contentMode: .fit)
+                    .aspectRatio(1.5, contentMode: .fit)
                         .frame(maxWidth: .infinity)
                         .padding(.horizontal)
                 
@@ -120,9 +245,11 @@ struct BPEditConteinerView: View {
             }
 //            .environmentObject(editManager)
         }
-        .onReceive(editManager.$selectedEventPoint, perform: { _ in
-            if let point = editManager.selectedEventPoint{
+        .onReceive(editManager.$selectedEventPoint, perform: { value in
+            if value != nil{
                 isEditState = true
+            } else {
+                isEditState = false
             }
         })
     }
@@ -130,8 +257,9 @@ struct BPEditConteinerView: View {
 
 #Preview {
     BPEditConteinerView(event: .constant(MockData.sampleEvent),
-                        type: .stadium,
+                        type: .car,
                         editable: true)
     .environmentObject(EditPlanPointsManager())
+    .environmentObject(MockData.sampleSettings)
     
 }
