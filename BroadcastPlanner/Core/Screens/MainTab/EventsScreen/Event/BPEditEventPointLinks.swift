@@ -1,7 +1,9 @@
 import SwiftUI
+import SpriteKit
 
 struct BPEditEventPointLinks: View {
-    let event: Event
+    @EnvironmentObject var editManager: EditPlanPointsManager
+//    let event: Event
     let actionLeft: () -> Void
     let actionRight: () -> Void
     
@@ -9,22 +11,19 @@ struct BPEditEventPointLinks: View {
         GeometryReader{ geo in
             HStack(spacing: 15){
                 
-                BPEditEventPlanPointsView(event: event,
-                                          type: .stadium,
-                                          isPreview: true)
+                SpriteView(scene: editManager.renderPitchScene)
                     .frame(width: 3 * geo.size.width / 4,
                            height: geo.size.height)
                     .onTapGesture {
                         actionLeft()
                     }
                 
-                BPEditEventPlanPointsView(event: event,
-                                          type: .car,
-                                          isPreview: true)
+                SpriteView(scene: editManager.renderCarScene)
                     .frame(height: geo.size.height)
                     .onTapGesture {
                         actionRight()
                     }
+                    
             }
         }
     }
@@ -40,5 +39,6 @@ struct BPEditEventPointLinks: View {
         .environmentObject(GlobalStorage())
         .environmentObject(EventTabRouter())
         .environmentObject(GlobalTimer())
+        .environmentObject(EditPlanPointsManager())
         
 }

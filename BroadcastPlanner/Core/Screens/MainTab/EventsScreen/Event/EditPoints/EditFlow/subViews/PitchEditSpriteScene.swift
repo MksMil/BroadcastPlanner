@@ -9,7 +9,7 @@ enum SceneState{
 
 //points: move, rotate, scale, color, add, remove
 
-class BPSpriteEditScene: SKScene{
+class PitchEditSpriteScene: SKScene{
     //point and cam movement control
     var sceneState: SceneState = .idle
     
@@ -25,8 +25,8 @@ class BPSpriteEditScene: SKScene{
     var animationDuration: Double = 0.3
     
     //for preview car scene rotation
-    var isPreview: Bool = false
-    
+//    var isPreview: Bool = false
+        
     let cameraNode = SKCameraNode()
     var backGroundNode = SKSpriteNode(imageNamed: "football_stadium")
     
@@ -34,7 +34,7 @@ class BPSpriteEditScene: SKScene{
     
     var points: [BPEventPlanPoint] = []
     
-    var type: PlanSectionType = .car
+    
     var selectedPointNode: SKNode?
     var editedNode: SKNode?
     
@@ -89,31 +89,14 @@ class BPSpriteEditScene: SKScene{
         }
     
     func setupBackground(){
-        switch type {
-            case .stadium:
-                backGroundNode = SKSpriteNode(imageNamed: "stadium")
-            case .car:
-                backGroundNode = SKSpriteNode(imageNamed: "empty_babybird")//empty_babybird, empty_starbird
-            case .none:
-                backGroundNode = SKSpriteNode(imageNamed: "neitral")
-        }
+        
+        backGroundNode = SKSpriteNode(imageNamed:"stadium")
         backGroundNode.name = "background"
-        addChild(backGroundNode)
         backGroundNode.position = CGPoint(x: size.width / 2,
                                           y: size.height / 2)
+        backGroundNode.scale(to: size)
+        addChild(backGroundNode)
         
-        
-        
-        
-        if type == .car && isPreview{
-            backGroundNode.zRotation = .pi / 2
-            backGroundNode.scale(to: CGSize(width: frame.height , height: frame.width))
-        } else if type == .car{
-            backGroundNode.scale(to: CGSize(width: frame.width,
-                                            height: frame.height / 2))
-        } else {
-            backGroundNode.scale(to: size)
-        }
     }
     
     func setupCamera(){
@@ -126,7 +109,7 @@ class BPSpriteEditScene: SKScene{
     
 }
 // MARK: - Touches
-extension BPSpriteEditScene{
+extension PitchEditSpriteScene{
     // diff - for the scale animation operation, not used for cam movement
     func maxVertCam(diff: Double) -> Double {
         self.size.height * (1 - (cameraNode.xScale + diff) / 2)
@@ -218,7 +201,8 @@ extension BPSpriteEditScene{
     }
     
     func updateData(){
-        if let selectedPointNode, let name = selectedPointNode.name{
+        if let selectedPointNode, 
+            let name = selectedPointNode.name{
             let coordinates = BPEventPlanPointCoordinate(x: selectedPointNode.position.x / size.width,
                                                          y: selectedPointNode.position.y / size.height, rotation: selectedPointNode.zRotation)
             updatePointCoordinatesAction(name, coordinates)
@@ -247,7 +231,8 @@ extension BPSpriteEditScene{
 
 
 // MARK: - BPPlanDelegateProtocol
-extension BPSpriteEditScene: BPPlanDelegateProtocol{
+extension PitchEditSpriteScene{
+    
     func updateScene(){
         removeAllChildren()
         setupCamera()

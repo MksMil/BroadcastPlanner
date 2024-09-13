@@ -52,6 +52,13 @@ final class GlobalStorage: ObservableObject{
         }
     }
     
+    // MARK: - get filtered users
+    func getUserWithSpecialization(_ specialization: UserSpecialization) -> [BPUser]{
+        users.filter { user in
+            user.specialization.contains { $0 == specialization.rawValue }
+        }
+    }
+    
     // MARK: - user upload
     func saveUser(user: BPUser, userImage: UIImage?) async {
         guard let id = user.id else { return }

@@ -5,7 +5,8 @@ class MockData {
     static var sampleEvent: Event = Event(
         
         date: Date(),
-        broadcaster: sampleBroadcaster,
+        broadcaster: sampleESBroadcaster,
+        broadcasterCar: BroadcasterCar(name: "BabyBird", imageName: "empty_babybird"),
         location: sampleLocations[0],
         eventPlan: BPEventPlan()
     )
@@ -20,15 +21,16 @@ class MockData {
         address: "Lviv. Striyska str. 199. 79031"
     )
     static var sampleUsers: [BPUser] = [ ]
-    static let sampleBroadcaster: Broadcaster  = Broadcaster(name: "SG", cars: [BroadcasterCar(name: "SG SUPER CAR")])
+    static let sampleESBroadcaster: Broadcaster  = Broadcaster(host: "EngeneerService", cars: [BroadcasterCar(name: "Starbird", imageName: "empty_starbird"),BroadcasterCar(name: "Babybird", imageName: "empty_babybird")])
+    static let sampleSGBroadcaster: Broadcaster  = Broadcaster( host: "SoftGroup",cars: [BroadcasterCar(name: "SG1", imageName: "empty_starbird"),BroadcasterCar(name: "SG2", imageName: "empty_babybird")])
     
     static let sampleCameras: [Camera] = CameraPosition.allCases.map{ Camera(position: $0) }
     
     static let sampleEvents: [Event] = [
-        Event(date: Date(), broadcaster: MockData.sampleBroadcaster, location: MockData.sampleStadium, eventPlan: BPEventPlan()),
-        Event(date: Date(), broadcaster: MockData.sampleBroadcaster, location: MockData.sampleStadium, eventPlan: BPEventPlan()),
-        Event(date: Date(), broadcaster: MockData.sampleBroadcaster, location: MockData.sampleStadium, eventPlan: BPEventPlan()),
-        Event(date: Date(), broadcaster: MockData.sampleBroadcaster, location: MockData.sampleStadium, eventPlan: BPEventPlan())]
+        Event(date: Date(), broadcaster: MockData.sampleESBroadcaster, broadcasterCar: BroadcasterCar(name: "BabyBird", imageName: "empty_babybird"), location: MockData.sampleStadium, eventPlan: BPEventPlan()),
+        Event(date: Date(), broadcaster: MockData.sampleESBroadcaster, broadcasterCar: BroadcasterCar(name: "BabyBird", imageName: "empty_babybird"), location: MockData.sampleStadium, eventPlan: BPEventPlan()),
+        Event(date: Date(), broadcaster: MockData.sampleESBroadcaster, broadcasterCar: BroadcasterCar(name: "BabyBird", imageName: "empty_babybird"), location: MockData.sampleStadium, eventPlan: BPEventPlan()),
+        Event(date: Date(), broadcaster: MockData.sampleESBroadcaster, broadcasterCar: BroadcasterCar(name: "BabyBird", imageName: "empty_babybird"),location: MockData.sampleStadium, eventPlan: BPEventPlan())]
     static let sampleLocations: [EventLocation] = [
         EventLocation(
             title: "Авангард",
@@ -59,14 +61,7 @@ class MockData {
                                                       fieldBackground: "",
                                                       carBackground: "")
     static var samplePlanTemplates: [BPEventPlan] {
-//        var arr = [BPEventPlan]()
-//        for i in 0..<5{
-//            let plan = sampleEventPlan
-//            plan.title = "\(i)"
-//            plan.id = UUID().uuidString
-//            arr.append(sampleEventPlan)
-//        }
-//        return arr
+
         [ BPEventPlan(id: "123", title: "1", background: "", fieldPoints: [sampleFieldPoint], carPoints: [], fieldBackground: "", carBackground: ""),
           BPEventPlan(id: "345", title: "2", background: "", fieldPoints: [sampleFieldPoint], carPoints: [], fieldBackground: "", carBackground: ""),
         ]
@@ -92,6 +87,7 @@ class MockData {
     static var sampleSettings: GlobalSettings {
         let settings = GlobalSettings()
         settings.planPointsTemlates = samplePlanTemplates
+        settings.broadcasters = [sampleESBroadcaster, sampleSGBroadcaster]
         return settings
     }
 }

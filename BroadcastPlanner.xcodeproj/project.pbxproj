@@ -34,16 +34,16 @@
 		292D664E2BD7998A009A2187 /* AnyContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 292D66442BD79989009A2187 /* AnyContentView.swift */; };
 		292D664F2BD7998A009A2187 /* SmartLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 292D66452BD79989009A2187 /* SmartLayout.swift */; };
 		292D66572BD7BFAC009A2187 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 292D66562BD7BFAC009A2187 /* ImagePicker.swift */; };
-		293752A82BF8C4FE0044924D /* BPEditEventPlanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 293752A72BF8C4FE0044924D /* BPEditEventPlanView.swift */; };
 		293752AA2BF8CD950044924D /* BPEventFilterCaseTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 293752A92BF8CD950044924D /* BPEventFilterCaseTabView.swift */; };
 		29379F2C2C74EEA1009289F7 /* ImageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29379F2B2C74EEA1009289F7 /* ImageManager.swift */; };
 		29389C3A2B8EE2EB003EF60C /* AppleHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29389C392B8EE2EB003EF60C /* AppleHelper.swift */; };
 		29389C3C2B8EE62F003EF60C /* UIKit+ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29389C3B2B8EE62F003EF60C /* UIKit+ext.swift */; };
 		29418D8F2C6639D7007CC6F3 /* GlobalTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29418D8E2C6639D7007CC6F3 /* GlobalTimer.swift */; };
 		29418D922C6CCDAE007CC6F3 /* FiltersEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29418D912C6CCDAE007CC6F3 /* FiltersEnums.swift */; };
+		294D2CA22C94512B00A6682C /* PreviewCarScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 294D2CA12C94512B00A6682C /* PreviewCarScene.swift */; };
 		294D97A72B3B2AEC00057F70 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 294D97A62B3B2AEC00057F70 /* FirebaseAuth */; };
-		2951142D2C4E39D0005E4BF8 /* BPSpriteEditScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2951142C2C4E39D0005E4BF8 /* BPSpriteEditScene.swift */; };
-		295114332C4E73F5005E4BF8 /* BPEditConteinerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 295114322C4E73F5005E4BF8 /* BPEditConteinerView.swift */; };
+		2951142D2C4E39D0005E4BF8 /* PitchEditSpriteScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2951142C2C4E39D0005E4BF8 /* PitchEditSpriteScene.swift */; };
+		295114332C4E73F5005E4BF8 /* BPEditStadiumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 295114322C4E73F5005E4BF8 /* BPEditStadiumView.swift */; };
 		29553BFB2B9073C100C7FE6A /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 29553BFA2B9073C100C7FE6A /* FirebaseFirestore */; };
 		29553BFD2B9073C100C7FE6A /* FirebaseFirestoreCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 29553BFC2B9073C100C7FE6A /* FirebaseFirestoreCombine-Community */; };
 		29553BFF2B9073C100C7FE6A /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 29553BFE2B9073C100C7FE6A /* FirebaseFirestoreSwift */; };
@@ -64,6 +64,8 @@
 		2967DF192B61109B003956FD /* UpdateEPView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2967DF182B61109B003956FD /* UpdateEPView.swift */; };
 		2967DF1B2B639A90003956FD /* Error+Modifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2967DF1A2B639A90003956FD /* Error+Modifier.swift */; };
 		2967DF212B64F69B003956FD /* KeyboardAdaptiveModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2967DF202B64F69B003956FD /* KeyboardAdaptiveModifier.swift */; };
+		297507BC2C935B6300E58091 /* BPEditCarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 297507BB2C935B6300E58091 /* BPEditCarView.swift */; };
+		297507BE2C9426B400E58091 /* SaveEditControlPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 297507BD2C9426B400E58091 /* SaveEditControlPanelView.swift */; };
 		29778E242C0B85FC006EF6CE /* BPResetPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29778E232C0B85FC006EF6CE /* BPResetPasswordView.swift */; };
 		298932682AE24D7000BD93CA /* BPError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 298932672AE24D7000BD93CA /* BPError.swift */; };
 		299190272C899BA000D2CDDC /* KeyPoints.swift in Sources */ = {isa = PBXBuildFile; fileRef = 299190262C899BA000D2CDDC /* KeyPoints.swift */; };
@@ -77,10 +79,8 @@
 		29AE68762BE24F9A00DE8FAB /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29AE68752BE24F9A00DE8FAB /* Message.swift */; };
 		29AE687E2BE8DA3700DE8FAB /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29AE687D2BE8DA3700DE8FAB /* NetworkManager.swift */; };
 		29AE68802BE901D900DE8FAB /* Properties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29AE687F2BE901D900DE8FAB /* Properties.swift */; };
-		29B8B6DE2C4D3CB100AC414A /* BPEditEventCarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29B8B6DD2C4D3CB100AC414A /* BPEditEventCarView.swift */; };
 		29BF35852BFB281600113946 /* BPEventPlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29BF35842BFB281600113946 /* BPEventPlan.swift */; };
 		29BF35872BFB288D00113946 /* BPEventPlanPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29BF35862BFB288D00113946 /* BPEventPlanPoint.swift */; };
-		29BF35892BFB3A5400113946 /* BPEditEventPlanPointsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29BF35882BFB3A5400113946 /* BPEditEventPlanPointsView.swift */; };
 		29C041C02AC556CE008B3E1F /* BroadcastPlannerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041BF2AC556CE008B3E1F /* BroadcastPlannerApp.swift */; };
 		29C041C42AC556D2008B3E1F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 29C041C32AC556D2008B3E1F /* Assets.xcassets */; };
 		29C041C82AC556D2008B3E1F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 29C041C72AC556D2008B3E1F /* Preview Assets.xcassets */; };
@@ -92,6 +92,7 @@
 		29C041E72AC69A11008B3E1F /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041E62AC69A11008B3E1F /* Camera.swift */; };
 		29C041E92AC69A5D008B3E1F /* MockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041E82AC69A5D008B3E1F /* MockData.swift */; };
 		29C041F22ACBF45B008B3E1F /* Color+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041F12ACBF45B008B3E1F /* Color+Ext.swift */; };
+		29C51B8E2C933F9C00ED2178 /* CarEditSpriteScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C51B8D2C933F9C00ED2178 /* CarEditSpriteScene.swift */; };
 		29CCF2EC2C807FE000BCEF34 /* GlobalSessionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29CCF2EB2C807FE000BCEF34 /* GlobalSessionStorage.swift */; };
 		29CCF2F12C80895100BCEF34 /* EmailPasswordStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29CCF2F02C80895100BCEF34 /* EmailPasswordStackView.swift */; };
 		29CCF2F32C80BDD800BCEF34 /* MainRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29CCF2F22C80BDD800BCEF34 /* MainRouter.swift */; };
@@ -149,15 +150,15 @@
 		292D66442BD79989009A2187 /* AnyContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnyContentView.swift; sourceTree = "<group>"; };
 		292D66452BD79989009A2187 /* SmartLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SmartLayout.swift; sourceTree = "<group>"; };
 		292D66562BD7BFAC009A2187 /* ImagePicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
-		293752A72BF8C4FE0044924D /* BPEditEventPlanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPEditEventPlanView.swift; sourceTree = "<group>"; };
 		293752A92BF8CD950044924D /* BPEventFilterCaseTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPEventFilterCaseTabView.swift; sourceTree = "<group>"; };
 		29379F2B2C74EEA1009289F7 /* ImageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageManager.swift; sourceTree = "<group>"; };
 		29389C392B8EE2EB003EF60C /* AppleHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleHelper.swift; sourceTree = "<group>"; };
 		29389C3B2B8EE62F003EF60C /* UIKit+ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIKit+ext.swift"; sourceTree = "<group>"; };
 		29418D8E2C6639D7007CC6F3 /* GlobalTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalTimer.swift; sourceTree = "<group>"; };
 		29418D912C6CCDAE007CC6F3 /* FiltersEnums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FiltersEnums.swift; sourceTree = "<group>"; };
-		2951142C2C4E39D0005E4BF8 /* BPSpriteEditScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPSpriteEditScene.swift; sourceTree = "<group>"; };
-		295114322C4E73F5005E4BF8 /* BPEditConteinerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPEditConteinerView.swift; sourceTree = "<group>"; };
+		294D2CA12C94512B00A6682C /* PreviewCarScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewCarScene.swift; sourceTree = "<group>"; };
+		2951142C2C4E39D0005E4BF8 /* PitchEditSpriteScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PitchEditSpriteScene.swift; sourceTree = "<group>"; };
+		295114322C4E73F5005E4BF8 /* BPEditStadiumView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPEditStadiumView.swift; sourceTree = "<group>"; };
 		2955C9622B4B8C8C003F9ADC /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		2955C9692B4E416D003F9ADC /* AuthenticationScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationScreen.swift; sourceTree = "<group>"; };
 		2955C96C2B4ECB05003F9ADC /* BPTextFieldWithIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPTextFieldWithIcon.swift; sourceTree = "<group>"; };
@@ -176,6 +177,8 @@
 		2967DF182B61109B003956FD /* UpdateEPView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateEPView.swift; sourceTree = "<group>"; };
 		2967DF1A2B639A90003956FD /* Error+Modifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Error+Modifier.swift"; sourceTree = "<group>"; };
 		2967DF202B64F69B003956FD /* KeyboardAdaptiveModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardAdaptiveModifier.swift; sourceTree = "<group>"; };
+		297507BB2C935B6300E58091 /* BPEditCarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPEditCarView.swift; sourceTree = "<group>"; };
+		297507BD2C9426B400E58091 /* SaveEditControlPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveEditControlPanelView.swift; sourceTree = "<group>"; };
 		29778E232C0B85FC006EF6CE /* BPResetPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPResetPasswordView.swift; sourceTree = "<group>"; };
 		298932672AE24D7000BD93CA /* BPError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPError.swift; sourceTree = "<group>"; };
 		299190262C899BA000D2CDDC /* KeyPoints.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyPoints.swift; sourceTree = "<group>"; };
@@ -191,10 +194,8 @@
 		29AE68752BE24F9A00DE8FAB /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		29AE687D2BE8DA3700DE8FAB /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		29AE687F2BE901D900DE8FAB /* Properties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Properties.swift; sourceTree = "<group>"; };
-		29B8B6DD2C4D3CB100AC414A /* BPEditEventCarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPEditEventCarView.swift; sourceTree = "<group>"; };
 		29BF35842BFB281600113946 /* BPEventPlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPEventPlan.swift; sourceTree = "<group>"; };
 		29BF35862BFB288D00113946 /* BPEventPlanPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPEventPlanPoint.swift; sourceTree = "<group>"; };
-		29BF35882BFB3A5400113946 /* BPEditEventPlanPointsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPEditEventPlanPointsView.swift; sourceTree = "<group>"; };
 		29C041BC2AC556CE008B3E1F /* BroadcastPlanner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BroadcastPlanner.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		29C041BF2AC556CE008B3E1F /* BroadcastPlannerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BroadcastPlannerApp.swift; sourceTree = "<group>"; };
 		29C041C32AC556D2008B3E1F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -208,6 +209,7 @@
 		29C041E62AC69A11008B3E1F /* Camera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
 		29C041E82AC69A5D008B3E1F /* MockData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockData.swift; sourceTree = "<group>"; };
 		29C041F12ACBF45B008B3E1F /* Color+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Ext.swift"; sourceTree = "<group>"; };
+		29C51B8D2C933F9C00ED2178 /* CarEditSpriteScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarEditSpriteScene.swift; sourceTree = "<group>"; };
 		29CCF2EB2C807FE000BCEF34 /* GlobalSessionStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalSessionStorage.swift; sourceTree = "<group>"; };
 		29CCF2F02C80895100BCEF34 /* EmailPasswordStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailPasswordStackView.swift; sourceTree = "<group>"; };
 		29CCF2F22C80BDD800BCEF34 /* MainRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainRouter.swift; sourceTree = "<group>"; };
@@ -307,8 +309,10 @@
 		2916E6032C4E79170025DCC6 /* subViews */ = {
 			isa = PBXGroup;
 			children = (
-				2951142C2C4E39D0005E4BF8 /* BPSpriteEditScene.swift */,
+				2951142C2C4E39D0005E4BF8 /* PitchEditSpriteScene.swift */,
+				29C51B8D2C933F9C00ED2178 /* CarEditSpriteScene.swift */,
 				2916E60A2C4E85400025DCC6 /* BPEditEventControlPanel.swift */,
+				297507BD2C9426B400E58091 /* SaveEditControlPanelView.swift */,
 				2916E6102C4E8FB20025DCC6 /* BPEditEventBottomGroup.swift */,
 				2916E60F2C4E8F760025DCC6 /* BottomGroup */,
 			);
@@ -430,10 +434,19 @@
 			path = FilterViews;
 			sourceTree = "<group>";
 		};
+		294D2CA02C94511800A6682C /* Preview */ = {
+			isa = PBXGroup;
+			children = (
+				294D2CA12C94512B00A6682C /* PreviewCarScene.swift */,
+			);
+			path = Preview;
+			sourceTree = "<group>";
+		};
 		2951142B2C4E39A3005E4BF8 /* EditFlow */ = {
 			isa = PBXGroup;
 			children = (
-				295114322C4E73F5005E4BF8 /* BPEditConteinerView.swift */,
+				295114322C4E73F5005E4BF8 /* BPEditStadiumView.swift */,
+				297507BB2C935B6300E58091 /* BPEditCarView.swift */,
 				2916E6032C4E79170025DCC6 /* subViews */,
 			);
 			path = EditFlow;
@@ -443,8 +456,6 @@
 			isa = PBXGroup;
 			children = (
 				2951142B2C4E39A3005E4BF8 /* EditFlow */,
-				295114302C4E73D4005E4BF8 /* Preview */,
-				29BF35882BFB3A5400113946 /* BPEditEventPlanPointsView.swift */,
 			);
 			path = EditPoints;
 			sourceTree = "<group>";
@@ -452,21 +463,13 @@
 		2951142F2C4E71FF005E4BF8 /* Event */ = {
 			isa = PBXGroup;
 			children = (
+				294D2CA02C94511800A6682C /* Preview */,
 				2916E60C2C4E871A0025DCC6 /* Protocols */,
 				2994DE662C157C9F00DF9060 /* BPCreateEditEventView.swift */,
 				2916E6122C4E9AEF0025DCC6 /* BPEditEventPointLinks.swift */,
 				2951142E2C4E71A9005E4BF8 /* EditPoints */,
 			);
 			path = Event;
-			sourceTree = "<group>";
-		};
-		295114302C4E73D4005E4BF8 /* Preview */ = {
-			isa = PBXGroup;
-			children = (
-				29B8B6DD2C4D3CB100AC414A /* BPEditEventCarView.swift */,
-				293752A72BF8C4FE0044924D /* BPEditEventPlanView.swift */,
-			);
-			path = Preview;
 			sourceTree = "<group>";
 		};
 		2955C9682B4E4157003F9ADC /* AuthenticationScreen */ = {
@@ -945,10 +948,11 @@
 				2916E6202C4FA6E10025DCC6 /* UserDataManager.swift in Sources */,
 				29CCF2F12C80895100BCEF34 /* EmailPasswordStackView.swift in Sources */,
 				293752AA2BF8CD950044924D /* BPEventFilterCaseTabView.swift in Sources */,
-				295114332C4E73F5005E4BF8 /* BPEditConteinerView.swift in Sources */,
+				295114332C4E73F5005E4BF8 /* BPEditStadiumView.swift in Sources */,
 				292D66572BD7BFAC009A2187 /* ImagePicker.swift in Sources */,
 				29379F2C2C74EEA1009289F7 /* ImageManager.swift in Sources */,
 				29CCF2EC2C807FE000BCEF34 /* GlobalSessionStorage.swift in Sources */,
+				29C51B8E2C933F9C00ED2178 /* CarEditSpriteScene.swift in Sources */,
 				291E72CF2BBEEBDD008092D7 /* BPSpecializationCellView.swift in Sources */,
 				292D664F2BD7998A009A2187 /* SmartLayout.swift in Sources */,
 				2916E6112C4E8FB20025DCC6 /* BPEditEventBottomGroup.swift in Sources */,
@@ -965,13 +969,14 @@
 				29C041D22AC55C7A008B3E1F /* Event.swift in Sources */,
 				29AE68762BE24F9A00DE8FAB /* Message.swift in Sources */,
 				2994DE6C2C15A2D900DF9060 /* BPEventHeaderView.swift in Sources */,
+				297507BE2C9426B400E58091 /* SaveEditControlPanelView.swift in Sources */,
 				29AE68742BE24F9300DE8FAB /* Chat.swift in Sources */,
 				2994DE702C17196300DF9060 /* BPEventPlanPointImage.swift in Sources */,
 				29E10F582C1845DE00A35A4B /* BPUserImageNameCompactCell.swift in Sources */,
 				29C041F22ACBF45B008B3E1F /* Color+Ext.swift in Sources */,
-				29BF35892BFB3A5400113946 /* BPEditEventPlanPointsView.swift in Sources */,
 				2955C96F2B4EDB15003F9ADC /* BPButtonLargeStyle.swift in Sources */,
 				291E72CB2BBEDF23008092D7 /* BPAccountInfoView.swift in Sources */,
+				294D2CA22C94512B00A6682C /* PreviewCarScene.swift in Sources */,
 				29C041E92AC69A5D008B3E1F /* MockData.swift in Sources */,
 				2916E6242C4FA71B0025DCC6 /* MessageDataManager.swift in Sources */,
 				2915AD1C2BF4A2AA0038239A /* BPUserProfileView.swift in Sources */,
@@ -996,7 +1001,6 @@
 				2916E6132C4E9AEF0025DCC6 /* BPEditEventPointLinks.swift in Sources */,
 				299190292C8A064400D2CDDC /* String+Ext.swift in Sources */,
 				29FFDAAD2AD945EC005AD50F /* MainEventListCell.swift in Sources */,
-				29B8B6DE2C4D3CB100AC414A /* BPEditEventCarView.swift in Sources */,
 				2916E6072C4E82690025DCC6 /* BPEditEventStuffListView.swift in Sources */,
 				29E10F642C21696B00A35A4B /* GlobalSettings.swift in Sources */,
 				29F42B5A2B88BBE70024B764 /* WelcomeFlowScreen.swift in Sources */,
@@ -1018,14 +1022,14 @@
 				2916E6222C4FA6FD0025DCC6 /* EventDataManager.swift in Sources */,
 				29C041DB2AC5620A008B3E1F /* StadiumView.swift in Sources */,
 				290B816B2AD7F01100B858F1 /* CameraDirection.swift in Sources */,
-				2951142D2C4E39D0005E4BF8 /* BPSpriteEditScene.swift in Sources */,
+				2951142D2C4E39D0005E4BF8 /* PitchEditSpriteScene.swift in Sources */,
 				29FFDAB22ADA7F6F005AD50F /* Sport.swift in Sources */,
 				295943062C60DBB800C2B27C /* EventTabRouter.swift in Sources */,
+				297507BC2C935B6300E58091 /* BPEditCarView.swift in Sources */,
 				290056C62C37DF6400CBA472 /* BPUserDataListCellView.swift in Sources */,
 				29C041D02AC557E1008B3E1F /* BPUser.swift in Sources */,
 				29389C3C2B8EE62F003EF60C /* UIKit+ext.swift in Sources */,
 				2967DF212B64F69B003956FD /* KeyboardAdaptiveModifier.swift in Sources */,
-				293752A82BF8C4FE0044924D /* BPEditEventPlanView.swift in Sources */,
 				2967DF192B61109B003956FD /* UpdateEPView.swift in Sources */,
 				2955C97C2B518715003F9ADC /* SettingsView.swift in Sources */,
 			);

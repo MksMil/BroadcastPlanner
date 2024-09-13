@@ -3,7 +3,7 @@ import SwiftUI
 struct BPEditEventStuffListView: View {
     @EnvironmentObject var editManager: EditPlanPointsManager
     
-    var type: PlanSectionType
+//    var type: PlanSectionType
     var eventPlan: BPEventPlan
     @State var selectedEventPoint: BPEventPlanPoint?
     let selectAction: (BPEventPlanPoint) -> Void = { _ in }
@@ -31,19 +31,14 @@ struct BPEditEventStuffListView: View {
         }
     }
         private func makePoints() -> [BPEventPlanPoint]{
-            switch type {
-                case .stadium:
-                    return eventPlan.fieldPoints
-                case .car:
-                    return eventPlan.carPoints
-                case .none:
-                    return []
-            }
+           
+            eventPlan.fieldPoints
+           
         }
     
 }
 
 #Preview {
-    BPEditEventStuffListView(type: .stadium, eventPlan: MockData.sampleEvent.eventPlan)
+    BPEditEventStuffListView(eventPlan: MockData.sampleEvent.eventPlan)
         .environmentObject(EditPlanPointsManager())
 }

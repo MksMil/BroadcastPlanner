@@ -1,7 +1,7 @@
 import Foundation
 
 enum HostBroadcaster: String, Codable, Identifiable, CaseIterable {
-    case SG
+    case SoftGroup
     case EngeneerService
     
     var id: Self {
@@ -11,20 +11,21 @@ enum HostBroadcaster: String, Codable, Identifiable, CaseIterable {
 
 struct Broadcaster: Codable, Identifiable {
     var id: String {
-        host.rawValue
+        host
     }
-    
-    var host: HostBroadcaster = .EngeneerService
-    var name: String
+    var host: String
     var cars: [BroadcasterCar] = []
 }
 
-class BroadcasterCar: Codable {
+class BroadcasterCar: Codable, Identifiable {
+    var id: String
     let name: String
-    var imageName: String?
+    let imageName: String 
     var units: [CarUnit] = []
-    init(name: String) {
+    init(name: String, imageName: String) {
+        self.id = UUID().uuidString
         self.name = name
+        self.imageName = imageName
     }
 }
 

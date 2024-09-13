@@ -1,5 +1,12 @@
 import SwiftUI
+import SpriteKit
 import Combine
+
+enum PlanSectionType: String, Identifiable {
+    case stadium
+    case car
+    var id: Self { self }
+}
 
 struct BPCreateEditEventView: View {
     
@@ -11,7 +18,8 @@ struct BPCreateEditEventView: View {
     
     @State private var type: PlanSectionType?
     var editable: Bool {
-        event.owners.contains { $0 == globalStorage.id }
+//        event.owners.contains { $0 == globalStorage.id }
+        true
     }
     
     var listUsers: [String: UIImage?] {
@@ -38,16 +46,36 @@ struct BPCreateEditEventView: View {
                         .disabled(!editable)
                     
                     GeometryReader{ geo in
-                        BPEditEventPointLinks(event: event){
-                            editManager.renderScene.type = .stadium
-                            type = .stadium
-                        } actionRight: {
-                            editManager.renderScene.type = .car
-                            type = .car
+//                        BPEditEventPointLinks(){
+//                            editManager.loadScene(isPreview: false)
+//                            type = .stadium
+//                        } actionRight: {
+//                            editManager.loadScene(isPreview: false)
+//                            type = .car
+//                        }
+                        HStack(spacing: 15){
+                            
+                            SpriteView(scene: editManager.renderPitchScene)
+                                .frame(width: 3 * geo.size.width / 4,
+                                       height: geo.size.height)
+                                .onTapGesture {
+                                    editManager.loadScene(isPreview: false)
+                                    type = .stadium
+                                }
+                            
+                            SpriteView(scene: editManager.previewCar)
+                                .frame(height: geo.size.height)
+                                .onTapGesture {
+                                    editManager.loadScene(isPreview: false)
+                                    type = .car
+                                }
+                                .frame(height: geo.size.width / 2)
+                                
                         }
-                        .frame(height: geo.size.width / 2)
                     }
                     .padding(.horizontal)
+                   
+                    
                     //staff list
 //                    EventUsersGridView(users: users,
 //                                       images: globalStorage.usersImages)
@@ -69,9 +97,16 @@ struct BPCreateEditEventView: View {
                 }
             }
             .fullScreenCover(item: $type) { type in
-                BPEditConteinerView(event: $event, 
-                                    type: type,
-                                    editable: editable )
+               
+                switch type {
+                    case .stadium:
+                        BPEditStadiumView(event: $event,
+                                        editable: editable )
+                    case .car:
+                        BPEditCarView(event: $event,
+                                      editable: editable)
+                }
+                
             }
             .navigationTitle("Event")
             .navigationBarTitleDisplayMode(.inline)
@@ -105,6 +140,8 @@ struct BPCreateEditEventView: View {
         }
             .onAppear{
                 editManager.configureWith(event: event)
+                editManager.loadScene(isPreview: true)
+//                editManager.setupPreview()
             }
             .environmentObject(editManager)
     }
@@ -114,7 +151,7 @@ struct BPCreateEditEventView: View {
     NavigationStack{
         BPCreateEditEventView( event: MockData.sampleEvent)
     }
-        .environmentObject(GlobalSettings())
+        .environmentObject(MockData.sampleSettings)
         .environmentObject(GlobalStorage())
         .environmentObject(EventTabRouter())
         .environmentObject(GlobalTimer())
