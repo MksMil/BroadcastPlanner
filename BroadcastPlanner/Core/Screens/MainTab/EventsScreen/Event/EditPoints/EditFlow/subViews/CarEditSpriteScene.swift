@@ -2,9 +2,7 @@ import SwiftUI
 import SpriteKit
 
 class CarEditSpriteScene: SKScene{
-    
-    //for preview car scene rotation
-    var isPreview: Bool = false
+
     var animationDuration: Double = 0.3
     //data
     
@@ -15,6 +13,8 @@ class CarEditSpriteScene: SKScene{
     var selectedPointNode: SKNode?
     var editedNode: SKNode?
     
+    
+    var points: [CarUnit] = []
     var pointNodes: [SKSpriteNode] = []
     
     var centerPoint: CGPoint {
@@ -31,33 +31,61 @@ class CarEditSpriteScene: SKScene{
             blue: 255 / 256,
             alpha: 1
         )
-        updateScene()
+        
+        setupNodes()
         
         // Scale pinch control
         let pinchGesture = UIPinchGestureRecognizer(target: self,
                                                     action: #selector(handlePinch(_:)))
         view.addGestureRecognizer(pinchGesture)
     }
-    func updateScene(){
+
+    
+    func setupNodes(){
         removeAllChildren()
         setupCamera()
-        setupBackground()
+        setupBackground() 
+        pointNodes.removeAll()
+        for point in points{
+            let texture = textureFromSFSymbol(named: "person.fill")
+            let node = SKSpriteNode(texture: texture)
+            if point.coordinates.rotation != 0 {
+                node.zRotation = 2 * .pi / (360 / point.coordinates.rotation)
+            }
+            node.size = CGSize(width: 12, height: 12)
+            node.name = point.id
+            node.zPosition = 10
+            node.position = CGPoint(x: size.width * point.coordinates.x,
+                                    y: size.height * point.coordinates.y)
+            pointNodes.append(node)
+            
+            node.alpha = 0
+            addChild(node)
+            
+            if !point.isDisabled{
+                node.run(SKAction.fadeIn(withDuration: 1))
+            }
+            
+        }
     }
-    override func update(_ currentTime: TimeInterval) {
-        super.update(currentTime)
-        
-    }
+    
+    func textureFromSFSymbol(named symbolName: String, pointSize: CGFloat = 10, weight: UIImage.SymbolWeight = .regular) -> SKTexture? {
+            let config = UIImage.SymbolConfiguration(pointSize: pointSize, weight: weight)
+            if let image = UIImage(systemName: symbolName, withConfiguration: config) {
+                return SKTexture(image: image)
+            }
+            return nil
+        }
     
     func changeBackground(imageName: String){
         let texture = SKTexture(imageNamed: imageName)
 
-            let fadeAnimation = SKAction.fadeOut(withDuration: 0.2)
-            let inAnimation = SKAction.fadeIn(withDuration: 0.2)
-            let action = SKAction.setTexture(texture)
-            let seq = SKAction.sequence([fadeAnimation,action,inAnimation])
-            backGroundNode.run(seq)
-//        }
+        let fadeAnimation = SKAction.fadeOut(withDuration: 0.1)
+        let action = SKAction.setTexture(texture)
+        let inAnimation = SKAction.fadeIn(withDuration: 0.2)
         
+        let seq = SKAction.sequence([fadeAnimation,action,inAnimation])
+        backGroundNode.run(seq)
     }
     
     func setupBackground(){
@@ -65,12 +93,7 @@ class CarEditSpriteScene: SKScene{
         addChild(backGroundNode)
         backGroundNode.position = CGPoint(x: size.width / 2,
                                           y: size.height / 2)
-//        if isPreview{
-//            backGroundNode.zRotation = .pi / 2
-//            backGroundNode.scale(to: CGSize(width: frame.height , height: frame.width))
-//        }  else {
-            backGroundNode.scale(to: size)
-//        }
+        backGroundNode.scale(to: size)
     }
     
     func setupCamera(){
@@ -78,6 +101,20 @@ class CarEditSpriteScene: SKScene{
         camera = cameraNode
         cameraNode.position = CGPoint(x: size.width / 2,
                                       y: size.height / 2)
+    }
+    
+    func setNode(name: String){
+    
+        guard let node = childNode(withName: name) else{ return }
+        
+        if let index = points.firstIndex(where: {$0.id == name}){
+            points[index].isDisabled.toggle()
+            if !points[index].isDisabled{
+                node.run(SKAction.fadeAlpha(to: 1, duration: 2))
+            } else {
+                node.run(SKAction.fadeAlpha(to: 0, duration: 2))
+            }
+        }
     }
 }
 // MARK: - Touches
@@ -136,9 +173,11 @@ extension CarEditSpriteScene{
         let node = atPoint(location)
         selectedPointNode = node
         
-        if let name = selectedPointNode?.name, name != "background"{
+        if let name = selectedPointNode?.name,
+           name != "background"{
             selectedPointNode?.zPosition += 10
             editedNode = selectedPointNode
+            lastPanLocation = touch.location(in: view)
         } else {
             lastPanLocation = touch.location(in: view)
         }
@@ -204,9 +243,10 @@ extension CarEditSpriteScene {
 
 #Preview {
     let manager = EditPlanPointsManager()
-    manager.loadScene(isPreview: false)
+    manager.loadScene()
     return BPEditCarView(event: .constant(MockData.sampleEvent),
                   editable: true)
     .environmentObject(manager)
     .environmentObject(MockData.sampleSettings)
+    .environmentObject(GlobalStorage())
 }

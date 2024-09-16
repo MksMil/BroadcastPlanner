@@ -3,6 +3,7 @@ import SpriteKit
 
 struct BPEditCarView: View {
     @Environment(\.dismiss) var dismiss
+    
     @EnvironmentObject var editManager: EditPlanPointsManager
     @EnvironmentObject var settings: GlobalSettings
     @EnvironmentObject var globalStorage: GlobalStorage
@@ -12,6 +13,7 @@ struct BPEditCarView: View {
     @State var broadcasterTitle: String = "choose broadcaster"
     @State var carTitle: String = "choose car"
 
+    @State private var isEnabled: Bool = true
     
     //if user cant edit(he is not owner)
     var editable: Bool
@@ -24,7 +26,7 @@ struct BPEditCarView: View {
         }
         if let car = editManager.selectedCar{
             event.broadcastCar = car
-            editManager.loadScene(isPreview: true)
+            editManager.loadScene()
         }
     }
     
@@ -40,9 +42,9 @@ struct BPEditCarView: View {
                         HStack(spacing: 0){
                             //dissmiss
                             Button {
+                                editManager.resetScale(type: .car)
                                 saveToEvent()
                                 dismiss()
-                                editManager.resetScale(type: .car)
                             } label: {
                                 Image(systemName: "chevron.down")
                                     .font(.title)
@@ -73,7 +75,6 @@ struct BPEditCarView: View {
                 //templates choise
                 if editable{
                     HStack {
-                       
                         Menu {
                             ScrollView{
                                 ForEach(editManager.cars) { car in
@@ -122,6 +123,7 @@ struct BPEditCarView: View {
                         RoundedRectangle(cornerRadius: 5).stroke( .ultraThinMaterial,lineWidth: 3)
                     }
                     .padding(.horizontal)
+                    
                 
                 BPEditEventControlPanel(scaleUpAction: {editManager.scaleUp(type: .car)},
                                         scaleDownAction: {editManager.scaleDown(type: .car)},
@@ -129,16 +131,44 @@ struct BPEditCarView: View {
                     .padding(.horizontal)
               
                 Spacer()
+                
+                ScrollView(.vertical) {
+                    ForEach(makeCarUnits()) { carUnit in
+                        HStack{
+                            Text(carUnit.position)
+                            Spacer()
+                            Button(action: {
+                                editManager.setEnabledToUnit(name: carUnit.id
+                                                             )
+                            }, label: {
+                                Image(systemName: "checkmark")
+                                    .foregroundStyle(carUnit.isDisabled ? .red: .green)
+                            })
+                        }
+                        .padding(.horizontal)
+                    }
+                }
+                .scrollDisabled(true)
+//                .padding()
+                .background {
+                    RoundedRectangle(cornerRadius: 5).fill(.ultraThinMaterial)
+                }
             }
         }
     }
     
-    
+    func makeCarUnits() -> [CarUnit]{
+        if let carUnits = editManager.selectedCar?.units{
+            return carUnits
+        } else{
+            return []
+        }
+    }
 }
 
 #Preview {
     let manager = EditPlanPointsManager()
-    manager.loadScene(isPreview: false)
+    manager.loadScene()
     return BPEditCarView(event: .constant(MockData.sampleEvent),
                   editable: true)
     .environmentObject(manager)

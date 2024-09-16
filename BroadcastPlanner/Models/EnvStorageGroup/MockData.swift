@@ -1,12 +1,12 @@
 import Foundation
 
 //mock data for Previews only
-class MockData {
+enum MockData {
     static var sampleEvent: Event = Event(
         
         date: Date(),
         broadcaster: sampleESBroadcaster,
-        broadcasterCar: BroadcasterCar(name: "BabyBird", imageName: "empty_babybird"),
+        broadcasterCar: esCarBabyBird,
         location: sampleLocations[0],
         eventPlan: BPEventPlan()
     )
@@ -21,16 +21,31 @@ class MockData {
         address: "Lviv. Striyska str. 199. 79031"
     )
     static var sampleUsers: [BPUser] = [ ]
-    static let sampleESBroadcaster: Broadcaster  = Broadcaster(host: "EngeneerService", cars: [BroadcasterCar(name: "Starbird", imageName: "empty_starbird"),BroadcasterCar(name: "Babybird", imageName: "empty_babybird")])
-    static let sampleSGBroadcaster: Broadcaster  = Broadcaster( host: "SoftGroup",cars: [BroadcasterCar(name: "SG1", imageName: "empty_starbird"),BroadcasterCar(name: "SG2", imageName: "empty_babybird")])
+
     
     static let sampleCameras: [Camera] = CameraPosition.allCases.map{ Camera(position: $0) }
     
     static let sampleEvents: [Event] = [
-        Event(date: Date(), broadcaster: MockData.sampleESBroadcaster, broadcasterCar: BroadcasterCar(name: "BabyBird", imageName: "empty_babybird"), location: MockData.sampleStadium, eventPlan: BPEventPlan()),
-        Event(date: Date(), broadcaster: MockData.sampleESBroadcaster, broadcasterCar: BroadcasterCar(name: "BabyBird", imageName: "empty_babybird"), location: MockData.sampleStadium, eventPlan: BPEventPlan()),
-        Event(date: Date(), broadcaster: MockData.sampleESBroadcaster, broadcasterCar: BroadcasterCar(name: "BabyBird", imageName: "empty_babybird"), location: MockData.sampleStadium, eventPlan: BPEventPlan()),
-        Event(date: Date(), broadcaster: MockData.sampleESBroadcaster, broadcasterCar: BroadcasterCar(name: "BabyBird", imageName: "empty_babybird"),location: MockData.sampleStadium, eventPlan: BPEventPlan())]
+        Event(date: Date(), 
+              broadcaster: MockData.sampleESBroadcaster,
+              broadcasterCar: BroadcasterCar(name: "BabyBird", imageName: "empty_babybird"),
+              location: MockData.sampleStadium,
+              eventPlan: BPEventPlan()),
+        Event(date: Date(),
+              broadcaster: MockData.sampleESBroadcaster,
+              broadcasterCar: BroadcasterCar(name: "BabyBird", imageName: "empty_babybird"),
+              location: MockData.sampleStadium,
+              eventPlan: BPEventPlan()),
+        Event(date: Date(),
+              broadcaster: MockData.sampleESBroadcaster,
+              broadcasterCar: BroadcasterCar(name: "BabyBird", imageName: "empty_babybird"),
+              location: MockData.sampleStadium,
+              eventPlan: BPEventPlan()),
+        Event(date: Date(), 
+              broadcaster: MockData.sampleESBroadcaster,
+              broadcasterCar: BroadcasterCar(name: "BabyBird", imageName: "empty_babybird"),
+              location: MockData.sampleStadium,
+              eventPlan: BPEventPlan())]
     static let sampleLocations: [EventLocation] = [
         EventLocation(
             title: "Авангард",
@@ -61,7 +76,6 @@ class MockData {
                                                       fieldBackground: "",
                                                       carBackground: "")
     static var samplePlanTemplates: [BPEventPlan] {
-
         [ BPEventPlan(id: "123", title: "1", background: "", fieldPoints: [sampleFieldPoint], carPoints: [], fieldBackground: "", carBackground: ""),
           BPEventPlan(id: "345", title: "2", background: "", fieldPoints: [sampleFieldPoint], carPoints: [], fieldBackground: "", carBackground: ""),
         ]
@@ -90,4 +104,56 @@ class MockData {
         settings.broadcasters = [sampleESBroadcaster, sampleSGBroadcaster]
         return settings
     }
+    
+    static let sampleESBroadcaster: Broadcaster  = Broadcaster(host: "EngenerService",
+                                                               cars: [MockData.esCarStarBird, MockData.esCarBabyBird])
+    static let sampleSGBroadcaster: Broadcaster  = Broadcaster( host: "SoftGroup",
+                                                                cars: [MockData.esCarStarBird, MockData.esCarBabyBird])
+    
+    static let esCarStarBird:BroadcasterCar =
+    BroadcasterCar(name: "Starbird",
+                   imageName: "empty_starbird",
+                   units: [
+                    CarUnit(id: UUID().uuidString, position: UserSpecialization.producer.rawValue,
+                            coordinates: BPEventPlanPointCoordinate(x: 0.392, y: 0.63, rotation: 0)),
+                    CarUnit(id: UUID().uuidString, position: UserSpecialization.replayDirector.rawValue,
+                            coordinates: BPEventPlanPointCoordinate(x: 0.434, y: 0.63, rotation: 0)),
+                    CarUnit(id: UUID().uuidString, position: UserSpecialization.mainDirector.rawValue,
+                            coordinates: BPEventPlanPointCoordinate(x: 0.482, y: 0.63, rotation: 0)),
+                    CarUnit(id: UUID().uuidString, position: UserSpecialization.director.rawValue,
+                            coordinates: BPEventPlanPointCoordinate(x: 0.523, y: 0.63, rotation: 0)),
+                    CarUnit(id: UUID().uuidString, position: UserSpecialization.graphicsOperator.rawValue,
+                            coordinates: BPEventPlanPointCoordinate(x: 0.57, y: 0.63, rotation: 0)),
+                    CarUnit(id: UUID().uuidString, position: UserSpecialization.replayOperator.rawValue,
+                            coordinates: BPEventPlanPointCoordinate(x: 0.385, y: 0.18, rotation: 0)),
+                    CarUnit(id: UUID().uuidString, position: UserSpecialization.replayOperator.rawValue,
+                            coordinates: BPEventPlanPointCoordinate(x: 0.425, y: 0.18, rotation: 0)),
+                    CarUnit(id: UUID().uuidString, position: UserSpecialization.replayOperator.rawValue,
+                            coordinates: BPEventPlanPointCoordinate(x: 0.465, y: 0.18, rotation: 0)),
+                    CarUnit(id: UUID().uuidString, position: UserSpecialization.replayOperator.rawValue,
+                            coordinates: BPEventPlanPointCoordinate(x: 0.505, y: 0.18, rotation: 0)),
+                    CarUnit(id: UUID().uuidString, position: UserSpecialization.soundDirector.rawValue,
+                            coordinates: BPEventPlanPointCoordinate(x: 0.69, y: 0.52, rotation: 90)),
+                    CarUnit(id: UUID().uuidString, position: UserSpecialization.soundDirector.rawValue,
+                            coordinates: BPEventPlanPointCoordinate(x: 0.69, y: 0.71, rotation: 90)),
+                    CarUnit(id: UUID().uuidString, position: UserSpecialization.soundDirector.rawValue,
+                            coordinates: BPEventPlanPointCoordinate(x: 0.745, y: 0.68, rotation: 0))
+                   ])
+    
+    
+    static let esCarBabyBird: BroadcasterCar =
+    BroadcasterCar(name: "Babybird", imageName: "empty_babybird", units:
+                    [
+                        CarUnit(id: UUID().uuidString, position: UserSpecialization.soundDirector.rawValue,
+                                coordinates: BPEventPlanPointCoordinate(x: 0.284, y: 0.44, rotation: 0)),
+                        CarUnit(id: UUID().uuidString, position: UserSpecialization.mainDirector.rawValue,
+                                coordinates: BPEventPlanPointCoordinate(x: 0.459, y: 0.42, rotation: 0)),
+                        CarUnit(id: UUID().uuidString, position: UserSpecialization.graphicsOperator.rawValue,
+                                coordinates: BPEventPlanPointCoordinate(x: 0.556, y: 0.42, rotation: 0)),
+                        CarUnit(id: UUID().uuidString, position: UserSpecialization.replayOperator.rawValue,
+                                coordinates: BPEventPlanPointCoordinate(x: 0.632, y: 0.42, rotation: 0)),
+                        CarUnit(id: UUID().uuidString, position: UserSpecialization.replayOperator.rawValue,
+                                coordinates: BPEventPlanPointCoordinate(x: 0.71, y: 0.42, rotation: 0))
+                    ])
+        
 }

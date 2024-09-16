@@ -46,27 +46,18 @@ struct BPCreateEditEventView: View {
                         .disabled(!editable)
                     
                     GeometryReader{ geo in
-//                        BPEditEventPointLinks(){
-//                            editManager.loadScene(isPreview: false)
-//                            type = .stadium
-//                        } actionRight: {
-//                            editManager.loadScene(isPreview: false)
-//                            type = .car
-//                        }
                         HStack(spacing: 15){
                             
                             SpriteView(scene: editManager.renderPitchScene)
                                 .frame(width: 3 * geo.size.width / 4,
                                        height: geo.size.height)
                                 .onTapGesture {
-                                    editManager.loadScene(isPreview: false)
                                     type = .stadium
                                 }
                             
                             SpriteView(scene: editManager.previewCar)
                                 .frame(height: geo.size.height)
                                 .onTapGesture {
-                                    editManager.loadScene(isPreview: false)
                                     type = .car
                                 }
                                 .frame(height: geo.size.width / 2)
@@ -140,8 +131,6 @@ struct BPCreateEditEventView: View {
         }
             .onAppear{
                 editManager.configureWith(event: event)
-                editManager.loadScene(isPreview: true)
-//                editManager.setupPreview()
             }
             .environmentObject(editManager)
     }
@@ -149,7 +138,7 @@ struct BPCreateEditEventView: View {
 
 #Preview {
     NavigationStack{
-        BPCreateEditEventView( event: MockData.sampleEvent)
+        BPCreateEditEventView(event: MockData.sampleEvent)
     }
         .environmentObject(MockData.sampleSettings)
         .environmentObject(GlobalStorage())

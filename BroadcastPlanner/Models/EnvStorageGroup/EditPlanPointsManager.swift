@@ -3,7 +3,7 @@ import SpriteKit
 import Combine
 
 final class EditPlanPointsManager: ObservableObject {
-//    typealias RenderDelegate = SKScene & BPPlanDelegateProtocol
+    //    typealias RenderDelegate = SKScene & BPPlanDelegateProtocol
     
     @Published var eventPlan: BPEventPlan?
     @Published var selectedEventPoint: BPEventPlanPoint?
@@ -15,12 +15,14 @@ final class EditPlanPointsManager: ObservableObject {
     
     var renderPitchScene: PitchEditSpriteScene = PitchEditSpriteScene()
     var renderCarScene: CarEditSpriteScene = CarEditSpriteScene()
+    
     var previewCar: PreviewCarScene = PreviewCarScene()
+    //    var previewStadium: PreviewStadiumScene = PreviewStadiumScene()
     
     var cancellables: [AnyCancellable] = []
     
     init(){
-        loadScene(isPreview: true)
+        loadScene()
         configurePublishers()
     }
     
@@ -54,41 +56,38 @@ final class EditPlanPointsManager: ObservableObject {
                 self.changeTexture(carName: "empty_obvan")
                 self.previewCar.changeBackground(imageName: "empty_obvan")
             }
-            
+            self.updateCarScene(units: car?.units ?? [])
         }
         .store(in: &cancellables)
     }
     
-    func loadScene(isPreview: Bool){
+    func loadScene(){
         //setup pitch scene
         let pitchScene = PitchEditSpriteScene()
-        
-//        scene.isPreview = isPreview
-
         pitchScene.selectAction =  { [weak self] id in
             guard let self else { return }
             if let point = self.eventPlan?.fieldPoints.first(where: {$0.id == id}){
                 self.selectedEventPoint = point
             } else {
-                    self.selectedEventPoint = BPEventPlanPoint()
-                }
+                self.selectedEventPoint = BPEventPlanPoint()
+            }
         }
         pitchScene.deselectAction = { [weak self] in
             guard let self else { return }
             self.selectedEventPoint = nil
         }
+        pitchScene.updatePointCoordinatesAction = { id, coord in }
         
-        pitchScene.updatePointCoordinatesAction = { id, coord in
-            
-        }
         renderPitchScene = pitchScene
         
         //setup car scene
         let carScene = CarEditSpriteScene()
-        carScene.isPreview = isPreview
-        if let imageName = selectedCar?.imageName{
+        if let imageName = selectedCar?.imageName, let points = selectedCar?.units{
             carScene.changeBackground(imageName: imageName)
+            carScene.points = points
+            
         }
+        
         renderCarScene = carScene
     }
     
@@ -96,17 +95,32 @@ final class EditPlanPointsManager: ObservableObject {
         self.eventPlan = event.eventPlan
         selectedBroadcater = event.broadcaster
         selectedCar = event.broadcastCar
+        
     }
-    
-    func update(type: PlanSectionType){
-        guard let eventPlan else { return }
-        renderPitchScene.points = type == .stadium ? eventPlan.fieldPoints: eventPlan.carPoints
+}
+
+// MARK: - CarEditScene managment
+extension EditPlanPointsManager{
+    func updateCarScene(units: [CarUnit]){
+        renderCarScene.points = units
+        renderCarScene.setupNodes()
     }
     
     func changeTexture(carName: String){
         renderCarScene.changeBackground(imageName: carName)
     }
     
+    func setEnabledToUnit(name: String){
+        print("set in manager \(name), ")
+        if let index = selectedCar?.units.firstIndex(where: {$0.id == name}){
+            selectedCar?.units[index].isDisabled.toggle()
+        }
+        renderCarScene.setNode(name: name)
+    }
+}
+
+// MARK: - Points Managment
+extension EditPlanPointsManager{
     func addPoint(){
         let point = BPEventPlanPoint()
         renderPitchScene.addPoint(point: point)
@@ -121,6 +135,11 @@ final class EditPlanPointsManager: ObservableObject {
         renderPitchScene.saveSelectedPoint()
     }
     
+}
+ 
+
+// MARK: - Scaling scenes
+extension EditPlanPointsManager {
     func scaleUp(type: PlanSectionType){
         switch type {
             case .stadium:
@@ -128,7 +147,6 @@ final class EditPlanPointsManager: ObservableObject {
             case .car:
                 renderCarScene.scaleUp()
         }
-        
     }
     
     func scaleDown(type: PlanSectionType){
@@ -139,7 +157,7 @@ final class EditPlanPointsManager: ObservableObject {
                 renderCarScene.scaleDown()
         }
     }
- 
+    
     func resetScale(type: PlanSectionType){
         switch type {
             case .stadium:
@@ -149,6 +167,10 @@ final class EditPlanPointsManager: ObservableObject {
         }
     }
     
+}
+
+// MARK: - Move Points in Stadium Edit Scene
+extension EditPlanPointsManager{
     func moveUp(){
         renderPitchScene.moveUP()
     }
