@@ -47,7 +47,7 @@ struct BPAccountInfoView: View {
                             }
                         }
                         if !isEdit {
-                            Task(priority: .userInitiated){
+                            Task{
                               await saveAction(user,image)
                             }
                         }
@@ -118,7 +118,6 @@ struct InfoBlock: View {
                 VStack{
                     
                     UserInfoTextField(text: $user.phoneNumber, isEdit: isEdit, imageName: "phone.circle.fill", prompt: "phone number", axis: .horizontal)
-                       
                     
                     Divider()
                     

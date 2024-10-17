@@ -1,27 +1,16 @@
-//
-//  BPJoystick.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 10.06.2024.
-//
-
 import SwiftUI
 
 struct BPJoystick: View {
-    enum Direction: String {
-        case up,down,left,right
-    }
     
-    var upAction: () -> () = {}
-    var downAction: () -> () = {}
-    var leftAction: () -> () = {}
-    var rightAction: () -> () = {}
+    let upAction: () -> ()
+    let downAction: () -> ()
+    let leftAction: () -> ()
+    let rightAction: () -> ()
     
-    var rotationLeft: () -> () = {}
-    var rotationRight: () -> () = {}
+    let rotationLeft: () -> ()
+    let rotationRight: () -> ()
     
     @State var timer: Timer?
-    @State var direction: Direction = .down
     
     @GestureState var downGest = false
     @GestureState var upGest = false
@@ -35,6 +24,7 @@ struct BPJoystick: View {
         GeometryReader{ geo in
             let wG = geo.size.width
             let hG = geo.size.height
+            
             Image(systemName: "arrowtriangle.up.fill")
                 .resizable()
                 .frame(width: wG / 3, height: hG / 3)
@@ -43,11 +33,12 @@ struct BPJoystick: View {
                 .gesture( SimultaneousGesture(LongPressGesture(minimumDuration: .infinity)
                     .updating($upGest) { current, state, tr in
                         state = current
+                        print("\(state)")
                     }, TapGesture().onEnded({ _ in
                         upAction()
                     }))
                 )
-           
+            
             Image(systemName: "arrowtriangle.down.fill")
                 .resizable()
                 .frame(width: wG / 3, height: hG / 3)
@@ -56,10 +47,12 @@ struct BPJoystick: View {
                 .gesture( SimultaneousGesture(LongPressGesture(minimumDuration: .infinity)
                     .updating($downGest) { current, state, tr in
                         state = current
+                        print("\(state)")
                     }, TapGesture().onEnded({ _ in
                         downAction()
                     }))
                 )
+                
             Image(systemName: "arrowtriangle.left.fill")
                 .resizable()
                 .frame(width: wG / 3, height: hG / 3)
@@ -91,10 +84,13 @@ struct BPJoystick: View {
                 .rotationEffect(Angle(degrees: -40))
                 .position(CGPoint(x: wG / 6, y: hG / 7))
                 .scaleEffect(leftRotation ? 0.95: 1)
-                .gesture(LongPressGesture(minimumDuration: 0.1)
+                .gesture(SimultaneousGesture(LongPressGesture(minimumDuration: 0.1)
                     .updating($leftRotation) { current, state, tr in
                         state = current
-                    })
+                    }, TapGesture().onEnded({ _ in
+                        rotationLeft()
+                    }))
+                )
             
             Image(systemName: "arrowshape.turn.up.left.fill")
                 .resizable()
@@ -102,17 +98,20 @@ struct BPJoystick: View {
                 .rotationEffect(Angle(degrees: 40))
                 .position(CGPoint(x: 5 * wG / 6, y: hG / 7))
                 .scaleEffect(rightRotaton ? 0.95: 1)
-                .gesture(LongPressGesture(minimumDuration: 0.1)
+                .gesture(SimultaneousGesture(LongPressGesture(minimumDuration: 0.1)
                     .updating($rightRotaton) { current, state, tr in
                         state = current
-                    })
+                    }, TapGesture().onEnded({ _ in
+                        rotationRight()
+                    }))
+                )
         }
         .foregroundStyle(.ultraThinMaterial)
         .onChange(of: upGest, perform: { value in
             if value {
                 timer = Timer(timeInterval: 0.1, repeats: true
                               , block: { _ in
-                            upAction()
+                    upAction()
                 })
                 RunLoop.main.add(timer!, forMode: .common)
             }else {
@@ -124,7 +123,7 @@ struct BPJoystick: View {
             if value {
                 timer = Timer(timeInterval: 0.1, repeats: true
                               , block: { _ in
-                            downAction()
+                    downAction()
                 })
                 RunLoop.main.add(timer!, forMode: .common)
             }else {
@@ -136,7 +135,7 @@ struct BPJoystick: View {
             if value {
                 timer = Timer(timeInterval: 0.1, repeats: true
                               , block: { _ in
-                            leftAction()
+                    leftAction()
                 })
                 RunLoop.main.add(timer!, forMode: .common)
             }else {
@@ -148,7 +147,7 @@ struct BPJoystick: View {
             if value {
                 timer = Timer(timeInterval: 0.1, repeats: true
                               , block: { _ in
-                            rightAction()
+                    rightAction()
                 })
                 RunLoop.main.add(timer!, forMode: .common)
             }else {
@@ -156,15 +155,7 @@ struct BPJoystick: View {
                 timer = nil
             }
         })
-        .onChange(of: leftRotation, perform: { value in
-            rotationLeft()
-        })
-        .onChange(of: rightRotaton, perform: { value in
-            rotationRight()
-        })
-//        .background {
-//            Circle().stroke(.black, lineWidth: 2)
-//        }
+
     }
 }
 
@@ -177,6 +168,10 @@ struct BPJoystick: View {
         print("left")
     } rightAction: {
         print("right")
+    } rotationLeft: {
+        print("rotation left")
+    } rotationRight: {
+        print("rotation right")
     }
     
 }

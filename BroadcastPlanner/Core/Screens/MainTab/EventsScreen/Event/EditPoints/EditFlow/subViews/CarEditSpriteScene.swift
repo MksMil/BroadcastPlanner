@@ -14,7 +14,7 @@ class CarEditSpriteScene: SKScene{
     var editedNode: SKNode?
     
     
-    var points: [CarUnit] = []
+    var points: [OBVanUnit] = []
     var pointNodes: [SKSpriteNode] = []
     
     var centerPoint: CGPoint {
@@ -46,27 +46,27 @@ class CarEditSpriteScene: SKScene{
         setupCamera()
         setupBackground() 
         pointNodes.removeAll()
-        for point in points{
-            let texture = textureFromSFSymbol(named: "person.fill")
-            let node = SKSpriteNode(texture: texture)
-            if point.coordinates.rotation != 0 {
-                node.zRotation = 2 * .pi / (360 / point.coordinates.rotation)
-            }
-            node.size = CGSize(width: 12, height: 12)
-            node.name = point.id
-            node.zPosition = 10
-            node.position = CGPoint(x: size.width * point.coordinates.x,
-                                    y: size.height * point.coordinates.y)
-            pointNodes.append(node)
-            
-            node.alpha = 0
-            addChild(node)
-            
-            if !point.isDisabled{
-                node.run(SKAction.fadeIn(withDuration: 1))
-            }
-            
-        }
+//        for point in points{
+//            let texture = textureFromSFSymbol(named: "person.fill")
+//            let node = SKSpriteNode(texture: texture)
+//            if point.coordinates.rotation != 0 {
+//                node.zRotation = 2 * .pi / (360 / point.coordinates.rotation)
+//            }
+//            node.size = CGSize(width: 12, height: 12)
+//            node.name = point.id
+//            node.zPosition = 10
+//            node.position = CGPoint(x: size.width * point.coordinates.x,
+//                                    y: size.height * point.coordinates.y)
+//            pointNodes.append(node)
+//            
+//            node.alpha = 0
+//            addChild(node)
+//            
+//            if point.isEnabled{
+//                node.run(SKAction.fadeIn(withDuration: 1))
+//            }
+//            
+//        }
     }
     
     func textureFromSFSymbol(named symbolName: String, pointSize: CGFloat = 10, weight: UIImage.SymbolWeight = .regular) -> SKTexture? {
@@ -104,15 +104,14 @@ class CarEditSpriteScene: SKScene{
     }
     
     func setNode(name: String){
-    
         guard let node = childNode(withName: name) else{ return }
         
         if let index = points.firstIndex(where: {$0.id == name}){
-            points[index].isDisabled.toggle()
-            if !points[index].isDisabled{
-                node.run(SKAction.fadeAlpha(to: 1, duration: 2))
+            points[index].isEnabled.toggle()
+            if points[index].isEnabled{
+                node.run(SKAction.fadeAlpha(to: 1, duration: 1))
             } else {
-                node.run(SKAction.fadeAlpha(to: 0, duration: 2))
+                node.run(SKAction.fadeAlpha(to: 0.3, duration: 1))
             }
         }
     }
@@ -241,12 +240,12 @@ extension CarEditSpriteScene {
     }
 }
 
-#Preview {
-    let manager = EditPlanPointsManager()
-    manager.loadScene()
-    return BPEditCarView(event: .constant(MockData.sampleEvent),
-                  editable: true)
-    .environmentObject(manager)
-    .environmentObject(MockData.sampleSettings)
-    .environmentObject(GlobalStorage())
-}
+//#Preview {
+//    let manager = EditPlanPointsManager()
+//    manager.loadScene()
+//    return BPEditCarView(event: .constant(MockData.sampleEvent),
+//                  editable: true)
+//    .environmentObject(manager)
+//    .environmentObject(MockData.sampleSettings)
+//    .environmentObject(GlobalStorage())
+//}

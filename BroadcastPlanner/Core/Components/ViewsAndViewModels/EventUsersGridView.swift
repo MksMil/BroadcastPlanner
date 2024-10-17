@@ -8,8 +8,8 @@ struct EventUsersGridView: View {
         ScrollView{
             SmartLayout(hSpacing: 5, vSpacing: 5){
                 ForEach(users, id: \.id){ user in
-                    BPUserDataListCellView(text: user.fullCompactName,
-                                           image: images[user.id ?? ""])
+                    BPUserDataListCellView(text: user.firstName,
+                                           image: images[user.id])
                 }
             }
         }

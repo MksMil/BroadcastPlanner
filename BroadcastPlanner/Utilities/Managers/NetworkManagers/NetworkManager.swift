@@ -1,63 +1,109 @@
-import Foundation
+import UIKit
 import Firebase
 import FirebaseStorage
 import FirebaseFirestoreSwift
 import FirebaseCore
 
-protocol NetworkManagerProtocol: AnyObject {
-    
-    //get firebase auth status
-    func getCurrentSessionUserInfo() async -> SessionUser?
-    
-    //get current user data
-    func getCurrentUserData(id: String) async -> BPUser?
-    
-    //create user in users directory in db
-    func createUser(id: String, email: String) async
-    
-    //save user data in users directory in db
-    func saveUser(user: BPUser,image: UIImage?) async
-    
-    //get events fron db
-    func getEvents() async -> [Event]?
-    
-    //update
-    func saveEvent(_ event: Event) async
-    
-    //get users from users directory from db
-    func getUsers() async -> [BPUser]?
-    
-    func getNewChatMessages() async
-    
-    //send online-status to user data
-    func goOnline(id: String) async
-    
-    //send offline-status to user data
-    func goOffline(id: String) async
-    
-    //save image to firestore
-    func saveImageToGlobalStorage(id: String, path: ImagePath,image: UIImage) async
-    
-    //load image from firestore
-    func loadImagesFromGlobalStorage( path: ImagePath, completion: @escaping (String, UIImage) -> () ) async
-    
-    //events managment
-    func removeEvent(_ event: Event) async
-    
-    //event templates
-    func getEventteamplates() async -> [BPEventPlan]?
-    func appendEventTemolate(plan: BPEventPlan) async
-    func removeEventPlan(plan: BPEventPlan) async
-    
-}
-
-final class NetworkManager: NetworkManagerProtocol {
+final class NetworkManager {
     
     var db: Firestore
+    var conteiner: DataManager?
     
     init() {
         self.db = Firestore.firestore()
     }
+    
+    func observeUsersUpdates() {
+        db.collection("\(DataPath.users.rawValue)").addSnapshotListener { [weak self] (snapshot, error) in
+            guard let self,
+                  let snapshot,
+                  let moc = conteiner?.moc else { return } // error handling!?
+            
+            for diff in snapshot.documentChanges {
+                let data = diff.document.data()
+                guard let remoteUser = BPUser.createUserFromData(data: data)
+                    
+                
+                else { continue }
+                
+                switch diff.type {
+                    case .added, .modified:
+                        // refresh / add user in Core Data
+                        let fetchRequest = LocalUser.fetchRequest()
+                        fetchRequest.predicate = NSPredicate(format: "id == %@", remoteUser.id)
+                        
+                        if let existingUser = try? moc.fetch(fetchRequest).first{
+                            //user exists
+                            remoteUser.toLocalUser(user: existingUser)
+                     } else {
+                            //user doesn't exists
+                            let newUser = LocalUser(context: moc)
+                            remoteUser.toLocalUser(user: newUser)
+                        }
+                    case .removed:
+                        let fetchRequest = LocalUser.fetchRequest()
+                        fetchRequest.predicate = NSPredicate(format: "id == %@", remoteUser.id )
+                        
+                        if let userToDelete = try? moc.fetch(fetchRequest).first {
+                            moc.delete(userToDelete)
+                        }
+                }
+                // save context
+                try? moc.save()
+            }
+        }
+    }
+    
+//    func observeEventsUpdates() {
+//        db.collection("events").addSnapshotListener { [weak self] (snapshot, error) in
+//            guard let self,
+//                  let snapshot,
+//                  let moc = conteiner?.persistentContainer.viewContext else { return } // error handling!?
+//            
+//            for diff in snapshot.documentChanges{
+//                let data = diff.document.data()
+//                
+//                guard let id = data["id"] as? String,
+//                      let date = data["date"] as? Timestamp,
+//                      let brodcasterId = data["broadcasterId"] as? String,
+//                      let obVanId = data["obVanId"] as? String,
+//                      let locationId = data["locationId"] as? String,
+//                      let homeImageString = data["homeImageString"] as? String,
+//                      let guestImageString = data["guestImageString"] as? String,
+//                      let locationPoints = data["locationPoints"] as? [LocalLocatoinPoint],
+//                      let carUnits = data["carUnits"] as? [LocalCarUnit],
+//                      let owners = data["owners"] as? [String]
+//                else{ return }
+//                
+//                switch diff.type {
+//                        
+//                    case .added, .modified:
+//                        print("add/ modify")
+//                        let request = LocalEvent.fetchRequest()
+//                        request.predicate = NSPredicate(format: "id == %@", id)
+//                        
+//                        if let existEvent = try? moc.fetch(LocalEvent.fetchRequest()).first{
+//                            // event exist
+////                            existEvent.
+//                            
+//                            
+//                        } else {
+//                            //event doesn't exist
+//                            
+//                            
+//                        }
+//                        
+//                        
+//                        
+//                    case .removed:
+//                        print("remove")
+//                }
+//            }
+//            
+//        }
+//        
+//        
+//    }
     
     @MainActor
     func getCurrentSessionUserInfo() async -> SessionUser?{
@@ -69,7 +115,7 @@ final class NetworkManager: NetworkManagerProtocol {
     
     @MainActor
     func getCurrentUserData(id: String) async -> BPUser? {
-        let userRef = db.collection("users").document(id)
+        let userRef = db.collection("\(DataPath.users.rawValue)").document(id)
         do {
             let userData = try await userRef.getDocument(as: BPUser.self)
             return userData
@@ -84,35 +130,32 @@ final class NetworkManager: NetworkManagerProtocol {
     
     @MainActor
     func createUser(id: String, email: String) async {
-        
-        let user = BPUser()
+        var user = BPUser()
         user.id = id
         user.email = email
         
-        let userRef = db.collection("users")
+        let userRef = db.collection("\(DataPath.users.rawValue)")
         do {
             let data = try Firestore.Encoder().encode(user)
             try await userRef.document(id).setData(data)
         } catch {
 #if DEBUG
-            print("DEBUG: save user error: \(error.localizedDescription)")
+            print("DEBUG: /NetworkManager/ create user error: \(error.localizedDescription)")
 #endif
         }
     }
     
     @MainActor
     func saveUser(user: BPUser, image: UIImage?) async {
-        guard let id = user.id else { return }
-        
-        let userRef = db.collection("users")
+        let userRef = db.collection("\(DataPath.users.rawValue)")
         do {
             let data = try Firestore.Encoder().encode(user)
-            try await userRef.document(id).setData(data)
+            try await userRef.document(user.id).setData(data)
             guard let image else { return }
-            await saveImageToGlobalStorage(id: id, path: .userImage, image: image)
+            await saveImageToGlobalStorage(id: user.id, image: image)
         } catch {
 #if DEBUG
-            print("DEBUG: save user error: \(error.localizedDescription)")
+            print("DEBUG: /NetworkManager/ save user error: \(error.localizedDescription)")
 #endif
         }
         
@@ -120,46 +163,29 @@ final class NetworkManager: NetworkManagerProtocol {
     
     @MainActor
     func getUsers()  async -> [BPUser]?{
-        let usersRef = db.collection("users")
+        let usersRef = db.collection("\(DataPath.users.rawValue)")
         do {
             let usersSnapshot = try await usersRef.getDocuments()
             let users = usersSnapshot.documents.compactMap{try? $0.data(as: BPUser.self)}
-            print("network manager finish get Users")
             return users
         } catch {
 #if DEBUG
-            print("DEBUG: getUsers flow error: \(error)")
+            print("DEBUG: /NetworkManager/ getUsers flow error: \(error)")
 #endif
         }
         return nil
     }
-    
+}
     // MARK: - Save/Load Images
-//    @MainActor
     // TODO: thread problem
-    func saveImageToGlobalStorage(id: String, path: ImagePath,image: UIImage) async {
+extension NetworkManager{
+    func saveImageToGlobalStorage(id: String,image: UIImage) async {
         guard let imageData = image.jpegData(compressionQuality: 1) else {
             return
         }
-        
-        //save to local
-        //        if let url = getPath(name: path){
-        //            if !FileManager.default.fileExists(atPath: url.relativePath){
-        //                do {
-        //                    try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
-        //                }catch{
-        //#if DEBUG
-        //                    print("DEBUG: NetworkManager/saveImageToGlobalStorage:  directory creation to saving image to local storage error: \(error)")
-        //#endif
-        //                }
-        //            }
-        //            FileManager.default.createFile(atPath: url.appendingPathComponent("\(id).jpeg").relativePath,
-        //                                           contents: imageData)
-        //        }
-        
         //save to global
         let storageRef = Storage.storage().reference()
-        let imageRef = storageRef.child("\(ImagePath.userImage.rawValue)/\(id)")
+        let imageRef = storageRef.child("\(DataPath.images.rawValue)/\(id)")
         //        imageRef.putData(imageData)
         do {
             let _ = try await imageRef.putDataAsync(imageData)
@@ -171,18 +197,10 @@ final class NetworkManager: NetworkManagerProtocol {
     }
     
     @MainActor
-    func loadImagesFromGlobalStorage(path: ImagePath, completion: @escaping (String, UIImage) -> () ) async {
-        
-        //load from local
-        //        if let url = getPath(name: path)?.appending(path: "\(id).jpeg", directoryHint: .notDirectory) {
-        //            if let data = FileManager.default.contents(atPath: url.relativePath){
-        //                completion(UIImage(data: data))
-        //            }
-        //        }
-        
+    func loadImagesFromGlobalStorage(completion: @escaping (String, UIImage) -> () ) async {
         //load from firebase
         let storageRef = Storage.storage().reference()
-        let imagesRef = storageRef.child("\(ImagePath.userImage.rawValue)")
+        let imagesRef = storageRef.child("\(DataPath.images.rawValue)")
         do {
             let result = try await imagesRef.listAll()
             
@@ -206,38 +224,13 @@ final class NetworkManager: NetworkManagerProtocol {
         }
         
     }
-    //sync image between local and global
-    func syncImage(id: String, path: ImagePath){
-        //try to load from global storage
-        //            let storageRef = storage.reference()
-        //            let imageRef = storageRef.child("\(path.rawValue)/\(id)")
-        //            let _ = imageRef.getData(maxSize: 3 * 1024 * 1024) { data, error in
-        //                if let error {
-        //                    print("error: \(error)")
-        //                    completion(nil)
-        //                }
-        //                completion(UIImage(data: data!))
-        //            }
-    }
-    // local directory path for save image
-    func getPath(name: ImagePath) -> URL? {
-        guard let path = FileManager
-            .default
-            .urls(for: .documentDirectory,
-                  in: .userDomainMask)
-                .first?
-            .appending(path: "\(name.rawValue)")
-        else {
-            return nil
-        }
-        return path
-    }
-    
+}
+
     // MARK: - Events
-    
+extension NetworkManager{
     func saveEvent(_ event: Event) async {
         //        guard let id = event.id else { return }
-        let eventRef = db.collection("events")
+        let eventRef = db.collection("\(DataPath.events.rawValue)")
         do {
             let data = try Firestore.Encoder().encode(event)
             try await eventRef.document(event.id).setData(data)
@@ -250,7 +243,7 @@ final class NetworkManager: NetworkManagerProtocol {
     
     func removeEvent(_ event: Event) async {
         do{
-            try await db.collection("events").document(event.id).delete()
+            try await db.collection("\(DataPath.events.rawValue)").document(event.id).delete()
         } catch {
 #if DEBUG
             print("DEBUG: remove event error: \(error.localizedDescription)")
@@ -259,7 +252,7 @@ final class NetworkManager: NetworkManagerProtocol {
     }
     
     func getEvents() async -> [Event]? {
-        let usersRef = db.collection("events")
+        let usersRef = db.collection("\(DataPath.events.rawValue)")
         do {
             let usersSnapshot = try await usersRef.getDocuments()
             let events = usersSnapshot.documents.compactMap{try? $0.data(as: Event.self)}
@@ -271,17 +264,18 @@ final class NetworkManager: NetworkManagerProtocol {
         }
         return nil
     }
+}
     // MARK: - Messages
+extension NetworkManager {
     func getNewChatMessages() async {
         
     }
     
-    
+}
     // MARK: - Online/Offline
-    @MainActor
+extension NetworkManager {
     func goOnline(id: String ) async {
-        //        guard let id =  else { return }
-        let userRef = db.collection("users").document(id)
+        let userRef = db.collection("\(DataPath.users.rawValue)").document(id)
         do {
             try await userRef.updateData(["isOnline":true])
             
@@ -291,10 +285,9 @@ final class NetworkManager: NetworkManagerProtocol {
 #endif
         }
     }
-    @MainActor
     func goOffline(id: String) async {
         //        guard let id = globalStorage.currentSessionUser?.id else { return }
-        let userRef = db.collection("users").document(id)
+        let userRef = db.collection("\(DataPath.users.rawValue)").document(id)
         
         do {
             try await userRef.updateData(["isOnline":false])
@@ -307,49 +300,42 @@ final class NetworkManager: NetworkManagerProtocol {
     }
 }
 // MARK: - eventPlan managment
-extension NetworkManager{
-    func getEventteamplates() async -> [BPEventPlan]?{
-        let usersRef = db.collection("eventTeamplates")
-        do {
-            let usersSnapshot = try await usersRef.getDocuments()
-            let eventTeamplates = usersSnapshot.documents.compactMap{try? $0.data(as: BPEventPlan.self)}
-            return eventTeamplates
-        } catch {
-#if DEBUG
-            print("DEBUG: getEventPlans flow error: \(error)")
-#endif
-        }
-        return nil
-    }
-    
-    func appendEventTemolate(plan: BPEventPlan) async{
-        let id = plan.id
-        let eventRef = db.collection("eventTeamplates")
-        do {
-            let data = try Firestore.Encoder().encode(plan)
-            try await eventRef.document(id).setData(data)
-        } catch {
-#if DEBUG
-            print("DEBUG: save event error: \(error.localizedDescription)")
-#endif
-        }
-    }
-    
-    func removeEventPlan(plan: BPEventPlan) async{
-        do{
-            try await db.collection("eventTeamplates").document(plan.id).delete()
-        } catch {
-#if DEBUG
-            print("DEBUG: remove event error: \(error.localizedDescription)")
-#endif
-        }
-    }
-}
+//extension NetworkManager{
+//    func getEventteamplates() async -> [BPEventPlan]?{
+//        let usersRef = db.collection("eventTeamplates")
+//        do {
+//            let usersSnapshot = try await usersRef.getDocuments()
+//            let eventTeamplates = usersSnapshot.documents.compactMap{try? $0.data(as: BPEventPlan.self)}
+//            return eventTeamplates
+//        } catch {
+//#if DEBUG
+//            print("DEBUG: getEventPlans flow error: \(error)")
+//#endif
+//        }
+//        return nil
+//    }
+//    
+//    func appendEventTemolate(plan: BPEventPlan) async{
+//        let id = plan.id
+//        let eventRef = db.collection("eventTeamplates")
+//        do {
+//            let data = try Firestore.Encoder().encode(plan)
+//            try await eventRef.document(id).setData(data)
+//        } catch {
+//#if DEBUG
+//            print("DEBUG: save event error: \(error.localizedDescription)")
+//#endif
+//        }
+//    }
+//    
+//    func removeEventPlan(plan: BPEventPlan) async{
+//        do{
+//            try await db.collection("eventTeamplates").document(plan.id).delete()
+//        } catch {
+//#if DEBUG
+//            print("DEBUG: remove event error: \(error.localizedDescription)")
+//#endif
+//        }
+//    }
+//}
 
-
-// MARK: - Document directory
-extension FileManager {
-    func getDocumentsDirectory() -> URL {
-        Self.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-    }
-}

@@ -5,12 +5,12 @@ struct BPEditEventBottomGroup: View {
     @EnvironmentObject var editManager: EditPlanPointsManager
     
 //    var type: PlanSectionType
-    var eventPlan: BPEventPlan
+    let event: Event
     @Binding var isEdit: Bool
     
     var body: some View {
         if !isEdit {
-            BPEditEventStuffListView(eventPlan: eventPlan)
+            BPEditEventStuffListView(event: event)
         } else {
             BPEditEventJoystickInfoPanel(moveUp: editManager.moveUp,
                                          moveDown: editManager.moveDown,
@@ -22,7 +22,8 @@ struct BPEditEventBottomGroup: View {
     }
 }
 
-#Preview {
-    BPEditEventBottomGroup(eventPlan: MockData.sampleEvent.eventPlan, isEdit: .constant(true))
-        .environmentObject(EditPlanPointsManager())
-}
+//#Preview {
+//    BPEditEventBottomGroup(event: MockData.sampleEvent,
+//                           isEdit: .constant(true))
+//        .environmentObject(EditPlanPointsManager())
+//}

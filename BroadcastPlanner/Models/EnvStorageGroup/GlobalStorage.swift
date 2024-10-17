@@ -4,12 +4,15 @@
 import SwiftUI
 import UIKit
 import Combine
+import CoreData
 
 @MainActor
 final class GlobalStorage: ObservableObject{
     
-    var networkManager: NetworkManagerProtocol?
+    var networkManager: NetworkManager?
     var settings: GlobalSettings
+    
+    var container: DataManager = DataManager.shared
     
     @Published var id: String = ""
     
@@ -25,7 +28,7 @@ final class GlobalStorage: ObservableObject{
     @Published var events: [Event] = []
 
     @Published var chats: [Chat] = []
-    @Published var eventTemplates: [BPEventPlan] = []
+//    @Published var eventTemplates: [BPEventPlan] = []
     
     var cancellables: Set<AnyCancellable> = []
     
@@ -34,23 +37,107 @@ final class GlobalStorage: ObservableObject{
     init()  {
         self.settings = GlobalSettings()
         self.networkManager = NetworkManager()
-    }
-    
-    convenience init(currentUser: BPUser) {
-        self.init()
-        self.currentUser = currentUser
+//#if DEBUG
+//        self.container = DataManager.shared
+//#else
+//        self.container = BPConteiner()
+//#endif
     }
     
     func configure() {
-        //fetch cache and network newData
+        //fetch cache and network newData in background!
         Task{
+            
+            // TODO: refactor to observe changes
             await self.getUsers()
             await self.loadImages()
             await self.getEvents()
             await self.getChats()
-            await self.getEventTemplates()
+            
+            await self.getStaticData()
+            
+//            await self.getEventTemplates()
+            
+//            mapDataToStorage()
         }
     }
+    
+    // MARK: - get locations, broadcasters and cars
+    func getStaticData() async {
+        
+    }
+    
+    // MARK: - Map loaded data to coredata storage
+//    func mapDataToStorage(){
+//        let moc = container.persistentContainer.viewContext
+//        do {
+//            let mocUsers = try moc.fetch(LocalUser.fetchRequest())
+//            // adding users to context
+//            
+//            for user in users {
+//                let mappedUser = mocUsers.filter({ mocUser in
+//                    user.id == mocUser.id
+//                }).first
+//                
+//                //new user
+//                if mappedUser == nil {
+//                    let newUser = LocalUser(context: moc)
+//                    newUser.id = user.id
+//                    newUser.firstName = user.firstName
+//                    newUser.lastName = user.lastName
+//                    newUser.email = user.email
+//                    newUser.creationDate = user.creationDate
+//                    newUser.leaveDate = user.leaveDateConverted
+//                    newUser.homeAddress = user.homeAddress
+//                    if let id = user.id, let image = usersImages[id]{
+//                        newUser.image = image.pngData()
+//                    }
+//                    newUser.phoneNumber = user.phoneNumber
+//                    newUser.specializations = user.specialization.joined(separator: ",")
+//                } else {
+//                    //existing user
+//                    guard let mappedUser else { return }
+//                    mappedUser.firstName = user.firstName
+//                    mappedUser.lastName = user.lastName
+//                    mappedUser.email = user.email
+//                    mappedUser.creationDate = user.creationDate
+//                    mappedUser.leaveDate = user.leaveDateConverted
+//                    mappedUser.homeAddress = user.homeAddress
+//                    if let id = user.id, let image = usersImages[id]{
+//                        mappedUser.image = image.pngData()
+//                    }
+//                    mappedUser.phoneNumber = user.phoneNumber
+//                    mappedUser.specializations = user.specialization.joined(separator: ",")
+//                }
+//            }
+//            
+//            //adding events to context
+//            let mocEvents = try moc.fetch(LocalEvent.fetchRequest())
+//            
+//            for event in events {
+//                //if event exist
+//                let mappedEvent = mocEvents.filter({ mocEvent in
+//                    event.id == mocEvent.id
+//                }).first
+//                
+//                if mappedEvent == nil{
+//                    //new event added
+//                    
+//                    let newEvent = LocalEvent(context: moc)
+//                    newEvent.id = event.id
+//                    newEvent.date = event.date
+//                    newEvent.homeImageString = event.homeImageString
+//                    newEvent.guestImageString = event.guestImageString
+//                    
+//                    newEvent.broadcaster = LocalBroadcaster()
+//                    
+//                }
+//            }
+//            
+//        } catch{
+//            print("\(error.localizedDescription)")
+//        }
+//    }
     
     // MARK: - get filtered users
     func getUserWithSpecialization(_ specialization: UserSpecialization) -> [BPUser]{
@@ -61,15 +148,15 @@ final class GlobalStorage: ObservableObject{
     
     // MARK: - user upload
     func saveUser(user: BPUser, userImage: UIImage?) async {
-        guard let id = user.id else { return }
+//        guard let id = user.id else { return }
         
         currentUser = user
         userProfileImage = userImage
         
-        usersImages[id] = userImage
+        usersImages[user.id] = userImage
 //        users.removeAll { $0.id == id }
 //        users.append(user)
-        users.replace([users.first(where: {$0.id == id})!], with: [user])
+        users.replace([users.first(where: {$0.id == user.id})!], with: [user])
         
         await networkManager?.saveUser(user: user, image: userImage)
     }
@@ -78,31 +165,14 @@ final class GlobalStorage: ObservableObject{
 // MARK: - load images from storage
 extension GlobalStorage {
     
-    //        //load from local storage
-    //        if let path = FileManager
-    //            .default
-    //            .urls(for: .documentDirectory,
-    //                  in: .userDomainMask)
-    //                .first?
-    //            .appending(path: "\(ImagePath.userImage.rawValue)/\(currentUser?.id ?? "").jpeg",directoryHint: .notDirectory)
-    //          {
-    //            if let data = FileManager.default.contents(atPath: path.relativePath){
-    //                userProfileImage = (UIImage(data: data))
-    //            }
-    //        }
-    
-    
     func loadImages() async{
-        await networkManager?.loadImagesFromGlobalStorage(path: .userImage,
-                                                          completion: {  key, image in
-//            guard let self else { return }
+        await networkManager?.loadImagesFromGlobalStorage {  key, image in
             self.usersImages[key] = image
             if key == self.id {
                 self.userProfileImage = image
             }
-        })
+        }
     }
-    
 }
 
 // MARK: - load data section
@@ -121,24 +191,23 @@ extension GlobalStorage{
     func getChats() async {
         await networkManager?.getNewChatMessages()
     }
-    
-    func getEventTemplates() async {
-        guard let templates = await networkManager?.getEventteamplates() else { return }
-        self.eventTemplates = templates
-    }
 }
     // MARK: - Event Teamplates managment section
-    extension GlobalStorage{
-    func appendEventPlanTeamplate(plan: BPEventPlan) async {
-        self.eventTemplates.append(plan)
-        await networkManager?.appendEventTemolate(plan: plan)
-    }
-    
-    func removeEventPlanTeamplate(plan: BPEventPlan) async {
-        await networkManager?.removeEventPlan(plan: plan)
-        eventTemplates.removeAll{ $0.id == plan.id }
-    }
-}
+//extension GlobalStorage{
+//    func getEventTemplates() async {
+//        guard let templates = await networkManager?.getEventteamplates() else { return }
+//        self.eventTemplates = templates
+//    }
+//    func appendEventPlanTeamplate(plan: BPEventPlan) async {
+//        self.eventTemplates.append(plan)
+//        await networkManager?.appendEventTemolate(plan: plan)
+//    }
+//
+//    func removeEventPlanTeamplate(plan: BPEventPlan) async {
+//        await networkManager?.removeEventPlan(plan: plan)
+//        eventTemplates.removeAll{ $0.id == plan.id }
+//    }
+//}
 
 // MARK: - Online / Offline managment for messenger usability
 extension GlobalStorage{
@@ -159,7 +228,7 @@ extension GlobalStorage {
     
     func createEvent() -> Event {
         let event = Event()
-        event.owners.append(id)
+        event.ownersIds.append(id)
         currentUser?.ownedEventIds.append(event.id)
         events.append(event)
         newEvent = true
@@ -169,9 +238,9 @@ extension GlobalStorage {
     func updateEvent(_ event: Event) async {
         removeEvent(event)
         
-        if !event.owners.contains(where: { uid in uid == id })
+        if !event.ownersIds.contains(where: { uid in uid == id })
         {
-            event.owners.append(id)
+            event.ownersIds.append(id)
             currentUser?.ownedEventIds.append(event.id)
         }
         events.append(event)

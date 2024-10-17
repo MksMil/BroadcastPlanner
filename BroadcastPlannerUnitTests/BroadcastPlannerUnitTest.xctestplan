@@ -1,0 +1,29 @@
+{
+  "configurations" : [
+    {
+      "id" : "B45435AA-EB3D-4818-9899-196680D519F4",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:BroadcastPlanner.xcodeproj",
+      "identifier" : "29C041BB2AC556CE008B3E1F",
+      "name" : "BroadcastPlanner"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:BroadcastPlanner.xcodeproj",
+        "identifier" : "29B505BB2CB6B3C9003A1E3F",
+        "name" : "BroadcastPlannerUnitTests"
+      }
+    }
+  ],
+  "version" : 1
+}

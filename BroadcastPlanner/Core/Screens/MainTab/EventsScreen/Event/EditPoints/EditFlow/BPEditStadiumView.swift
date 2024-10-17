@@ -23,25 +23,25 @@ struct BPEditStadiumView: View {
     
     @State private var stadiumFilter: BPEventPlanPointStadiumFilter = .all
     
-    var filteredStadiumPoints: [BPEventPlanPoint] {
-        let points = event.eventPlan.fieldPoints
-        switch stadiumFilter {
-            case .all:
-                return points
-            case .cam:
-                return points.filter { point in
-                    point.cam.optic != .none
-                }
-            case .light:
-                return points.filter { point in
-                    point.light.lightType != .none
-                }
-            case .mic:
-                return points.filter { point in
-                    point.mic.placeType != .none
-                }
-        }
-    }
+//    var filteredStadiumPoints: [LocationPoint] {
+//        let points = event.eventPlan.fieldPoints
+//        switch stadiumFilter {
+//            case .all:
+//                return points
+//            case .cam:
+//                return points.filter { point in
+//                    point.cam.optic != .none
+//                }
+//            case .light:
+//                return points.filter { point in
+//                    point.light.lightType != .none
+//                }
+//            case .mic:
+//                return points.filter { point in
+//                    point.mic.placeType != .none
+//                }
+//        }
+//    }
 
     var body: some View {
         ZStack{
@@ -88,26 +88,26 @@ struct BPEditStadiumView: View {
                         }
                         Divider()
                             .frame(height: 30)
-                        Menu {
-                            ScrollView{
-                                ForEach(settings.planPointsTemlates) { plan in
-                                    Button("\(plan.title)") {
-                                        title = plan.title
-                                    }
-                                }
-                            }
-                        } label: {
-                            Text(title)
-                                .frame(maxWidth: .infinity)
-                                .padding(.horizontal,15)
-                                .background {
-                                    RoundedRectangle(cornerRadius: 10).fill(.ultraThinMaterial)
-                                        .frame(height: 45)
-                                }
-                        }
-                        .onAppear{
-                            title = event.eventPlan.title
-                        }
+//                        Menu {
+//                            ScrollView{
+//                                ForEach(settings.planPointsTemlates) { plan in
+//                                    Button("\(plan.title)") {
+//                                        title = plan.title
+//                                    }
+//                                }
+//                            }
+//                        } label: {
+//                            Text(title)
+//                                .frame(maxWidth: .infinity)
+//                                .padding(.horizontal,15)
+//                                .background {
+//                                    RoundedRectangle(cornerRadius: 10).fill(.ultraThinMaterial)
+//                                        .frame(height: 45)
+//                                }
+//                        }
+//                        .onAppear{
+//                            title = event.eventPlan.title
+//                        }
                         Spacer()
                         Button {
                             print("new schema")
@@ -162,8 +162,8 @@ struct BPEditStadiumView: View {
                 //users collection
                 
                 // TODO: editable control
-                BPEditEventBottomGroup(eventPlan: event.eventPlan,
-                                       isEdit: $isEdit)
+//                BPEditEventBottomGroup(eventPlan: event.eventPlan,
+//                                       isEdit: $isEdit)
                 .padding(.horizontal)
             }
         }
@@ -177,9 +177,9 @@ struct BPEditStadiumView: View {
     }
 }
 
-#Preview {
-    BPEditStadiumView(event: .constant(MockData.sampleEvent),
-                      editable: true)
-    .environmentObject(EditPlanPointsManager())
-    .environmentObject(MockData.sampleSettings)
-}
+//#Preview {
+//    BPEditStadiumView(event: .constant(MockData.sampleEvent),
+//                      editable: true)
+//    .environmentObject(EditPlanPointsManager())
+//    .environmentObject(MockData.sampleSettings)
+//}

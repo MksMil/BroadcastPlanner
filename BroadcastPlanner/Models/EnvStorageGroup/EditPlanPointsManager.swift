@@ -3,21 +3,21 @@ import SpriteKit
 import Combine
 
 final class EditPlanPointsManager: ObservableObject {
-    //    typealias RenderDelegate = SKScene & BPPlanDelegateProtocol
     
-    @Published var eventPlan: BPEventPlan?
-    @Published var selectedEventPoint: BPEventPlanPoint?
+    var event: Event = Event()
     
-    @Published var selectedBroadcater: Broadcaster?
-    @Published var selectedCar: BroadcasterCar?
+    @Published var selectedEventPoint: LocationPoint?
     
-    @Published var cars: [BroadcasterCar] = []
+    @Published var selectedBroadcaster: Broadcaster?
+    @Published var selectedCar: OBVan?
+    
+    @Published var cars: [OBVan] = []
     
     var renderPitchScene: PitchEditSpriteScene = PitchEditSpriteScene()
     var renderCarScene: CarEditSpriteScene = CarEditSpriteScene()
     
     var previewCar: PreviewCarScene = PreviewCarScene()
-    //    var previewStadium: PreviewStadiumScene = PreviewStadiumScene()
+    var previewStadium: PreviewStadiumScene = PreviewStadiumScene()
     
     var cancellables: [AnyCancellable] = []
     
@@ -27,38 +27,39 @@ final class EditPlanPointsManager: ObservableObject {
     }
     
     func setupPreview(){
-        if let imageName = selectedCar?.imageName {
-            previewCar.changeBackground(imageName: imageName)
-        } else {
-            previewCar.changeBackground(imageName: "empty_obvan")
-        }
+//        if let imageName = selectedCar?.imageName {
+//            previewCar.changeBackground(imageName: imageName)
+//        } else {
+//            previewCar.changeBackground(imageName: "empty_obvan")
+//        }
     }
     
     func configurePublishers(){
-        $selectedBroadcater.sink { [weak self] broadcaster in
-            guard let self else { return }
-            if let broadcaster {
-                self.cars = broadcaster.cars
-                self.selectedCar = nil
-            } else {
-                self.cars = []
-                self.changeTexture(carName: "empty_obvan")
-            }
-        }
-        .store(in: &cancellables)
-        
-        $selectedCar.sink { [weak self] car in
-            guard let self else { return }
-            if let car {
-                self.changeTexture(carName: car.imageName)
-                self.previewCar.changeBackground(imageName: car.imageName)
-            } else {
-                self.changeTexture(carName: "empty_obvan")
-                self.previewCar.changeBackground(imageName: "empty_obvan")
-            }
-            self.updateCarScene(units: car?.units ?? [])
-        }
-        .store(in: &cancellables)
+//        $selectedBroadcaster.sink { [weak self] broadcaster in
+//            guard let self else { return }
+//            if let broadcaster {
+//                print("cars assigned")
+//                self.cars = broadcaster.cars
+//                self.selectedCar = nil
+//            } else {
+//                self.cars = []
+//                self.changeTexture(carName: "empty_obvan")
+//            }
+//        }
+//        .store(in: &cancellables)
+//        
+//        $selectedCar.sink { [weak self] car in
+//            guard let self else { return }
+//            if let car {
+//                self.changeTexture(carName: car.imageName)
+//                self.previewCar.changeBackground(imageName: car.imageName)
+//            } else {
+//                self.changeTexture(carName: "empty_obvan")
+//                self.previewCar.changeBackground(imageName: "empty_obvan")
+//            }
+//            self.updateCarScene(units: car?.units ?? [])
+//        }
+//        .store(in: &cancellables)
     }
     
     func loadScene(){
@@ -66,10 +67,10 @@ final class EditPlanPointsManager: ObservableObject {
         let pitchScene = PitchEditSpriteScene()
         pitchScene.selectAction =  { [weak self] id in
             guard let self else { return }
-            if let point = self.eventPlan?.fieldPoints.first(where: {$0.id == id}){
+            if let point = self.event.locationPoints.first(where: {$0.id == id}){
                 self.selectedEventPoint = point
             } else {
-                self.selectedEventPoint = BPEventPlanPoint()
+//                self.selectedEventPoint = LocationPoint()
             }
         }
         pitchScene.deselectAction = { [weak self] in
@@ -82,26 +83,25 @@ final class EditPlanPointsManager: ObservableObject {
         
         //setup car scene
         let carScene = CarEditSpriteScene()
-        if let imageName = selectedCar?.imageName, let points = selectedCar?.units{
-            carScene.changeBackground(imageName: imageName)
-            carScene.points = points
-            
-        }
-        
+//        if let imageName = selectedCar?.imageName,
+//            let points = selectedCar?.units{
+//            carScene.changeBackground(imageName: imageName)
+//            carScene.points = points
+//        }
         renderCarScene = carScene
     }
     
     func configureWith(event: Event){
-        self.eventPlan = event.eventPlan
-        selectedBroadcater = event.broadcaster
-        selectedCar = event.broadcastCar
+        self.event = event
+//        selectedBroadcaster = event.broadcaster
+//        selectedCar = event.broadcastCar
         
     }
 }
 
 // MARK: - CarEditScene managment
 extension EditPlanPointsManager{
-    func updateCarScene(units: [CarUnit]){
+    func updateCarScene(units: [OBVanUnit]){
         renderCarScene.points = units
         renderCarScene.setupNodes()
     }
@@ -112,9 +112,9 @@ extension EditPlanPointsManager{
     
     func setEnabledToUnit(name: String){
         print("set in manager \(name), ")
-        if let index = selectedCar?.units.firstIndex(where: {$0.id == name}){
-            selectedCar?.units[index].isDisabled.toggle()
-        }
+//        if let index = selectedCar?.units.firstIndex(where: {$0.id == name}){
+//            selectedCar?.units[index].isEnabled.toggle()
+//        }
         renderCarScene.setNode(name: name)
     }
 }
@@ -122,9 +122,9 @@ extension EditPlanPointsManager{
 // MARK: - Points Managment
 extension EditPlanPointsManager{
     func addPoint(){
-        let point = BPEventPlanPoint()
-        renderPitchScene.addPoint(point: point)
-        selectedEventPoint = point
+//        let point = LocationPoint()
+//        renderPitchScene.addPoint(point: point)
+//        selectedEventPoint = point
     }
     
     func deletePoint(){
@@ -134,7 +134,6 @@ extension EditPlanPointsManager{
     func save(){
         renderPitchScene.saveSelectedPoint()
     }
-    
 }
  
 

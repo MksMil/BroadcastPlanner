@@ -3,6 +3,35 @@
 <plist version="1.0">
 <dict>
 	<key>top-level-items</key>
-	<array/>
+	<array>
+		<dict>
+			<key>children</key>
+			<array>
+				<dict>
+					<key>destination</key>
+					<dict>
+						<key>rebasable-url</key>
+						<dict>
+							<key>base</key>
+							<string>workspace</string>
+							<key>payload</key>
+							<dict>
+								<key>relative-path</key>
+								<string>BroadcastPlanner/Models/Data/BroadcastPlanner.xcdatamodeld/BroadcastPlanner.xcdatamodel</string>
+							</dict>
+						</dict>
+						<key>type</key>
+						<string>DVTDocumentLocation</string>
+					</dict>
+					<key>type</key>
+					<string>bookmark</string>
+				</dict>
+			</array>
+			<key>title</key>
+			<string>BroadcastPlanner.xcdatamodeld</string>
+			<key>type</key>
+			<string>group</string>
+		</dict>
+	</array>
 </dict>
 </plist>

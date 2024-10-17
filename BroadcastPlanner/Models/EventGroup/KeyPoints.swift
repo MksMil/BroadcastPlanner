@@ -1,20 +1,17 @@
 import Foundation
 
-class KeyPoints: Identifiable ,Codable {
+struct KeyPoints: Identifiable ,Codable {
+    struct Coordinates: Codable {
+        var x: Double
+        var y: Double
+        var retation: Double
+    }
+    
     var id: String
 
     var title: String
-    var points: [String: BPEventPlanPointCoordinate]
+    var points: [String: Coordinates]
     
-    
-    
-    init(id: String = UUID().uuidString,
-         title: String = "",
-         points: [String : BPEventPlanPointCoordinate] = [:]) {
-        self.id = id
-        self.title = title
-        self.points = points
-    }
     
 }
 

@@ -1,50 +1,79 @@
 import SwiftUI
 import FirebaseFirestore
 import FirebaseFirestoreSwift
+import CoreData
 
-class BPUser: Identifiable, Codable {
+struct BPUser: Identifiable, Codable {
     
-    var id: String?
+    var id: String
     
     var firstName : String = "empty first name"
     var lastName: String = "empty last name"
     var isOnline: Bool = false
     
     var phoneNumber: String = "1234567890"
-    var email: String = ""
+    var email: String = "email"
     var homeAddress: String = "homeAddress"
     var specialization = [String]()
     
-    var creationDate: Date = Date()
+    var creationDate: Timestamp = Timestamp(date: Date())
+    var creationDateConverted: Date {
+        creationDate.dateValue()
+    }
     var leaveDate: Timestamp = Timestamp(date: Date())
     var leaveDateConverted: Date {
         leaveDate.dateValue()
     }
     var ownedEventIds = [String]()
-    var memberEventIds = [String]()
+    var participatedEventIds = [String]()
     
-    init(){
-        
-    }
-    convenience init(id: String?){
-        self.init()
+    init(id: String = UUID().uuidString){
         self.id = id
     }
     
-   required init(from decoder: any Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.id = try container.decode(String.self, forKey: .id)
-        self.firstName = try container.decode(String.self, forKey: .firstName)
-        self.lastName = try container.decode(String.self, forKey: .lastName)
-        self.isOnline = try container.decode(Bool.self, forKey: .isOnline)
-        self.phoneNumber = try container.decode(String.self, forKey: .phoneNumber)
-        self.email = try container.decode(String.self, forKey: .email)
-        self.homeAddress = try container.decode(String.self, forKey: .homeAddress)
-        self.specialization = try container.decode([String].self, forKey: .specialization)
-        self.creationDate = try container.decode(Date.self, forKey: .creationDate)
-        self.leaveDate = try container.decode(Timestamp.self, forKey: .leaveDate)
-        self.ownedEventIds = try container.decode([String].self, forKey: .ownedEventIds)
-        self.memberEventIds = try container.decode([String].self, forKey: .memberEventIds)
+    func toLocalUser(user: LocalUser){
+        user.firstName = firstName
+        user.lastName = lastName
+        user.isOnline = isOnline
+        user.phoneNumber = phoneNumber
+        user.email = email
+        user.homeAddress = homeAddress
+        user.specializations = specialization.joined(separator: ",")
+        user.creationDate = creationDate.dateValue()
+        user.leaveDate = leaveDate.dateValue()
+    }
+}
+
+extension BPUser {
+    static func createUserFromData(data: [String: Any]) -> BPUser?{
+        guard let id = data["id"] as? String,
+        let firstName = data["firstNname"] as? String,
+        let lastName = data["lastName"] as? String,
+        let isOnline = data["isOnline"] as? Bool,
+        let phoneNumber = data["phoneNumber"] as? String,
+        let email = data["email"] as? String,
+        let homeAddress = data["homeAddress"] as? String,
+        let specialization = data["specialization"] as? [String],
+        let creationDate = data["creationDate"] as? Timestamp,
+        let leaveDate = data["leaveDate"] as? Timestamp,
+        let participetedEventIds = data["participatedEventIds"] as? [String],
+        let ownedEventIds = data["ownedEventIds"] as? [String]
+        else { return nil }
+        
+        var user = BPUser(id: id)
+        user.firstName = firstName
+        user.lastName = lastName
+        user.isOnline = isOnline
+        user.phoneNumber = phoneNumber
+        user.email = email
+        user.homeAddress = homeAddress
+        user.specialization = specialization
+        user.creationDate = creationDate
+        user.leaveDate = leaveDate
+        user.participatedEventIds = participetedEventIds
+        user.ownedEventIds = ownedEventIds
+        
+        return user
     }
 }
 
@@ -60,9 +89,9 @@ extension BPUser: Hashable, Equatable{
     }
     
     // MARK: - computed compactFullName
-    var fullCompactName: String {
-        firstName.prefix(1) + "." + lastName
-    }
+    
+    
+    
 }
 
 

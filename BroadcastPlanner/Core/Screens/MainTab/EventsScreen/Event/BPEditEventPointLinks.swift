@@ -33,12 +33,12 @@ struct BPEditEventPointLinks: View {
 //    BPEditEventPointLinks( linkTapped: .constant(.none))
 //        .environmentObject(BPEventViewModel(event: MockData.sampleEvent))
 //}
-#Preview {
-    BPCreateEditEventView( event: MockData.sampleEvent)
-        .environmentObject(GlobalSettings())
-        .environmentObject(GlobalStorage())
-        .environmentObject(EventTabRouter())
-        .environmentObject(GlobalTimer())
-        .environmentObject(EditPlanPointsManager())
-        
-}
+//#Preview {
+//    BPCreateEditEventView( event: MockData.sampleEvent)
+//        .environmentObject(GlobalSettings())
+//        .environmentObject(GlobalStorage())
+//        .environmentObject(EventTabRouter())
+//        .environmentObject(GlobalTimer())
+//        .environmentObject(EditPlanPointsManager())
+//        
+//}

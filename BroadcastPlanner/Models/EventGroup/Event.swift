@@ -1,41 +1,51 @@
 import Foundation
-import FirebaseFirestore
 
 class Event: Identifiable, Codable {
     var id: String
     
-    var date: Date = Date()
+    //event date
+    var date: Date
     
-    var broadcaster: Broadcaster
-    var broadcastCar: BroadcasterCar
-    var eventLocation: EventLocation
+    //info
+    var locationID: String
+    var broadcasterId: String
+    var obVanId: String
     
-    var eventPlan: BPEventPlan
-    var owners: [String] = []
     
-    //team logos
-    var homeImageString: String = ""
-    var guestImageString: String = ""
+    //unit points
+    var locationPoints: [LocationPoint]
+    var obVanUnits: [OBVanUnit]
+    
+    //owners Id's
+    var ownersIds: [String] = []
+    var usersIds: [String] = []
+    //clubs Id's
+    var homeClubId: String
+    var guestClubId: String
    
-    
-    
     // MARK: - Initialization
-    init( id: String = UUID().uuidString,date: Date = Date(), eventPlan: BPEventPlan = BPEventPlan()) {
+    init( id: String = UUID().uuidString, date: Date = Date(), broadcasterId: String, obVanId: String, locationPoints: [LocationPoint] = [], obvanUnits: [OBVanUnit] = [], locationID: String, homeClubId: String, guestClubId: String) {
         self.id = id
         self.date = date
-        self.broadcaster = Broadcaster(host: "")
-        self.broadcastCar = BroadcasterCar(name: "", imageName: "")
-        self.eventPlan = eventPlan
-        self.eventLocation = EventLocation()
+        self.broadcasterId = broadcasterId
+        self.obVanId = obVanId
+        self.locationPoints = locationPoints
+        self.obVanUnits = obvanUnits
+        self.locationID = locationID
+        self.homeClubId = homeClubId
+        self.guestClubId = guestClubId
     }
     
-    init( id: String = UUID().uuidString, date: Date = Date(), broadcaster: Broadcaster,broadcasterCar: BroadcasterCar, location: EventLocation,eventPlan: BPEventPlan = BPEventPlan()) {
-        self.id = id
-        self.date = date
-        self.broadcaster = broadcaster
-        self.broadcastCar = broadcasterCar
-        self.eventLocation = location
-        self.eventPlan = eventPlan
+    init(){
+        self.id = UUID().uuidString
+        self.date = Date()
+        self.broadcasterId = ""
+        self.obVanId = ""
+        self.locationID = ""
+        self.locationPoints = []
+        self.obVanUnits = []
+        self.homeClubId = ""
+        self.guestClubId = ""
     }
 }
 
@@ -48,4 +58,5 @@ extension Event: Hashable, Equatable {
         hasher.combine(id)
     }
 }
+
 

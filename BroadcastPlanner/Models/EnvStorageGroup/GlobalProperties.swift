@@ -7,14 +7,7 @@ struct GlobalProperties {
 }
 
 enum DataPath: String{
-    case users, events, locations
-}
-
-enum ImagePath: String{
-    case userImage
-    case stadiumBackground
-    case carBackground
-    case teamLogo
+    case users, events, locations, images, broadcasters
 }
 
 enum TeamLogos: String, CaseIterable, Identifiable {

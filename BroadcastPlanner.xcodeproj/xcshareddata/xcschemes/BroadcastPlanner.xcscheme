@@ -29,18 +29,29 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <TestPlans>
          <TestPlanReference
-            reference = "container:BroadcastPlanner.xctestplan"
+            reference = "container:BroadcastPlannerUnitTests/BroadcastPlannerUnitTest.xctestplan"
             default = "YES">
          </TestPlanReference>
       </TestPlans>
       <Testables>
          <TestableReference
-            skipped = "NO">
+            skipped = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "29656CD02B17600A0093A19A"
                BuildableName = "BroadcastPlannerTests.xctest"
                BlueprintName = "BroadcastPlannerTests"
+               ReferencedContainer = "container:BroadcastPlanner.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "29B505BB2CB6B3C9003A1E3F"
+               BuildableName = "BroadcastPlannerUnitTests.xctest"
+               BlueprintName = "BroadcastPlannerUnitTests"
                ReferencedContainer = "container:BroadcastPlanner.xcodeproj">
             </BuildableReference>
          </TestableReference>

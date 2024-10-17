@@ -1,11 +1,10 @@
 // Data model for authenticated user
 
 import Foundation
-import FirebaseAuth
+//import FirebaseAuth
 import Firebase
 
 struct SessionUser {
-    
     let id: String
     
     let displayName: String?

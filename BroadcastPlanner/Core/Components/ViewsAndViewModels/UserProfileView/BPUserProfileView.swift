@@ -133,6 +133,6 @@ struct BPUserProfileView: View {
     }
 }
 
-#Preview {
-    BPUserProfileView(user: MockData.sampleUser)
-}
+//#Preview {
+//    BPUserProfileView(user: MockData.sampleUser)
+//}

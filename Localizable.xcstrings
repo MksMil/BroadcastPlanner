@@ -4,13 +4,23 @@
     "" : {
 
     },
-    ":" : {
-
-    },
     "%@" : {
 
     },
-    "%lld" : {
+    "%@ %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ %2$@"
+          }
+        }
+      }
+    },
+    "+ new broadcaster" : {
+
+    },
+    "+ new car" : {
 
     },
     "1" : {
@@ -26,9 +36,6 @@
 
     },
     "ButtonName" : {
-
-    },
-    "Cancel" : {
 
     },
     "Change E-mail" : {
@@ -88,9 +95,6 @@
     "LOGO" : {
 
     },
-    "Match Day" : {
-
-    },
     "Messege" : {
 
     },
@@ -130,6 +134,9 @@
     "SAVE" : {
 
     },
+    "select" : {
+
+    },
     "Send" : {
 
     },
@@ -146,9 +153,6 @@
 
     },
     "Sign Up" : {
-
-    },
-    "Status" : {
 
     },
     "Tab Label 1" : {

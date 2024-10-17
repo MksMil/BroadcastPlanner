@@ -17,7 +17,7 @@ class PitchEditSpriteScene: SKScene{
     var selectAction: (String)->Void = {_ in}
     var deselectAction: ()->Void = {}
     
-    var updatePointCoordinatesAction: (String, BPEventPlanPointCoordinate) -> Void = { _,_ in }
+    var updatePointCoordinatesAction: (String, Double) -> Void = { _,_ in }
     
     //for test
     var step: Double = 5
@@ -32,7 +32,7 @@ class PitchEditSpriteScene: SKScene{
     
     var lastPanLocation: CGPoint?
     
-    var points: [BPEventPlanPoint] = []
+    var points: [LocationPoint] = []
     
     
     var selectedPointNode: SKNode?
@@ -68,17 +68,17 @@ class PitchEditSpriteScene: SKScene{
         }
     }
     
-    func configurePointNode(node: SKSpriteNode,
-                            point: BPEventPlanPoint)
-    {
-        node.name = point.id
-        node.position = CGPoint(x:  size.width * point.coordinates.x,
-                                y:  size.height * point.coordinates.y)
-//        if let texture = textureFromSFSymbol(named: "video.fill"){
-            node.texture = SKTexture(imageNamed: "cam1")//texture
-//        }
-        node.zRotation = point.coordinates.rotation
-    }
+//    func configurePointNode(node: SKSpriteNode,
+//                            point: LocationPoint)
+//    {
+//        node.name = point.id
+//        node.position = CGPoint(x:  size.width * point.coordinates.x,
+//                                y:  size.height * point.coordinates.y)
+////        if let texture = textureFromSFSymbol(named: "video.fill"){
+//            node.texture = SKTexture(imageNamed: "cam1")//texture
+////        }
+//        node.zRotation = point.coordinates.rotation
+//    }
     
     func textureFromSFSymbol(named symbolName: String, pointSize: CGFloat = 10, weight: UIImage.SymbolWeight = .regular) -> SKTexture? {
             let config = UIImage.SymbolConfiguration(pointSize: pointSize, weight: weight)
@@ -201,12 +201,12 @@ extension PitchEditSpriteScene{
     }
     
     func updateData(){
-        if let selectedPointNode, 
-            let name = selectedPointNode.name{
-            let coordinates = BPEventPlanPointCoordinate(x: selectedPointNode.position.x / size.width,
-                                                         y: selectedPointNode.position.y / size.height, rotation: selectedPointNode.zRotation)
-            updatePointCoordinatesAction(name, coordinates)
-        }
+//        if let selectedPointNode, 
+//            let name = selectedPointNode.name{
+//            let coordinates = BPEventPlanPointCoordinate(x: selectedPointNode.position.x / size.width,
+//                                                         y: selectedPointNode.position.y / size.height, rotation: selectedPointNode.zRotation)
+//            updatePointCoordinatesAction(name, coordinates)
+//        }
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -240,7 +240,7 @@ extension PitchEditSpriteScene{
         setupPoints()
     }
     
-    func select(point: BPEventPlanPoint){
+    func select(point: LocationPoint){
         if let node = childNode(withName: point.id){
             selectedPointNode = node
             if node.name != "background"{
@@ -275,11 +275,11 @@ extension PitchEditSpriteScene{
         }
     }
     
-    func addPoint(point: BPEventPlanPoint){
+    func addPoint(point: LocationPoint){
         let node = SKSpriteNode(color: .blue, size: CGSize(width: 4 * step,
                                                            height: 4 * step ))
-        configurePointNode(node: node,
-                           point: point)
+//        configurePointNode(node: node,
+//                           point: point)
         pointNodes.append(node)
         self.addChild(node)
         select(point: point)
@@ -319,6 +319,7 @@ extension PitchEditSpriteScene{
     }
     
     func rotateClockwise(){
+        print("rotation right")
         if selectedPointNode?.name != "background"{
             selectedPointNode?.run(SKAction.rotate(byAngle: angle, duration: animationDuration))
             updateData()
@@ -365,12 +366,12 @@ extension PitchEditSpriteScene{
 //    .environmentObject(GlobalSettings())
 //}
 
-#Preview {
-    NavigationStack{
-        BPCreateEditEventView( event: MockData.sampleEvent)
-    }
-        .environmentObject(GlobalSettings())
-        .environmentObject(GlobalStorage())
-        .environmentObject(EventTabRouter())
-        .environmentObject(GlobalTimer())
-}
+//#Preview {
+//    NavigationStack{
+//        BPCreateEditEventView( event: MockData.sampleEvent)
+//    }
+//        .environmentObject(GlobalSettings())
+//        .environmentObject(GlobalStorage())
+//        .environmentObject(EventTabRouter())
+//        .environmentObject(GlobalTimer())
+//}

@@ -1,13 +1,6 @@
-//
-//  UserSpecialization.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 04.04.2024.
-//
-
 import Foundation
 
-enum UserSpecialization: String, CaseIterable, Identifiable {
+enum UserSpecialization: String, CaseIterable, Identifiable, Codable {
     case producer
     case floorManager
     

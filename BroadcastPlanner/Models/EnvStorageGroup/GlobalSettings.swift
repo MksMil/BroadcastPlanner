@@ -3,20 +3,20 @@ import Foundation
 //globals settings for UI and all standart cases (images, eventLocations, etc.)can be fetched from network
 
 class GlobalSettings: ObservableObject {
-    var eventLocations: [EventLocation]
-    var planPointsTemlates: [BPEventPlan] = []
+    var eventLocations: [Location]
+//    var planPointsTemlates: [BPEventPlan] = []
     
     
     //locationId: [imageName]
     var staiumImages: [String: [String]]
-    var broadcasters: [Broadcaster] = []
+//    var broadcasterTemplates: [Broadcaster] = [MockData.sampleESBroadcaster, MockData.sampleSGBroadcaster]
     var carImages: [String]
     //crete location
     //edit location
     //fetch locations
     
     // MARK: - Initialization
-    init(eventLocations: [EventLocation] = [],
+    init(eventLocations: [Location] = [],
          stadiumImages: [String: [String]] = [:],
          carImages: [String] = []) {
         self.eventLocations = eventLocations
@@ -29,6 +29,6 @@ class GlobalSettings: ObservableObject {
     // MARK: - load data
     func fetchData(){
         //load mock
-        self.eventLocations = MockData.sampleLocations
+//        self.eventLocations = MockData.sampleLocations
     }
 }

@@ -12,6 +12,7 @@ struct BPCreateEditEventView: View {
     
     @EnvironmentObject var globalStorage: GlobalStorage
     @EnvironmentObject var eventRouter: EventTabRouter
+    
     @StateObject var editManager: EditPlanPointsManager = EditPlanPointsManager()
     
     @State var event: Event
@@ -22,18 +23,20 @@ struct BPCreateEditEventView: View {
         true
     }
     
-    var listUsers: [String: UIImage?] {
-        var result = [String: UIImage?]()
-        for user in globalStorage.users{
-            guard let id = user.id else { continue }
-            result[user.fullCompactName] = globalStorage.usersImages[id]
-        }
-        return result
-    }
     
-    var layoutList: [String] {
-        listUsers.keys.map{$0}.sorted(by: <)
-    }
+    //coredata fetchrequest here
+//    var listUsers: [String: UIImage?] {
+//        var result = [String: UIImage?]()
+//        for user in globalStorage.users{
+//            guard let id = user.id else { continue }
+//            result[user.fullCompactName] = globalStorage.usersImages[id]
+//        }
+//        return result
+//    }
+    
+//    var layoutList: [String] {
+//        listUsers.keys.map{$0}.sorted(by: <)
+//    }
     
     var body: some View {
         
@@ -41,28 +44,28 @@ struct BPCreateEditEventView: View {
                 MainBackground()
                 
                 VStack(alignment: .leading, spacing: 0){
-                    BPEventHeaderView(event: $event)
-                        .frame(height: 300)
-                        .disabled(!editable)
+                    //header: time, date, teams, location
+//                    BPEventHeaderView(event: $event)
+//                        .frame(height: 300)
+//                        .disabled(!editable)
                     
+                    
+                    //preview + fsc editStad / editCar  views
                     GeometryReader{ geo in
                         HStack(spacing: 15){
-                            
-                            SpriteView(scene: editManager.renderPitchScene)
-                                .frame(width: 3 * geo.size.width / 4,
-                                       height: geo.size.height)
+                            SpriteView(scene: editManager.previewStadium)
+                                .frame(width: 3 * geo.size.width / 4)
                                 .onTapGesture {
                                     type = .stadium
                                 }
                             
                             SpriteView(scene: editManager.previewCar)
-                                .frame(height: geo.size.height)
                                 .onTapGesture {
                                     type = .car
                                 }
-                                .frame(height: geo.size.width / 2)
-                                
                         }
+                        .frame(height: geo.size.width / 2)
+                        
                     }
                     .padding(.horizontal)
                    
@@ -72,16 +75,16 @@ struct BPCreateEditEventView: View {
 //                                       images: globalStorage.usersImages)
                     // TODO: (struct: Hashable, id: comb(name+num)) for the grid !?!
                     ScrollView{
-                        SmartLayout(hSpacing: 5, vSpacing: 5){
-                            ForEach(layoutList, id: \.self){ user in
-                                if let image = listUsers[user]{
-                                    BPUserDataListCellView(text: user,
-                                                           image: image)
-                                } else {
-                                    BPUserDataListCellView(text: user)
-                                }
-                            }
-                        }
+//                        SmartLayout(hSpacing: 5, vSpacing: 5){
+//                            ForEach(layoutList, id: \.self){ user in
+////                                if let image = listUsers[user]{
+////                                    BPUserDataListCellView(text: user,
+////                                                           image: image)
+////                                } else {
+//                                    BPUserDataListCellView(text: user)
+////                                }
+//                            }
+//                        }
                     }
                     .padding(.horizontal,10)
                     Spacer()
@@ -136,12 +139,12 @@ struct BPCreateEditEventView: View {
     }
 }
 
-#Preview {
-    NavigationStack{
-        BPCreateEditEventView(event: MockData.sampleEvent)
-    }
-        .environmentObject(MockData.sampleSettings)
-        .environmentObject(GlobalStorage())
-        .environmentObject(EventTabRouter())
-        .environmentObject(GlobalTimer())
-}
+//#Preview {
+//    NavigationStack{
+//        BPCreateEditEventView(event: MockData.sampleEvent)
+//    }
+//        .environmentObject(MockData.sampleSettings)
+//        .environmentObject(GlobalStorage())
+//        .environmentObject(EventTabRouter())
+//        .environmentObject(GlobalTimer())
+//}

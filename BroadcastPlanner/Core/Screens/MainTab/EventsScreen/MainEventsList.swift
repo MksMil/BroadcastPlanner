@@ -29,18 +29,18 @@ struct MainEventsList: View {
             case .userOwned:
                return events
                     .filter({ event in
-                        event.owners.contains { $0 == globalStorage.id
+                        event.ownersIds.contains { $0 == globalStorage.id
                         }
                     })
                     .sorted{ $0.date < $1.date }
             case .userPartisipation:
-                guard let currentUser = globalStorage.currentUser else { return []}
+//                guard let currentUser = globalStorage.currentUser else { return []}
                 return events
-                    .filter{ event in
-                        currentUser.memberEventIds.contains(where: { id in
-                        event.id == id})
-                    }
-                    .sorted{ $0.date > $1.date }
+//                    .filter{ event in
+//                        currentUser.memberEventIds.contains(where: { id in
+//                        event.id == id})
+//                    }
+//                    .sorted{ $0.date > $1.date }
         }
     }
     
@@ -58,29 +58,29 @@ struct MainEventsList: View {
                                 .padding(.horizontal,20)
                         }
                     
-                    List {
-                        ForEach(filteredEvents) { event in
-                            MainEventListCell(event: event)
-                                .frame(height: 70)
-                                .transition(.slide)
-                                .onTapGesture {
-                                    selectedEvent = event
-                                    if let selectedEvent {
-                                        eventRouter.routeToEdit(event: selectedEvent)
-                                    }
-                                }
-                                .listRowBackground(Color.clear)
-                        }
-                        .onDelete(perform: { indexSet in
-                            Task{
-                              await globalStorage.removeEvent(at: indexSet)
-                            }
-                        })
-                    }
-                    .padding(.horizontal,8)
-                    .scrollContentBackground(.hidden)
-                    .listStyle(.inset)
-                    .padding(.top, -8)
+//                    List {
+//                        ForEach(filteredEvents) { event in
+//                            MainEventListCell(event: event)
+//                                .frame(height: 70)
+//                                .transition(.slide)
+//                                .onTapGesture {
+//                                    selectedEvent = event
+//                                    if let selectedEvent {
+//                                        eventRouter.routeToEdit(event: selectedEvent)
+//                                    }
+//                                }
+//                                .listRowBackground(Color.clear)
+//                        }
+//                        .onDelete(perform: { indexSet in
+//                            Task{
+//                              await globalStorage.removeEvent(at: indexSet)
+//                            }
+//                        })
+//                    }
+//                    .padding(.horizontal,8)
+//                    .scrollContentBackground(.hidden)
+//                    .listStyle(.inset)
+//                    .padding(.top, -8)
                 }
                 
             }

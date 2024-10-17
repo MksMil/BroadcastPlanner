@@ -13,7 +13,7 @@ struct BPEditEventJoystickInfoPanel: View {
     let rotateRight: () -> Void 
     
     
-   @State var selectedEventPoint: BPEventPlanPoint?
+   @State var selectedEventPoint: LocationPoint?
     
     var body: some View {
         HStack{
@@ -23,16 +23,16 @@ struct BPEditEventJoystickInfoPanel: View {
                 VStack{
                     HStack{
                         VStack(alignment: .leading,spacing: 3){
-                            BPUserImageNameCompactCell(user: selectedEventPoint?.user)
+//                            BPUserImageNameCompactCell(user: selectedEventPoint?.user)
                             
-                            BPPositionCompactCell(pointPositionName: selectedEventPoint?.coordinates.description)
+//                            BPPositionCompactCell(pointPositionName: selectedEventPoint?.coordinates.description)
                         }
                         Spacer()
                         Circle()
                             .frame(width: 45)
                             .padding(.vertical,10)
                             .overlay {
-                                Text(String(selectedEventPoint?.eventPlanPointNumber ?? Int.random(in: 1..<20)))
+                                Text(String(Int.random(in: 1..<20)))
                                     .font(.title)
                                     .bold()
                                     .foregroundStyle(.white)
@@ -72,10 +72,10 @@ struct BPEditEventJoystickInfoPanel: View {
                 .padding(.top)
                 .padding(.trailing)
                 
-                BPEventPlanPointImage()
-                    .frame(width: 75, height: 75)
-                    .border(.ultraThickMaterial, width: 1)
-                    .padding(.trailing)
+//                BPEventPlanPointImage()
+//                    .frame(width: 75, height: 75)
+//                    .border(.ultraThickMaterial, width: 1)
+//                    .padding(.trailing)
 
                 Spacer()
             }

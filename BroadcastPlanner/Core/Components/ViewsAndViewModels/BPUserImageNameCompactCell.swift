@@ -18,7 +18,7 @@ struct BPUserImageNameCompactCell: View {
             Image(systemName: "person.fill")
             
             Spacer()
-            Text(user?.fullCompactName ?? "unnamed")
+            Text(user?.firstName ?? "unnamed")
             Spacer()
         }
     }

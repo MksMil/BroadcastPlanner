@@ -3,42 +3,33 @@ import SwiftUI
 struct BPEditEventStuffListView: View {
     @EnvironmentObject var editManager: EditPlanPointsManager
     
-//    var type: PlanSectionType
-    var eventPlan: BPEventPlan
-    @State var selectedEventPoint: BPEventPlanPoint?
-    let selectAction: (BPEventPlanPoint) -> Void = { _ in }
+    let event: Event
+    @State var selectedEventPoint: LocationPoint?
+    let selectAction: (LocationPoint) -> Void = { _ in }
     
     var body: some View {
         ScrollView{
-            SmartLayout(hSpacing: 5, vSpacing: 5){
-                ForEach(makePoints()) { point in
-                    Text("\(point.eventPlanPointNumber)")
+//                ForEach(event.locationPoints) { point in
+                    Text("1")
                         .fixedSize()
                         .padding(10)
                         .frame(width: 115, height: 50)
-                        .background(selectedEventPoint?.id == point.id ?  .ultraThickMaterial : .ultraThinMaterial
-                        )
-                        .onTapGesture {
-                            withAnimation {
-                                selectAction(point)
-                            }
-                        }
-                }
-            }
+//                        .background(selectedEventPoint?.id == point.id ?  .ultraThickMaterial : .ultraThinMaterial
+//                        )
+//                        .onTapGesture {
+//                            withAnimation {
+//                                selectAction(point)
+//                            }
+//                        }
+//            }
             .scrollContentBackground(.hidden)
             .listStyle(.inset)
             .padding()
         }
     }
-        private func makePoints() -> [BPEventPlanPoint]{
-           
-            eventPlan.fieldPoints
-           
-        }
-    
 }
 
-#Preview {
-    BPEditEventStuffListView(eventPlan: MockData.sampleEvent.eventPlan)
-        .environmentObject(EditPlanPointsManager())
-}
+//#Preview {
+//    BPEditEventStuffListView(event: MockData.sampleEvent)
+//        .environmentObject(EditPlanPointsManager())
+//}
