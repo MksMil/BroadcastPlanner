@@ -7,7 +7,7 @@ struct BPEditStadiumView: View {
     @EnvironmentObject var editManager: EditPlanPointsManager
     @EnvironmentObject var settings: GlobalSettings
     
-    @Binding var event: Event
+    @Binding var event: LocalEvent
     
     @State var title: String = ""
     

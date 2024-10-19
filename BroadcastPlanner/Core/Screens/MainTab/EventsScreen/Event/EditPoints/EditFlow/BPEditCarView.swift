@@ -8,7 +8,7 @@ struct BPEditCarView: View {
     @EnvironmentObject var settings: GlobalSettings
     @EnvironmentObject var globalStorage: GlobalStorage
     
-    @Binding var event: Event
+    @Binding var event: LocalEvent
     
     @State var broadcasterTitle: String = "choose broadcaster"
     @State var carTitle: String = "choose car"

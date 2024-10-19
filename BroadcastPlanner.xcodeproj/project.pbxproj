@@ -29,7 +29,6 @@
 		291E72CF2BBEEBDD008092D7 /* BPSpecializationCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 291E72CE2BBEEBDD008092D7 /* BPSpecializationCellView.swift */; };
 		292D664E2BD7998A009A2187 /* AnyContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 292D66442BD79989009A2187 /* AnyContentView.swift */; };
 		292D664F2BD7998A009A2187 /* SmartLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 292D66452BD79989009A2187 /* SmartLayout.swift */; };
-		292D66572BD7BFAC009A2187 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 292D66562BD7BFAC009A2187 /* ImagePicker.swift */; };
 		293752AA2BF8CD950044924D /* BPEventFilterCaseTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 293752A92BF8CD950044924D /* BPEventFilterCaseTabView.swift */; };
 		29389C3A2B8EE2EB003EF60C /* AppleHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29389C392B8EE2EB003EF60C /* AppleHelper.swift */; };
 		29389C3C2B8EE62F003EF60C /* UIKit+ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29389C3B2B8EE62F003EF60C /* UIKit+ext.swift */; };
@@ -82,6 +81,7 @@
 		29C041DB2AC5620A008B3E1F /* StadiumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041DA2AC5620A008B3E1F /* StadiumView.swift */; };
 		29C041F22ACBF45B008B3E1F /* Color+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041F12ACBF45B008B3E1F /* Color+Ext.swift */; };
 		29C51B8E2C933F9C00ED2178 /* CarEditSpriteScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C51B8D2C933F9C00ED2178 /* CarEditSpriteScene.swift */; };
+		29C8F9472CC24FD000A7D5D2 /* UserInfoTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C8F9462CC24FD000A7D5D2 /* UserInfoTextField.swift */; };
 		29CB0F642C98B24E003B30C4 /* CarUnitEnableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29CB0F632C98B24E003B30C4 /* CarUnitEnableCellView.swift */; };
 		29CB0F662C9A9BDE003B30C4 /* CarUnitCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29CB0F652C9A9BDE003B30C4 /* CarUnitCellView.swift */; };
 		29CCF2EC2C807FE000BCEF34 /* GlobalSessionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29CCF2EB2C807FE000BCEF34 /* GlobalSessionStorage.swift */; };
@@ -137,7 +137,6 @@
 		291E72CE2BBEEBDD008092D7 /* BPSpecializationCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPSpecializationCellView.swift; sourceTree = "<group>"; };
 		292D66442BD79989009A2187 /* AnyContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnyContentView.swift; sourceTree = "<group>"; };
 		292D66452BD79989009A2187 /* SmartLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SmartLayout.swift; sourceTree = "<group>"; };
-		292D66562BD7BFAC009A2187 /* ImagePicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		293752A92BF8CD950044924D /* BPEventFilterCaseTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPEventFilterCaseTabView.swift; sourceTree = "<group>"; };
 		29389C392B8EE2EB003EF60C /* AppleHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleHelper.swift; sourceTree = "<group>"; };
 		29389C3B2B8EE62F003EF60C /* UIKit+ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIKit+ext.swift"; sourceTree = "<group>"; };
@@ -190,6 +189,7 @@
 		29C041DA2AC5620A008B3E1F /* StadiumView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StadiumView.swift; sourceTree = "<group>"; };
 		29C041F12ACBF45B008B3E1F /* Color+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Ext.swift"; sourceTree = "<group>"; };
 		29C51B8D2C933F9C00ED2178 /* CarEditSpriteScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarEditSpriteScene.swift; sourceTree = "<group>"; };
+		29C8F9462CC24FD000A7D5D2 /* UserInfoTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfoTextField.swift; sourceTree = "<group>"; };
 		29CB0F632C98B24E003B30C4 /* CarUnitEnableCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarUnitEnableCellView.swift; sourceTree = "<group>"; };
 		29CB0F652C9A9BDE003B30C4 /* CarUnitCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarUnitCellView.swift; sourceTree = "<group>"; };
 		29CCF2EB2C807FE000BCEF34 /* GlobalSessionStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalSessionStorage.swift; sourceTree = "<group>"; };
@@ -389,14 +389,6 @@
 			path = Layout;
 			sourceTree = "<group>";
 		};
-		292D66552BD7BF93009A2187 /* Image */ = {
-			isa = PBXGroup;
-			children = (
-				292D66562BD7BFAC009A2187 /* ImagePicker.swift */,
-			);
-			path = Image;
-			sourceTree = "<group>";
-		};
 		29389C382B8EE2BE003EF60C /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
@@ -544,6 +536,7 @@
 		2967DF162B5FD585003956FD /* TextFieldViews */ = {
 			isa = PBXGroup;
 			children = (
+				29C8F9462CC24FD000A7D5D2 /* UserInfoTextField.swift */,
 				2955C96C2B4ECB05003F9ADC /* BPTextFieldWithIcon.swift */,
 			);
 			path = TextFieldViews;
@@ -692,7 +685,6 @@
 			isa = PBXGroup;
 			children = (
 				2916E6192C4F9DE40025DCC6 /* Managers */,
-				292D66552BD7BF93009A2187 /* Image */,
 				29D1697E2B86182900A70638 /* Validators */,
 				298932662AE24D5700BD93CA /* Error */,
 				29C041F02ACBF443008B3E1F /* Extensions */,
@@ -926,7 +918,6 @@
 				293752AA2BF8CD950044924D /* BPEventFilterCaseTabView.swift in Sources */,
 				295114332C4E73F5005E4BF8 /* BPEditStadiumView.swift in Sources */,
 				299916AC2CB66A890003B521 /* Club.swift in Sources */,
-				292D66572BD7BFAC009A2187 /* ImagePicker.swift in Sources */,
 				29CCF2EC2C807FE000BCEF34 /* GlobalSessionStorage.swift in Sources */,
 				29C51B8E2C933F9C00ED2178 /* CarEditSpriteScene.swift in Sources */,
 				291E72CF2BBEEBDD008092D7 /* BPSpecializationCellView.swift in Sources */,
@@ -978,6 +969,7 @@
 				29FFDAAD2AD945EC005AD50F /* MainEventListCell.swift in Sources */,
 				2916E6072C4E82690025DCC6 /* BPEditEventStuffListView.swift in Sources */,
 				29E10F642C21696B00A35A4B /* GlobalSettings.swift in Sources */,
+				29C8F9472CC24FD000A7D5D2 /* UserInfoTextField.swift in Sources */,
 				29F42B5A2B88BBE70024B764 /* WelcomeFlowScreen.swift in Sources */,
 				2955C9792B50FDEF003F9ADC /* SignUpView.swift in Sources */,
 				2916E60B2C4E85400025DCC6 /* BPEditEventControlPanel.swift in Sources */,

@@ -141,14 +141,22 @@ class MockData {
     // MARK: - Mock Broadcaster
      var mockBroadcasters: [Broadcaster]  {
         [Broadcaster(title: "Engener Service",
-                     obVanIds: ["obvanId1",
-                                "obvanId2"],
+                     obVans: [OBVan(id: "obvanId1",
+                                    name: "StarBird",
+                                    imageId: "StarBirdImaageID"),
+                              OBVan(id: "obvanId2",
+                                    name: "BlueBird",
+                                    imageId: "BlueBirdImageID")],
                      eventIds: ["firstEventId"]),
          Broadcaster(title: "Soft Group",
-                     obVanIds: ["obvanId3"],
+                     obVans: [OBVan(id: "obvanId3",
+                                    name: "SGObvan1",
+                                    imageId: "SGObvan1Image1")],
                      eventIds: ["firstEventId"]),
          Broadcaster(title: "1+1",
-                     obVanIds: ["obvanId2"],
+                     obVans: [OBVan(id: "obvanId4",
+                                    name: "StarMedia",
+                                    imageId: "StarMediaImage1")],
                      eventIds: ["firstEventId"])
         ]
     }

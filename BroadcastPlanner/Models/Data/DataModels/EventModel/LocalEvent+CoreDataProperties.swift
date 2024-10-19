@@ -114,4 +114,18 @@ extension LocalEvent : Identifiable {
             return "N/A"
         }
     }
+    var viewUsers: [LocalUser] {
+        users?.allObjects.compactMap{$0 as? LocalUser} ?? []
+    }
+    var viewOwners: [LocalUser] {
+        owners?.allObjects.compactMap{$0 as? LocalUser} ?? []
+    }
+    
+    var viewLocationPoints: [LocalLocationPoint]{
+        locationPoints?.allObjects.compactMap{$0 as? LocalLocationPoint} ?? []
+    }
+    
+    var viewObvanUnits: [LocalOBVanUnit]{
+        obVanUnits?.allObjects.compactMap{$0 as? LocalOBVanUnit} ?? []
+    }
 }

@@ -1,34 +1,17 @@
 import Foundation
 
-//globals settings for UI and all standart cases (images, eventLocations, etc.)can be fetched from network
+//globals settings for UI and all pointlocation and obvanUnit templates
 
 class GlobalSettings: ObservableObject {
-    var eventLocations: [Location]
-//    var planPointsTemlates: [BPEventPlan] = []
     
-    
-    //locationId: [imageName]
-    var staiumImages: [String: [String]]
-//    var broadcasterTemplates: [Broadcaster] = [MockData.sampleESBroadcaster, MockData.sampleSGBroadcaster]
-    var carImages: [String]
-    //crete location
-    //edit location
-    //fetch locations
+    var stadiumTeamplates: [String: Any] = [:]
+    var obvanTeamplates: [String: Any] = [:]
     
     // MARK: - Initialization
-    init(eventLocations: [Location] = [],
-         stadiumImages: [String: [String]] = [:],
-         carImages: [String] = []) {
-        self.eventLocations = eventLocations
-        self.staiumImages = stadiumImages
-        self.carImages = carImages
-    
-        self.fetchData()
+    init() {
+        
     }
     
-    // MARK: - load data
-    func fetchData(){
-        //load mock
-//        self.eventLocations = MockData.sampleLocations
-    }
+    
+    
 }

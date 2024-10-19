@@ -15,7 +15,7 @@ struct BPCreateEditEventView: View {
     
     @StateObject var editManager: EditPlanPointsManager = EditPlanPointsManager()
     
-    @State var event: Event
+    @State var event: LocalEvent
     
     @State private var type: PlanSectionType?
     var editable: Bool {
@@ -112,7 +112,7 @@ struct BPCreateEditEventView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button{
                         Task{
-                            await  globalStorage.updateEvent(event)
+//                            await  globalStorage.updateEvent(event)
                             eventRouter.routeStepBack()
                         }
                     }label: {
@@ -123,7 +123,7 @@ struct BPCreateEditEventView: View {
                     // TODO: Delete Confirmation (Alert?)
                     Button{
                         Task{
-                            globalStorage.removeEvent(event)
+//                            globalStorage.removeEvent(event)
                             eventRouter.routeStepBack()
                         }
                     } label: {

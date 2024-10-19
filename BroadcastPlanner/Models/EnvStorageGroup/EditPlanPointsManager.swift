@@ -4,9 +4,9 @@ import Combine
 
 final class EditPlanPointsManager: ObservableObject {
     
-    var event: Event = Event()
+    var event: LocalEvent?
     
-    @Published var selectedEventPoint: LocationPoint?
+    @Published var selectedEventPoint: LocalLocationPoint?
     
     @Published var selectedBroadcaster: Broadcaster?
     @Published var selectedCar: OBVan?
@@ -67,7 +67,7 @@ final class EditPlanPointsManager: ObservableObject {
         let pitchScene = PitchEditSpriteScene()
         pitchScene.selectAction =  { [weak self] id in
             guard let self else { return }
-            if let point = self.event.locationPoints.first(where: {$0.id == id}){
+            if let point = self.event?.viewLocationPoints.first(where: {$0.id == id}){
                 self.selectedEventPoint = point
             } else {
 //                self.selectedEventPoint = LocationPoint()
@@ -91,7 +91,7 @@ final class EditPlanPointsManager: ObservableObject {
         renderCarScene = carScene
     }
     
-    func configureWith(event: Event){
+    func configureWith(event: LocalEvent){
         self.event = event
 //        selectedBroadcaster = event.broadcaster
 //        selectedCar = event.broadcastCar

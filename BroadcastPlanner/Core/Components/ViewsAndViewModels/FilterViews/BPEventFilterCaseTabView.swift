@@ -49,9 +49,9 @@ struct BPEventFilterCaseTabView<T: RawRepresentable & CaseIterable>: View  where
 
 #Preview{
     NavigationStack{
-        MainEventsList(userID: "aa")
+        MainEventsList()
     }
-    .environmentObject(GlobalStorage())
+    .environmentObject(GlobalStorage(localUser: LocalUser(context: DataManager.preview.moc),networkManager: NetworkManager()))
     .environmentObject(GlobalSettings())
     .environmentObject(GlobalTimer())
 }

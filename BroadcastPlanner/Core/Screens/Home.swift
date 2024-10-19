@@ -3,28 +3,21 @@ import NavigationTransitions
 
 struct Home: View {
     
-    @EnvironmentObject var globalStorage: GlobalStorage
+    @StateObject var globalStorage: GlobalStorage
     @State private var selection: Int = 1
-    
    
     var body: some View {
         ZStack(alignment:.bottom){
             
             TabView(selection: $selection) {
-                MainEventsList(events: globalStorage.events,
-                               userID: globalStorage.id)
+                MainEventsList()
                     .tabItem { Label("Events", systemImage: "calendar")}
                     .tag(0)
                     .padding(.bottom,1)
                     .transition(.opacity)
                 
                 // MyInfo Screen
-                BPAccountInfoView(user: globalStorage.currentUser ?? BPUser(),
-                                  image: globalStorage.userProfileImage,
-                                  saveAction: { user, image in
-                    await globalStorage.saveUser(user: user,
-                                                 userImage: image)
-                })
+                BPAccountInfoView()
                     .tabItem { Label("Info", systemImage: "figure.mind.and.body") }
                     .tag(1)
                     .padding(.bottom,1)
@@ -44,12 +37,14 @@ struct Home: View {
             }
         }
         .navigationBarBackButtonHidden()
+        .environmentObject(globalStorage)
     }
 }
 
 #Preview {
-    Home()
-        .environmentObject(GlobalStorage())
+    
+    
+    Home(globalStorage: GlobalStorage(localUser: LocalUser(context: DataManager.preview.moc),networkManager: NetworkManager()))
         .environmentObject(GlobalTimer())
         .environmentObject(GlobalSettings())
         .environmentObject(GlobalSessionStorage())

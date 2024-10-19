@@ -3,11 +3,11 @@ import Foundation
 // global  constants : properties, string, localizeble strings, network links
 
 struct GlobalProperties {
+ 
+    enum Path: String{
+        case users, events, locations, clubs, broadcasters, images
+    }
     
-}
-
-enum DataPath: String{
-    case users, events, locations, images, broadcasters
 }
 
 enum TeamLogos: String, CaseIterable, Identifiable {

@@ -13,7 +13,7 @@ struct BPEditEventJoystickInfoPanel: View {
     let rotateRight: () -> Void 
     
     
-   @State var selectedEventPoint: LocationPoint?
+   @State var selectedEventPoint: LocalLocationPoint?
     
     var body: some View {
         HStack{

@@ -6,6 +6,7 @@ struct SettingsView: View {
     
     @EnvironmentObject var globalStorage: GlobalStorage
     @EnvironmentObject var sessionStorage: GlobalSessionStorage
+    @EnvironmentObject var appState: ApplicationState
     @Environment(\.authorizationController) private var authorizationController
     
     
@@ -122,10 +123,14 @@ struct SettingsView: View {
                         Button(action: {
                             Task{
                                 do{
+                                    // TODO: set user is offline 
                                     print("try to log out")
+                                    appState.userOnlineStatus = .offline
                                     try AuthenticationManager.shared.logOut()
                                     sessionStorage.userSession = nil
-//                                    globalStorage.isLogged = false
+                                    globalStorage.id = ""
+                                    appState.state = .notAuthorized
+//
                                 }catch {
                                     print("failed to signing out: \(error.localizedDescription)")
                                 }
@@ -147,6 +152,8 @@ struct SettingsView: View {
                                 do{
                                     try await AuthenticationManager.shared.deleteUser()
                                     sessionStorage.userSession = nil
+                                    appState.state = .notAuthorized
+                                    appState.userOnlineStatus = .offline
                                 } catch {
 #if DEBUG
                                     print("DEBUG:\(error.localizedDescription)")
@@ -195,8 +202,9 @@ struct SettingsView: View {
 
 #Preview {
     SettingsView()
-        .environmentObject(GlobalStorage())
+        .environmentObject(GlobalStorage(localUser: LocalUser(context: DataManager.preview.moc),networkManager: NetworkManager()))
         .environmentObject(GlobalSessionStorage())
+        .environmentObject(ApplicationState())
 }
 
 

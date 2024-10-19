@@ -3,16 +3,30 @@ import Firebase
 import FirebaseFirestore
 import GoogleSignIn
 
+enum AppState {
+    case authorized, notAuthorized
+}
 
+enum UserOnlineStatus {
+    case online, offline
+}
+
+class ApplicationState: ObservableObject{
+    @Published var state: AppState = .notAuthorized
+    @Published var userOnlineStatus: UserOnlineStatus = .offline
+}
 
 // MARK: - Main App
 @main
 struct BroadcastPlannerApp: App {
+    
+    
+    
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @Environment(\.scenePhase) var scenePhase
-    
+    @StateObject var appState: ApplicationState = ApplicationState()
     @StateObject private var sessionStorage: GlobalSessionStorage = GlobalSessionStorage()
-    @StateObject private var globalStorage = GlobalStorage()
+    
     @StateObject private var globalSettings = GlobalSettings()
     @StateObject private var globalTimer = GlobalTimer()
     
@@ -21,38 +35,26 @@ struct BroadcastPlannerApp: App {
         WindowGroup {
             RootView()
                 .onChange(of: scenePhase, perform: { phase in
-                    if !globalStorage.id.isEmpty{
+                    if appState.state == .authorized{
                         switch phase {
                             case .active:
                                 //send online status
                                 print("scene in foreground: send online status")
-                                Task {
-                                    await globalStorage.goOnline()
-                                }
-                                
-                            case .background:
+                                appState.userOnlineStatus = .online
+                            case .background, .inactive:
                                 //send offline status
                                 //save local cache: images + data( events, users, messages)
-                                print("scene in background: send offline status")
-                                Task{
-                                    await globalStorage.goOffline()
-                                }
-                                
-                            case .inactive:
-                                print("scene in inactive: send inactive status")
-                                Task {
-                                    await globalStorage.goOffline()
-                                }
-                                
+                                print("scene in background or inactive state: send offline status")
+                                appState.userOnlineStatus = .offline
                             @unknown default:
                                 print("scene in unknown phase: send unknown status")
                         }
                     }
                 })
                 .environmentObject(sessionStorage)
-                .environmentObject(globalStorage)
                 .environmentObject(globalSettings)
                 .environmentObject(globalTimer)
+                .environmentObject(appState)
         }
     }
 }

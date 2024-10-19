@@ -195,6 +195,6 @@ public struct AnyContentViewSizePreferenceKey: PreferenceKey{
 }
 
 #Preview {
-    BPAccountInfoView(user: BPUser(), saveAction: {user, image in})
+    BPAccountInfoView()
 }
 

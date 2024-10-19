@@ -108,7 +108,9 @@ struct AuthenticationScreen: View {
                 Task{
                     await sessionStorage.signUp()
                     guard let id = sessionStorage.userSession?.id else { return }
-                    signUpHandler(BPUser(id:id))
+                    var user = BPUser(id: id)
+                    user.email = sessionStorage.userSession?.email ?? ""
+                    signUpHandler(user)
                 }
             }
         }

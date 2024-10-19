@@ -17,7 +17,8 @@ struct BPEditEventBottomGroup: View {
                                          moveLeft: editManager.moveLeft,
                                          moveRight: editManager.moveRight,
                                          rotateLeft: editManager.rotateCounterClockwise,
-                                         rotateRight: editManager.rotateClockwise, selectedEventPoint: editManager.selectedEventPoint)
+                                         rotateRight: editManager.rotateClockwise,
+                                         selectedEventPoint: editManager.selectedEventPoint)
         }
     }
 }

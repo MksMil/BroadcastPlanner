@@ -1,39 +1,17 @@
 import UIKit
 import CoreData
 
-class DataManager {
+class DataManager: ObservableObject {
     
     // MARK: - Properties
     
-    static let shared = DataManager(forPreview: true)
-//    static let sharedForTest = DataManager(forPreview: true)
+    static let shared = DataManager(forPreview: false)
+    
+    static let preview = DataManager(forPreview: true)
+
     let persistentContainer: NSPersistentContainer
     let backgroundContext: NSManagedObjectContext
     let moc: NSManagedObjectContext
-    
-    //caches for mapping coredata: [id: Entity]
-//    var imageCache: [String: LocalImage] = [:]
-//    
-//    var usersCache: [String: LocalUser] = [:]
-//    var eventCache: [String: LocalEvent] = [:]
-//    
-//    var locationCache: [String: LocalLocation] = [:]
-//    var broadcasterCache: [String: LocalBroadcaster] = [:]
-//    var obVanCache: [String: LocalOBVan] = [:]
-//    
-//    var clubCache: [String: LocalClub] = [:]
-//    
-//    //environment cache
-//    var cameraCache: [String: LocalCamera] = [:]
-//    var soundCache: [String: LocalSound] = [:]
-//    var lightCache: [String: LocalLight] = [:]
-//    var hardwareCache: [String: LocalHardware] = [:]
-//    
-//    //points cache
-//    var locationPointsCache: [String: LocalLocationPoint] = [:]
-//    var localOBVanUnitCache: [String: OBVanUnit] = [:]
-    
-    
     // MARK: - Init
     init(forPreview: Bool = false) {
         if forPreview {
@@ -75,7 +53,6 @@ extension DataManager {
     func createOrUpdateLocalUserWithUser(_ user: BPUser) -> LocalUser{
         let localUser = fetchOrCreateUserWithId(user.id)
         updateLocalUser(localUser, with: user)
-        saveContext()
         return localUser
     }
     // map
@@ -107,7 +84,6 @@ extension DataManager {
     
     func removeLocalUser(_ localUser: LocalUser){
         moc.delete(localUser)
-        saveContext()
     }
 }
 
@@ -129,7 +105,6 @@ extension DataManager {
         let localEvent = fetchOrCreateEventWithId(event.id)
         localEvent.id = event.id
         updateLocalEvent(localEvent, with: event)
-        saveContext()
         return localEvent
     }
     
@@ -192,7 +167,6 @@ extension DataManager {
     
     func removeLocalEvent(_ localEvent: LocalEvent){
         moc.delete(localEvent)
-        saveContext()
     }
     
 }
@@ -219,9 +193,8 @@ extension DataManager {
     }
     
     func updateLocalImage(_ localImage: LocalImage, withImage image: UIImage) {
-        if let data = image.jpegData(compressionQuality: 1){
+        if let data = image.pngData(){
             localImage.imageData = data
-            saveContext()
         }
     }
     
@@ -235,7 +208,6 @@ extension DataManager {
     
     func removeLocalImage(_ localImage: LocalImage){
         moc.delete(localImage)
-        saveContext()
     }
 }
 
@@ -257,7 +229,6 @@ extension DataManager {
     func createOrUpdateLocalLocationWithLocation(_ location: Location) -> LocalLocation {
         let localLocation = fetchOrCreateLocationWithId( location.id)
         updateLocalLocation(localLocation, withLocation: location)
-        saveContext()
         return localLocation
     }
     
@@ -284,7 +255,6 @@ extension DataManager {
     
     func removeLocalLocation(_ location: LocalLocation){
         moc.delete(location)
-        saveContext()
     }
 }
 
@@ -306,17 +276,15 @@ extension DataManager {
     func createOrUpdateLocalBroadcasterWithBroadcaster(_ broadcaster: Broadcaster) -> LocalBroadcaster{
         let localBroadcaster = fetchOrCreateBroadcasterWithId(broadcaster.id)
         updateLocalBroadcaster(localBroadcaster, withBroadcaster: broadcaster)
-        saveContext()
         return localBroadcaster
     }
     
     func updateLocalBroadcaster(_ localBroadcaster: LocalBroadcaster, withBroadcaster broadcaster: Broadcaster) {
         localBroadcaster.title = broadcaster.title
-        for obVanId in broadcaster.obVanIds{
-            let obVan = fetchOrCreateObvanWithId(obVanId)
-            localBroadcaster.addToCars(obVan)
-            obVan.broadcaster = localBroadcaster
-            
+        for obvan in broadcaster.obVans{
+            let localObvan = createOrUpdateLocalObvanWithObvan(obvan)
+            localBroadcaster.addToCars(localObvan)
+            localObvan.broadcaster = localBroadcaster
         }
     }
     
@@ -330,7 +298,6 @@ extension DataManager {
     
     func removeLocalBroadcaster(_ broadcaster: LocalBroadcaster){
         moc.delete(broadcaster)
-        saveContext()
     }
     
     //obVan
@@ -349,7 +316,6 @@ extension DataManager {
     func createOrUpdateLocalObvanWithObvan(_ obvan: OBVan) -> LocalOBVan {
         let localObvan = fetchOrCreateObvanWithId(obvan.id)
         updateLocalObvan(localObvan, withObvan: obvan)
-        saveContext()
         return localObvan
     }
     
@@ -366,13 +332,15 @@ extension DataManager {
         request.predicate = NSPredicate(format: "id == %@", obvan.id)
         if let obvanToRemove = try? moc.fetch(request).first{
             moc.delete(obvanToRemove)
-            saveContext()
         }
     }
     
-    func removeLocalObvan(_ obvan: LocalOBVan){
-        moc.delete(obvan)
-        saveContext()
+    func removeObvanWithId(_ id: String){
+        let request = LocalOBVan.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", id)
+        if let obvanToRemove = try? moc.fetch(request).first{
+            moc.delete(obvanToRemove)
+        }
     }
 }
 
@@ -394,7 +362,6 @@ extension DataManager {
     func createOrUpdateLocalClubWithClub(_ club: Club) -> LocalClub{
         let localClub = fetchOrCreateClubWithId(club.id)
         updateLocalClub(localClub, withClub: club)
-        saveContext()
         return localClub
     }
     
@@ -420,7 +387,6 @@ extension DataManager {
     
     func removeLocalClub(localClub: LocalClub) {
         moc.delete(localClub)
-        saveContext()
     }
 }
 
@@ -443,7 +409,6 @@ extension DataManager {
         
         let localCamera = fetchOrCreateCameraWithId(camera.id)
         updateLocalCamera(localCamera, withCamera: camera)
-        saveContext()
         return localCamera
     }
     func updateLocalCamera(_ localCamera: LocalCamera,withCamera camera: Camera) {
@@ -459,7 +424,6 @@ extension DataManager {
     
     func removeLocalCamera(_ camera: LocalCamera){
         moc.delete(camera)
-        saveContext()
     }
     //sound
     func fetchOrCreateSoundWithId(_ id: String) -> LocalSound {
@@ -477,7 +441,6 @@ extension DataManager {
     func createOrUpdateSound(_ sound: Sound) -> LocalSound {
         let localSound = fetchOrCreateSoundWithId(sound.id)
         updateLocalSound(localSound, withSound: sound)
-        saveContext()
         return localSound
     }
     func updateLocalSound(_ localSound: LocalSound, withSound sound: Sound) {
@@ -494,7 +457,6 @@ extension DataManager {
     
     func removeLocalSound(_ sound: LocalSound){
         moc.delete(sound)
-        saveContext()
     }
     //light
     
@@ -513,7 +475,6 @@ extension DataManager {
     func createOrUpdateLocalLightWithLight(_ light: Light) -> LocalLight{
         let localLight = fetchOrCreateLightWithId(light.id)
         updateLocalLight(localLight, withLight: light)
-        saveContext()
         return localLight
     }
     
@@ -531,7 +492,6 @@ extension DataManager {
     
     func removeLocalLight(_ light: LocalLight){
         moc.delete(light)
-        saveContext()
     }
     
     //hardware
@@ -550,7 +510,6 @@ extension DataManager {
     func createOrUpdateLocalHardwareWithHardware(_ hardware: Hardware) -> LocalHardware{
         let localHardware = fetchOrCreateHardwareWithId(hardware.id)
         updateLocalHardware(localHardware, withHardware: hardware)
-        saveContext()
         return localHardware
     }
     
@@ -569,7 +528,6 @@ extension DataManager {
     
     func removeLocalHardware(_ localhardware: LocalHardware){
         moc.delete(localhardware)
-        saveContext()
     }
 }
 
@@ -591,7 +549,6 @@ extension DataManager {
     func createOrUpdateLocalPointWithLocationPoint(_ point: LocationPoint) -> LocalLocationPoint{
         let localPoint = fetchOrCreateLocationPointWithId(point.id)
         updateLocalPoint(localPoint, withLocationPoint: point)
-        saveContext()
         return localPoint
     }
     func updateLocalPoint(_ localPoint: LocalLocationPoint,withLocationPoint point:LocationPoint){
@@ -640,7 +597,6 @@ extension DataManager {
     
     func removeLocalLocationPoint(_ localPoint: LocalLocationPoint){
         moc.delete(localPoint)
-        saveContext()
     }
     
     //Obvan unit
@@ -675,7 +631,6 @@ extension DataManager {
             localUnit.hardware = hardware
             hardware.obVanUnit = localUnit
         }
-        saveContext()
     }
     
     func removeObvanUnit(unit: OBVanUnit){
@@ -688,7 +643,6 @@ extension DataManager {
     
     func removeLocalObvanUnit(_ unit: LocalOBVanUnit){
         moc.delete(unit)
-        saveContext()
     }
 }
 

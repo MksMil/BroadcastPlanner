@@ -5,11 +5,23 @@ struct MainEventsList: View {
     @EnvironmentObject var globalStorage: GlobalStorage
     @StateObject private var eventRouter = EventTabRouter()
     
-    @State var filter: FilterEventCases = .notFiltered
-    @State var selectedEvent: Event?
-    @State var events: [Event] = []
+    @State var filter: FilterEventCases = .notFiltered {
+        didSet{
+            switch filter {
+                case .notFiltered:
+                    events.nsPredicate = nil
+                case .userOwned:
+                    events.nsPredicate = NSPredicate(format: "viewUsers CONTAINS %@", globalStorage.localUser)
+                case .userPartisipation:
+                    events.nsPredicate = NSPredicate(format: "viewOwners CONTAINS %@", globalStorage.localUser)
+            }
+        }
+    }
     
-    var  userID: String
+    @FetchRequest<LocalEvent>(sortDescriptors: []) private var events
+    
+    @State var selectedEvent: LocalEvent?
+    
     var title: String {
         switch filter {
             case .notFiltered:
@@ -21,28 +33,7 @@ struct MainEventsList: View {
         }
     }
     
-    var filteredEvents: [Event] {
-        switch filter {
-            case .notFiltered:
-                return events
-                    .sorted{ $0.date < $1.date }
-            case .userOwned:
-               return events
-                    .filter({ event in
-                        event.ownersIds.contains { $0 == globalStorage.id
-                        }
-                    })
-                    .sorted{ $0.date < $1.date }
-            case .userPartisipation:
-//                guard let currentUser = globalStorage.currentUser else { return []}
-                return events
-//                    .filter{ event in
-//                        currentUser.memberEventIds.contains(where: { id in
-//                        event.id == id})
-//                    }
-//                    .sorted{ $0.date > $1.date }
-        }
-    }
+   
     
     var body: some View {
         NavigationStack(path: $eventRouter.path ){
@@ -58,36 +49,33 @@ struct MainEventsList: View {
                                 .padding(.horizontal,20)
                         }
                     
-//                    List {
-//                        ForEach(filteredEvents) { event in
+                    List(events) { event in
+//                        ForEach($events) { event in
 //                            MainEventListCell(event: event)
-//                                .frame(height: 70)
-//                                .transition(.slide)
+                        Text(event.viewId)
+                                .frame(height: 70)
+                                .transition(.slide)
 //                                .onTapGesture {
 //                                    selectedEvent = event
 //                                    if let selectedEvent {
 //                                        eventRouter.routeToEdit(event: selectedEvent)
 //                                    }
 //                                }
-//                                .listRowBackground(Color.clear)
+                                .listRowBackground(Color.clear)
 //                        }
 //                        .onDelete(perform: { indexSet in
 //                            Task{
 //                              await globalStorage.removeEvent(at: indexSet)
 //                            }
 //                        })
-//                    }
-//                    .padding(.horizontal,8)
-//                    .scrollContentBackground(.hidden)
-//                    .listStyle(.inset)
-//                    .padding(.top, -8)
+                    }
+                    .padding(.horizontal,8)
+                    .scrollContentBackground(.hidden)
+                    .listStyle(.inset)
+                    .padding(.top, -8)
                 }
                 
             }
-            .onReceive(globalStorage.$events) {
-                events = $0
-            }
-            
             .navigationTitle(Text(title))
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarBackButtonHidden()
@@ -96,7 +84,7 @@ struct MainEventsList: View {
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button{
-//                        let event = globalStorage.createEvent()
+                        let event = globalStorage.createEvent()
                         eventRouter.routeToCreate(event: globalStorage.createEvent())//event)
                     }label: {
                         Image(systemName: "calendar.badge.plus")
@@ -126,10 +114,14 @@ struct MainEventsList: View {
     }
 }
 
-#Preview {
-    MainEventsList(userID: "")
-        .environmentObject(GlobalStorage())
-        .environmentObject(GlobalSettings())
-        .environmentObject(GlobalTimer())
-        .environmentObject(GlobalSessionStorage())
-}
+//#Preview {
+//    
+//    let previewStorage = GlobalStorage()
+//    
+//    return MainEventsList()
+//        .environmentObject(previewStorage)
+//        .environmentObject(GlobalSettings())
+//        .environmentObject(GlobalTimer())
+//        .environmentObject(GlobalSessionStorage())
+//        .environment(\.managedObjectContext,previewStorage.container.moc )
+//}
