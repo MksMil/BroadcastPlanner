@@ -48,6 +48,7 @@ struct BPCreateEditEventView: View {
                     BPEventHeaderView(event: event)
                         .frame(height: 300)
                         .disabled(!editable)
+                        .frame(maxWidth: .infinity)
                     
                     
                     //preview + fsc editStad / editCar  views
@@ -65,9 +66,8 @@ struct BPCreateEditEventView: View {
                                 }
                         }
                         .frame(height: geo.size.width / 2)
-                        
+                        .padding(.horizontal)
                     }
-                    .padding(.horizontal)
                    
                     
                     //staff list
@@ -75,16 +75,16 @@ struct BPCreateEditEventView: View {
 //                                       images: globalStorage.usersImages)
                     // TODO: (struct: Hashable, id: comb(name+num)) for the grid !?!
                     ScrollView{
-                        SmartLayout(hSpacing: 5, vSpacing: 5){
-                            ForEach(users){ user in
-//                                if let image = listUsers[user]{
-//                                    BPUserDataListCellView(text: user,
-//                                                           image: image)
-//                                } else {
-                                BPUserDataListCellView(user: user, text: "text")
-//                                }
-                            }
-                        }
+//                        SmartLayout(hSpacing: 5, vSpacing: 5){
+//                            ForEach(users){ user in
+////                                if let image = listUsers[user]{
+////                                    BPUserDataListCellView(text: user,
+////                                                           image: image)
+////                                } else {
+//                                BPUserDataListCellView(user: user, text: "text")
+////                                }
+//                            }
+//                        }
                     }
                     .padding(.horizontal,10)
                     Spacer()

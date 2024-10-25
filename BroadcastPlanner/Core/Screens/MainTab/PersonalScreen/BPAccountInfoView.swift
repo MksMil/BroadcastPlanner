@@ -142,7 +142,6 @@ struct BPAccountInfoView: View {
                         if !isEdit {
                             Task{
                                 updateUser()
-//                                await globalStorage.saveUser(userImage: inputImage)
                             }
                         }
                     }label: {
@@ -224,6 +223,5 @@ struct SpecializationSection: View {
     BPAccountInfoView()
         .environmentObject(GlobalStorage(localUser: LocalUser(context: DataManager.preview.moc),
                                          networkManager: NetworkManager()))
-//        .environment(\.managedObjectContext, DataManager.preview.moc)
 }
 

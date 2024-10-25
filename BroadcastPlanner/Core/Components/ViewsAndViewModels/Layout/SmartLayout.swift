@@ -31,10 +31,11 @@ struct SmartLayout: Layout{
     
     func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
         guard !subviews.isEmpty else { return proposal.replacingUnspecifiedDimensions() }
-        let totalWidth = proposal.width ?? proposal.replacingUnspecifiedDimensions().width
+        var totalWidth = proposal.width ?? proposal.replacingUnspecifiedDimensions().width
         var width = Double.zero
         var height = subviews.isEmpty ? 0: subviews[0].sizeThatFits(.unspecified).height
         var maxAddedHeight = subviews[0].sizeThatFits(.unspecified).height
+        
         
         for index in subviews.indices{
             
@@ -46,6 +47,7 @@ struct SmartLayout: Layout{
                     // if last
                     height += size.height + vSpacing
                 } else {
+                    totalWidth = width - hSpacing
                     width = size.width + hSpacing
                     maxAddedHeight = size.height
                     height += maxAddedHeight + vSpacing
@@ -69,7 +71,16 @@ struct SmartLayout: Layout{
     }
 }
 
-//#Preview {
-//    BPAccountInfoView(cells: UserSpecialization.allCases)
-//        .environmentObject(GlobalStorage())
-//}
+#Preview(body: {
+    SmartLayout(hSpacing: 0, vSpacing: 0) {
+        ForEach([1,2,3,4,5,6,7,8,9,0], id: \.self){ logo in
+            Image(systemName:"\(logo).circle")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 75, height: 75)
+                
+        }
+    }
+    .border(.red)
+})
+

@@ -15,9 +15,10 @@ class DataManager: ObservableObject {
     // MARK: - Init
     init(forPreview: Bool = false) {
         if forPreview {
-            let modelUrl = Bundle.main.url(forResource: "BroadcastPlanner", withExtension: "momd")!
-            let mom = NSManagedObjectModel(contentsOf: modelUrl)!
-            self.persistentContainer =  NSPersistentContainer(name: "BroadcastPlanner",managedObjectModel: mom)
+//            let modelUrl = Bundle.main.url(forResource: "BroadcastPlanner", withExtension: "momd")!
+//            let mom = NSManagedObjectModel(contentsOf: modelUrl)!
+//            self.persistentContainer =  NSPersistentContainer(name: "BroadcastPlanner",managedObjectModel: mom)
+            self.persistentContainer =  NSPersistentContainer(name: "BroadcastPlanner")
 //            let description = NSPersistentStoreDescription()
 //                   description.type = NSInMemoryStoreType // Используем in-memory хранилище
 //            self.persistentContainer.persistentStoreDescriptions = [description]

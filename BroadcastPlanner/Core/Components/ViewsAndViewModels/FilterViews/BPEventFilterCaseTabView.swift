@@ -14,18 +14,18 @@ struct BPEventFilterCaseTabView<T: RawRepresentable & CaseIterable>: View  where
         HStack{
             ForEach(tabs.indices, id: \.self) { tabIndex in
 
-                    Image(systemName: "\(tabs[tabIndex].rawValue)")
+                Image(systemName: "\(tabs[tabIndex].rawValue)")
                     .font(.title)
-                        .padding(.horizontal,10)
-                        .padding(.vertical,5)
-                        .onTapGesture {
-                            withAnimation{
-                                self.selectedTab = tabs[tabIndex]
-                            }
+                    .padding(.horizontal,10)
+                    .padding(.vertical,5)
+                    .onTapGesture {
+                        withAnimation{
+                            self.selectedTab = tabs[tabIndex]
                         }
+                    }
 //                })
                 //data about geometry added to tabIndex Id in ns namespace
-                .matchedGeometryEffect(id: tabs[tabIndex].rawValue , in: ns)
+                    .matchedGeometryEffect(id: tabs[tabIndex].rawValue , in: ns)
             }
         }
         .padding(.horizontal)

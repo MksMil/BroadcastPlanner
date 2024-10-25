@@ -65,7 +65,6 @@
 		299190292C8A064400D2CDDC /* String+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 299190282C8A064400D2CDDC /* String+Ext.swift */; };
 		299277982B7629FD00B8F892 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 299277972B7629FD00B8F892 /* GoogleService-Info.plist */; };
 		2994DE672C157C9F00DF9060 /* BPCreateEditEventView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2994DE662C157C9F00DF9060 /* BPCreateEditEventView.swift */; };
-		2994DE6C2C15A2D900DF9060 /* BPEventHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2994DE6B2C15A2D900DF9060 /* BPEventHeaderView.swift */; };
 		2994DE6E2C16F18E00DF9060 /* BPJoystick.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2994DE6D2C16F18D00DF9060 /* BPJoystick.swift */; };
 		2994DE702C17196300DF9060 /* BPEventPlanPointImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2994DE6F2C17196300DF9060 /* BPEventPlanPointImage.swift */; };
 		299916AC2CB66A890003B521 /* Club.swift in Sources */ = {isa = PBXBuildFile; fileRef = 299916AB2CB66A890003B521 /* Club.swift */; };
@@ -170,7 +169,6 @@
 		299277972B7629FD00B8F892 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		299277992B762A4100B8F892 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		2994DE662C157C9F00DF9060 /* BPCreateEditEventView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPCreateEditEventView.swift; sourceTree = "<group>"; };
-		2994DE6B2C15A2D900DF9060 /* BPEventHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPEventHeaderView.swift; sourceTree = "<group>"; };
 		2994DE6D2C16F18D00DF9060 /* BPJoystick.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPJoystick.swift; sourceTree = "<group>"; };
 		2994DE6F2C17196300DF9060 /* BPEventPlanPointImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPEventPlanPointImage.swift; sourceTree = "<group>"; };
 		299916AB2CB66A890003B521 /* Club.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Club.swift; sourceTree = "<group>"; };
@@ -220,6 +218,7 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		290127A92CCFD5300054B2D7 /* EventHeader */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = EventHeader; sourceTree = "<group>"; };
 		29558A212CA3F0E2009C3016 /* Environment */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Environment; sourceTree = "<group>"; };
 		29558A222CA3F105009C3016 /* Points */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Points; sourceTree = "<group>"; };
 		29558A232CA3F140009C3016 /* Broadcaster */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Broadcaster; sourceTree = "<group>"; };
@@ -470,7 +469,7 @@
 				29E10F572C1845DE00A35A4B /* BPUserImageNameCompactCell.swift */,
 				291E72CE2BBEEBDD008092D7 /* BPSpecializationCellView.swift */,
 				29D169792B85D4F800A70638 /* HaptickEngine.swift */,
-				2994DE6B2C15A2D900DF9060 /* BPEventHeaderView.swift */,
+				290127A92CCFD5300054B2D7 /* EventHeader */,
 				2994DE6D2C16F18D00DF9060 /* BPJoystick.swift */,
 				2994DE6F2C17196300DF9060 /* BPEventPlanPointImage.swift */,
 				29E8CD772C352E82002EB11A /* LogoImageView.swift */,
@@ -813,6 +812,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				290127A92CCFD5300054B2D7 /* EventHeader */,
 				29558A212CA3F0E2009C3016 /* Environment */,
 				29558A222CA3F105009C3016 /* Points */,
 				29558A232CA3F140009C3016 /* Broadcaster */,
@@ -935,7 +935,6 @@
 				29CCF2F32C80BDD800BCEF34 /* MainRouter.swift in Sources */,
 				29C041D22AC55C7A008B3E1F /* Event.swift in Sources */,
 				29AE68762BE24F9A00DE8FAB /* Message.swift in Sources */,
-				2994DE6C2C15A2D900DF9060 /* BPEventHeaderView.swift in Sources */,
 				297507BE2C9426B400E58091 /* SaveEditControlPanelView.swift in Sources */,
 				29AE68742BE24F9300DE8FAB /* Chat.swift in Sources */,
 				2994DE702C17196300DF9060 /* BPEventPlanPointImage.swift in Sources */,

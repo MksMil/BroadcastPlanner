@@ -15,14 +15,14 @@ struct Home: View {
                     .tag(0)
                     .padding(.bottom,1)
                     .transition(.opacity)
-                
-                // MyInfo Screen
+//                
+//                // MyInfo Screen
                 BPAccountInfoView()
                     .tabItem { Label("Info", systemImage: "figure.mind.and.body") }
                     .tag(1)
                     .padding(.bottom,1)
                     .transition(.opacity)
-                //messenger
+//                //messenger
                 BPMessengerView()
                     .tabItem { Label("Messege", systemImage: "message.badge") }
                     .tag(2)
@@ -42,10 +42,14 @@ struct Home: View {
 }
 
 #Preview {
+    let moc = DataManager.shared.moc
     
     
-    Home(globalStorage: GlobalStorage(localUser: LocalUser(context: DataManager.preview.moc),networkManager: NetworkManager()))
+    return Home(globalStorage: GlobalStorage(localUser: LocalUser(context: moc),networkManager: NetworkManager()))
         .environmentObject(GlobalTimer())
         .environmentObject(GlobalSettings())
         .environmentObject(GlobalSessionStorage())
+        .environmentObject(ApplicationState())
+        .environment(\.managedObjectContext, moc)
+
 }

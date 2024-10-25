@@ -20,19 +20,10 @@
         }
       }
     },
-    "%lld" : {
-
-    },
     "+ new broadcaster" : {
 
     },
     "+ new car" : {
-
-    },
-    "00" : {
-
-    },
-    "0%lld" : {
 
     },
     "1" : {
@@ -48,9 +39,6 @@
 
     },
     "ButtonName" : {
-
-    },
-    "Cancel" : {
 
     },
     "Change E-mail" : {
@@ -86,6 +74,15 @@
     "email: %@" : {
 
     },
+    "enter club name" : {
+
+    },
+    "enter contact info" : {
+
+    },
+    "enter url" : {
+
+    },
     "Event" : {
 
     },
@@ -93,6 +90,12 @@
 
     },
     "Forget password" : {
+
+    },
+    "Hello, World!" : {
+
+    },
+    "Hours" : {
 
     },
     "id: %@" : {
@@ -114,6 +117,9 @@
 
     },
     "Messege" : {
+
+    },
+    "Minutes" : {
 
     },
     "Move Forvard\nselection: %lld" : {
@@ -168,9 +174,6 @@
 
     },
     "Sign Up" : {
-
-    },
-    "Start" : {
 
     },
     "Status" : {

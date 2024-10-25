@@ -16,7 +16,12 @@ final class GlobalStorage: ObservableObject{
     
     @Published var id: String = ""
     @Published var localUser: LocalUser
-//    @Published var userProfileImage: UIImage?
+    
+    //user priority:
+    //0 - full access create/edit
+    //1 - limited access - add events, edit owned events. denied: add/edit clubs/location/broadcasters/cars
+    //2 - full limited - only
+    @Published var userPriority: Int = 0
     
     //new event flag
     var newEvent: Bool = false

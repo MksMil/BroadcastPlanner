@@ -6,7 +6,6 @@ struct MainEventsList: View {
     @EnvironmentObject var globalStorage: GlobalStorage
     @StateObject private var eventRouter = EventTabRouter()
     
-    
     @FetchRequest<LocalEvent>(sortDescriptors: []) var events
     
     @State var selectedEvent: LocalEvent?
@@ -52,7 +51,6 @@ struct MainEventsList: View {
                                         eventRouter.routeToEdit(event: selectedEvent)
                                     }
                                 }
-                            
                         }
                         .onDelete(perform: { indexSet in
                             guard let index = indexSet.first else { return }
@@ -106,9 +104,11 @@ struct MainEventsList: View {
     
 
 #Preview {
-    MainEventsList()
-        .environmentObject(GlobalStorage(localUser: LocalUser(context: DataManager.preview.moc),networkManager: NetworkManager()))
+    NavigationStack{
+        MainEventsList()
+    }
+    .environmentObject(GlobalStorage(localUser: LocalUser(context: DataManager.shared.moc),networkManager: NetworkManager()))
         .environmentObject(GlobalSettings())
         .environmentObject(GlobalTimer())
-//        .environment(\.managedObjectContext,DataManager.shared.moc)
+        .environment(\.managedObjectContext, DataManager.shared.moc)
 }
