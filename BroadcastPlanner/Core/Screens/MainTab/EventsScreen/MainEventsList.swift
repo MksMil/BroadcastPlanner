@@ -1,39 +1,30 @@
 import SwiftUI
+import CoreData
 import Combine
 
 struct MainEventsList: View {
     @EnvironmentObject var globalStorage: GlobalStorage
     @StateObject private var eventRouter = EventTabRouter()
     
-    @State var filter: FilterEventCases = .notFiltered {
-        didSet{
-            switch filter {
-                case .notFiltered:
-                    events.nsPredicate = nil
-                case .userOwned:
-                    events.nsPredicate = NSPredicate(format: "viewUsers CONTAINS %@", globalStorage.localUser)
-                case .userPartisipation:
-                    events.nsPredicate = NSPredicate(format: "viewOwners CONTAINS %@", globalStorage.localUser)
-            }
-        }
-    }
     
-    @FetchRequest<LocalEvent>(sortDescriptors: []) private var events
+    @FetchRequest<LocalEvent>(sortDescriptors: []) var events
     
     @State var selectedEvent: LocalEvent?
     
+    @State var filter: FilterEventCases = .notFiltered
     var title: String {
-        switch filter {
-            case .notFiltered:
-                "All Events"
-            case .userOwned:
-                "My own Events"
-            case .userPartisipation:
-                "My participation"
-        }
+            switch filter {
+                case .notFiltered:
+                    events.nsPredicate = nil
+                    return "All Events"
+                case .userOwned:
+                    events.nsPredicate = NSPredicate(format: "owners CONTAINS %@", globalStorage.localUser)
+                    return "My own Events"
+                case .userPartisipation:
+                    events.nsPredicate = NSPredicate(format: "users CONTAINS %@", globalStorage.localUser)
+                    return "My participation"
+            }
     }
-    
-   
     
     var body: some View {
         NavigationStack(path: $eventRouter.path ){
@@ -49,25 +40,25 @@ struct MainEventsList: View {
                                 .padding(.horizontal,20)
                         }
                     
-                    List(events) { event in
-//                        ForEach($events) { event in
-//                            MainEventListCell(event: event)
-                        Text(event.viewId)
+                    List {
+                        ForEach(events) { event in
+                            MainEventListCell(event: event)
                                 .frame(height: 70)
                                 .transition(.slide)
-//                                .onTapGesture {
-//                                    selectedEvent = event
-//                                    if let selectedEvent {
-//                                        eventRouter.routeToEdit(event: selectedEvent)
-//                                    }
-//                                }
                                 .listRowBackground(Color.clear)
-//                        }
-//                        .onDelete(perform: { indexSet in
-//                            Task{
-//                              await globalStorage.removeEvent(at: indexSet)
-//                            }
-//                        })
+                                .onTapGesture {
+                                    selectedEvent = event
+                                    if let selectedEvent {
+                                        eventRouter.routeToEdit(event: selectedEvent)
+                                    }
+                                }
+                            
+                        }
+                        .onDelete(perform: { indexSet in
+                            guard let index = indexSet.first else { return }
+                            let eventToDelete = events[index]
+                            globalStorage.removeEvent(eventToDelete)
+                        })
                     }
                     .padding(.horizontal,8)
                     .scrollContentBackground(.hidden)
@@ -84,7 +75,7 @@ struct MainEventsList: View {
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button{
-                        let event = globalStorage.createEvent()
+//                        let event = globalStorage.createEvent()
                         eventRouter.routeToCreate(event: globalStorage.createEvent())//event)
                     }label: {
                         Image(systemName: "calendar.badge.plus")
@@ -93,7 +84,6 @@ struct MainEventsList: View {
                     }
                     .frame(alignment: .center)
                     .font(.headline)
-//                    .foregroundStyle(.blue)
                 }
             }
             .navigationDestination(for: EventTabPath.self) { path in
@@ -113,15 +103,12 @@ struct MainEventsList: View {
         .environmentObject(eventRouter)
     }
 }
+    
 
-//#Preview {
-//    
-//    let previewStorage = GlobalStorage()
-//    
-//    return MainEventsList()
-//        .environmentObject(previewStorage)
-//        .environmentObject(GlobalSettings())
-//        .environmentObject(GlobalTimer())
-//        .environmentObject(GlobalSessionStorage())
-//        .environment(\.managedObjectContext,previewStorage.container.moc )
-//}
+#Preview {
+    MainEventsList()
+        .environmentObject(GlobalStorage(localUser: LocalUser(context: DataManager.preview.moc),networkManager: NetworkManager()))
+        .environmentObject(GlobalSettings())
+        .environmentObject(GlobalTimer())
+//        .environment(\.managedObjectContext,DataManager.shared.moc)
+}

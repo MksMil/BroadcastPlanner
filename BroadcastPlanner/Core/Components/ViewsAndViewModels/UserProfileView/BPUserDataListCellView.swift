@@ -2,13 +2,12 @@ import SwiftUI
 
 struct BPUserDataListCellView: View {
     
-//    var user : BPUser
+    var user : LocalUser
     var text: String
-    var image: UIImage?
     
     var body: some View {
         HStack{
-            makeImage()
+            user.userImage
                 .resizable()
                 .scaledToFill()
             
@@ -18,12 +17,12 @@ struct BPUserDataListCellView: View {
                 .clipShape(Circle())
            
             VStack(alignment: .leading, spacing: 0){
-                Text(text)//user.fullCompactName)
+                Text("\(user.userFirstName) \(user.userLastName)")//user.fullCompactName)
                     .font(.system(size: 10))
                     .bold()
                 
 //                    .padding(.leading,5)
-                Text("position")
+                Text("\(user.userSpecialization)")
                     .font(.system(size: 8))
 //                    .italic()
                     .foregroundStyle(.gray)
@@ -45,16 +44,10 @@ struct BPUserDataListCellView: View {
         .clipShape(RoundedRectangle(cornerRadius: 20))
     }
     
-    func makeImage() -> Image{
-        if let image  {
-            return Image(uiImage: image)
-        } else {
-            return Image(systemName: "person.circle")
-        }
-    }
+    
 }
 
-//#Preview {
-//    BPUserDataListCellView(user: MockData.sampleUser)
-//}
+#Preview {
+    BPUserDataListCellView(user: LocalUser(context: DataManager.preview.moc), text: "text")
+}
 

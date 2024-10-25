@@ -1,12 +1,5 @@
-//
-//  LocalImage+CoreDataProperties.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 14.10.2024.
-//
-//
-
-import Foundation
+import UIKit
+import SwiftUI
 import CoreData
 
 
@@ -45,5 +38,15 @@ extension LocalImage {
 }
 
 extension LocalImage : Identifiable {
-
+    var viewId: String {
+        id ?? "N/A"
+    }
+    
+    var viewImage: Image?{
+        if let data = imageData, let uiimage = UIImage(data: data){
+            return Image(uiImage: uiimage)
+        } else {
+            return nil
+        }
+    }
 }

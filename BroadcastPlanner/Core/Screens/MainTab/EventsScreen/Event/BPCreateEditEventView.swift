@@ -23,7 +23,7 @@ struct BPCreateEditEventView: View {
         true
     }
     
-    
+    @FetchRequest<LocalUser>(sortDescriptors: []) private var users
     //coredata fetchrequest here
 //    var listUsers: [String: UIImage?] {
 //        var result = [String: UIImage?]()
@@ -43,11 +43,11 @@ struct BPCreateEditEventView: View {
             ZStack(){
                 MainBackground()
                 
-                VStack(alignment: .leading, spacing: 0){
+                VStack(alignment: .center, spacing: 0){
                     //header: time, date, teams, location
-//                    BPEventHeaderView(event: $event)
-//                        .frame(height: 300)
-//                        .disabled(!editable)
+                    BPEventHeaderView(event: event)
+                        .frame(height: 300)
+                        .disabled(!editable)
                     
                     
                     //preview + fsc editStad / editCar  views
@@ -75,16 +75,16 @@ struct BPCreateEditEventView: View {
 //                                       images: globalStorage.usersImages)
                     // TODO: (struct: Hashable, id: comb(name+num)) for the grid !?!
                     ScrollView{
-//                        SmartLayout(hSpacing: 5, vSpacing: 5){
-//                            ForEach(layoutList, id: \.self){ user in
-////                                if let image = listUsers[user]{
-////                                    BPUserDataListCellView(text: user,
-////                                                           image: image)
-////                                } else {
-//                                    BPUserDataListCellView(text: user)
-////                                }
-//                            }
-//                        }
+                        SmartLayout(hSpacing: 5, vSpacing: 5){
+                            ForEach(users){ user in
+//                                if let image = listUsers[user]{
+//                                    BPUserDataListCellView(text: user,
+//                                                           image: image)
+//                                } else {
+                                BPUserDataListCellView(user: user, text: "text")
+//                                }
+                            }
+                        }
                     }
                     .padding(.horizontal,10)
                     Spacer()
@@ -112,7 +112,7 @@ struct BPCreateEditEventView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button{
                         Task{
-//                            await  globalStorage.updateEvent(event)
+                            await  globalStorage.updateEvent(event)
                             eventRouter.routeStepBack()
                         }
                     }label: {
@@ -123,7 +123,7 @@ struct BPCreateEditEventView: View {
                     // TODO: Delete Confirmation (Alert?)
                     Button{
                         Task{
-//                            globalStorage.removeEvent(event)
+                            globalStorage.removeEvent(event)
                             eventRouter.routeStepBack()
                         }
                     } label: {
@@ -139,12 +139,12 @@ struct BPCreateEditEventView: View {
     }
 }
 
-//#Preview {
-//    NavigationStack{
-//        BPCreateEditEventView(event: MockData.sampleEvent)
-//    }
-//        .environmentObject(MockData.sampleSettings)
-//        .environmentObject(GlobalStorage())
-//        .environmentObject(EventTabRouter())
-//        .environmentObject(GlobalTimer())
-//}
+#Preview {
+    NavigationStack{
+        BPCreateEditEventView(event: LocalEvent(context: DataManager.preview.moc))
+    }
+        .environmentObject(GlobalSettings())
+        .environmentObject(GlobalStorage(localUser: LocalUser(context: DataManager.preview.moc), networkManager: NetworkManager()))
+        .environmentObject(EventTabRouter())
+        .environmentObject(GlobalTimer())
+}

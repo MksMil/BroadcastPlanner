@@ -195,6 +195,10 @@ public struct AnyContentViewSizePreferenceKey: PreferenceKey{
 }
 
 #Preview {
-    BPAccountInfoView()
+    let user = LocalUser(context: DataManager.preview.moc)
+    user.specializations = "director,cameramen,floorManager"
+    
+    return BPAccountInfoView()
+        .environmentObject(GlobalStorage(localUser: user, networkManager: NetworkManager()))
 }
 

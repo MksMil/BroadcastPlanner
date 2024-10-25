@@ -4,6 +4,9 @@
     "" : {
 
     },
+    ":" : {
+
+    },
     "%@" : {
 
     },
@@ -17,10 +20,19 @@
         }
       }
     },
+    "%lld" : {
+
+    },
     "+ new broadcaster" : {
 
     },
     "+ new car" : {
+
+    },
+    "00" : {
+
+    },
+    "0%lld" : {
 
     },
     "1" : {
@@ -36,6 +48,9 @@
 
     },
     "ButtonName" : {
+
+    },
+    "Cancel" : {
 
     },
     "Change E-mail" : {
@@ -95,6 +110,9 @@
     "LOGO" : {
 
     },
+    "Match Day" : {
+
+    },
     "Messege" : {
 
     },
@@ -114,9 +132,6 @@
 
     },
     "password: %@" : {
-
-    },
-    "position" : {
 
     },
     "Press me" : {
@@ -153,6 +168,12 @@
 
     },
     "Sign Up" : {
+
+    },
+    "Start" : {
+
+    },
+    "Status" : {
 
     },
     "Tab Label 1" : {

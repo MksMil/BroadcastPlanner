@@ -18,9 +18,9 @@ class DataManager: ObservableObject {
             let modelUrl = Bundle.main.url(forResource: "BroadcastPlanner", withExtension: "momd")!
             let mom = NSManagedObjectModel(contentsOf: modelUrl)!
             self.persistentContainer =  NSPersistentContainer(name: "BroadcastPlanner",managedObjectModel: mom)
-            let description = NSPersistentStoreDescription()
-                   description.type = NSInMemoryStoreType // Используем in-memory хранилище
-            self.persistentContainer.persistentStoreDescriptions = [description]
+//            let description = NSPersistentStoreDescription()
+//                   description.type = NSInMemoryStoreType // Используем in-memory хранилище
+//            self.persistentContainer.persistentStoreDescriptions = [description]
             persistentContainer.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
         } else {
             self.persistentContainer =  NSPersistentContainer(name: "BroadcastPlanner")
@@ -564,11 +564,13 @@ extension DataManager {
         localPoint.pointDescription = point.description
         localPoint.task = point.task
         
-        if let id = point.userId{
+        
+        for  id in point.userId{
             let user = fetchOrCreateUserWithId(id)
             localPoint.addToUser(user)
             user.addToLocationPoints(localPoint)
         }
+        
         for sound in point.sounds{
             let localSound = createOrUpdateSound(sound)
             localPoint.addToSounds(localSound)

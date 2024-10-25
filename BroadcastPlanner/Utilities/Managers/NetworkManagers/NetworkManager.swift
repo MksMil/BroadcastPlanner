@@ -358,9 +358,9 @@ extension NetworkManager{
         }
     }
     
-    func removeEvent(_ event: Event) async {
+    func removeEventWithId(_ id: String) async {
         do{
-            try await db.collection("\(GlobalProperties.Path.events.rawValue)").document(event.id).delete()
+            try await db.collection("\(GlobalProperties.Path.events.rawValue)").document(id).delete()
         } catch {
 #if DEBUG
             print("DEBUG: remove event error: \(error.localizedDescription)")

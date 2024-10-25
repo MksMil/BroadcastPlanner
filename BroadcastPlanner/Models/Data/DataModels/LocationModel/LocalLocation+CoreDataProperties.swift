@@ -1,12 +1,5 @@
-//
-//  LocalLocation+CoreDataProperties.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 11.10.2024.
-//
-//
-
-import Foundation
+import UIKit
+import SwiftUI
 import CoreData
 
 
@@ -61,5 +54,31 @@ extension LocalLocation {
 }
 
 extension LocalLocation : Identifiable {
-
+    var viewId: String {
+        id ?? "N/A"
+    }
+    var viewAddress: String {
+        address ?? "somewhere on Earth"
+    }
+    
+    var viwTitle: String {
+        title ?? "mystic place"
+    }
+    
+    var viewBackground: UIImage {
+        if let data = background?.imageData, let image = UIImage(data: data){
+            return image
+        } else {
+            return  UIImage(imageLiteralResourceName: "stadium")
+        }
+    }
+    
+    var viewEvents: [LocalEvent] {
+        events?.allObjects as? [LocalEvent] ?? []
+    }
+    
+    var viewImages: [Image] {
+        (images?.allObjects as? [LocalImage] ?? []).compactMap{$0.viewImage}
+    }
+    
 }

@@ -25,4 +25,15 @@ extension LocalHardware {
 
 extension LocalHardware : Identifiable {
 
+    var veiwId: String {
+        id ?? "N/A"
+    }
+    
+    var viewType: Hardware.ReplayType{
+        Hardware.ReplayType(rawValue: type ?? "") ?? Hardware.ReplayType.none
+    }
+    var viewChannels: [String] {
+        channels?.split(separator: ",") as? [String] ?? [String]()
+    }
+    
 }

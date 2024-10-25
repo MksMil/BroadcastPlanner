@@ -24,4 +24,12 @@ extension LocalCamera {
 
 extension LocalCamera : Identifiable {
 
+    var viewId: String {
+        id ?? "N/A"
+    }
+    
+    var viewOptic: Camera.OpticType{
+        Camera.OpticType(rawValue: optic ?? "none") ?? Camera.OpticType.none
+    }
+    
 }

@@ -1,12 +1,4 @@
-//
-//  LocalOBVan+CoreDataProperties.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 15.10.2024.
-//
-//
-
-import Foundation
+import SwiftUI
 import CoreData
 
 
@@ -42,5 +34,22 @@ extension LocalOBVan {
 }
 
 extension LocalOBVan : Identifiable {
-
+    var viewId: String {
+        id ?? "N/A"
+    }
+    var viewName: String {
+        name ?? "obvan name"
+    }
+    
+    var viewBroadcasteName: String {
+        broadcaster?.viewTitle ?? "no broadcaster"
+    }
+    
+    var viewEvents: [LocalEvent] {
+        events?.allObjects as? [LocalEvent] ?? []
+    }
+    
+    var viewImage: Image {
+        image?.viewImage ?? Image("empty_obvan")
+    }
 }

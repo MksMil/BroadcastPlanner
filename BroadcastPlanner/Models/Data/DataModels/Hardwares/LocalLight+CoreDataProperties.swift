@@ -1,11 +1,3 @@
-//
-//  LocalLight+CoreDataProperties.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 14.10.2024.
-//
-//
-
 import Foundation
 import CoreData
 
@@ -24,4 +16,12 @@ extension LocalLight {
 
 extension LocalLight : Identifiable {
 
+    var viewId: String {
+        id ?? "N/A"
+    }
+    
+    var viewLightType: Light.LightType{
+        Light.LightType(rawValue: lightType ?? "---") ?? Light.LightType.none
+    }
+    
 }

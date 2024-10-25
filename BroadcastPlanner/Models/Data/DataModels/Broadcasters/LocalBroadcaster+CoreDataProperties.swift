@@ -1,11 +1,3 @@
-//
-//  LocalBroadcaster+CoreDataProperties.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 11.10.2024.
-//
-//
-
 import Foundation
 import CoreData
 
@@ -58,5 +50,19 @@ extension LocalBroadcaster {
 }
 
 extension LocalBroadcaster : Identifiable {
-
+    var viewId: String {
+        id ?? "N/A"
+    }
+    
+    var viewTitle: String {
+        title ?? "broadcaster title"
+    }
+    
+    var viewCars: [LocalOBVan] {
+        cars?.allObjects as? [LocalOBVan] ?? []
+    }
+    
+    var viewEvents: [LocalEvent] {
+        events?.allObjects as? [LocalEvent] ?? []
+    }
 }

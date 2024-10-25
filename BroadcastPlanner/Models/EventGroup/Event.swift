@@ -59,4 +59,23 @@ extension Event: Hashable, Equatable {
     }
 }
 
+// MARK: - map LocalEvent to Event
+extension Event {
+    static func mapLocalEventToEvent(localEvent: LocalEvent) -> Event {
+        let event = Event(id: localEvent.viewId,
+              date: localEvent.viewRemainingDate,
+              broadcasterId: localEvent.broadcaster?.id ?? "Empty",
+              obVanId: localEvent.obVan?.id ?? "empty",
+              locationPoints: localEvent.viewLocationPoints.map{LocationPoint.mapToLocationPoint(localPoint: $0)},
+              obvanUnits: localEvent.viewObvanUnits.map{OBVanUnit.mapToObvan(localUnit: $0)},
+              locationID: localEvent.location?.id ?? "empty location",
+              homeClubId: localEvent.homeClub?.id ?? "no club",
+              guestClubId: localEvent.guestClub?.id ?? "no club")
+        event.ownersIds = localEvent.viewOwners.map({$0.userId})
+        event.usersIds = localEvent.viewUsers.map({$0.userId})
+        
+        return event
+    }
+}
+
 

@@ -1,14 +1,5 @@
-//
-//  LocalEvent+CoreDataProperties.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 11.10.2024.
-//
-//
-
-import Foundation
+import SwiftUI
 import CoreData
-
 
 extension LocalEvent {
 
@@ -106,13 +97,12 @@ extension LocalEvent : Identifiable {
         let date = date ?? Date()
         return BPDateFormater.format(date: date)
     }
+    var viewRemainingDate: Date {
+        date ?? Date()
+    }
     
     var viewBroadcasterName: String{
-        if let name = broadcaster?.title{
-            return name
-        } else {
-            return "N/A"
-        }
+        broadcaster?.viewTitle ?? "mystic broadcaster"
     }
     var viewUsers: [LocalUser] {
         users?.allObjects.compactMap{$0 as? LocalUser} ?? []
@@ -127,5 +117,23 @@ extension LocalEvent : Identifiable {
     
     var viewObvanUnits: [LocalOBVanUnit]{
         obVanUnits?.allObjects.compactMap{$0 as? LocalOBVanUnit} ?? []
+    }
+    
+    var viewTitle: String {
+        guard let title = location?.title else { return "N/A"}
+        return title
+    }
+    
+    var viewAddress: String {
+        guard let address = location?.address else { return "N/A"}
+        return address
+    }
+    
+    var homeImage : Image {
+        homeClub?.imageLogo?.viewImage ?? Image(systemName: "plus")
+    }
+    
+    var guestImage : Image {
+        guestClub?.imageLogo?.viewImage ?? Image(systemName: "plus")
     }
 }

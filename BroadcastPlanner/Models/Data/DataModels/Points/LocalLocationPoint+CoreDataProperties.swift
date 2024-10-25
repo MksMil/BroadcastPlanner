@@ -1,12 +1,4 @@
-//
-//  LocalLocationPoint+CoreDataProperties.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 14.10.2024.
-//
-//
-
-import Foundation
+import SwiftUI
 import CoreData
 
 
@@ -103,4 +95,53 @@ extension LocalLocationPoint {
 
 extension LocalLocationPoint : Identifiable {
 
+    var viewX: Double {
+        Double(coordinateX)
+    }
+    
+    var viewY: Double {
+        Double(coordinateY)
+    }
+    var viewRotation: Double{
+        Double(rotation)
+    }
+    var viewId: String{
+        id ?? UUID().uuidString
+    }
+    
+    var viewNumber: Int {
+        Int(number)
+    }
+    
+    var viewCameras: [Camera] {
+        (cameras?.allObjects as? [LocalCamera] ?? []).map{Camera(id: $0.viewId, optic: $0.viewOptic)}
+    }
+    
+    var viewSounds: [Sound] {
+        (sounds?.allObjects as? [LocalSound] ?? []).map{Sound(id: $0.viewId, windDefence: $0.viewWindDefence, placeType: $0.viewPlaceType)}
+    }
+    
+    var viewLights: [Light] {
+        (lights?.allObjects as? [LocalLight] ?? []).map{Light(id: $0.viewId, lightType: $0.viewLightType)}
+    }
+    
+    var viewImageId: String {
+        image?.id ?? ""
+    }
+    
+    var viewDescription: String {
+        pointDescription ?? "no description"
+    }
+    
+    var viewTask: String {
+        task ?? "no task"
+    }
+    
+    var viewUsers: [LocalUser]{
+        (user?.allObjects as? [LocalUser]) ?? []
+    }
+    
+    var viewImage: Image {
+        image?.viewImage ?? Image("cam1")
+    }
 }

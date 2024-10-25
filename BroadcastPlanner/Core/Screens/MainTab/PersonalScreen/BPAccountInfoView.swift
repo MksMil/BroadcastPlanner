@@ -120,6 +120,11 @@ struct BPAccountInfoView: View {
                     SpecializationSection(specialization: $userSpecialization,
                                           isEditSpecialization: $isEditSpecialization,
                                           isEdit: isEdit)
+                    .padding(.vertical,0)
+                    .padding(.horizontal)
+                    Divider()
+                        .padding(.vertical,0)
+                        .padding(.horizontal,20)
                     Spacer()
                 }
             }
@@ -137,7 +142,7 @@ struct BPAccountInfoView: View {
                         if !isEdit {
                             Task{
                                 updateUser()
-                                await globalStorage.saveUser(userImage: inputImage)
+//                                await globalStorage.saveUser(userImage: inputImage)
                             }
                         }
                     }label: {
@@ -152,7 +157,6 @@ struct BPAccountInfoView: View {
             .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
         }
         .onReceive(globalStorage.$localUser, perform: { user in
-            
             firstName = user.userFirstName
             lastName = user.userLastName
             email = user.userEmail
@@ -162,19 +166,6 @@ struct BPAccountInfoView: View {
             showedImage =  user.userImage
             userSpecialization = user.userSpecialization.map{$0.rawValue}
         })
-        .onAppear{
-            localUser.nsPredicate = NSPredicate(format:"id == %@", globalStorage.id)
-            guard let user = localUser.first else { return }
-            
-            firstName = user.userFirstName
-            lastName = user.userLastName
-            email = user.userEmail
-            phoneNumber = user.userPhoneNumber
-            address = user.userAddress
-           
-            showedImage =  user.userImage
-            userSpecialization = user.userSpecialization.map{$0.rawValue}
-        }
     }
     
     func updateUser(){
@@ -187,7 +178,11 @@ struct BPAccountInfoView: View {
         if let inputImage{
             globalStorage.localUser.image?.imageData = inputImage.pngData()
         }
+        
         globalStorage.container.saveContext()
+        Task{
+          await  globalStorage.saveUser(userImage: inputImage)
+        }
         
     }
 }
@@ -220,11 +215,6 @@ struct SpecializationSection: View {
                     .fontWeight(.light)
                     .foregroundStyle(Color(.systemGray))
             }
-            .padding(.vertical,0)
-            .padding(.horizontal)
-            Divider()
-                .padding(.vertical,0)
-                .padding(.horizontal,20)
         }
         .disabled(!isEdit)
     }
@@ -232,7 +222,8 @@ struct SpecializationSection: View {
 
 #Preview {
     BPAccountInfoView()
-        .environmentObject(GlobalStorage(localUser: LocalUser(context: DataManager.preview.moc),networkManager: NetworkManager()))
-        .environment(\.managedObjectContext, DataManager.preview.moc)
+        .environmentObject(GlobalStorage(localUser: LocalUser(context: DataManager.preview.moc),
+                                         networkManager: NetworkManager()))
+//        .environment(\.managedObjectContext, DataManager.preview.moc)
 }
 

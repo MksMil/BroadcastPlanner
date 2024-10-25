@@ -1,12 +1,4 @@
-//
-//  LocalClub+CoreDataProperties.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 11.10.2024.
-//
-//
-
-import Foundation
+import SwiftUI
 import CoreData
 
 
@@ -62,5 +54,30 @@ extension LocalClub {
 }
 
 extension LocalClub : Identifiable {
-
+    var viewId: String {
+        id ?? "N/A"
+    }
+    var viewContacts: String {
+        contacts ?? "N/A"
+    }
+    
+    var viewTitle: String {
+        title ?? "mystic Club"
+    }
+    
+    var viewUrl: String {
+        urlString ?? "http://..."
+    }
+    
+    var viewGuestEvents: [LocalEvent] {
+        guestEvent?.allObjects as? [LocalEvent] ?? []
+    }
+    
+    var viewHomeEvents: [LocalEvent] {
+        homeEvent?.allObjects as? [LocalEvent] ?? []
+    }
+    
+    var viewImageLogo: Image {
+        imageLogo?.viewImage ?? Image(systemName: "person.3")
+    }
 }

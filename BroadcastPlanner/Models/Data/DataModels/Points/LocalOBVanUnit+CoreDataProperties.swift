@@ -28,5 +28,30 @@ extension LocalOBVanUnit {
 }
 
 extension LocalOBVanUnit : Identifiable {
-
+    var viewId: String{
+        id ?? "N/A"
+    }
+    var viewX: Double{
+        Double(coordinateX)
+    }
+    
+    var viewY: Double{
+        Double(coordinateY)
+    }
+    
+    var viewRotation: Double {
+        Double(rotation)
+    }
+    var viewPosition: UserSpecialization{
+        UserSpecialization(rawValue: position ?? "") ?? UserSpecialization.producer
+    }
+    
+    var viewUserId: String {
+        user?.userId ?? ""
+    }
+    
+    var viewHardware: [Hardware]{
+        guard let hardware else { return [] }
+       return [Hardware(id: hardware.veiwId, envType: hardware.viewType, chanels: hardware.viewChannels)]
+     }
 }

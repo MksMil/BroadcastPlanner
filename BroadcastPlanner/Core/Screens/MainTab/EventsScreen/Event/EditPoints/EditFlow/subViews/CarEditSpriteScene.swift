@@ -104,16 +104,16 @@ class CarEditSpriteScene: SKScene{
     }
     
     func setNode(name: String){
-        guard let node = childNode(withName: name) else{ return }
-        
-        if let index = points.firstIndex(where: {$0.id == name}){
-            points[index].isEnabled.toggle()
-            if points[index].isEnabled{
-                node.run(SKAction.fadeAlpha(to: 1, duration: 1))
-            } else {
-                node.run(SKAction.fadeAlpha(to: 0.3, duration: 1))
-            }
-        }
+//        guard let node = childNode(withName: name) else{ return }
+//        
+//        if let index = points.firstIndex(where: {$0.id == name}){
+//            points[index].isEnabled.toggle()
+//            if points[index].isEnabled{
+//                node.run(SKAction.fadeAlpha(to: 1, duration: 1))
+//            } else {
+//                node.run(SKAction.fadeAlpha(to: 0.3, duration: 1))
+//            }
+//        }
     }
 }
 // MARK: - Touches

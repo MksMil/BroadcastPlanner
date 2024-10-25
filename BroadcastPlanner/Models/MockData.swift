@@ -55,7 +55,7 @@ class MockData {
             obVanId: "obvanId1",
             locationPoints: [
                 LocationPoint(id: "point1Id",
-                              userId: "mockID2",
+                              userId: ["mockID2"],
                               coordinateX: 0,
                               coordinateY: 0,
                               rotation: 0,
@@ -69,7 +69,7 @@ class MockData {
                                              placeType: .low)],
                               lights: [Light(id: "lightId1", lightType: .light)]),
                 LocationPoint(id: "point2Id",
-                              userId: "mockID1",
+                              userId: ["mockID1"],
                               coordinateX: 0,
                               coordinateY: 0,
                               rotation: 0,
@@ -88,7 +88,6 @@ class MockData {
                                    coordinateX: 0,
                                    coordinateY: 0,
                                    rotation: 0,
-                                   isEnabled: true,
                                    userId: "mockID1",
                                    hardwares: [Hardware(id: "hardId1", envType: .evs, chanels: ["1","2"])]),
                          OBVanUnit(id: "unit2",
@@ -96,7 +95,6 @@ class MockData {
                                     coordinateX: 0,
                                     coordinateY: 0,
                                     rotation: 0,
-                                    isEnabled: true,
                                     userId: "mockID2",
                                     hardwares: [Hardware(id: "hardId2", envType: .evs, chanels: ["3","4"])]),
                          OBVanUnit(id: "unit3",
@@ -104,7 +102,6 @@ class MockData {
                                     coordinateX: 0,
                                     coordinateY: 0,
                                     rotation: 0,
-                                    isEnabled: true,
                                     userId: "mockID3",
                                     hardwares: [ Hardware(id: "hardId3", envType: .evs, chanels: ["1","2","3","4"]) ]
                                   )
@@ -217,7 +214,7 @@ class MockData {
      var mockLocationPoints: [LocationPoint]  {
        [
         LocationPoint(id: "point1Id",
-                      userId: "mockID2",
+                      userId: ["mockID2"],
                       coordinateX: 0,
                       coordinateY: 0,
                       rotation: 0,
@@ -231,7 +228,7 @@ class MockData {
                                      placeType: .low)],
                       lights: [Light(id: "lightId1", lightType: .light)]),
         LocationPoint(id: "point2Id",
-                      userId: "mockID1",
+                      userId: ["mockID1"],
                       coordinateX: 0,
                       coordinateY: 0,
                       rotation: 0,

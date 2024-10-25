@@ -10,21 +10,16 @@ import CoreData
 final class GlobalStorage: ObservableObject{
     
     var networkManager: NetworkManager 
-    var settings: GlobalSettings
+//    var settings: GlobalSettings
     
     var container: DataManager = DataManager.shared
     
     @Published var id: String = ""
     @Published var localUser: LocalUser
-    
-    @Published var currentUser: BPUser?
-    @Published var userProfileImage: UIImage?
+//    @Published var userProfileImage: UIImage?
     
     //new event flag
     var newEvent: Bool = false
-
-
-    @Published var chats: [Chat] = []
     
     var cancellables: Set<AnyCancellable> = []
     
@@ -33,16 +28,11 @@ final class GlobalStorage: ObservableObject{
     init(localUser: LocalUser, networkManager: NetworkManager)  {
         self.localUser = localUser
         self.id = localUser.userId
-        self.settings = GlobalSettings()
+//        self.settings = GlobalSettings()
         self.networkManager = networkManager
         networkManager.storage = self
     }
-    
 
-    
-  
-
-    
     // MARK: - user upload
     func saveUser(userImage: UIImage?) async {
         
@@ -60,53 +50,6 @@ final class GlobalStorage: ObservableObject{
         }
     }
 }
-
-// MARK: - load images from storage
-extension GlobalStorage {
-    
-//    func loadImages() async{
-//        await networkManager.loadImagesFromGlobalStorage {  key, image in
-//            self.usersImages[key] = image
-//            if key == self.id {
-//                self.userProfileImage = image
-//            }
-//        }
-//    }
-}
-
-// MARK: - load data section
-extension GlobalStorage{
-//    func getUsers() async {
-//        guard let globUsers = await networkManager?.getUsers() else { return }
-//        users = globUsers
-//        currentUser = users.first(where: { $0.id == self.id })
-//    }
-    
-//    func getEvents() async {
-//        guard let events = await networkManager.getEvents() else { return }
-//        self.events = events
-//    }
-    
-    func getChats() async {
-        await networkManager.getNewChatMessages()
-    }
-}
-    // MARK: - Event Teamplates managment section
-//extension GlobalStorage{
-//    func getEventTemplates() async {
-//        guard let templates = await networkManager?.getEventteamplates() else { return }
-//        self.eventTemplates = templates
-//    }
-//    func appendEventPlanTeamplate(plan: BPEventPlan) async {
-//        self.eventTemplates.append(plan)
-//        await networkManager?.appendEventTemolate(plan: plan)
-//    }
-//
-//    func removeEventPlanTeamplate(plan: BPEventPlan) async {
-//        await networkManager?.removeEventPlan(plan: plan)
-//        eventTemplates.removeAll{ $0.id == plan.id }
-//    }
-//}
 
 // MARK: - Online / Offline managment for messenger usability
 extension GlobalStorage{
@@ -130,24 +73,21 @@ extension GlobalStorage {
         let event = container.fetchOrCreateEventWithId(UUID().uuidString)
         event.addToOwners(localUser)
         localUser.addToOwnedEvents(event)
-//        event.ownersIds.append(id)
-//        currentUser?.ownedEventIds.append(event.id)
-//        events.append(event)
         newEvent = true
         return event
     }
     
-    func updateEvent(_ event: Event) async {
-        removeEvent(event)
-        
-        if !event.ownersIds.contains(where: { uid in uid == id })
-        {
-            event.ownersIds.append(id)
-            currentUser?.ownedEventIds.append(event.id)
-        }
-//        events.append(event)
-        await networkManager.saveEvent(event)
-        unMarkNewEvent()
+    func updateEvent(_ event: LocalEvent) async {
+//        removeEvent(event)
+//        
+//        if !event.ownersIds.contains(where: { uid in uid == id })
+//        {
+//            event.ownersIds.append(id)
+//            currentUser?.ownedEventIds.append(event.id)
+//        }
+////        events.append(event)
+        await networkManager.saveEvent(Event.mapLocalEventToEvent(localEvent: event))
+//        unMarkNewEvent()
     }
     
     func removeEvent(at indexSet: IndexSet) async{
@@ -157,7 +97,11 @@ extension GlobalStorage {
 //        await removeEventFromGlobal(event: event)
     }
     
-    func removeEvent(_ event: Event){
+    func removeEvent(_ event: LocalEvent){
+        Task{
+            await networkManager.removeEventWithId(event.viewId)
+        }
+//        container.removeLocalEvent(event)
 //        events.removeAll {
 //            $0.id == event.id
 //        }
@@ -169,8 +113,5 @@ extension GlobalStorage {
 //            }
 //        }
     }
-    
-    func removeEventFromGlobal(event: Event) async{
-        await networkManager.removeEvent(event)
-    }
+ 
 }

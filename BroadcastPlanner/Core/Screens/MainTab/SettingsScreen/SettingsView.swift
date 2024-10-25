@@ -172,29 +172,29 @@ struct SettingsView: View {
                     }.foregroundStyle(Color.accent)
                 }
             }
-            .fullScreenCover(item: $updEP, content: { state in
-                switch state {
-                    case .email:
-                        UpdateEPView(
-                            currentValue: globalStorage.currentUser?.email ?? "",
-                            updEP: .email){ value in
-                                Task{
-                                    await sessionStorage.updateEmailPassword(newValue: value, updEp: .email)
-                                    updEP = nil
-                                }
-                            }
-                    case .password:
-                        UpdateEPView(
-                            currentValue: sessionStorage.password,
-                            updEP: .password){ value in
-                                Task{
-                                    await sessionStorage.updateEmailPassword(newValue: value, updEp: .password)
-                                    updEP = nil
-                                }
-                            }
-                }
-                
-            })
+//            .fullScreenCover(item: $updEP, content: { state in
+//                switch state {
+//                    case .email:
+//                        UpdateEPView(
+//                            currentValue: globalStorage.currentUser?.email ?? "",
+//                            updEP: .email){ value in
+//                                Task{
+//                                    await sessionStorage.updateEmailPassword(newValue: value, updEp: .email)
+//                                    updEP = nil
+//                                }
+//                            }
+//                    case .password:
+//                        UpdateEPView(
+//                            currentValue: sessionStorage.password,
+//                            updEP: .password){ value in
+//                                Task{
+//                                    await sessionStorage.updateEmailPassword(newValue: value, updEp: .password)
+//                                    updEP = nil
+//                                }
+//                            }
+//                }
+//                
+//            })
             .navigationBarBackButtonHidden()
 //        }
     }

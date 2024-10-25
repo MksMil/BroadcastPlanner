@@ -68,4 +68,5 @@ struct RootView: View {
         .environmentObject(GlobalTimer())
         .environmentObject(GlobalSettings())
         .environmentObject(GlobalSessionStorage())
+        .environmentObject(ApplicationState())
 }
