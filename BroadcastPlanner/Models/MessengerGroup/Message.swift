@@ -2,7 +2,7 @@ import Foundation
 import Firebase
 
 // MARK: - Message
-struct Message: Identifiable, Codable  {
+struct Message: Identifiable, Codable,BPDataProtocol  {
    
     var id: String
     var messageOwnerId: String

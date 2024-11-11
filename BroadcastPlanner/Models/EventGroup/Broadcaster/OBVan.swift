@@ -1,6 +1,6 @@
 import Foundation
 
-struct OBVan: Codable, Identifiable {
+struct OBVan: Codable, Identifiable,BPDataProtocol {
     var id: String
     var name: String
     var imageId: String

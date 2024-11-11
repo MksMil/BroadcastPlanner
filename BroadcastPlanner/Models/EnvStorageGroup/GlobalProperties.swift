@@ -5,9 +5,16 @@ import Foundation
 struct GlobalProperties {
  
     enum Path: String{
-        case users, events, locations, clubs, broadcasters, images
+        case users, events, locations, clubs, broadcasters, obvans, images, cameras, sounds, lights, hardwares, none
     }
     
+    enum PublishChanges: String{
+        case currentUser, users, events, locations, clubs, broadcasters, obvans, images, cameras, sounds, lights, hardwares, none
+    }
+    
+    enum ImageType: String{
+        case user, eventBackground, club
+    }
 }
 
 enum TeamLogos: String, CaseIterable, Identifiable {

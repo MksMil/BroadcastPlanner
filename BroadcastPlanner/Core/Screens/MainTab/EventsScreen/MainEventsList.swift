@@ -3,7 +3,7 @@ import CoreData
 import Combine
 
 struct MainEventsList: View {
-    @EnvironmentObject var globalStorage: GlobalStorage
+    @EnvironmentObject var session: GlobalSessionStorage
     @StateObject private var eventRouter = EventTabRouter()
     
     @FetchRequest<LocalEvent>(sortDescriptors: []) var events
@@ -17,10 +17,10 @@ struct MainEventsList: View {
                     events.nsPredicate = nil
                     return "All Events"
                 case .userOwned:
-                    events.nsPredicate = NSPredicate(format: "owners CONTAINS %@", globalStorage.localUser)
+//                    events.nsPredicate = NSPredicate(format: "owners CONTAINS %@", globalStorage.localUser)
                     return "My own Events"
                 case .userPartisipation:
-                    events.nsPredicate = NSPredicate(format: "users CONTAINS %@", globalStorage.localUser)
+//                    events.nsPredicate = NSPredicate(format: "users CONTAINS %@", globalStorage.localUser)
                     return "My participation"
             }
     }
@@ -48,14 +48,13 @@ struct MainEventsList: View {
                                 .onTapGesture {
                                     selectedEvent = event
                                     if let selectedEvent {
-                                        eventRouter.routeToEdit(event: selectedEvent)
+                                        eventRouter.routeToCreateEdit(event: selectedEvent)
                                     }
                                 }
                         }
                         .onDelete(perform: { indexSet in
                             guard let index = indexSet.first else { return }
                             let eventToDelete = events[index]
-                            globalStorage.removeEvent(eventToDelete)
                         })
                     }
                     .padding(.horizontal,8)
@@ -73,8 +72,11 @@ struct MainEventsList: View {
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button{
-//                        let event = globalStorage.createEvent()
-                        eventRouter.routeToCreate(event: globalStorage.createEvent())//event)
+//                        Task{
+//                            await globalStorage.createEvent(){ event in
+//                                eventRouter.routeToCreateEdit(event: event)
+//                            }
+//                        }
                     }label: {
                         Image(systemName: "calendar.badge.plus")
                             .resizable()
@@ -86,14 +88,16 @@ struct MainEventsList: View {
             }
             .navigationDestination(for: EventTabPath.self) { path in
                 switch path{
-                    case .create(let event):
-                        BPCreateEditEventView(event: event)
-                    case .edit(let event):
-                         BPCreateEditEventView(event: event)
-                    case .stadPointsEdit:
-                         Text("")
-                    case .carPointsEdit:
-                         Text("")
+                case .createEdit(let event):
+                    BPCreateEditEventView(event: event)
+                case .addEditLocation(let location):
+                    AddEditLocation(location: location)
+                case .addEditClub(let club):
+                    AddEditClubView(club: club,acceptAction: {_,_,_,_,_ in },cancelAction: {}, removeAction: {})
+                case .stadPointsEdit:
+                    Text("")
+                case .carPointsEdit:
+                    Text("")
                 }
             }
             
@@ -104,11 +108,9 @@ struct MainEventsList: View {
     
 
 #Preview {
-    NavigationStack{
+    
         MainEventsList()
-    }
-    .environmentObject(GlobalStorage(localUser: LocalUser(context: DataManager.shared.moc),networkManager: NetworkManager()))
+        .environmentObject(GlobalSessionStorage())
         .environmentObject(GlobalSettings())
-        .environmentObject(GlobalTimer())
         .environment(\.managedObjectContext, DataManager.shared.moc)
 }

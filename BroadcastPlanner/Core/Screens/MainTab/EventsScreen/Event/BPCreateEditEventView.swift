@@ -10,7 +10,6 @@ enum PlanSectionType: String, Identifiable {
 
 struct BPCreateEditEventView: View {
     
-    @EnvironmentObject var globalStorage: GlobalStorage
     @EnvironmentObject var eventRouter: EventTabRouter
     
     @StateObject var editManager: EditPlanPointsManager = EditPlanPointsManager()
@@ -45,7 +44,9 @@ struct BPCreateEditEventView: View {
                 
                 VStack(alignment: .center, spacing: 0){
                     //header: time, date, teams, location
-                    BPEventHeaderView(event: event)
+                    BPEventHeaderView(event: event, routeAction:{
+                        eventRouter.routeStepBack()
+                    })
                         .frame(height: 300)
                         .disabled(!editable)
                         .frame(maxWidth: .infinity)
@@ -112,7 +113,7 @@ struct BPCreateEditEventView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button{
                         Task{
-                            await  globalStorage.updateEvent(event)
+//                            await  globalStorage.updateEvent(event)
                             eventRouter.routeStepBack()
                         }
                     }label: {
@@ -123,7 +124,7 @@ struct BPCreateEditEventView: View {
                     // TODO: Delete Confirmation (Alert?)
                     Button{
                         Task{
-                            globalStorage.removeEvent(event)
+//                            globalStorage.removeEvent(event)
                             eventRouter.routeStepBack()
                         }
                     } label: {
@@ -141,10 +142,10 @@ struct BPCreateEditEventView: View {
 
 #Preview {
     NavigationStack{
-        BPCreateEditEventView(event: LocalEvent(context: DataManager.preview.moc))
+        BPCreateEditEventView(event: LocalEvent(context: DataManager.shared.moc))
     }
+        .environmentObject(GlobalSessionStorage())
         .environmentObject(GlobalSettings())
-        .environmentObject(GlobalStorage(localUser: LocalUser(context: DataManager.preview.moc), networkManager: NetworkManager()))
         .environmentObject(EventTabRouter())
-        .environmentObject(GlobalTimer())
+        .environment(\.managedObjectContext, DataManager.shared.moc)
 }

@@ -6,6 +6,7 @@ import Foundation
 final class GlobalSessionStorage: ObservableObject{
     
     @Published var userSession: SessionUser?
+    
     @Published var email: String = ""
     @Published var password: String = ""
     @Published var confirmPassword: String = ""

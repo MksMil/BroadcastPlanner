@@ -4,7 +4,6 @@ import AuthenticationServices
 
 struct SettingsView: View {
     
-    @EnvironmentObject var globalStorage: GlobalStorage
     @EnvironmentObject var sessionStorage: GlobalSessionStorage
     @EnvironmentObject var appState: ApplicationState
     @Environment(\.authorizationController) private var authorizationController
@@ -128,7 +127,6 @@ struct SettingsView: View {
                                     appState.userOnlineStatus = .offline
                                     try AuthenticationManager.shared.logOut()
                                     sessionStorage.userSession = nil
-                                    globalStorage.id = ""
                                     appState.state = .notAuthorized
 //
                                 }catch {
@@ -202,7 +200,6 @@ struct SettingsView: View {
 
 #Preview {
     SettingsView()
-        .environmentObject(GlobalStorage(localUser: LocalUser(context: DataManager.preview.moc),networkManager: NetworkManager()))
         .environmentObject(GlobalSessionStorage())
         .environmentObject(ApplicationState())
 }

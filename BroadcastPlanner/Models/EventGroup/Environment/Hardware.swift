@@ -1,7 +1,7 @@
 import Foundation
 
 // MARK: - Hardware
-struct Hardware: Codable, Identifiable {
+struct Hardware: Codable, Identifiable,BPDataProtocol {
     enum ReplayType: String, Codable, CaseIterable, Identifiable{
         var id: Self { self }
         

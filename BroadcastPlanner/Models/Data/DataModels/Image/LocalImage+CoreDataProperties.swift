@@ -1,5 +1,5 @@
-import UIKit
 import SwiftUI
+import UIKit
 import CoreData
 
 
@@ -11,12 +11,13 @@ extension LocalImage {
 
     @NSManaged public var id: String?
     @NSManaged public var imageData: Data?
+    @NSManaged public var type: String?
+    @NSManaged public var locationPoint: NSSet?
     @NSManaged public var parentClubLogo: LocalClub?
     @NSManaged public var parentLocationBackground: LocalLocation?
     @NSManaged public var parentLocationImage: LocalLocation?
     @NSManaged public var parentObVan: LocalOBVan?
     @NSManaged public var parentUser: LocalUser?
-    @NSManaged public var locationPoint: NSSet?
 
 }
 
@@ -42,11 +43,28 @@ extension LocalImage : Identifiable {
         id ?? "N/A"
     }
     
-    var viewImage: Image?{
-        if let data = imageData, let uiimage = UIImage(data: data){
+    var viewImage: Image{
+        if let data = imageData,
+           let uiimage = UIImage(data: data){
             return Image(uiImage: uiimage)
         } else {
-            return nil
+           return Image(systemName: "camera")
+        }
+    }
+    
+    var viewType: String{
+        type ?? "N/A"
+    }
+    
+    var viewResizedImage: Image {
+        if let data = imageData,
+           let uiimage = UIImage(data: data){
+            let result = ImageOptimizator.resizeImage(image: uiimage,
+                                                      targetSize: CGSize(width: 120,
+                                                                         height: 120))
+            return Image(uiImage: result)
+        } else {
+            return Image(systemName: "camera")
         }
     }
 }

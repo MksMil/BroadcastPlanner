@@ -1,6 +1,6 @@
 import Foundation
 // MARK: - Camera
-struct Camera: Codable, Identifiable {
+struct Camera: Codable, Identifiable,BPDataProtocol {
     enum OpticType: String, CaseIterable, Identifiable, Codable{
         case none = "---"
         case x14 = "x14"

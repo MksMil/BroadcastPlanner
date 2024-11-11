@@ -2,7 +2,7 @@ import Foundation
 
 //structure to generate directors group in broadcast obvan
 
-struct OBVanUnit: Codable, Identifiable{
+struct OBVanUnit: Codable, Identifiable,BPDataProtocol{
     var id: String
     var position: UserSpecialization
     var coordinateX: Double

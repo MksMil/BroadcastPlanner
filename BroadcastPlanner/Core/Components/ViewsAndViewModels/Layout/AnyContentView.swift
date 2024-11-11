@@ -195,10 +195,11 @@ public struct AnyContentViewSizePreferenceKey: PreferenceKey{
 }
 
 #Preview {
-    let user = LocalUser(context: DataManager.preview.moc)
-    user.specializations = "director,cameramen,floorManager"
     
-    return BPAccountInfoView()
-        .environmentObject(GlobalStorage(localUser: user, networkManager: NetworkManager()))
+    BPAccountInfoView(id: "123")
+        .environmentObject(GlobalSessionStorage())
 }
 
+extension GeometryProxy: @retroactive @unchecked Sendable{
+    
+}

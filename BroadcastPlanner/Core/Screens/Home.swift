@@ -3,7 +3,7 @@ import NavigationTransitions
 
 struct Home: View {
     
-    @StateObject var globalStorage: GlobalStorage
+    @EnvironmentObject var session: GlobalSessionStorage
     @State private var selection: Int = 1
    
     var body: some View {
@@ -17,7 +17,7 @@ struct Home: View {
                     .transition(.opacity)
 //                
 //                // MyInfo Screen
-                BPAccountInfoView()
+                BPAccountInfoView(id: session.userSession?.id ?? "")
                     .tabItem { Label("Info", systemImage: "figure.mind.and.body") }
                     .tag(1)
                     .padding(.bottom,1)
@@ -37,19 +37,14 @@ struct Home: View {
             }
         }
         .navigationBarBackButtonHidden()
-        .environmentObject(globalStorage)
     }
 }
 
 #Preview {
-    let moc = DataManager.shared.moc
-    
-    
-    return Home(globalStorage: GlobalStorage(localUser: LocalUser(context: moc),networkManager: NetworkManager()))
-        .environmentObject(GlobalTimer())
+   Home()
         .environmentObject(GlobalSettings())
         .environmentObject(GlobalSessionStorage())
         .environmentObject(ApplicationState())
-        .environment(\.managedObjectContext, moc)
+        .environment(\.managedObjectContext, DataManager.shared.moc)
 
 }

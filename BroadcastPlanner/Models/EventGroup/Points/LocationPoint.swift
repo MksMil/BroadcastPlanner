@@ -1,6 +1,6 @@
 import Foundation
 
-struct LocationPoint: Identifiable, Equatable,Hashable, Codable {
+struct LocationPoint: Identifiable, Equatable,Hashable, Codable,BPDataProtocol {
  
     var id: String
     var userId : [String]

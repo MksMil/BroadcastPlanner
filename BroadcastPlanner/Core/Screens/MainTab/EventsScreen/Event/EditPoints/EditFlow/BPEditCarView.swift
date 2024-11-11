@@ -6,7 +6,7 @@ struct BPEditCarView: View {
     
     @EnvironmentObject var editManager: EditPlanPointsManager
     @EnvironmentObject var settings: GlobalSettings
-    @EnvironmentObject var globalStorage: GlobalStorage
+//    @EnvironmentObject var globalStorage: GlobalStorage
     
     @Binding var event: LocalEvent
     

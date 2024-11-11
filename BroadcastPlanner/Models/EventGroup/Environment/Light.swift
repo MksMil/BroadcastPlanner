@@ -1,7 +1,7 @@
 import Foundation
 
 // MARK: - Light
-struct Light: Codable, Identifiable {
+struct Light: Codable, Identifiable,BPDataProtocol {
     enum LightType: String, CaseIterable, Identifiable, Codable{
         case none = "---"
         case light = "some Light"

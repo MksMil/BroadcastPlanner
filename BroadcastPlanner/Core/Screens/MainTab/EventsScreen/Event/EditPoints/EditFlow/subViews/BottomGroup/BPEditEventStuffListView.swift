@@ -3,7 +3,7 @@ import SwiftUI
 struct BPEditEventStuffListView: View {
     @EnvironmentObject var editManager: EditPlanPointsManager
     
-    let event: Event
+    let event: BPEvent
     @State var selectedEventPoint: LocationPoint?
     let selectAction: (LocationPoint) -> Void = { _ in }
     

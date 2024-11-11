@@ -83,10 +83,10 @@ struct UpdateEPView: View {
 
 #Preview {
     UpdateEPView(currentValue: "", updEP: .password, updateAction: {_ in })
-        .environmentObject(GlobalStorage(localUser: LocalUser(context: DataManager.preview.moc),networkManager: NetworkManager()))
+//        .environmentObject(GlobalStorage())
     
 }
 #Preview {
     UpdateEPView(currentValue: "", updEP: .email, updateAction: {_ in })
-        .environmentObject(GlobalStorage(localUser: LocalUser(context: DataManager.preview.moc),networkManager: NetworkManager()))
+//        .environmentObject(GlobalStorage())
 }

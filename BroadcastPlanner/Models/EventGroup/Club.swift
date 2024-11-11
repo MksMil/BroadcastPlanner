@@ -1,7 +1,7 @@
 import UIKit
 
-struct Club: Codable, Hashable, Identifiable{
-    let id: String
+struct Club: Codable, Hashable, Identifiable,BPDataProtocol{
+    var id: String
     var title: String
     var contacts: String = ""
     var urlString: String = ""

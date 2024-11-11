@@ -47,8 +47,8 @@ class MockData {
     }
     
     // MARK: - Mock Event
-     var mockEvents: [Event] {
-        [Event(
+     var mockEvents: [BPEvent] {
+        [BPEvent(
             id: "firstEventId",
             date: Date(timeIntervalSince1970: 0),
             broadcasterId: "Engener Service",
@@ -110,7 +110,7 @@ class MockData {
             homeClubId: "dynamoId",
             guestClubId: "shakhtarId"
         ),
-         Event(
+         BPEvent(
              id: "secondEventId",
              date: Date(timeIntervalSince1970: 10000),
              broadcasterId: "Soft Group",
@@ -121,7 +121,7 @@ class MockData {
              homeClubId: "VorsklaId",
              guestClubId: "KolosId"
          ),
-         Event(
+         BPEvent(
              id: "thirdEventId",
              date: Date(timeIntervalSince1970: 20000),
              broadcasterId: "1+1",
@@ -137,7 +137,8 @@ class MockData {
     
     // MARK: - Mock Broadcaster
      var mockBroadcasters: [Broadcaster]  {
-        [Broadcaster(title: "Engener Service",
+         [Broadcaster(id: UUID().uuidString,
+                      title: "Engener Service",
                      obVans: [OBVan(id: "obvanId1",
                                     name: "StarBird",
                                     imageId: "StarBirdImaageID"),
@@ -145,12 +146,14 @@ class MockData {
                                     name: "BlueBird",
                                     imageId: "BlueBirdImageID")],
                      eventIds: ["firstEventId"]),
-         Broadcaster(title: "Soft Group",
+         Broadcaster(id: UUID().uuidString,
+                     title: "Soft Group",
                      obVans: [OBVan(id: "obvanId3",
                                     name: "SGObvan1",
                                     imageId: "SGObvan1Image1")],
                      eventIds: ["firstEventId"]),
-         Broadcaster(title: "1+1",
+         Broadcaster(id: UUID().uuidString,
+                     title: "1+1",
                      obVans: [OBVan(id: "obvanId4",
                                     name: "StarMedia",
                                     imageId: "StarMediaImage1")],

@@ -5,9 +5,6 @@ struct AddEditClubView: View {
     
     let club: LocalClub
     
-    @EnvironmentObject var globalStorage: GlobalStorage
-    @Environment(\.dismiss) var dismiss
-    
     @State var selectedPhoto: PhotosPickerItem?
     @State var showedImage: Image = Image(systemName: "plus")
     @State var uiimage: UIImage?
@@ -17,24 +14,13 @@ struct AddEditClubView: View {
     
     @State var location: LocalLocation?
     
+    let acceptAction: (String, UIImage?,String,String, LocalLocation?)->Void
+    let cancelAction: ()->Void
+    let removeAction: ()->Void
+//    let saveAction: (String, UIImage?,String,String, LocalLocation?)->Void
+//    let removeAction: ()->Void
+    
     func updateClub(){
-        club.title = title
-        if let uiimage{
-            if let localImage = club.imageLogo{
-                globalStorage.container.updateLocalImage(localImage, withImage: uiimage)
-            } else {
-                let localimage = globalStorage.container.createOrUpdateLocalImageWithId(UUID().uuidString, withImage: uiimage)
-                club.imageLogo = localimage
-                localimage.parentClubLogo = club
-            }
-        }
-        club.contacts = contacts
-        club.urlString = urlString
-        if let location {
-            club.homeLocation = location
-            location.homeClub = club
-        }
-        globalStorage.container.saveContext()
     }
     
     var body: some View {
@@ -42,7 +28,7 @@ struct AddEditClubView: View {
             HStack{
                 //cancel
                 Button {
-                    dismiss()
+                    cancelAction()
                 } label: {
                     Image(systemName: "xmark")
                         .resizable()
@@ -65,12 +51,13 @@ struct AddEditClubView: View {
                 }
                 .frame(maxWidth: .infinity,
                        alignment: .leading)
-                
-                
+                Button("Remove Club"){
+                    removeAction()
+                }
+                .buttonStyle(.borderedProminent)
                 //save
                 Button{
-                    updateClub()
-                    dismiss()
+                    acceptAction(title, uiimage, contacts,urlString,location)
                 } label: {
                     Image(systemName: "checkmark")
                         .resizable()
@@ -89,44 +76,47 @@ struct AddEditClubView: View {
                 
                 .frame(maxWidth: .infinity, alignment: .trailing)
             }
-            .padding(.horizontal,10)
+//            .padding(.horizontal,10)
             .padding(.top, 10)
             .font(.title3)
             
-            //photopicker -> logoImage -> LocalImage -> map
-            PhotosPicker(selection: $selectedPhoto,
-                         matching: .images,
-                         photoLibrary: .shared()) {
-                showedImage
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 70,height: 70)
-//                    .padding(30)
-                    .background{
-                        Rectangle()
-                            .fill(.ultraThickMaterial)
-                            .overlay {
-                                Rectangle()
-                                    .stroke(.gray,
-                                            lineWidth: 2)
-                            }
-                    }
-            }
-            //club name -> title
             
-            TextField("enter club name", text: $title)
-                .font(.title)
-                .textFieldStyle(.roundedBorder)
+            HStack{
+                //photopicker -> logoImage -> LocalImage -> map
+                PhotosPicker(selection: $selectedPhoto,
+                             matching: .images,
+                             photoLibrary: .shared()) {
+                    showedImage
+                        .resizable()
+                        .frame(width: 60,height: 60)
+//                        .aspectRatio(contentMode: .fit)
+                        .scaledToFit()
+                        .padding(2)
+                        .background{
+                            Rectangle()
+                                .fill(.ultraThickMaterial)
+                                .overlay {
+                                    Rectangle()
+                                        .stroke(.gray,
+                                                lineWidth: 2)
+                                }
+                        }
+                }
+                //club name -> title
                 
+                TextField("enter club name", text: $title)
+                    .font(.title)
+                    .textFieldStyle(.roundedBorder)
+            }
             
             //contacts
             TextField("enter contact info", text: $contacts)
-                .font(.title)
+                .font(.headline)
                 .textFieldStyle(.roundedBorder)
                 
             //url
             TextField("enter url", text: $urlString)
-                .font(.title)
+                .font(.headline)
                 .textFieldStyle(.roundedBorder)
                 
             //id = UUID().uuidString
@@ -150,6 +140,8 @@ struct AddEditClubView: View {
             
             //location ? add location?
             Spacer()
+
+            
         }
         .padding()
         .onChange(of: selectedPhoto) { value in
@@ -164,11 +156,16 @@ struct AddEditClubView: View {
                 }
             }
         }
+        .onAppear {
+            title = club.viewTitle
+            contacts = club.viewContacts
+            urlString = club.viewUrl
+            showedImage = club.viewImageLogo
+            location = club.homeLocation
+        }
     }
 }
 
 #Preview {
-    AddEditClubView(club: LocalClub(context: DataManager.preview.moc))
-        .environmentObject(GlobalStorage(localUser: LocalUser(context: DataManager.preview.moc),
-                                         networkManager: NetworkManager()))
+    AddEditClubView(club: LocalClub(context: DataManager.preview.moc), acceptAction: {_,_,_,_,_ in }, cancelAction: {}, removeAction: {})
 }

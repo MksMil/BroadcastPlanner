@@ -20,15 +20,14 @@ class ApplicationState: ObservableObject{
 @main
 struct BroadcastPlannerApp: App {
     
-    
-    
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @Environment(\.scenePhase) var scenePhase
-    @StateObject var appState: ApplicationState = ApplicationState()
-    @StateObject private var sessionStorage: GlobalSessionStorage = GlobalSessionStorage()
     
+    @StateObject var appState: ApplicationState = ApplicationState()
+    
+    @StateObject private var sessionStorage: GlobalSessionStorage = GlobalSessionStorage()
+//    @StateObject private var globalStorage: GlobalStorage = GlobalStorage()
     @StateObject private var globalSettings = GlobalSettings()
-    @StateObject private var globalTimer = GlobalTimer()
     
     var body: some Scene {
                 
@@ -51,9 +50,9 @@ struct BroadcastPlannerApp: App {
                         }
                     }
                 })
+//                .environmentObject(globalStorage)
                 .environmentObject(sessionStorage)
                 .environmentObject(globalSettings)
-                .environmentObject(globalTimer)
                 .environmentObject(appState)
         }
     }

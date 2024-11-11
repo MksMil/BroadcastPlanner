@@ -1,5 +1,5 @@
-import UIKit
 import SwiftUI
+import UIKit
 import CoreData
 
 
@@ -14,7 +14,7 @@ extension LocalLocation {
     @NSManaged public var title: String?
     @NSManaged public var background: LocalImage?
     @NSManaged public var events: NSSet?
-    @NSManaged public var homeClub: LocalClub?
+    @NSManaged public var homeClub: NSSet?
     @NSManaged public var images: NSSet?
 
 }
@@ -33,6 +33,23 @@ extension LocalLocation {
 
     @objc(removeEvents:)
     @NSManaged public func removeFromEvents(_ values: NSSet)
+
+}
+
+// MARK: Generated accessors for homeClub
+extension LocalLocation {
+
+    @objc(addHomeClubObject:)
+    @NSManaged public func addToHomeClub(_ value: LocalClub)
+
+    @objc(removeHomeClubObject:)
+    @NSManaged public func removeFromHomeClub(_ value: LocalClub)
+
+    @objc(addHomeClub:)
+    @NSManaged public func addToHomeClub(_ values: NSSet)
+
+    @objc(removeHomeClub:)
+    @NSManaged public func removeFromHomeClub(_ values: NSSet)
 
 }
 
@@ -55,14 +72,14 @@ extension LocalLocation {
 
 extension LocalLocation : Identifiable {
     var viewId: String {
-        id ?? "N/A"
+        id ?? UUID().uuidString
     }
     var viewAddress: String {
-        address ?? "somewhere on Earth"
+        address ?? ""
     }
     
-    var viwTitle: String {
-        title ?? "mystic place"
+    var viewTitle: String {
+        title ?? ""
     }
     
     var viewBackground: UIImage {

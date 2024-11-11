@@ -5,7 +5,7 @@ struct BPEditEventBottomGroup: View {
     @EnvironmentObject var editManager: EditPlanPointsManager
     
 //    var type: PlanSectionType
-    let event: Event
+    let event: BPEvent
     @Binding var isEdit: Bool
     
     var body: some View {

@@ -35,6 +35,15 @@
     "ADD" : {
 
     },
+    "Add background photos" : {
+
+    },
+    "Add event background" : {
+
+    },
+    "Add Location" : {
+
+    },
     "BP" : {
 
     },
@@ -74,10 +83,16 @@
     "email: %@" : {
 
     },
+    "enter address" : {
+
+    },
     "enter club name" : {
 
     },
     "enter contact info" : {
+
+    },
+    "enter title" : {
 
     },
     "enter url" : {
@@ -90,9 +105,6 @@
 
     },
     "Forget password" : {
-
-    },
-    "Hello, World!" : {
 
     },
     "Hours" : {
@@ -108,6 +120,12 @@
 
     },
     "Link with Google" : {
+
+    },
+    "Location Address" : {
+
+    },
+    "Location Title" : {
 
     },
     "LOGO" : {
@@ -140,6 +158,9 @@
     "password: %@" : {
 
     },
+    "Permanently erase the items in the trash?" : {
+
+    },
     "Press me" : {
 
     },
@@ -147,6 +168,15 @@
 
     },
     "regularMaterial" : {
+
+    },
+    "Remove Club" : {
+
+    },
+    "Remove location" : {
+
+    },
+    "Remove Photo" : {
 
     },
     "Save" : {

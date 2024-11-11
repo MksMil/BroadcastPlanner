@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23231" systemVersion="23H124" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23507" systemVersion="24B83" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="LocalBroadcaster" representedClassName=".LocalBroadcaster" syncable="YES">
         <attribute name="id" optional="YES" attributeType="String"/>
         <attribute name="title" optional="YES" attributeType="String"/>
@@ -43,6 +43,7 @@
     <entity name="LocalImage" representedClassName=".LocalImage" syncable="YES">
         <attribute name="id" optional="YES" attributeType="String"/>
         <attribute name="imageData" optional="YES" attributeType="Binary"/>
+        <attribute name="type" optional="YES" attributeType="String"/>
         <relationship name="locationPoint" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LocalLocationPoint" inverseName="image" inverseEntity="LocalLocationPoint"/>
         <relationship name="parentClubLogo" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalClub" inverseName="imageLogo" inverseEntity="LocalClub"/>
         <relationship name="parentLocationBackground" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalLocation" inverseName="background" inverseEntity="LocalLocation"/>
@@ -61,7 +62,7 @@
         <attribute name="title" optional="YES" attributeType="String"/>
         <relationship name="background" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalImage" inverseName="parentLocationBackground" inverseEntity="LocalImage"/>
         <relationship name="events" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LocalEvent" inverseName="location" inverseEntity="LocalEvent"/>
-        <relationship name="homeClub" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalClub" inverseName="homeLocation" inverseEntity="LocalClub"/>
+        <relationship name="homeClub" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LocalClub" inverseName="homeLocation" inverseEntity="LocalClub"/>
         <relationship name="images" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LocalImage" inverseName="parentLocationImage" inverseEntity="LocalImage"/>
     </entity>
     <entity name="LocalLocationPoint" representedClassName=".LocalLocationPoint" syncable="YES">

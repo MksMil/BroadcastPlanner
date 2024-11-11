@@ -1,6 +1,6 @@
 import Foundation
 
-class Event: Identifiable, Codable {
+class BPEvent: Identifiable, Codable,BPDataProtocol {
     var id: String
     
     //event date
@@ -50,8 +50,8 @@ class Event: Identifiable, Codable {
 }
 
 // MARK: - Hashable/Equatable
-extension Event: Hashable, Equatable {
-    static func == (lhs: Event, rhs: Event) -> Bool {
+extension BPEvent: Hashable, Equatable {
+    static func == (lhs: BPEvent, rhs: BPEvent) -> Bool {
         lhs.id == rhs.id
     }
     func hash(into hasher: inout Hasher) {
@@ -60,9 +60,9 @@ extension Event: Hashable, Equatable {
 }
 
 // MARK: - map LocalEvent to Event
-extension Event {
-    static func mapLocalEventToEvent(localEvent: LocalEvent) -> Event {
-        let event = Event(id: localEvent.viewId,
+extension BPEvent {
+    static func mapLocalEventToEvent(localEvent: LocalEvent) -> BPEvent {
+        let event = BPEvent(id: localEvent.viewId,
               date: localEvent.viewRemainingDate,
               broadcasterId: localEvent.broadcaster?.id ?? "Empty",
               obVanId: localEvent.obVan?.id ?? "empty",

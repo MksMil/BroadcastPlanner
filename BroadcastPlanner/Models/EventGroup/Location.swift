@@ -1,6 +1,6 @@
 import Foundation
 
-class Location: Identifiable,Codable{
+class Location: Identifiable,Codable,BPDataProtocol{
     var id: String
     var title: String
     var address: String

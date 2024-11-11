@@ -2,7 +2,7 @@ import SwiftUI
 import Combine
 
 struct MainEventListCell: View {
-    @EnvironmentObject var globalTimer: GlobalTimer
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     var event: LocalEvent
     @State private var eventDate: String = ""
     @State private var counter: String = "counter here"
@@ -139,7 +139,7 @@ struct MainEventListCell: View {
         .onAppear{
             update()
         }
-        .onReceive(globalTimer.timer, perform: { _ in
+        .onReceive(timer, perform: { _ in
             updateCounter()
         })
     }
@@ -148,20 +148,12 @@ struct MainEventListCell: View {
 }
 
 #Preview{
-    let moc = DataManager.preview.moc
-    let user = LocalUser(context: moc)
-    
-    return NavigationStack{
+    NavigationStack{
         MainEventsList()
     }
-    .environmentObject(GlobalStorage(localUser: user,
-                                     networkManager: NetworkManager()))
-    .environmentObject(GlobalSettings())
-    .environmentObject(GlobalTimer())
-//    .environment(\.managedObjectContext, moc)
+
 }
 
 //#Preview {
 //    MainEventListCell(event: LocalEvent(context: DataManager.preview.moc))
-//        .environmentObject(GlobalTimer())
 //}

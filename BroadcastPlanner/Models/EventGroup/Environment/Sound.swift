@@ -1,5 +1,5 @@
 // MARK: - Mic
-struct Sound: Codable, Identifiable {
+struct Sound: Codable, Identifiable,BPDataProtocol {
     enum WindDefence: String, Codable,CaseIterable, Identifiable{
         case none = "---"
         case dog = "Dog"

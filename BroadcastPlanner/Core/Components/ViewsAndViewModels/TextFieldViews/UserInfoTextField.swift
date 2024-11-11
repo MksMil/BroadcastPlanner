@@ -20,11 +20,18 @@ struct UserInfoTextField: View {
             // TODO: Text content type?
             TextField("", text: $text, prompt: Text(prompt), axis: axis)
                 .autocorrectionDisabled()
+                .font(.title)
                 .padding(.vertical,4)
                 .padding(.horizontal,5)
                 .background {
                     RoundedRectangle(cornerRadius: 5.0).fill(.ultraThinMaterial).opacity(isEdit ? 0.5 : 0)
                 }
         }
+        .frame(height: 40)
     }
+}
+
+#Preview {
+    BPAccountInfoView(id: "123")
+        .environment(\.managedObjectContext, DataManager.shared.moc)
 }

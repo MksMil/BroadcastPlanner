@@ -3,7 +3,7 @@ import FirebaseFirestore
 import FirebaseFirestoreSwift
 import CoreData
 
-struct BPUser: Identifiable, Codable {
+struct BPUser: Identifiable, Codable,BPDataProtocol {
     
     var id: String
     
