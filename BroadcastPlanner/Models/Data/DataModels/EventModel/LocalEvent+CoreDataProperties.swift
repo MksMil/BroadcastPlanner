@@ -130,10 +130,10 @@ extension LocalEvent : Identifiable {
     }
     
     var homeImage : Image {
-        homeClub?.imageLogo?.viewImage ?? Image(systemName: "plus")
+        homeClub?.imageLogo?.mediumImage ?? Image(systemName: "plus")
     }
     
     var guestImage : Image {
-        guestClub?.imageLogo?.viewImage ?? Image(systemName: "plus")
+        guestClub?.imageLogo?.mediumImage ?? Image(systemName: "plus")
     }
 }

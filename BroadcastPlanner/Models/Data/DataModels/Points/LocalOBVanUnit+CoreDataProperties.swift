@@ -54,4 +54,9 @@ extension LocalOBVanUnit : Identifiable {
         guard let hardware else { return [] }
        return [Hardware(id: hardware.veiwId, envType: hardware.viewType, chanels: hardware.viewChannels)]
      }
+//    
+//    var viewLocalHardware: [LocalHardware]{
+//        guard let hardware else { return [] }
+//       return [Hardware(id: hardware.veiwId, envType: hardware.viewType, chanels: hardware.viewChannels)]
+//     }
 }

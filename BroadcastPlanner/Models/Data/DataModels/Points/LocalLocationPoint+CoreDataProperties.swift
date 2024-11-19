@@ -117,13 +117,26 @@ extension LocalLocationPoint : Identifiable {
         (cameras?.allObjects as? [LocalCamera] ?? []).map{Camera(id: $0.viewId, optic: $0.viewOptic)}
     }
     
+    var viewLocalCameras: [LocalCamera]{
+        cameras?.allObjects as? [LocalCamera] ?? []
+    }
+    
     var viewSounds: [Sound] {
         (sounds?.allObjects as? [LocalSound] ?? []).map{Sound(id: $0.viewId, windDefence: $0.viewWindDefence, placeType: $0.viewPlaceType)}
+    }
+    
+    var viewLocalSounds: [LocalSound] {
+        sounds?.allObjects as? [LocalSound] ?? []
     }
     
     var viewLights: [Light] {
         (lights?.allObjects as? [LocalLight] ?? []).map{Light(id: $0.viewId, lightType: $0.viewLightType)}
     }
+    
+    var viewLocalLights: [LocalLight] {
+        lights?.allObjects as? [LocalLight] ?? []
+    }
+
     
     var viewImageId: String {
         image?.id ?? ""
@@ -142,6 +155,6 @@ extension LocalLocationPoint : Identifiable {
     }
     
     var viewImage: Image {
-        image?.viewImage ?? Image("cam1")
+        image?.smallImage ?? Image("cam1")
     }
 }

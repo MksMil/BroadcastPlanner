@@ -44,7 +44,8 @@ struct BPCreateEditEventView: View {
                 
                 VStack(alignment: .center, spacing: 0){
                     //header: time, date, teams, location
-                    BPEventHeaderView(event: event, routeAction:{
+                    BPEventHeaderView(event: event,
+                                      routeAction:{
                         eventRouter.routeStepBack()
                     })
                         .frame(height: 300)
@@ -110,10 +111,12 @@ struct BPCreateEditEventView: View {
             .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
             .toolbar {
                                 if editable{
+                                    //save event and dismiss screen
                 ToolbarItem(placement: .confirmationAction) {
                     Button{
                         Task{
-//                            await  globalStorage.updateEvent(event)
+                            DataManager.shared.saveContext(type: .main,
+                                                           publish: .events, id: [])
                             eventRouter.routeStepBack()
                         }
                     }label: {
@@ -124,7 +127,11 @@ struct BPCreateEditEventView: View {
                     // TODO: Delete Confirmation (Alert?)
                     Button{
                         Task{
-//                            globalStorage.removeEvent(event)
+                            DataManager.shared.removeLocalEvent(event,
+                                                                inContext: .main)
+                            DataManager.shared.saveContext(type: .main,
+                                                           publish: .events,
+                                                           id: [])
                             eventRouter.routeStepBack()
                         }
                     } label: {

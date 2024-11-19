@@ -78,6 +78,6 @@ extension LocalClub : Identifiable {
     }
     
     var viewImageLogo: Image {
-        imageLogo?.viewImage ?? Image(systemName: "person.3")
+        imageLogo?.smallImage ?? Image(systemName: "person.3")
     }
 }

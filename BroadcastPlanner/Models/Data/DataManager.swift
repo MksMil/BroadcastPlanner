@@ -109,7 +109,12 @@ extension DataManager {
 
     func removeLocalUser(_ localUser: LocalUser, inContext contextType: ContextType) {
         let context = contextFromType(contextType)
-        context.perform { context.delete(localUser) }
+        context.perform {
+            if let imageToRemove = localUser.image{
+                self.removeLocalImage(imageToRemove, inContext: contextType)
+            }
+            context.delete(localUser)
+        }
     }
 }
 
@@ -200,12 +205,28 @@ extension DataManager {
 
     func removeLocalEvent(_ localEvent: LocalEvent, inContext contextType: ContextType) {
         let context = contextFromType(contextType)
-        context.perform{ context.delete(localEvent) }
+        context.perform{
+            for locationPoint in localEvent.viewLocationPoints {
+                self.removeLocalLocationPoint(locationPoint, inContext: contextType)
+            }
+            for unit in localEvent.viewObvanUnits {
+                self.removeLocalObvanUnit(unit, inContext: contextType)
+            }
+            context.delete(localEvent) }
     }
 }
 
 // MARK: - Image CRUD
 extension DataManager {
+    
+    func fetchImagesByType(_ type: String, inContext contextType: ContextType) async -> [LocalImage]{
+        let request = LocalImage.fetchRequest()
+        request.predicate = NSPredicate(format: "typr == %@", type)
+        let context = contextFromType(contextType)
+        return await context.perform {
+            return (try? context.fetch(request)) ?? []
+        }
+  }
 
     func fetchOrCreateImageWithId(_ id: String, inContext contextType: ContextType) -> LocalImage {
         let context = contextFromType(contextType)
@@ -225,20 +246,18 @@ extension DataManager {
     func createOrUpdateLocalImageWithId(_ id: String, withImage image: UIImage,
                                         andType type: String, inContext contextType: ContextType) -> LocalImage {
         let localImage = fetchOrCreateImageWithId(id, inContext: contextType)
+        let _ = ImagesManager().saveResizedImages(image: image, id: id)
         assignType(type: type, toLocalImage: localImage, inContext: contextType)
-        updateLocalImage(localImage, withImage: image, inContext: contextType)
         return localImage
     }
 
-    func updateLocalImage(_ localImage: LocalImage, withImage image: UIImage, inContext contextType: ContextType) {
-        let context = contextFromType(contextType)
-        context.performAndWait{
-            if let data = image.pngData() {
-                localImage.imageData = data
-            }
-        }
+    func createOrUpdateLocalImageWithImageData(imageData: ImageData, withImage image: UIImage, inContext contextType: ContextType) -> LocalImage{
+        let localImage = fetchOrCreateImageWithId(imageData.id, inContext: contextType)
+        let _ = ImagesManager().saveResizedImages(image: image, id: imageData.id)
+        assignType(type: imageData.type, toLocalImage: localImage, inContext: contextType)
+        return localImage
     }
-
+    
     func assignType(type: String, toLocalImage image: LocalImage, inContext contextType: ContextType) {
         let context = contextFromType(contextType)
         context.performAndWait{
@@ -259,7 +278,10 @@ extension DataManager {
 
     func removeLocalImage(_ localImage: LocalImage, inContext contextType: ContextType) {
         let context = contextFromType(contextType)
-        context.perform { context.delete(localImage) }
+        context.perform {
+            let _ = ImagesManager().removeImageFromDevice(withId: localImage.viewId)
+            context.delete(localImage)
+        }
     }
 }
 
@@ -317,7 +339,15 @@ extension DataManager {
 
     func removeLocalLocation(_ location: LocalLocation, inContext contextType: ContextType) {
         let context = contextFromType(contextType)
-        context.perform { context.delete(location) }
+        context.perform {
+            for localImage in location.viewLocalImages{
+                self.removeLocalImage(localImage, inContext: contextType)
+            }
+            if let localImage = location.background{
+                self.removeLocalImage(localImage, inContext: contextType)
+            }
+            context.delete(location)
+        }
     }
 }
 
@@ -374,7 +404,12 @@ extension DataManager {
 
     func removeLocalBroadcaster(_ broadcaster: LocalBroadcaster, inContext contextType: ContextType) {
         let context = contextFromType(contextType)
-        context.perform { context.delete(broadcaster) }
+        context.perform {
+            for obvan in broadcaster.viewCars{
+                self.removeLocalOBVan(localObvan: obvan, inContext: contextType)
+            }
+            context.delete(broadcaster)
+        }
     }
 
     //obVan
@@ -416,8 +451,21 @@ extension DataManager {
         request.predicate = NSPredicate(format: "id == %@", obvan.id)
         context.perform {
             if let obvanToRemove = try? context.fetch(request).first {
+                if let localImage = obvanToRemove.image{
+                    self.removeLocalImage(localImage, inContext: contextType)
+                }
                 context.delete(obvanToRemove)
             }
+        }
+    }
+    
+    func removeLocalOBVan(localObvan: LocalOBVan, inContext contextType: ContextType){
+        let context = contextFromType(contextType)
+        context.perform {
+            if let localImage = localObvan.image{
+                self.removeLocalImage(localImage, inContext: contextType)
+            }
+            context.delete(localObvan)
         }
     }
 
@@ -427,6 +475,9 @@ extension DataManager {
         request.predicate = NSPredicate(format: "id == %@", id)
         context.perform {
             if let obvanToRemove = try? context.fetch(request).first {
+                if let localImage = obvanToRemove.image{
+                    self.removeLocalImage(localImage, inContext: contextType)
+                }
                 context.delete(obvanToRemove)
             }
         }
@@ -435,6 +486,14 @@ extension DataManager {
 
 // MARK: - Club CRUD
 extension DataManager {
+    
+    func fetchAllLocalClubs(inContext contextType: ContextType) -> [LocalClub]{
+        let context = contextFromType(contextType)
+        let request = LocalClub.fetchRequest()
+        return context.performAndWait {
+            return (try? context.fetch(request)) ?? []
+        }
+    }
 
     func fetchOrCreateClubWithId(_ id: String, inContext contextType: ContextType) -> LocalClub {
         let context = contextFromType(contextType)
@@ -484,7 +543,7 @@ extension DataManager {
                 club.title = title
                 if let uiimage {
                     if let localImage = club.imageLogo {
-                        localImage.imageData = uiimage.pngData()
+                        localImage.uploadImage(uiimage: uiimage)
                     } else {
                         let localImage =
                             self.createOrUpdateLocalImageWithId(
@@ -492,6 +551,7 @@ extension DataManager {
                                 withImage: uiimage,
                                 andType: GlobalProperties.ImageType.club.rawValue,
                                 inContext: contextType)
+                        localImage.uploadImage(uiimage: uiimage)
                         club.imageLogo = localImage
                         localImage.parentClubLogo = club
                     }
@@ -519,7 +579,12 @@ extension DataManager {
 
     func removeLocalClub(localClub: LocalClub, inContext contextType: ContextType) {
         let context = contextFromType(contextType)
-        context.perform { context.delete(localClub) }
+        context.perform {
+            if let localImage = localClub.imageLogo{
+                self.removeLocalImage(localImage, inContext: contextType)
+            }
+            context.delete(localClub)
+        }
     }
 }
 
@@ -786,7 +851,23 @@ extension DataManager {
 
     func removeLocalLocationPoint(_ localPoint: LocalLocationPoint, inContext contextType: ContextType) {
         let context = contextFromType(contextType)
-        context.perform { context.delete(localPoint)}
+        context.perform {
+            for camera in localPoint.viewLocalCameras {
+                self.removeLocalCamera(camera, inContext: contextType)
+            }
+            
+            for sound in localPoint.viewLocalSounds {
+                self.removeLocalSound(sound, inContext: contextType)
+            }
+            
+            for light in localPoint.viewLocalLights{
+                self.removeLocalLight(light, inContext: contextType)
+            }
+            if let loacImage = localPoint.image{
+                self.removeLocalImage(loacImage, inContext: contextType)
+            }
+            context.delete(localPoint)
+        }
     }
 
     //Obvan unit
@@ -848,6 +929,9 @@ extension DataManager {
     func removeLocalObvanUnit(_ unit: LocalOBVanUnit, inContext contextType: ContextType) {
         let context = contextFromType(contextType)
         context.perform {
+            if let hardware = unit.hardware{
+                self.removeLocalHardware(hardware, inContext: contextType)
+            }
             context.delete(unit)
         }
     }

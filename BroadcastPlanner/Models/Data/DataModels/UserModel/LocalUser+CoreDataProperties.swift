@@ -133,8 +133,11 @@ extension LocalUser : Identifiable {
     
     //an image or system Person.circle symbol
     var userImage: Image{
-        guard let data = image?.imageData, let image = UIImage(data: data) else { return Image(systemName: "person.circle")}
-        return Image(uiImage: image)
+        if let image {
+            return image.mediumImage
+        } else {
+            return Image(systemName: "person.circle")
+        }
     }
     //make an array of UserSpecialization values from String value (with "," strategy)
     var userSpecialization: [UserSpecialization] {

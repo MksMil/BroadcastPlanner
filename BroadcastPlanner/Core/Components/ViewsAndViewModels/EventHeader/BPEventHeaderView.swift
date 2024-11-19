@@ -4,6 +4,7 @@ import UIKit
 struct BPEventHeaderView: View {
     @EnvironmentObject var router: EventTabRouter
     @EnvironmentObject var settings: GlobalSettings
+    
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     let logoSize: Double = 100
@@ -20,14 +21,19 @@ struct BPEventHeaderView: View {
     
     @State private var selectedTime: (Int,Int) = (1,1)
     
+    
+    @State private var homeImage: Image
+    @State private var guestImage: Image
     @State var stadium: String = "stadium"
     @State private var address: String = "address"
     
     @State private var isPresentedLogosSheet: Bool = false
-    @State private var isPresentedLocationSheet: Bool = false
+    @State private var iSelectedHomeTeamLogo: Bool = false
+
     @State private var isPresentedDatePicker: Bool = false
     @State private var isPresentedTimePicker: Bool = false
-    @State private var iSelectedHomeTeamLogo: Bool = false
+
+    @State private var isPresentedLocationSheet: Bool = false
     
     @Namespace var ns
     @Namespace var min
@@ -40,12 +46,10 @@ struct BPEventHeaderView: View {
     
     init(event: LocalEvent, routeAction: @escaping ()->Void) {
         self.event = event
-//        self._homeClub = State(initialValue: event.homeClub)
-//        self._guestClub = State(initialValue: event.guestClub)
         self._eventDate = State(initialValue: event.viewRemainingDate)
         self.routeAction = routeAction
-//        self._stadium = State(initialValue: event.eventLocation.title.wrappedValue)
-//        self._address = State(initialValue: event.eventLocation.address.wrappedValue)
+        self._homeImage = State(wrappedValue: event.homeImage)
+        self._guestImage = State(wrappedValue: event.guestImage)
     }
  
     var body: some View {
@@ -57,7 +61,7 @@ struct BPEventHeaderView: View {
                 
                 HStack(alignment: .top){
                         
-                    LogoImageView(image: Image("Dynamo"),
+                    LogoImageView(image: homeImage,
                                   logoSize: logoSize)
                             .onTapGesture {
                                 iSelectedHomeTeamLogo = true
@@ -88,7 +92,7 @@ struct BPEventHeaderView: View {
                                 }
                         }
                         
-                        LogoImageView(image: Image("Shakhtar"), logoSize: logoSize)
+                    LogoImageView(image: guestImage, logoSize: logoSize)
                             .onTapGesture {
                                 iSelectedHomeTeamLogo = false
                                 isPresentedLogosSheet = true
@@ -150,7 +154,18 @@ struct BPEventHeaderView: View {
                     isPresentedLogosSheet.toggle()
                 } acceptAction: { selectedClub in
                     //club accepted
+                    if iSelectedHomeTeamLogo{
+                        event.homeClub = selectedClub
+                        homeImage = selectedClub.imageLogo?.mediumImage ?? Image(systemName: "plus")
+                        if event.location == nil {
+                            event.location = selectedClub.homeLocation
+                        }
+                    } else {
+                        event.guestClub = selectedClub
+                        guestImage = selectedClub.imageLogo?.mediumImage ?? Image(systemName: "plus")
+                    }
                     isPresentedLogosSheet.toggle()
+                    DataManager.shared.saveContext(type: .main, publish: .events, id: [])
                 } createNewClubAction: {
                     isPresentedLogosSheet.toggle()
                     let newClub = DataManager.shared.fetchOrCreateClubWithId(UUID().uuidString, inContext: .main)
@@ -165,7 +180,12 @@ struct BPEventHeaderView: View {
             })
             // TODO: add new location button and flow
             .sheet(isPresented: $isPresentedLocationSheet, content: {
-                LocationSheetView(cancelAction: {}, saveAction: {})
+                LocationSheetView(cancelAction: {
+                    isPresentedLocationSheet.toggle()
+                }, saveAction: {localLocation in
+                    event.location = localLocation
+                    isPresentedLocationSheet.toggle()
+                })
                 .padding()
                 .presentationDetents([.fraction(0.6)])
             })

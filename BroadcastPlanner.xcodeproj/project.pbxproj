@@ -73,6 +73,7 @@
 		29AE68742BE24F9300DE8FAB /* Chat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29AE68732BE24F9300DE8FAB /* Chat.swift */; };
 		29AE68762BE24F9A00DE8FAB /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29AE68752BE24F9A00DE8FAB /* Message.swift */; };
 		29AE687E2BE8DA3700DE8FAB /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29AE687D2BE8DA3700DE8FAB /* NetworkManager.swift */; };
+		29AECAF12CECC52700CAD02C /* ImageData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29AECAF02CECC52700CAD02C /* ImageData.swift */; };
 		29C041C02AC556CE008B3E1F /* BroadcastPlannerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041BF2AC556CE008B3E1F /* BroadcastPlannerApp.swift */; };
 		29C041C42AC556D2008B3E1F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 29C041C32AC556D2008B3E1F /* Assets.xcassets */; };
 		29C041C82AC556D2008B3E1F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 29C041C72AC556D2008B3E1F /* Preview Assets.xcassets */; };
@@ -102,7 +103,6 @@
 		29F42B5A2B88BBE70024B764 /* WelcomeFlowScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29F42B592B88BBE70024B764 /* WelcomeFlowScreen.swift */; };
 		29F7CF102CA14BA9009C303E /* Date+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29F7CF0F2CA14BA9009C303E /* Date+Ext.swift */; };
 		29F7CF122CA15861009C303E /* View+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29F7CF112CA15861009C303E /* View+Ext.swift */; };
-		29FFDAAD2AD945EC005AD50F /* MainEventListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29FFDAAC2AD945EC005AD50F /* MainEventListCell.swift */; };
 		29FFDAB82ADBC2F1005AD50F /* MainBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29FFDAB72ADBC2F1005AD50F /* MainBackground.swift */; };
 /* End PBXBuildFile section */
 
@@ -179,6 +179,7 @@
 		29AE68732BE24F9300DE8FAB /* Chat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chat.swift; sourceTree = "<group>"; };
 		29AE68752BE24F9A00DE8FAB /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		29AE687D2BE8DA3700DE8FAB /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
+		29AECAF02CECC52700CAD02C /* ImageData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageData.swift; sourceTree = "<group>"; };
 		29B505BC2CB6B3C9003A1E3F /* BroadcastPlannerUnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BroadcastPlannerUnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		29C041BC2AC556CE008B3E1F /* BroadcastPlanner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BroadcastPlanner.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		29C041BF2AC556CE008B3E1F /* BroadcastPlannerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BroadcastPlannerApp.swift; sourceTree = "<group>"; };
@@ -207,7 +208,6 @@
 		29F42B592B88BBE70024B764 /* WelcomeFlowScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeFlowScreen.swift; sourceTree = "<group>"; };
 		29F7CF0F2CA14BA9009C303E /* Date+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Ext.swift"; sourceTree = "<group>"; };
 		29F7CF112CA15861009C303E /* View+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Ext.swift"; sourceTree = "<group>"; };
-		29FFDAAC2AD945EC005AD50F /* MainEventListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainEventListCell.swift; sourceTree = "<group>"; };
 		29FFDAB72ADBC2F1005AD50F /* MainBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainBackground.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -226,9 +226,10 @@
 		29558A212CA3F0E2009C3016 /* Environment */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Environment; sourceTree = "<group>"; };
 		29558A222CA3F105009C3016 /* Points */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Points; sourceTree = "<group>"; };
 		29558A232CA3F140009C3016 /* Broadcaster */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Broadcaster; sourceTree = "<group>"; };
+		29AECAE92CEB357C00CAD02C /* ListCell */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = ListCell; sourceTree = "<group>"; };
 		29B505BD2CB6B3C9003A1E3F /* BroadcastPlannerUnitTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = BroadcastPlannerUnitTests; sourceTree = "<group>"; };
 		29BE3AF42CAD57E600BDEF82 /* Data */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (29C8F88A2CC0050300A7D5D2 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Data; sourceTree = "<group>"; };
-		29E70B942CDE03B9002B826E /* ImageOptimizator */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = ImageOptimizator; sourceTree = "<group>"; };
+		29E70B942CDE03B9002B826E /* ImageHandle */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = ImageHandle; sourceTree = "<group>"; };
 		29F7CF132CA158FA009C303E /* DateViews */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = DateViews; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
@@ -262,6 +263,7 @@
 		290B816E2AD7FCBC00B858F1 /* EventsScreen */ = {
 			isa = PBXGroup;
 			children = (
+				29AECAE92CEB357C00CAD02C /* ListCell */,
 				290B816F2AD7FCE700B858F1 /* MainEventsList.swift */,
 				2951142F2C4E71FF005E4BF8 /* Event */,
 			);
@@ -671,6 +673,7 @@
 				291E72C72BBEC789008092D7 /* UserGroup */,
 				29AE68722BE24F7900DE8FAB /* MessengerGroup */,
 				290D88682CBE610500202CEF /* MockData.swift */,
+				29AECAF02CECC52700CAD02C /* ImageData.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -681,7 +684,6 @@
 				2955C96B2B4ECADA003F9ADC /* ViewsAndViewModels */,
 				290B81762AD91FF200B858F1 /* Modifiers */,
 				29FFDAB62ADBC2C3005AD50F /* Backgrounds */,
-				29FFDAAB2AD945DA005AD50F /* MainEventList */,
 				290B81712AD8473300B858F1 /* StadiumViews */,
 			);
 			path = Components;
@@ -690,7 +692,7 @@
 		29C041E02AC69864008B3E1F /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
-				29E70B942CDE03B9002B826E /* ImageOptimizator */,
+				29E70B942CDE03B9002B826E /* ImageHandle */,
 				2916E6192C4F9DE40025DCC6 /* Managers */,
 				29D1697E2B86182900A70638 /* Validators */,
 				298932662AE24D5700BD93CA /* Error */,
@@ -765,14 +767,6 @@
 			path = WelcomeFLow;
 			sourceTree = "<group>";
 		};
-		29FFDAAB2AD945DA005AD50F /* MainEventList */ = {
-			isa = PBXGroup;
-			children = (
-				29FFDAAC2AD945EC005AD50F /* MainEventListCell.swift */,
-			);
-			path = MainEventList;
-			sourceTree = "<group>";
-		};
 		29FFDAB62ADBC2C3005AD50F /* Backgrounds */ = {
 			isa = PBXGroup;
 			children = (
@@ -824,8 +818,9 @@
 				29558A212CA3F0E2009C3016 /* Environment */,
 				29558A222CA3F105009C3016 /* Points */,
 				29558A232CA3F140009C3016 /* Broadcaster */,
+				29AECAE92CEB357C00CAD02C /* ListCell */,
 				29BE3AF42CAD57E600BDEF82 /* Data */,
-				29E70B942CDE03B9002B826E /* ImageOptimizator */,
+				29E70B942CDE03B9002B826E /* ImageHandle */,
 				29F7CF132CA158FA009C303E /* DateViews */,
 			);
 			name = BroadcastPlanner;
@@ -975,11 +970,11 @@
 				2916E6132C4E9AEF0025DCC6 /* BPEditEventPointLinks.swift in Sources */,
 				29CB0F662C9A9BDE003B30C4 /* CarUnitCellView.swift in Sources */,
 				299190292C8A064400D2CDDC /* String+Ext.swift in Sources */,
-				29FFDAAD2AD945EC005AD50F /* MainEventListCell.swift in Sources */,
 				2916E6072C4E82690025DCC6 /* BPEditEventStuffListView.swift in Sources */,
 				29E10F642C21696B00A35A4B /* GlobalSettings.swift in Sources */,
 				29C8F9472CC24FD000A7D5D2 /* UserInfoTextField.swift in Sources */,
 				29F42B5A2B88BBE70024B764 /* WelcomeFlowScreen.swift in Sources */,
+				29AECAF12CECC52700CAD02C /* ImageData.swift in Sources */,
 				2955C9792B50FDEF003F9ADC /* SignUpView.swift in Sources */,
 				2916E60B2C4E85400025DCC6 /* BPEditEventControlPanel.swift in Sources */,
 				29389C3A2B8EE2EB003EF60C /* AppleHelper.swift in Sources */,

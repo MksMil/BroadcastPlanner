@@ -17,8 +17,7 @@ struct AddEditClubView: View {
     let acceptAction: (String, UIImage?,String,String, LocalLocation?)->Void
     let cancelAction: ()->Void
     let removeAction: ()->Void
-//    let saveAction: (String, UIImage?,String,String, LocalLocation?)->Void
-//    let removeAction: ()->Void
+
     
     func updateClub(){
     }
@@ -81,24 +80,25 @@ struct AddEditClubView: View {
             .font(.title3)
             
             
-            HStack{
+            
                 //photopicker -> logoImage -> LocalImage -> map
                 PhotosPicker(selection: $selectedPhoto,
                              matching: .images,
                              photoLibrary: .shared()) {
                     showedImage
                         .resizable()
-                        .frame(width: 60,height: 60)
+                        
+                        .frame(width: 150,height: 150)
 //                        .aspectRatio(contentMode: .fit)
                         .scaledToFit()
-                        .padding(2)
+                        .padding()
                         .background{
                             Rectangle()
                                 .fill(.ultraThickMaterial)
                                 .overlay {
                                     Rectangle()
                                         .stroke(.gray,
-                                                lineWidth: 2)
+                                                lineWidth: 1)
                                 }
                         }
                 }
@@ -107,7 +107,7 @@ struct AddEditClubView: View {
                 TextField("enter club name", text: $title)
                     .font(.title)
                     .textFieldStyle(.roundedBorder)
-            }
+            
             
             //contacts
             TextField("enter contact info", text: $contacts)

@@ -50,6 +50,6 @@ extension LocalOBVan : Identifiable {
     }
     
     var viewImage: Image {
-        image?.viewImage ?? Image("empty_obvan")
+        image?.mediumImage ?? Image("empty_obvan")
     }
 }

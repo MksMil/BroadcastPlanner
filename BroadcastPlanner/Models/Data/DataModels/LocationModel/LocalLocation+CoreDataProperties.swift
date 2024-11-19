@@ -83,11 +83,7 @@ extension LocalLocation : Identifiable {
     }
     
     var viewBackground: UIImage {
-        if let data = background?.imageData, let image = UIImage(data: data){
-            return image
-        } else {
-            return  UIImage(imageLiteralResourceName: "stadium")
-        }
+        background?.makeUIImage() ?? UIImage(imageLiteralResourceName: "stadium")
     }
     
     var viewEvents: [LocalEvent] {
@@ -95,7 +91,11 @@ extension LocalLocation : Identifiable {
     }
     
     var viewImages: [Image] {
-        (images?.allObjects as? [LocalImage] ?? []).compactMap{$0.viewImage}
+        (images?.allObjects as? [LocalImage] ?? []).compactMap{$0.mediumImage}
+    }
+    
+    var viewLocalImages: [LocalImage]{
+        images?.allObjects as? [LocalImage] ?? []
     }
     
 }

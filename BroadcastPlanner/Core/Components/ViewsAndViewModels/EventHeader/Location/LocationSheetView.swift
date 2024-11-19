@@ -5,11 +5,11 @@ struct LocationSheetView: View {
     
     @FetchRequest<LocalLocation>(sortDescriptors: []) var locations
     
-    
+    @State private var selectedLocation: LocalLocation?
     @State private var isAddEdit: Bool = false
     
     let cancelAction: ()-> Void
-    let saveAction: ()-> Void
+    let saveAction: (LocalLocation?)-> Void
     
     var body: some View {
         VStack{
@@ -39,7 +39,7 @@ struct LocationSheetView: View {
                 Spacer()
                 Button{
                     //accept location to selected point
-                    saveAction()
+                    saveAction(selectedLocation)
                 } label: {
                     Image(systemName: "checkmark")
                         .resizable()
@@ -63,17 +63,26 @@ struct LocationSheetView: View {
                 isAddEdit.toggle()
             }
             ScrollView{
-                
+                List{
+                    ForEach(locations, id:\.id) { location in
+                        Text("\(location.viewTitle)")
+                        
+                    }
+                }
             }
             Spacer()
         }
         .fullScreenCover(isPresented: $isAddEdit ) {
-            AddEditLocation(location: LocalLocation(context: moc))
+            AddEditLocation(location: selectedLocation ?? DataManager.shared.fetchOrCreateLocationWithId(UUID().uuidString, inContext: .main)) {
+                
+            } acceptAction: { location in
+                
+            }
         }
     }
 }
 
 #Preview {
-    LocationSheetView(cancelAction: {}, saveAction: {})
+    LocationSheetView(cancelAction: {}, saveAction: {_ in })
         .environment(\.managedObjectContext, DataManager.shared.moc)
 }

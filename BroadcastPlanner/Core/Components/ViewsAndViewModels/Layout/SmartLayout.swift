@@ -43,11 +43,12 @@ struct SmartLayout: Layout{
             
             if (width + size.width) > totalWidth {
                 //next row
+                //remove trailing spacing
+                totalWidth = width - hSpacing
                 if index == subviews.count - 1 {
                     // if last
                     height += size.height + vSpacing
                 } else {
-                    totalWidth = width - hSpacing
                     width = size.width + hSpacing
                     maxAddedHeight = size.height
                     height += maxAddedHeight + vSpacing
@@ -73,7 +74,7 @@ struct SmartLayout: Layout{
 
 #Preview(body: {
     SmartLayout(hSpacing: 0, vSpacing: 0) {
-        ForEach([1,2,3,4,5,6,7,8,9,0], id: \.self){ logo in
+        ForEach([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], id: \.self){ logo in
             Image(systemName:"\(logo).circle")
                 .resizable()
                 .scaledToFit()

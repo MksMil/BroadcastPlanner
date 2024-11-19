@@ -2,56 +2,65 @@ import SwiftUI
 import Combine
 
 struct MainEventListCell: View {
-    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    var event: LocalEvent
-    @State private var eventDate: String = ""
-    @State private var counter: String = "counter here"
-    @State private var homeClub: LocalClub?
-    @State private var guestClub: LocalClub?
-    @State private var title: String
-    @State private var address: String
     
-    var timeRemaining: TimeInterval {
-        max(event.viewRemainingDate.timeIntervalSinceNow, 0)
-        }
+    
+    
+//    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    var event: LocalEvent
+    
+    @StateObject var vm: MainEventListCellViewModel
+    
+//    @State private var eventDate: String = ""
+//    @State private var counter: String = "counter here"
+//    @State private var homeClub: LocalClub?
+//    @State private var guestClub: LocalClub?
+//    @State private var title: String
+//    @State private var address: String
+    
+//    var timeRemaining: TimeInterval {
+//        max(event.viewRemainingDate.timeIntervalSinceNow, 0)
+//        }
+//    
+//   
+//    
+//    private var countdownFormatter: DateComponentsFormatter {
+//        let formatter = DateComponentsFormatter()
+//        formatter.allowedUnits = [.day, .hour, .minute, .second]
+//        formatter.unitsStyle = .positional
+//        formatter.zeroFormattingBehavior = .pad
+//        return formatter
+//    }
+//    
+//    private func getDate(date: Date) -> String {
+//        return BPDateFormater.format(date: date)
+//    }
+    
+//    private func updateCounter() {
+//        if timeRemaining > 0 {
+//            counter = "\(countdownFormatter.string(from: timeRemaining) ?? "Time's up!")"
+//        } else {
+//            counter = "Time Up!"
+//        }
+//    }
+    
+//    private func update(){
+//        homeClub =  event.homeClub
+//        guestClub = event.guestClub
+//        title = event.viewTitle
+//        address = event.viewAddress
+//        eventDate = getDate(date: event.viewRemainingDate)
+//    }
     
     init(event: LocalEvent){
         self.event = event
-        self._homeClub = State(initialValue: event.homeClub)
-        self._guestClub = State(initialValue: event.guestClub)
-        self._title = State(initialValue: event.viewTitle)
-        self._address = State(initialValue: event.viewAddress)
-        self.eventDate = getDate(date: event.viewRemainingDate)
+//        self._homeClub = State(initialValue: event.homeClub)
+//        self._guestClub = State(initialValue: event.guestClub)
+//        self._title = State(initialValue: event.viewTitle)
+//        self._address = State(initialValue: event.viewAddress)
+//        self.eventDate = getDate(date: event.viewRemainingDate)
+        
+        self._vm = StateObject(wrappedValue: MainEventListCellViewModel(event: event))
     }
-    
-    private var countdownFormatter: DateComponentsFormatter {
-        let formatter = DateComponentsFormatter()
-        formatter.allowedUnits = [.day, .hour, .minute, .second]
-        formatter.unitsStyle = .positional
-        formatter.zeroFormattingBehavior = .pad
-        return formatter
-    }
-    
-    private func getDate(date: Date) -> String {
-        return BPDateFormater.format(date: date)
-    }
-    
-    private func updateCounter() {
-        if timeRemaining > 0 {
-            counter = "\(countdownFormatter.string(from: timeRemaining) ?? "Time's up!")"
-        } else {
-            counter = "Time Up!"
-        }
-    }
-    
-    private func update(){
-        homeClub =  event.homeClub
-        guestClub = event.guestClub
-        title = event.viewTitle
-        address = event.viewAddress
-        eventDate = getDate(date: event.viewRemainingDate)
-    }
-    
     
     var body: some View {
         ZStack{
@@ -63,14 +72,14 @@ struct MainEventListCell: View {
                             Spacer()
                             VStack(spacing: 0){
                                 HStack {
-                                    Text(eventDate)
+                                    Text(vm.eventDate)
                                         .font(.system(size: 10))
                                         .minimumScaleFactor(0.5)
                                         .fixedSize()
                                 }
                                 .padding(.vertical,10)
                                 
-                                Text(counter)
+                                Text(vm.counter)
                                     .font(.system(size: 10))
                                     .minimumScaleFactor(0.5)
                                     .fixedSize()
@@ -101,11 +110,11 @@ struct MainEventListCell: View {
                                 .frame(height: geo.size.height / 2)
 
                                 VStack{
-                                    Text(title)
+                                    Text(vm.title)
                                         .font(.caption2)
                                         .lineLimit(1)
                                         .minimumScaleFactor(0.35)
-                                    Text(address)
+                                    Text(vm.address)
                                         .font(.caption2)
                                         .lineLimit(1)
                                         .minimumScaleFactor(0.35)
@@ -137,22 +146,25 @@ struct MainEventListCell: View {
             .foregroundStyle(Color.black)
         }
         .onAppear{
-            update()
+            vm.update()
         }
-        .onReceive(timer, perform: { _ in
-            updateCounter()
-        })
+//        .onReceive(timer, perform: { _ in
+//            updateCounter()
+//        })
     }
     
     
 }
 
-#Preview{
-    NavigationStack{
-        MainEventsList()
-    }
 
+#Preview {
+    MainEventsList()
+        .environmentObject(GlobalSessionStorage())
+        .environmentObject(GlobalSettings())
+        .environment(\.managedObjectContext, DataManager.shared.moc)
 }
+
+
 
 //#Preview {
 //    MainEventListCell(event: LocalEvent(context: DataManager.preview.moc))

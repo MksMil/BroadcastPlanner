@@ -7,7 +7,7 @@ struct AddEditEventBackgroundView: View {
     
     @State private var eventBackgroundItem: PhotosPickerItem?
     
-    @FetchRequest<LocalImage>(sortDescriptors: [],predicate: NSPredicate(format: "type == %@", GlobalProperties.ImageType.eventBackground.rawValue)) var backgroundLocalImages
+    @FetchRequest<LocalImage>(sortDescriptors: [],predicate: NSPredicate(format: "type == %@", GlobalProperties.ImageType.eventTemplate.rawValue)) var backgroundLocalImages
     
     let addNewBackgroundAction: (UIImage, Image) -> Void
     let addExistBackgroundAction: (Int)->Void

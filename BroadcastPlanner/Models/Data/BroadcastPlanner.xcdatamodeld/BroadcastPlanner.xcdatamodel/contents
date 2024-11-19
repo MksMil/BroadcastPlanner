@@ -42,7 +42,6 @@
     </entity>
     <entity name="LocalImage" representedClassName=".LocalImage" syncable="YES">
         <attribute name="id" optional="YES" attributeType="String"/>
-        <attribute name="imageData" optional="YES" attributeType="Binary"/>
         <attribute name="type" optional="YES" attributeType="String"/>
         <relationship name="locationPoint" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LocalLocationPoint" inverseName="image" inverseEntity="LocalLocationPoint"/>
         <relationship name="parentClubLogo" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalClub" inverseName="imageLogo" inverseEntity="LocalClub"/>

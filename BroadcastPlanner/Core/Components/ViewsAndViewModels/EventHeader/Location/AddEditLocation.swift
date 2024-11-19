@@ -3,11 +3,15 @@ import UIKit
 import PhotosUI
 
 struct AddEditLocation: View {
+    
+    @StateObject var vm: AddEditLocationViewModel
+    
     let lenght: Double = 75
     
     let location: LocalLocation
+    let cancelAction: ()->Void
+    let acceptAction: (LocalLocation)->Void
     
-//    @EnvironmentObject var globalStorage: GlobalStorage
     @Environment(\.dismiss) var dismiss
     
     @State private var title: String = ""
@@ -28,11 +32,19 @@ struct AddEditLocation: View {
 //    
 //    @FetchRequest<LocalImage>(sortDescriptors: [],predicate: NSPredicate(format: "type == %@", GlobalProperties.ImageType.eventBackground.rawValue)) var backgroundLocalImages
     
+    init(location: LocalLocation, cancelAction: @escaping ()->Void, acceptAction: @escaping (LocalLocation)->Void){
+        self.location = location
+        self._vm = StateObject(wrappedValue: AddEditLocationViewModel(location: location))
+        self.cancelAction = cancelAction
+        self.acceptAction = acceptAction
+    }
+    
+    
     var body: some View {
         VStack{
                 HStack{
                     Button {
-                        //                    cancelAction()
+                                            cancelAction()
                     } label: {
                         Image(systemName: "xmark")
                             .resizable()
@@ -58,7 +70,7 @@ struct AddEditLocation: View {
                     Spacer()
                     
                     Button{
-                        //                    saveAction()
+                        acceptAction(location)
                     } label: {
                         Image(systemName: "checkmark")
                             .resizable()
@@ -186,8 +198,6 @@ struct AddEditLocation: View {
                 Spacer(minLength: 50)
                 
                 Button("Remove location"){
-//                    globalStorage.conteiner.removeLocalLocation(location,inContext: .main)
-//                    globalStorage.conteiner.saveContext(type: .main)
                     dismiss()
                 }
                 .buttonStyle(.borderedProminent)
@@ -267,6 +277,6 @@ struct AddEditLocation: View {
 }
 
 #Preview {
-    AddEditLocation(location: LocalLocation(context: DataManager.shared.moc))
+    AddEditLocation(location: LocalLocation(context: DataManager.shared.moc),cancelAction: {}, acceptAction: {_ in })
         .environment(\.managedObjectContext, DataManager.shared.moc)
 }

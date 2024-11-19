@@ -11,11 +11,12 @@ struct LogoImageView: View {
             .scaledToFit()
             .frame(width: logoSize, height: logoSize)
             .padding(logoSize / 10)
+            .clipShape(Circle())
             .background{
                 Circle().fill( .ultraThinMaterial.opacity(0.9))
-                    .overlay {
-                        Circle().stroke(Color.white, lineWidth: 3)
-                    }
+            }
+            .overlay {
+                Circle().stroke(Color.white, lineWidth: 3)
             }
     }
 }
@@ -24,6 +25,6 @@ struct LogoImageView: View {
     ZStack{
         Color.blue
             .ignoresSafeArea()
-        LogoImageView(image: Image("Dynamo"), logoSize: 150)
+        LogoImageView(image: Image("Chernomorets"), logoSize: 150)
     }
 }

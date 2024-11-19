@@ -70,8 +70,8 @@ final class PersonalScreenViewModel: ObservableObject {
             localUser.specializations = userSpecialization.joined(separator: ",")
         // TODO: handle image saving
         //image entity == nil!
-            if let inputImage {
-                localUser.image?.imageData = inputImage.pngData()
+        if let image = inputImage,let localImage =  localUser.image{
+            localImage.uploadImage(uiimage: image)
             }
             DataManager.shared.saveContext(type: .main,
                                            publish: .none,

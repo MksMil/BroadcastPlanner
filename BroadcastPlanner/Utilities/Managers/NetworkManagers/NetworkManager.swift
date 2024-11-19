@@ -59,8 +59,8 @@ final class NetworkManager: ObservableObject {
                         
                         //wait for all changes done
                         await group.waitForAll()
-                        //after all changes in context -> it's tome to save context
-                        DataManager.shared.saveContext(type: .bg,publish: type, id: ids)
+                        //after all changes in context -> it's time to save context and publish changes for those who needs
+                        DataManager.shared.saveContext(type: .bg, publish: type, id: ids)
                     }
                 }
             }
@@ -245,41 +245,19 @@ final class NetworkManager: ObservableObject {
 
     // MARK: - Observe Images
     func observeImages() {
-        db.collection("\(GlobalProperties.Path.images.rawValue)")
-            .addSnapshotListener { [weak self] (snapshot, error) in
-                guard let self,
-                    let snapshot
-                else { return }
-
-                for diff in snapshot.documentChanges {
-                    do {
-                        let type = try diff.document.data(as: String.self)
-                        let dataId = diff.document.documentID
-                        switch diff.type {
-                        case .modified, .added:
-                            Task {
-                                await self.loadImageFromGlobalStorage(
-                                    id: dataId
-                                ) { image in
-                                    let _ = DataManager.shared.createOrUpdateLocalImageWithId(
-                                            dataId,
-                                            withImage: image,
-                                            andType: type,
-                                            inContext: .bg)
-                                }
-                            }
-                        case .removed:
-                            DataManager.shared.removeImageWithId(dataId, inContext: .bg)
-                        }
-//                        DataManager.shared.saveContext(type: .bg, publish: .images,id: dataId)
-                    } catch {
-                        print(
-                            "DEBUG: NetworkManager/ loadImageError: \(error.localizedDescription)"
-                        )
-                    }
+        makeSnapshotListener(forType: .images) { image in
+            Task{
+                await self.loadImageFromGlobalStorage(
+                    id: image.id
+                ) { uiimage in
+                    let _ = DataManager.shared.createOrUpdateLocalImageWithImageData(imageData: image,
+                                                                                     withImage: uiimage,
+                                                                                     inContext: .bg)
                 }
-                
             }
+        } completionOnRemoved: { imageData in
+            DataManager.shared.removeImageWithId(imageData.id, inContext: .bg)
+        }
     }
     // MARK: - Load Image with ID and store to coredate conteiner
     func loadImageFromGlobalStorage(
@@ -341,8 +319,8 @@ final class NetworkManager: ObservableObject {
                 return
             }
             await saveImageToGlobalStorage(
-                id: user.id, imageData: imageData,
-                type: GlobalProperties.ImageType.user.rawValue)
+                id: user.id, uiimage: image,
+                type: GlobalProperties.ImageType.user)
         } catch {
             #if DEBUG
                 print(
@@ -357,14 +335,14 @@ final class NetworkManager: ObservableObject {
 // MARK: - Save/Load Images
 // TODO: thread problem
 extension NetworkManager {
-    func saveImageToGlobalStorage(id: String, imageData: Data, type: String)
+    func saveImageToGlobalStorage(id: String, uiimage: UIImage, type: GlobalProperties.ImageType)
         async
     {
-
+        guard let data = uiimage.jpegData(compressionQuality: 1) else { return }
         let userRef = db.collection("\(GlobalProperties.Path.images.rawValue)")
         do {
             //            let data = try Firestore.Encoder().encode(user)
-            try await userRef.document(id).setData(["type": type])
+            try await userRef.document(id).setData(["type": type.rawValue, "id":id])
 
         } catch {
             #if DEBUG
@@ -379,7 +357,7 @@ extension NetworkManager {
         let imageRef = storageRef.child(
             "\(GlobalProperties.Path.images.rawValue)/\(id)")
         do {
-            let _ = try await imageRef.putDataAsync(imageData)
+            let _ = try await imageRef.putDataAsync(data)
         } catch {
             #if DEBUG
                 print(

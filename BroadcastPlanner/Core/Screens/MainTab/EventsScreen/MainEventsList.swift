@@ -17,10 +17,10 @@ struct MainEventsList: View {
                     events.nsPredicate = nil
                     return "All Events"
                 case .userOwned:
-//                    events.nsPredicate = NSPredicate(format: "owners CONTAINS %@", globalStorage.localUser)
+                events.nsPredicate = NSPredicate(format: "owners CONTAINS %@", session.userSession?.id ?? "")
                     return "My own Events"
                 case .userPartisipation:
-//                    events.nsPredicate = NSPredicate(format: "users CONTAINS %@", globalStorage.localUser)
+                    events.nsPredicate = NSPredicate(format: "users CONTAINS %@", session.userSession?.id ?? "")
                     return "My participation"
             }
     }
@@ -55,6 +55,8 @@ struct MainEventsList: View {
                         .onDelete(perform: { indexSet in
                             guard let index = indexSet.first else { return }
                             let eventToDelete = events[index]
+                            DataManager.shared.removeLocalEvent(eventToDelete, inContext: .main)
+                            DataManager.shared.saveContext(type: .main, publish: .none, id: [])
                         })
                     }
                     .padding(.horizontal,8)
@@ -62,7 +64,6 @@ struct MainEventsList: View {
                     .listStyle(.inset)
                     .padding(.top, -8)
                 }
-                
             }
             .navigationTitle(Text(title))
             .navigationBarTitleDisplayMode(.inline)
@@ -72,11 +73,11 @@ struct MainEventsList: View {
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button{
-//                        Task{
-//                            await globalStorage.createEvent(){ event in
-//                                eventRouter.routeToCreateEdit(event: event)
-//                            }
-//                        }
+                        Task{
+                            let newEvent = DataManager.shared.fetchOrCreateEventWithId(UUID().uuidString,
+                                                                        inContext: .main)
+                            eventRouter.routeToCreateEdit(event: newEvent)
+                        }
                     }label: {
                         Image(systemName: "calendar.badge.plus")
                             .resizable()
@@ -91,7 +92,9 @@ struct MainEventsList: View {
                 case .createEdit(let event):
                     BPCreateEditEventView(event: event)
                 case .addEditLocation(let location):
-                    AddEditLocation(location: location)
+                    AddEditLocation(location: location,cancelAction: {}) { _ in
+                        
+                    }
                 case .addEditClub(let club):
                     AddEditClubView(club: club,acceptAction: {_,_,_,_,_ in },cancelAction: {}, removeAction: {})
                 case .stadPointsEdit:
@@ -108,7 +111,6 @@ struct MainEventsList: View {
     
 
 #Preview {
-    
         MainEventsList()
         .environmentObject(GlobalSessionStorage())
         .environmentObject(GlobalSettings())

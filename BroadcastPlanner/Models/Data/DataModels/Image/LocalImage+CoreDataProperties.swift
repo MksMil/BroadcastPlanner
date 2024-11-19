@@ -4,13 +4,14 @@ import CoreData
 
 
 extension LocalImage {
+    
+    
 
     @nonobjc public class func fetchRequest() -> NSFetchRequest<LocalImage> {
         return NSFetchRequest<LocalImage>(entityName: "LocalImage")
     }
 
     @NSManaged public var id: String?
-    @NSManaged public var imageData: Data?
     @NSManaged public var type: String?
     @NSManaged public var locationPoint: NSSet?
     @NSManaged public var parentClubLogo: LocalClub?
@@ -43,28 +44,54 @@ extension LocalImage : Identifiable {
         id ?? "N/A"
     }
     
-    var viewImage: Image{
-        if let data = imageData,
-           let uiimage = UIImage(data: data){
-            return Image(uiImage: uiimage)
-        } else {
-           return Image(systemName: "camera")
-        }
+    var viewType: GlobalProperties.ImageType{
+        GlobalProperties.ImageType.init(rawValue: type ?? "none") ?? .none
     }
     
-    var viewType: String{
-        type ?? "N/A"
+    var originImage: Image {
+        makeImageWithSize(size: .originImages)
     }
     
-    var viewResizedImage: Image {
-        if let data = imageData,
-           let uiimage = UIImage(data: data){
-            let result = ImageOptimizator.resizeImage(image: uiimage,
-                                                      targetSize: CGSize(width: 120,
-                                                                         height: 120))
+    var mediumImage: Image{
+        makeImageWithSize(size: .mediumImages)
+    }
+    
+    var smallImage: Image {
+        makeImageWithSize(size: .smallImages)
+    }
+    
+    func makeImageWithSize(size: ImageSizes) -> Image{
+        let imageManager = ImagesManager()
+        if let result = imageManager.loadImage(type: size, id: viewId){
             return Image(uiImage: result)
         } else {
-            return Image(systemName: "camera")
+            switch viewType {
+            case .user:
+                return Image(systemName: "person")
+            case .eventTemplate:
+                return Image(systemName: "compass.drawing")
+            case .club:
+                return Image(systemName: "rhombus")
+            case .broadcaster:
+                return Image(systemName: "antenna.radiowaves.left.and.right")
+            case .location:
+                return Image(systemName: "photo")
+            case .obvan:
+                return Image(systemName: "truck.box")
+            case .none:
+                return Image(systemName: "camera")
+            @unknown default:
+                return Image(systemName: "camera")
+            }
         }
+    }
+    
+    func makeUIImage() -> UIImage?{
+        let imageManager = ImagesManager()
+        return imageManager.loadImage(type: .originImages, id: viewId )
+    }
+    func uploadImage(uiimage: UIImage){
+        let imageManager = ImagesManager()
+        let _ = imageManager.saveResizedImages(image: uiimage, id: viewId)
     }
 }
