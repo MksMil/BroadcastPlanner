@@ -77,8 +77,7 @@ final class PersonalScreenViewModel: ObservableObject {
                                            publish: .none,
                                            id: [])
             await NetworkManager.shared
-                .saveUser(
-                    user: BPUser.makeBPUser(localUser: localUser),
-                    image: inputImage)
+                .saveUser(user: BPUser.makeBPUser(localUser: localUser),
+                          image: inputImage)
     }
 }

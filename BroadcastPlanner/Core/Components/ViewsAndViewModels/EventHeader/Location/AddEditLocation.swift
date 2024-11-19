@@ -205,25 +205,7 @@ struct AddEditLocation: View {
             .padding()
             .fullScreenCover(isPresented: $isBackSheetShowed, content: {
               
-                AddEditEventBackgroundView(/*backgroundImages: backgroundImages*/){ uiimage, image in
-                    locationBackground = image
-//                    globalStorage.conteiner.backgroundContext.perform{
-//                        locationBackground = image
-//                        Task{
-//                            let localImage = globalStorage.conteiner.createOrUpdateLocalImageWithId(UUID().uuidString, withImage: uiimage, andType: GlobalProperties.ImageType.eventBackground.rawValue)
-//                            location.background = localImage
-//                            localImage.parentLocationBackground = location
-//                            globalStorage.conteiner.saveContext()
-//                        }
-//                    }
-                } addExistBackgroundAction: { num in
-//                    locationBackground = image
-//                    globalStorage.conteiner.backgroundContext.perform{
-//                        location.background = localImage
-//                        localImage.parentLocationBackground = location
-//                        globalStorage.conteiner.saveContext()
-//                    }
-
+                AddEditEventBackgroundView(){ _ in
                 }
 
             })

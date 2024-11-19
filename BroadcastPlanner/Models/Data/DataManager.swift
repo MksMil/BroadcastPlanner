@@ -243,11 +243,13 @@ extension DataManager {
         }
     }
 
-    func createOrUpdateLocalImageWithId(_ id: String, withImage image: UIImage,
-                                        andType type: String, inContext contextType: ContextType) -> LocalImage {
+    func createOrUpdateLocalImageWithId(_ id: String,
+                                        withImage image: UIImage,
+                                        andType type: GlobalProperties.ImageType,
+                                        inContext contextType: ContextType) -> LocalImage {
         let localImage = fetchOrCreateImageWithId(id, inContext: contextType)
         let _ = ImagesManager().saveResizedImages(image: image, id: id)
-        assignType(type: type, toLocalImage: localImage, inContext: contextType)
+        assignType(type: type.rawValue, toLocalImage: localImage, inContext: contextType)
         return localImage
     }
 
@@ -549,7 +551,7 @@ extension DataManager {
                             self.createOrUpdateLocalImageWithId(
                                 UUID().uuidString,
                                 withImage: uiimage,
-                                andType: GlobalProperties.ImageType.club.rawValue,
+                                andType: GlobalProperties.ImageType.club,
                                 inContext: contextType)
                         localImage.uploadImage(uiimage: uiimage)
                         club.imageLogo = localImage

@@ -11,8 +11,6 @@ final class MainEventListCellViewModel: ObservableObject{
         .autoconnect()
     @Published var eventDate: String = ""
     @Published var counter: String = "counter here"
-//    @Published var homeClub: LocalClub?
-//    @Published var guestClub: LocalClub?
     @Published var title: String
     @Published var address: String
     
@@ -26,8 +24,6 @@ final class MainEventListCellViewModel: ObservableObject{
         self.event = event
         self.eventDate = BPDateFormater.format(date: event.viewRemainingDate)
         self.counter = ""
-//        self.homeClub = event.homeClub
-//        self.guestClub = event.guestClub
         self.title = event.viewTitle
         self.address = event.viewAddress
         //publisher
@@ -62,8 +58,6 @@ final class MainEventListCellViewModel: ObservableObject{
     }
     
     func update(){
-//        homeClub =  event.homeClub
-//        guestClub = event.guestClub
         title = event.viewTitle
         address = event.viewAddress
         eventDate = getDate(date: event.viewRemainingDate)

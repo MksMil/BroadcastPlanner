@@ -1,18 +1,12 @@
-//
-//  CellImage.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 19.11.2024.
-//
-
 import SwiftUI
 
 struct CellImage: View {
+    let image: LocalImage
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        image.mediumImage
+            .resizable()
+            .scaledToFill()
+            .frame(width: 100, height: 100)
+            .clipShape(RoundedRectangle(cornerRadius: 5))
     }
-}
-
-#Preview {
-    CellImage()
 }

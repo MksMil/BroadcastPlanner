@@ -97,13 +97,13 @@ struct MainEventListCell: View {
                                 HStack{
                                     //home team logo
                                     
-                                    LogoImageView(image:event.homeImage,
+                                    LogoImageView(image:event.homeSmallImage,
                                                   logoSize: geo.size.height / 2)
                                     
                                     Text(":")
                                     
                                     //guest team logo
-                                    LogoImageView(image: event.guestImage,
+                                    LogoImageView(image: event.guestSmallImage,
                                                   logoSize: geo.size.height / 2)
 
                                 }

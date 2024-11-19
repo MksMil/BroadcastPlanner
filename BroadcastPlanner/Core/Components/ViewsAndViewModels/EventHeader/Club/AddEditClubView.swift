@@ -8,6 +8,7 @@ struct AddEditClubView: View {
     @State var selectedPhoto: PhotosPickerItem?
     @State var showedImage: Image = Image(systemName: "plus")
     @State var uiimage: UIImage?
+    
     @State private var title: String = ""
     @State private var urlString: String = ""
     @State private var contacts: String = ""
@@ -18,7 +19,6 @@ struct AddEditClubView: View {
     let cancelAction: ()->Void
     let removeAction: ()->Void
 
-    
     func updateClub(){
     }
     
@@ -75,38 +75,34 @@ struct AddEditClubView: View {
                 
                 .frame(maxWidth: .infinity, alignment: .trailing)
             }
-//            .padding(.horizontal,10)
             .padding(.top, 10)
             .font(.title3)
             
-            
-            
-                //photopicker -> logoImage -> LocalImage -> map
-                PhotosPicker(selection: $selectedPhoto,
-                             matching: .images,
-                             photoLibrary: .shared()) {
-                    showedImage
-                        .resizable()
-                        
-                        .frame(width: 150,height: 150)
-//                        .aspectRatio(contentMode: .fit)
-                        .scaledToFit()
-                        .padding()
-                        .background{
+        //photopicker -> logoImage -> LocalImage -> map
+        PhotosPicker(selection: $selectedPhoto,
+                     matching: .images,
+                     photoLibrary: .shared()) {
+            showedImage
+                .resizable()
+                .scaledToFit()
+                .frame(width: 150,height: 150)
+            //                        .aspectRatio(contentMode: .fit)
+                .padding()
+                .background{
+                    Rectangle()
+                        .fill(.ultraThickMaterial)
+                        .overlay {
                             Rectangle()
-                                .fill(.ultraThickMaterial)
-                                .overlay {
-                                    Rectangle()
-                                        .stroke(.gray,
-                                                lineWidth: 1)
-                                }
+                                .stroke(.gray,
+                                        lineWidth: 1)
                         }
                 }
-                //club name -> title
-                
-                TextField("enter club name", text: $title)
-                    .font(.title)
-                    .textFieldStyle(.roundedBorder)
+        }
+            //club name -> title
+            
+            TextField("enter club name", text: $title)
+                .font(.title)
+                .textFieldStyle(.roundedBorder)
             
             
             //contacts
@@ -136,12 +132,8 @@ struct AddEditClubView: View {
                             }
                     }
             }
-
-            
             //location ? add location?
             Spacer()
-
-            
         }
         .padding()
         .onChange(of: selectedPhoto) { value in
@@ -154,13 +146,14 @@ struct AddEditClubView: View {
                 withAnimation{
                     showedImage = Image(uiImage: image)
                 }
+                
             }
         }
         .onAppear {
             title = club.viewTitle
             contacts = club.viewContacts
             urlString = club.viewUrl
-            showedImage = club.viewImageLogo
+            showedImage = club.viewImageMediumLogo
             location = club.homeLocation
         }
     }

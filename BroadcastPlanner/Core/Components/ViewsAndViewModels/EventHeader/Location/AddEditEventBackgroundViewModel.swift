@@ -1,8 +1,42 @@
-//
-//  AddEditEventBackgroundViewModel.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 19.11.2024.
-//
+import SwiftUI
+import UIKit
+import PhotosUI
 
-import Foundation
+final class AddEditEventBackgroundViewViewModel: ObservableObject{
+    
+    @Published var selectedImage: LocalImage?
+    var eventBackgroundItem: PhotosPickerItem?{
+        willSet{
+    
+            guard let item = newValue else { return }
+            Task{
+                if let data = try? await item.loadTransferable(type: Data.self),
+                   let uiimage = UIImage(data: data){
+                    createNewLocalImageWith(uiimage: uiimage)
+                }
+            }
+        }
+        didSet{
+            eventBackgroundItem = nil
+        }
+    }
+    
+    init(){
+
+    }
+
+    
+    func createNewLocalImageWith(uiimage: UIImage){
+        Task{
+            let _ = DataManager
+                .shared
+                .createOrUpdateLocalImageWithId(UUID().uuidString,
+                                                withImage: uiimage,
+                                                andType: GlobalProperties.ImageType.eventTemplate,
+                                                inContext: .bg)
+            DataManager.shared.saveContext(type: .bg,
+                                           publish: .none,
+                                           id: [])
+        }
+    }
+}

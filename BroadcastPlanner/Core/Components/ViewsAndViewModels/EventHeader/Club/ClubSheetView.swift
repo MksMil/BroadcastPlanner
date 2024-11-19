@@ -15,6 +15,8 @@ struct ClubSheetView: View {
         return "Edit \(selectedClub.viewTitle)"
     }
     
+    @FetchRequest<LocalClub>(sortDescriptors: []) var clubs
+    
     init(cancelAction: @escaping () -> Void = {},
          acceptAction: @escaping (LocalClub) -> Void = {_ in },
          createNewClubAction: @escaping () -> Void = {},
@@ -118,19 +120,15 @@ struct ClubSheetView: View {
                                 .onTapGesture {
                                     vm.editWithNewClub()
                                 }
-                            ForEach(vm.images, id:\.0.id) { tuple in
-                                ClubSheetCellView(title: tuple.0.viewTitle,
-                                                  image: tuple.1)
-                                .padding(0)
-                                .onTapGesture {
-                                    withAnimation{
-                                        vm.selectedClub = tuple.0
-                                        vm.selectedImage = tuple.1
-                                    }
-                                }
-                                .matchedGeometryEffect(id: tuple.0.id,
+
+                            ForEach(clubs){ club in
+                                ClubSheetCellView(club: club)
+                                .matchedGeometryEffect(id: club.id,
                                                        in: clubNS,
                                                        isSource: true)
+                                .onTapGesture {
+                                    vm.selectedClub = club
+                                }
                             }
                             .overlay {
                                 if let selectedClub = vm.selectedClub{

@@ -24,8 +24,8 @@ struct BPEventHeaderView: View {
     
     @State private var homeImage: Image
     @State private var guestImage: Image
-    @State var stadium: String = "stadium"
-    @State private var address: String = "address"
+    @State var stadium: String = ""
+    @State private var address: String = ""
     
     @State private var isPresentedLogosSheet: Bool = false
     @State private var iSelectedHomeTeamLogo: Bool = false

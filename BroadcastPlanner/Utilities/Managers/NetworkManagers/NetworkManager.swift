@@ -246,30 +246,26 @@ final class NetworkManager: ObservableObject {
     // MARK: - Observe Images
     func observeImages() {
         makeSnapshotListener(forType: .images) { image in
-            Task{
-                await self.loadImageFromGlobalStorage(
+                 self.loadImageFromGlobalStorage(
                     id: image.id
                 ) { uiimage in
                     let _ = DataManager.shared.createOrUpdateLocalImageWithImageData(imageData: image,
                                                                                      withImage: uiimage,
                                                                                      inContext: .bg)
                 }
-            }
         } completionOnRemoved: { imageData in
             DataManager.shared.removeImageWithId(imageData.id, inContext: .bg)
         }
     }
     // MARK: - Load Image with ID and store to coredate conteiner
-    func loadImageFromGlobalStorage(
-        id: String, completion: @escaping (UIImage) -> Void
-    ) async {
+    func loadImageFromGlobalStorage(id: String, completion: @escaping (UIImage) -> Void)  {
         //load from firebase
         let storageRef = Storage.storage().reference()
         let imageRef = storageRef.child(
-            "\(GlobalProperties.Path.images.rawValue)/\(id).jpeg")
+            "\(GlobalProperties.Path.images.rawValue)/\(id)")
         imageRef.getData(maxSize: 3 * 1024 * 1024) { data, error in
             if error != nil {
-                print("download error occured")
+                print("NetworkManager download Image error occured")
             }
             if let data {
                 print("data loaded item: \(imageRef.name)")
@@ -315,9 +311,7 @@ final class NetworkManager: ObservableObject {
         do {
             let data = try Firestore.Encoder().encode(user)
             try await userRef.document(user.id).setData(data)
-            guard let image, let imageData = image.pngData() else {
-                return
-            }
+            guard let image else { return }
             await saveImageToGlobalStorage(
                 id: user.id, uiimage: image,
                 type: GlobalProperties.ImageType.user)

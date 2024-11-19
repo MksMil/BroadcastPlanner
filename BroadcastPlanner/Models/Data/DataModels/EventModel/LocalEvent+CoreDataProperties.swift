@@ -129,6 +129,14 @@ extension LocalEvent : Identifiable {
         return address
     }
     
+    var homeSmallImage : Image {
+        homeClub?.imageLogo?.smallImage ?? Image(systemName: "plus")
+    }
+    
+    var guestSmallImage : Image {
+        guestClub?.imageLogo?.smallImage ?? Image(systemName: "plus")
+    }
+    
     var homeImage : Image {
         homeClub?.imageLogo?.mediumImage ?? Image(systemName: "plus")
     }

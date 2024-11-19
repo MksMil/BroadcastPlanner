@@ -3,20 +3,21 @@ import UIKit
 import PhotosUI
 
 struct AddEditEventBackgroundView: View {
+    @StateObject var vm = AddEditEventBackgroundViewViewModel()
     @Environment(\.dismiss) var dismiss
-    
-    @State private var eventBackgroundItem: PhotosPickerItem?
-    
+    @Namespace var ns
     @FetchRequest<LocalImage>(sortDescriptors: [],predicate: NSPredicate(format: "type == %@", GlobalProperties.ImageType.eventTemplate.rawValue)) var backgroundLocalImages
     
-    let addNewBackgroundAction: (UIImage, Image) -> Void
-    let addExistBackgroundAction: (Int)->Void
+    let acceptAction: (LocalImage) -> Void
+    
     
     var body: some View {
+#if DEBUG
+        let _ = Self._printChanges()
+#endif
         VStack{
             HStack{
                 Button {
-                    //                    cancelAction()
                     dismiss()
                 } label: {
                     Image(systemName: "xmark")
@@ -66,9 +67,8 @@ struct AddEditEventBackgroundView: View {
             .font(.title)
             .bold()
             ScrollView{
-//                SmartLayout(hSpacing: 4, vSpacing: 4){
-                VStack{
-                    PhotosPicker(selection: $eventBackgroundItem) {
+                SmartLayout(hSpacing: 4, vSpacing: 4){
+                    PhotosPicker(selection: $vm.eventBackgroundItem) {
                         Image(systemName: "plus")
                             .resizable()
                             .scaledToFit()
@@ -76,51 +76,38 @@ struct AddEditEventBackgroundView: View {
                             .background {
                                 RoundedRectangle(cornerRadius: 5).fill(.ultraThinMaterial)
                             }
-                            .frame(width: 150, height: 150)
+                            .frame(width: 100, height: 100)
                     }
                     ForEach(backgroundLocalImages){ image in
-                        image.viewResizedImage
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: 150, height: 150)
-                                .clipShape(RoundedRectangle(cornerRadius: 5))
-                                .onTapGesture {
-                                    //                                locationBackground = backImages[index]
-                                    //                                globalStorage.container.saveContext()
-                                    //                                isBackSheetShowed.toggle()
-//                                    addExistBackgroundAction(index)
-//                                    dismiss()
-                                    Task{
-                                        DataManager.shared.removeLocalImage(image, inContext: .main)
-                                        DataManager.shared.saveContext(type: .main,publish: .images, id: [])
-                                    }
+                        CellImage(image: image)
+                            .matchedGeometryEffect(id: image.viewId,
+                                                   in: ns,
+                                                   isSource: true)
+                            .onTapGesture {
+                                withAnimation{
+                                    vm.selectedImage = image
                                 }
-                                .border(.red, width: 2)
-//                        }
+                            }
+                    }
+                }
+                .overlay {
+                    if let selectedImage = vm.selectedImage{
+                        RoundedRectangle(cornerRadius: 5).stroke(Color.green,
+                                                                 lineWidth: 4)
+                        .frame(width: 100, height: 100)
+                        .matchedGeometryEffect(id: selectedImage.viewId,
+                                               in: ns,
+                                               isSource: false)
                     }
                 }
             }
             .scrollIndicators(.hidden)
             .padding()
         }
-        .onChange(of: eventBackgroundItem) { newValue in
-            guard let item = eventBackgroundItem else { return }
-            Task{
-                if let data = try? await item.loadTransferable(type: Data.self),
-                   let uiimage = UIImage(data: data){
-                    addNewBackgroundAction(uiimage, Image(uiImage: uiimage))
-                    dismiss()
-                }
-            }
-        }
-        
     }
 }
 
 #Preview {
-    AddEditEventBackgroundView(
-                                addNewBackgroundAction: {_,_ in },
-                                addExistBackgroundAction: {_ in })
+    AddEditEventBackgroundView(acceptAction: {_ in })
         .environment(\.managedObjectContext, DataManager.shared.moc)
-        
 }

@@ -77,7 +77,11 @@ extension LocalClub : Identifiable {
         homeEvent?.allObjects as? [LocalEvent] ?? []
     }
     
-    var viewImageLogo: Image {
+    var viewImageSmallLogo: Image {
         imageLogo?.smallImage ?? Image(systemName: "person.3")
+    }
+    
+    var viewImageMediumLogo: Image {
+        imageLogo?.mediumImage ?? Image(systemName: "person.3")
     }
 }

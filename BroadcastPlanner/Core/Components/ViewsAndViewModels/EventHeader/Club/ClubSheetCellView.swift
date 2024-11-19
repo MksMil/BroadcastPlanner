@@ -2,18 +2,17 @@ import SwiftUI
 
 struct ClubSheetCellView: View {
 
-    let title: String
-    let image: Image
+    let club: LocalClub
     
     var body: some View {
         VStack{
-            image
+            club.viewImageMediumLogo
                 .resizable()
                 .scaledToFit()
                 .padding(5)
                 .frame(width: 70, height: 70)
             Spacer(minLength: 5)
-            Text(title.prefix(3).uppercased())
+            Text(club.viewTitle.prefix(3).uppercased())
                 .font(.subheadline)
                 .padding(.bottom,5)
             
@@ -36,8 +35,8 @@ struct ClubSheetCellView: View {
 //}
 
 
-#Preview {
-    ClubSheetCellView(title: "DON", image: Image(systemName: "plus"))
-        
-}
+//#Preview {
+//    ClubSheetCellView(title: "DON", image: Image(systemName: "plus"))
+//        
+//}
 
