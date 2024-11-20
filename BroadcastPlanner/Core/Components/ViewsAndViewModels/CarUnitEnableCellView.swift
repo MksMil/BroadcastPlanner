@@ -1,10 +1,3 @@
-//
-//  CarUnitCellView.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 16.09.2024.
-//
-
 import SwiftUI
 
 struct CarUnitEnableCellView: View {

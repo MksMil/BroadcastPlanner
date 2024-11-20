@@ -18,14 +18,14 @@ struct AddEditLocation: View {
     @State private var title: String = ""
     @State private var address: String = ""
 
-    @State private var locationPhotos: [PhotosPickerItem] = []
-    @State private var localImages: [Image] = []
+//    @State private var locationPhotos: [PhotosPickerItem] = []
+//    @State private var localImages: [Image] = []
     
     @State private var eventBackground: PhotosPickerItem?
     @State private var locationBackground: Image = Image(systemName:"compass.drawing")
     
     @State private var isShowingDialog: Bool = false
-    @State private var removedPhotoIndex: Int?
+    @State private var removedLocalImage: LocalImage?
     
     @State private var isBackSheetShowed: Bool = false
     
@@ -43,62 +43,21 @@ struct AddEditLocation: View {
     
     var body: some View {
         VStack{
-                HStack{
-                    Button {
-                                            cancelAction()
-                    } label: {
-                        Image(systemName: "xmark")
-                            .resizable()
-                            .scaledToFit()
-                            .bold()
-                            .padding()
-                            .background {
-                                Rectangle()
-                                    .fill(.red
-                                        .opacity(0.3))
-                                    .overlay {
-                                        Rectangle()
-                                            .stroke(Color
-                                                .red
-                                                .opacity(0.5),
-                                                    lineWidth: 2)
-                                    }
-                            }
-                            .frame(width: 50)
-                    }
-                    .frame(alignment: .leading)
-                    
-                    Spacer()
-                    
-                    Button{
-                        acceptAction(location)
-                    } label: {
-                        Image(systemName: "checkmark")
-                            .resizable()
-                            .scaledToFit()
-                            .bold()
-                            .padding()
-                            .background {
-                                Rectangle().fill(.green.opacity(0.3))
-                                    .overlay {
-                                        Rectangle().stroke(Color.green.opacity(0.5),
-                                                           lineWidth: 2)
-                                    }
-                            }
-                            .frame(width: 50)
-                    }
-                    .frame( alignment: .trailing)
-                }
+            ConfirmationButtonGroupView(isAcceptDisabled: .constant(false), cancelAction: {
+                cancelAction()
+            }, acceptAction: {
+                acceptAction(location)
+            })
                 .padding(.horizontal)
                 .font(.title)
                 .bold()
                 
             ScrollView{
-                
+                // TODO: Make component for title and textfield
                 Text("Location Title")
                     .font(.title3)
                     .bold()
-                TextField("enter title", text: $title)
+                TextField("enter title", text: $vm.title)
                     .padding(.horizontal)
                     .textFieldStyle(.roundedBorder)
                     .autocorrectionDisabled()
@@ -108,7 +67,7 @@ struct AddEditLocation: View {
                 Text("Location Address")
                     .font(.title3)
                     .bold()
-                TextField("enter address", text: $address,axis: .vertical)
+                TextField("enter address", text: $vm.address,axis: .vertical)
                     .lineLimit(3)
                     .padding(.horizontal)
                     .textFieldStyle(.roundedBorder)
@@ -123,42 +82,21 @@ struct AddEditLocation: View {
                     .overlay {
                         ScrollView(.horizontal){
                             HStack{
-                                ForEach(0..<localImages.count, id: \.self) { index in
-                                    ZStack(alignment: .topTrailing){
-                                        localImages[index]
-                                            .resizable()
-                                            .scaledToFill()
-                                            .frame(width: lenght, height: lenght)
-                                            .clipShape(RoundedRectangle(cornerRadius: 5))
-                                            .overlay {
-                                                RoundedRectangle(cornerRadius: 5).stroke(.white, lineWidth: 2)
-                                            }
-                                        Image(systemName: "xmark")
-                                            .resizable()
-                                            .frame(width: 8, height: 8)
-                                            .padding(3)
-                                            .onTapGesture {
-                                                //remove photo
-                                                removedPhotoIndex = index
-                                                isShowingDialog = true
-                                            }
-                                            .foregroundStyle(.white)
-                                            .background {
-                                                Circle().fill(.gray.opacity(0.7))
-                                                    .overlay {
-                                                        Circle().stroke(.white, lineWidth: 2)
-                                                    }
-                                            }
-                                            .padding(3)
-                                    }
-                                    .frame(width: lenght, height: lenght)
+                                ForEach(vm.localImages){ image in
+                                    LocationPreview(image: image,
+                                                    removeAction: {
+                                        removedLocalImage = image
+                                        isShowingDialog.toggle()
+                                    })
+                                .frame( height: lenght)
+                                
                                 }
                             }
                         }
                         .padding(.horizontal)
                         .scrollIndicators(.hidden)
                     }
-                PhotosPicker(selection: $locationPhotos) {
+                PhotosPicker(selection: $vm.locationPhotos) {
                     Text("Add background photos")
                         .padding(5)
                         .padding(.horizontal,10)
@@ -199,7 +137,11 @@ struct AddEditLocation: View {
                 Spacer(minLength: 50)
                 
                 Button("Remove location"){
-                    dismiss()
+//                    dismiss()
+                    Task{
+                        DataManager.shared.removeLocalLocation(location, inContext: .main)
+                        
+                    }
                 }
                 .buttonStyle(.borderedProminent)
             }
@@ -210,19 +152,7 @@ struct AddEditLocation: View {
                 }
 
             })
-            .onChange(of: locationPhotos) { photos in
-                Task{
-                    for photo in photos{
-                        guard let imageData = try? await photo.loadTransferable(type: Data.self),
-                              let uiimage = UIImage(data: imageData) else { continue }
-                        let localImage = Image(uiImage: uiimage)
-                        withAnimation{
-                            localImages.append(localImage)
-                            locationPhotos = []
-                        }
-                    }
-                }
-            }
+
             .onChange(of: eventBackground) { bgItem in
 //                Task{
 //                    guard let item = bgItem,
@@ -239,11 +169,12 @@ struct AddEditLocation: View {
             ) {
                 Button("Remove Photo", role: .destructive) {
                     // Handle empty trash action.
-                    guard let removedPhotoIndex else { return }
+                    guard let removedLocalImage else { return }
+                    print("remove")
                     withAnimation{
-                        let _ = localImages.remove(at: removedPhotoIndex)
+//                        let _ = localImages.remove(at: removedPhotoIndex)
                     }
-                    self.removedPhotoIndex = nil
+//                    self.removedPhotoIndex = nil
                 }
             }
         }
@@ -252,7 +183,7 @@ struct AddEditLocation: View {
             title = location.viewTitle
             address = location.viewAddress
             locationBackground = Image(uiImage: location.viewBackground)
-            localImages = location.viewImages
+//            localImages = location.viewImages
         }
     }
     
@@ -262,4 +193,39 @@ struct AddEditLocation: View {
 #Preview {
     AddEditLocation(location: LocalLocation(context: DataManager.shared.moc),cancelAction: {}, acceptAction: {_ in })
         .environment(\.managedObjectContext, DataManager.shared.moc)
+}
+
+
+struct LocationPreview: View {
+    
+    let image: LocalImage
+    let removeAction: ()->Void
+    
+    var body: some View {
+        ZStack(alignment: .topTrailing){
+            image.mediumImage
+            .resizable()
+            .scaledToFill()
+            .clipShape(RoundedRectangle(cornerRadius: 5))
+            .overlay {
+                RoundedRectangle(cornerRadius: 5).stroke(.white, lineWidth: 2)
+            }
+            Image(systemName: "xmark")
+                .resizable()
+                .frame(width: 8, height: 8)
+                .padding(3)
+                .onTapGesture {
+                    //remove photo
+                    removeAction()
+                }
+                .foregroundStyle(.white)
+                .background {
+                    Circle().fill(.gray.opacity(0.7))
+                        .overlay {
+                            Circle().stroke(.white, lineWidth: 2)
+                        }
+                }
+                .padding(3)
+        }
+    }
 }

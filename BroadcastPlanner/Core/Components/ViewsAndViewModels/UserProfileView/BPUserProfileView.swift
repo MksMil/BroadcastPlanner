@@ -7,7 +7,6 @@ struct BPUserProfileView: View {
     var image: UIImage?
     
     var body: some View {
-        
             
             ZStack{
                 MainBackground()

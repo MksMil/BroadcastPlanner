@@ -92,6 +92,7 @@
 		29D0798F2CA2AF23001FDE49 /* PreviewStadiumScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29D0798E2CA2AF23001FDE49 /* PreviewStadiumScene.swift */; };
 		29D1697A2B85D4F800A70638 /* HaptickEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29D169792B85D4F800A70638 /* HaptickEngine.swift */; };
 		29D169802B86188B00A70638 /* BPValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29D1697F2B86188B00A70638 /* BPValidator.swift */; };
+		29D8D3B42CEE1D27000E4F72 /* GenericForShapes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29D8D3B32CEE1D27000E4F72 /* GenericForShapes.swift */; };
 		29E10F582C1845DE00A35A4B /* BPUserImageNameCompactCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29E10F572C1845DE00A35A4B /* BPUserImageNameCompactCell.swift */; };
 		29E10F5A2C1AF8B300A35A4B /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 29E10F592C1AF8B300A35A4B /* FirebaseStorage */; };
 		29E10F622C1D9C9900A35A4B /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 29E10F612C1D9C9900A35A4B /* SDWebImageSwiftUI */; };
@@ -201,6 +202,7 @@
 		29D0798E2CA2AF23001FDE49 /* PreviewStadiumScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewStadiumScene.swift; sourceTree = "<group>"; };
 		29D169792B85D4F800A70638 /* HaptickEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HaptickEngine.swift; sourceTree = "<group>"; };
 		29D1697F2B86188B00A70638 /* BPValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPValidator.swift; sourceTree = "<group>"; };
+		29D8D3B32CEE1D27000E4F72 /* GenericForShapes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericForShapes.swift; sourceTree = "<group>"; };
 		29E10F572C1845DE00A35A4B /* BPUserImageNameCompactCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPUserImageNameCompactCell.swift; sourceTree = "<group>"; };
 		29E10F632C21696B00A35A4B /* GlobalSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalSettings.swift; sourceTree = "<group>"; };
 		29E10F652C2169C400A35A4B /* GlobalProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalProperties.swift; sourceTree = "<group>"; };
@@ -229,6 +231,7 @@
 		29AECAE92CEB357C00CAD02C /* ListCell */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = ListCell; sourceTree = "<group>"; };
 		29B505BD2CB6B3C9003A1E3F /* BroadcastPlannerUnitTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = BroadcastPlannerUnitTests; sourceTree = "<group>"; };
 		29BE3AF42CAD57E600BDEF82 /* Data */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (29C8F88A2CC0050300A7D5D2 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Data; sourceTree = "<group>"; };
+		29D8D3B02CEDE589000E4F72 /* Buttons */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Buttons; sourceTree = "<group>"; };
 		29E70B942CDE03B9002B826E /* ImageHandle */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = ImageHandle; sourceTree = "<group>"; };
 		29F7CF132CA158FA009C303E /* DateViews */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = DateViews; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -446,6 +449,7 @@
 				294D2CA02C94511800A6682C /* Preview */,
 				2916E60C2C4E871A0025DCC6 /* Protocols */,
 				2994DE662C157C9F00DF9060 /* BPCreateEditEventView.swift */,
+				290127A92CCFD5300054B2D7 /* EventHeader */,
 				2916E6122C4E9AEF0025DCC6 /* BPEditEventPointLinks.swift */,
 				2951142E2C4E71A9005E4BF8 /* EditPoints */,
 			);
@@ -466,6 +470,8 @@
 		2955C96B2B4ECADA003F9ADC /* ViewsAndViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				29D8D3B32CEE1D27000E4F72 /* GenericForShapes.swift */,
+				29D8D3B02CEDE589000E4F72 /* Buttons */,
 				29F7CF132CA158FA009C303E /* DateViews */,
 				29CCF2EF2C80891100BCEF34 /* AuthenticationGroup */,
 				29418D902C6CCD8B007CC6F3 /* FilterViews */,
@@ -477,7 +483,6 @@
 				29E10F572C1845DE00A35A4B /* BPUserImageNameCompactCell.swift */,
 				291E72CE2BBEEBDD008092D7 /* BPSpecializationCellView.swift */,
 				29D169792B85D4F800A70638 /* HaptickEngine.swift */,
-				290127A92CCFD5300054B2D7 /* EventHeader */,
 				2994DE6D2C16F18D00DF9060 /* BPJoystick.swift */,
 				2994DE6F2C17196300DF9060 /* BPEventPlanPointImage.swift */,
 				29E8CD772C352E82002EB11A /* LogoImageView.swift */,
@@ -820,6 +825,7 @@
 				29558A232CA3F140009C3016 /* Broadcaster */,
 				29AECAE92CEB357C00CAD02C /* ListCell */,
 				29BE3AF42CAD57E600BDEF82 /* Data */,
+				29D8D3B02CEDE589000E4F72 /* Buttons */,
 				29E70B942CDE03B9002B826E /* ImageHandle */,
 				29F7CF132CA158FA009C303E /* DateViews */,
 			);
@@ -982,6 +988,7 @@
 				29418D922C6CCDAE007CC6F3 /* FiltersEnums.swift in Sources */,
 				290F598A2CE63006002EAA4A /* PersonalScreenViewModel.swift in Sources */,
 				290FF3B72B5E90240096D655 /* BPErrorView.swift in Sources */,
+				29D8D3B42CEE1D27000E4F72 /* GenericForShapes.swift in Sources */,
 				29D169802B86188B00A70638 /* BPValidator.swift in Sources */,
 				29778E242C0B85FC006EF6CE /* BPResetPasswordView.swift in Sources */,
 				29E10F662C2169C400A35A4B /* GlobalProperties.swift in Sources */,

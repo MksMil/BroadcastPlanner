@@ -1,10 +1,3 @@
-//
-//  BPButtonLargeStyle.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 10.01.2024.
-//
-
 import SwiftUI
 
 struct Mygrad: View{

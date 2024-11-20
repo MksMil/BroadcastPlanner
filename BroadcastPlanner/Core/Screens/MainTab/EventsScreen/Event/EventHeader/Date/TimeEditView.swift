@@ -16,28 +16,11 @@ struct TimeEditView: View {
     
     var body: some View {
         VStack{
-            HStack{
-                //cancell button
-                Button{
-                    cancelAction()
-                } label: {
-                    Image(systemName: "xmark")
-                        .resizable()
-                        .scaledToFit()
-                        .bold()
-                        .padding()
-                        .background {
-                            RoundedRectangle(cornerRadius: 5).fill(.red.opacity(0.3))
-                                .overlay {
-                                    RoundedRectangle(cornerRadius: 5).stroke(Color.red.opacity(0.5),
-                                                                             lineWidth: 2)
-                                }
-                        }
-                        .frame(width: 50)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                
-                //event date value
+            ConfirmationButtonGroupView(height: 50, isAcceptDisabled: .constant(false)) {
+                cancelAction()
+            } acceptAction: {
+                acceptAction(newDate)
+            } content: {
                 Text("\(newDate.formatted(date: .omitted, time: .shortened))")
                     .font(.title)
                     .fixedSize()
@@ -52,31 +35,11 @@ struct TimeEditView: View {
                             }
                     }
                     .font(.title)
-                
-                //save button
-                Button{
-                    acceptAction(newDate)
-                } label: {
-                    Image(systemName: "checkmark")
-                        .resizable()
-                        .scaledToFit()
-                        .bold()
-                        .padding()
-                        .background {
-                            RoundedRectangle(cornerRadius: 5).fill(.green.opacity(0.3))
-                                .overlay {
-                                    RoundedRectangle(cornerRadius: 5).stroke(Color.green.opacity(0.5),
-                                                                             lineWidth: 2)
-                                }
-                        }
-                        .frame(width: 50)
-                }
-                
-                .frame(maxWidth: .infinity, alignment: .trailing)
             }
             .padding(.horizontal,10)
             .padding(.top,20)
             .foregroundStyle(.black)
+            
             
            
             

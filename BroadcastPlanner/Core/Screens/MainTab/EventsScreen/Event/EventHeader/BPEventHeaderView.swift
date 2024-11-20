@@ -9,9 +9,7 @@ struct BPEventHeaderView: View {
     
     let logoSize: Double = 100
     let event: LocalEvent
-    
-    let routeAction: ()->Void
-    
+        
     @State private var timerCounter: Int = 0
     @State private var imageIndex: Int = 0
     @State private var backImage: Image?
@@ -34,6 +32,7 @@ struct BPEventHeaderView: View {
     @State private var isPresentedTimePicker: Bool = false
 
     @State private var isPresentedLocationSheet: Bool = false
+    @State private var isPresentedAddEditLocation: Bool = false
     
     @Namespace var ns
     @Namespace var min
@@ -47,7 +46,7 @@ struct BPEventHeaderView: View {
     init(event: LocalEvent, routeAction: @escaping ()->Void) {
         self.event = event
         self._eventDate = State(initialValue: event.viewRemainingDate)
-        self.routeAction = routeAction
+//        self.routeAction = routeAction
         self._homeImage = State(wrappedValue: event.homeImage)
         self._guestImage = State(wrappedValue: event.guestImage)
     }

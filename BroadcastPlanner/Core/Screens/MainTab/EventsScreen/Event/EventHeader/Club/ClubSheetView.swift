@@ -5,6 +5,8 @@ struct ClubSheetView: View {
     @StateObject var vm: ClubSheetViewModel
     @Namespace var clubNS
     
+    @State var isAcceptDissabled: Bool = true
+    
     let cancelAction: ()->Void
     let acceptAction: (LocalClub)->Void
     let createNewClubAction: ()->Void
@@ -34,31 +36,13 @@ struct ClubSheetView: View {
 #endif
         if !vm.isEditState{
             VStack(spacing: 20){
-                HStack{
-                    Button {
-                        cancelAction()
-                    } label: {
-                        Image(systemName: "xmark")
-                            .resizable()
-                            .scaledToFit()
-                            .bold()
-                            .padding()
-                            .background {
-                                Rectangle()
-                                    .fill(.red.opacity(0.3))
-                                    .overlay {
-                                        Rectangle()
-                                            .stroke(Color
-                                                .red
-                                                .opacity(0.5),
-                                                    lineWidth: 2)
-                                    }
-                            }
-                            .frame(width: 50)
-                    }
-                    
-                    Spacer()
-                    //     edit club button
+                ConfirmationButtonGroupView(height: 50, isAcceptDisabled: $isAcceptDissabled) {
+                    cancelAction()
+                } acceptAction: {
+                    //accept club to selected point
+                    guard let selectedClub = vm.selectedClub else { return }
+                    acceptAction(selectedClub)
+                } content: {
                     Button{
                         guard vm.selectedClub != nil else { return }
                         withAnimation{
@@ -80,33 +64,13 @@ struct ClubSheetView: View {
                                     }
                             }
                     }
-                    .disabled(vm.selectedClub == nil)
-                    
-                    Button{
-                        //accept club to selected point
-                        guard let selectedClub = vm.selectedClub else { return }
-                        acceptAction(selectedClub)
-                    } label: {
-                        Image(systemName: "checkmark")
-                            .resizable()
-                            .scaledToFit()
-                            .bold()
-                            .padding()
-                            .background {
-                                Rectangle().fill(vm.selectedClub == nil ? .gray.opacity(0.3): .green.opacity(0.3))
-                                    .overlay {
-                                        Rectangle().stroke(vm.selectedClub == nil ? Color.gray.opacity(0.5):Color.green.opacity(0.5),
-                                                           lineWidth: 2)
-                                    }
-                            }
-                            .frame(width: 50)
-                    }
-                    .disabled(vm.selectedClub == nil)
+                    .disabled(isAcceptDissabled)
                 }
                 .disabled(vm.isEditState)
                 .padding(.horizontal,10)
                 .padding(.top, 10)
                 .font(.title3)
+                
                 
                 ScrollView{
                     LazyVStack{
@@ -127,7 +91,10 @@ struct ClubSheetView: View {
                                                        in: clubNS,
                                                        isSource: true)
                                 .onTapGesture {
-                                    vm.selectedClub = club
+                                    withAnimation{
+                                        vm.selectedClub = club
+                                        isAcceptDissabled = false
+                                    }
                                 }
                             }
                             .overlay {
@@ -148,6 +115,7 @@ struct ClubSheetView: View {
                 .onTapGesture {
                     withAnimation{
                         vm.selectedClub = nil
+                        isAcceptDissabled = true
                     }
                 }
             }
