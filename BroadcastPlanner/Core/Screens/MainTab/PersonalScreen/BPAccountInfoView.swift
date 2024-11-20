@@ -31,7 +31,7 @@ struct BPAccountInfoView: View {
                             ) {
                                 vm.showedImage
                                     .resizable()
-                                    .scaledToFill()
+                                    .scaledToFit()
                                     .frame(width: 100, height: 100)
                                     .clipShape(Circle())
                                     .background {

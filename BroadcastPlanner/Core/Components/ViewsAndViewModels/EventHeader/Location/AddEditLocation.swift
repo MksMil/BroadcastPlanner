@@ -9,6 +9,7 @@ struct AddEditLocation: View {
     let lenght: Double = 75
     
     let location: LocalLocation
+    
     let cancelAction: ()->Void
     let acceptAction: (LocalLocation)->Void
     

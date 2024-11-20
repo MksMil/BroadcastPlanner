@@ -17,9 +17,11 @@ final class PersonalScreenViewModel: ObservableObject {
                         type: Data.self),
                     let image = UIImage(data: data)
                 else { return }
-                withAnimation(.easeInOut(duration: 3)) {
-                    inputImage = image
-                    showedImage = Image(uiImage: image)
+                await MainActor.run {
+                    withAnimation(.easeInOut(duration: 3)) {
+                        inputImage = image
+                        showedImage = Image(uiImage: image)
+                    }                    
                 }
             }
         }

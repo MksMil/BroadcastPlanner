@@ -37,7 +37,7 @@ struct RootView: View {
                 }
         }
             .onReceive(sessionStorage.$userSession) { session in
-                if let session {
+                if session != nil {
                     appState.state = .authorized
                 } else {
                     appState.state = .notAuthorized

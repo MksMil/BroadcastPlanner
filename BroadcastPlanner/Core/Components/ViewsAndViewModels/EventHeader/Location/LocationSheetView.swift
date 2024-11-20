@@ -1,5 +1,9 @@
 import SwiftUI
 
+final class LocationSheetViewModel: ObservableObject{
+    
+}
+
 struct LocationSheetView: View {
     @Environment(\.managedObjectContext) var moc
     
@@ -72,13 +76,13 @@ struct LocationSheetView: View {
             }
             Spacer()
         }
-        .fullScreenCover(isPresented: $isAddEdit ) {
-            AddEditLocation(location: selectedLocation ?? DataManager.shared.fetchOrCreateLocationWithId(UUID().uuidString, inContext: .main)) {
-                
-            } acceptAction: { location in
-                
-            }
-        }
+//        .fullScreenCover(isPresented: $isAddEdit ) {
+//            AddEditLocation(location: selectedLocation ?? DataManager.shared.fetchOrCreateLocationWithId(UUID().uuidString, inContext: .main)) {
+//                
+//            } acceptAction: { location in
+//                
+//            }
+//        }
     }
 }
 
