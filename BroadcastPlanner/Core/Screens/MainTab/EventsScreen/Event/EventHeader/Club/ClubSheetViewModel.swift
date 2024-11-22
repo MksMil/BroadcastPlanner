@@ -6,30 +6,20 @@ import CoreData
 final class ClubSheetViewModel: ObservableObject{
     @Published var isEditState: Bool = false
     @Published var selectedClub: LocalClub?
-    
-    @Published var images: [(LocalClub,Image)] = []
-    var selectedImage: Image = Image(systemName: "xmark")
-    init(){
-        fetchImages()
+        
+    var buttonTitle: String {
+        guard let selectedClub else {return "Choose Club" }
+        return "Edit \(selectedClub.viewTitle)"
+    }
+    var isAcceptDissabled: Bool {
+        selectedClub == nil
     }
     
-//    @MainActor
-    func fetchImages() {
-        Task{
-            images = ( DataManager.shared.fetchAllLocalClubs(inContext: .main).map({ club in
-                (club,club.imageLogo?.smallImage ?? Image(systemName: "xmark"))
-            })
-            )
-        }
-    }
-//    @MainActor
+    init(){}
+      
     func updateClubWith(title: String, uiimage: UIImage?,contacts: String ,urlString: String, location: LocalLocation?){
         if let selectedClub{
-                if let uiimage {
-                    images.append((selectedClub,Image(uiImage: uiimage)))
-                } else {
-                    images.append((selectedClub,Image(systemName: "xmark")))
-                }
+               
             Task{
                 DataManager.shared.updateClubWith(id: selectedClub.viewId,
                                                   title: title,
@@ -39,33 +29,27 @@ final class ClubSheetViewModel: ObservableObject{
                                                   location: location,
                                                   inContext: .main)
                 DataManager.shared.saveContext(type: .main, publish: .clubs, id: [])
-                // TODO: Network upload club + image
                 guard let uiimage else { return }
                 await NetworkManager.shared.saveImageToGlobalStorage(id: selectedClub.imageLogo?.viewId ?? UUID().uuidString, uiimage: uiimage, type: .club)
             }
         }
         withAnimation{
-//            self.selectedClub = nil
             isEditState = false
         }
     }
-//    @MainActor
     func editWithNewClub(){
-        
         Task{
             selectedClub = DataManager.shared.fetchOrCreateClubWithId(UUID().uuidString,inContext: .main)
-        withAnimation{
-            print("\(selectedClub == nil)")
-            isEditState = true
-        }
+//            await MainActor.run {   
+                withAnimation{
+                    isEditState = true
+                }
+//            }
         }
     }
-//    @MainActor
     func removeSelectedClub(){
         guard let selectedClub else { return }
-        images.removeAll { (localClub, _) in
-            selectedClub == localClub
-        }
+       
         withAnimation{
             self.selectedClub = nil
             isEditState = false

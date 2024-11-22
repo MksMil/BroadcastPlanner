@@ -16,7 +16,7 @@ struct TimeEditView: View {
     
     var body: some View {
         VStack{
-            ConfirmationButtonGroupView(height: 50, isAcceptDisabled: .constant(false)) {
+            ConfirmationButtonGroupView(height: 50, isAcceptDisabled: false) {
                 cancelAction()
             } acceptAction: {
                 acceptAction(newDate)

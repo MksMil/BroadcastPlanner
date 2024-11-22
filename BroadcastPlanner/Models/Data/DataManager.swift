@@ -221,7 +221,7 @@ extension DataManager {
     
     func fetchImagesByType(_ type: String, inContext contextType: ContextType) async -> [LocalImage]{
         let request = LocalImage.fetchRequest()
-        request.predicate = NSPredicate(format: "typr == %@", type)
+        request.predicate = NSPredicate(format: "type == %@", type)
         let context = contextFromType(contextType)
         return await context.perform {
             return (try? context.fetch(request)) ?? []

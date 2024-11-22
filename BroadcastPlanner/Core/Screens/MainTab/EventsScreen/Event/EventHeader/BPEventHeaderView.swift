@@ -1,9 +1,50 @@
 import SwiftUI
 import UIKit
 
+final class BPEventHeaderViewModel: ObservableObject{
+    @Published var locationEditState: Bool = false{
+        didSet{
+            withAnimation{
+                locationSheetDetents = locationEditState ? PresentationDetent.fraction(0.9):PresentationDetent.fraction(0.6)
+            }
+        }
+    }
+    
+    //publish?
+    @Published var state: SheetState = .none {
+        didSet{
+            withAnimation{
+                switch state {
+                case .none:
+                    locationOrClubSheet = false
+                case .selectGuestClubFlow, .selectHomeClubFlow:
+                    locationSheetDetents = PresentationDetent.fraction(0.6)
+                case .selectLocationForEvent, .selectLocationForClub:
+                    locationSheetDetents = PresentationDetent.fraction(0.9)
+                }
+            }
+        }
+    }
+    @Published var locationOrClubSheet: Bool = false
+    @Published var locationSheetDetents: PresentationDetent = PresentationDetent.fraction(0.6)
+}
+
+
+enum SheetState: Identifiable {
+    case selectHomeClubFlow
+    case selectGuestClubFlow
+    case selectLocationForEvent
+    case selectLocationForClub
+    case none
+    
+    var id:Self { self }
+}
+
 struct BPEventHeaderView: View {
     @EnvironmentObject var router: EventTabRouter
     @EnvironmentObject var settings: GlobalSettings
+    
+    @StateObject var vm: BPEventHeaderViewModel = BPEventHeaderViewModel()
     
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
@@ -14,11 +55,9 @@ struct BPEventHeaderView: View {
     @State private var imageIndex: Int = 0
     @State private var backImage: Image?
     
-//    @State var newDate: Date = Date()
     @State var eventDate: Date = Date()
     
     @State private var selectedTime: (Int,Int) = (1,1)
-    
     
     @State private var homeImage: Image
     @State private var guestImage: Image
@@ -31,8 +70,8 @@ struct BPEventHeaderView: View {
     @State private var isPresentedDatePicker: Bool = false
     @State private var isPresentedTimePicker: Bool = false
 
-    @State private var isPresentedLocationSheet: Bool = false
-    @State private var isPresentedAddEditLocation: Bool = false
+//    @State private var isPresentedLocationSheet: Bool = false
+//    @State private var isPresentedAddEditLocation: Bool = false
     
     @Namespace var ns
     @Namespace var min
@@ -63,8 +102,8 @@ struct BPEventHeaderView: View {
                     LogoImageView(image: homeImage,
                                   logoSize: logoSize)
                             .onTapGesture {
-                                iSelectedHomeTeamLogo = true
-                                isPresentedLogosSheet = true
+                                vm.state = .selectHomeClubFlow
+                                vm.locationOrClubSheet.toggle()
                             }
                         
                     VStack(spacing: 40){
@@ -93,8 +132,8 @@ struct BPEventHeaderView: View {
                         
                     LogoImageView(image: guestImage, logoSize: logoSize)
                             .onTapGesture {
-                                iSelectedHomeTeamLogo = false
-                                isPresentedLogosSheet = true
+                                vm.state = .selectGuestClubFlow
+                                vm.locationOrClubSheet.toggle()
                             }
                     }
                     .padding(.top, 25)
@@ -108,7 +147,8 @@ struct BPEventHeaderView: View {
                         .padding(5)
                         .background(RoundedRectangle(cornerRadius: 5).fill(.ultraThinMaterial).overlay{RoundedRectangle(cornerRadius: 5).stroke(.white, lineWidth: 1)})
                         .onTapGesture {
-                            isPresentedLocationSheet = true
+                            vm.state = .selectLocationForEvent
+                            vm.locationOrClubSheet.toggle()
                         }
                     
                     //address
@@ -118,7 +158,8 @@ struct BPEventHeaderView: View {
                         .padding(5)
                         .background(RoundedRectangle(cornerRadius: 5).fill(.ultraThinMaterial).overlay{RoundedRectangle(cornerRadius: 5).stroke(.white, lineWidth: 1)})
                         .onTapGesture {
-                            isPresentedLocationSheet = true
+                            vm.state = .selectLocationForEvent
+                            vm.locationOrClubSheet.toggle()
                         }
                 }
                 Spacer()
@@ -148,45 +189,46 @@ struct BPEventHeaderView: View {
                     }
             }
             // TODO: add new team and logo button and flow
-            .sheet(isPresented: $isPresentedLogosSheet, content: {
-                ClubSheetView {
-                    isPresentedLogosSheet.toggle()
-                } acceptAction: { selectedClub in
-                    //club accepted
-                    if iSelectedHomeTeamLogo{
-                        event.homeClub = selectedClub
-                        homeImage = selectedClub.imageLogo?.mediumImage ?? Image(systemName: "plus")
-                        if event.location == nil {
-                            event.location = selectedClub.homeLocation
-                        }
-                    } else {
-                        event.guestClub = selectedClub
-                        guestImage = selectedClub.imageLogo?.mediumImage ?? Image(systemName: "plus")
-                    }
-                    isPresentedLogosSheet.toggle()
-                    DataManager.shared.saveContext(type: .main, publish: .events, id: [])
-                } createNewClubAction: {
-                    isPresentedLogosSheet.toggle()
-                    let newClub = DataManager.shared.fetchOrCreateClubWithId(UUID().uuidString, inContext: .main)
-                    router.routeToAddEditClub(club: newClub)
-                } editClubAction: { selectedClub in
-                    isPresentedLogosSheet.toggle()
-                    router.routeToAddEditClub(club: selectedClub)
-                }
+//            .sheet(isPresented: $isPresentedLogosSheet, content: {
+//                ClubSheetView {
+//                    isPresentedLogosSheet.toggle()
+//                } acceptAction: { selectedClub in
+//                    //club accepted
+//                    if iSelectedHomeTeamLogo{
+//                        event.homeClub = selectedClub
+//                        homeImage = selectedClub.imageLogo?.mediumImage ?? Image(systemName: "plus")
+//                        if event.location == nil {
+//                            event.location = selectedClub.homeLocation
+//                        }
+//                    } else {
+//                        event.guestClub = selectedClub
+//                        guestImage = selectedClub.imageLogo?.mediumImage ?? Image(systemName: "plus")
+//                    }
+//                    isPresentedLogosSheet.toggle()
+//                } defineLocation: {_ in }
+//                .presentationBackground(.ultraThinMaterial)
+//                .presentationContentInteraction(.scrolls)
+//                .presentationDetents([.fraction(1)])
+//            })
+//            // TODO: add new location button and flow
+//            .sheet(isPresented: $isPresentedLocationSheet, content: {
+//                LocationFlow(isEditMode: $vm.locationEditState) {
+//                    isPresentedLocationSheet.toggle()
+//                } acceptAction: { localLocation in
+//                    event.location = localLocation
+//                    isPresentedLocationSheet.toggle()
+//                }
+////                Button("change state", action: {
+////                    vm.locationEditState.toggle()
+////                })
+//                .padding()
+//                .presentationDetents([.fraction(0.6), .fraction(0.9)],selection: $vm.locationSheetDetents)
+//            })
+            .sheet(isPresented: $vm.locationOrClubSheet, content: {
+                EventHeaderSheet(state: $vm.state, event: event)
                 .presentationBackground(.ultraThinMaterial)
                 .presentationContentInteraction(.scrolls)
-                .presentationDetents([.fraction(1)])
-            })
-            // TODO: add new location button and flow
-            .sheet(isPresented: $isPresentedLocationSheet, content: {
-                LocationSheetView(cancelAction: {
-                    isPresentedLocationSheet.toggle()
-                }, saveAction: {localLocation in
-                    event.location = localLocation
-                    isPresentedLocationSheet.toggle()
-                })
-                .padding()
-                .presentationDetents([.fraction(0.6)])
+                .presentationDetents([.fraction(0.6), .fraction(0.9)],selection: $vm.locationSheetDetents)
             })
             //date picker sheet
             .sheet(isPresented: $isPresentedDatePicker, content: {
@@ -205,7 +247,6 @@ struct BPEventHeaderView: View {
             .sheet(isPresented: $isPresentedTimePicker, content: {
                 TimeEditView(newDate: eventDate) {
                     isPresentedTimePicker = false
-
                 } acceptAction: { newDate in
                     event.date = newDate
                     eventDate = newDate
@@ -215,42 +256,26 @@ struct BPEventHeaderView: View {
                 .presentationBackground(.ultraThinMaterial)
                 .presentationDetents([.fraction(0.5)])
             })
-        //timer control for background club images
-            .onReceive(timer) { _ in
-                timerCounter += 1
-                if timerCounter > 8 {
-                    timerCounter = 0
-                    updateBackground()
-                }
-            }
-            
-    }
-
-    //circular background
-    func updateBackground(){
-//        withAnimation(.linear(duration: 2)){
-//            if event.eventLocation.imageStrings.isEmpty{
-//                backImage = "neitral"
-//            } else {
-//                imageIndex += 1
-//                if imageIndex < event.eventLocation.imageStrings.count{
-//                    backImage = event.eventLocation.imageStrings[imageIndex]
-//                } else {
-//                    imageIndex = 0
-//                    backImage = event.eventLocation.imageStrings[imageIndex]
+//            .task{
+//                Task{
+//                    let images = await DataManager.shared.fetchImagesByType(GlobalProperties.ImageType.location.rawValue, inContext: .main)
+//                    for image in images {
+//                        DataManager.shared.removeLocalImage(image, inContext: .main)
+//                        print("deleted")
+//                        DataManager.shared.saveContext(type: .main, publish: .none, id: [])
+//                    }
 //                }
+//                
 //            }
-//        }
-    }
-
+}
 }
 
-#Preview {
-        MainEventsList()
-        .environmentObject(GlobalSessionStorage())
-        .environmentObject(GlobalSettings())
-        .environment(\.managedObjectContext, DataManager.shared.moc)
-}
+//#Preview {
+//        MainEventsList()
+//        .environmentObject(GlobalSessionStorage())
+//        .environmentObject(GlobalSettings())
+//        .environment(\.managedObjectContext, DataManager.shared.moc)
+//}
 
 //#Preview {
 //    BPEventHeaderView(event: LocalEvent(context: DataManager.preview.moc)
@@ -260,12 +285,12 @@ struct BPEventHeaderView: View {
 //    .environmentObject(EventTabRouter())
 //}
 
-//#Preview {
-//    NavigationStack{
-//        BPCreateEditEventView(event: LocalEvent(context: DataManager.shared.moc))
-//    }
-//            .environmentObject(GlobalSettings())
-//            .environmentObject(GlobalSessionStorage())
-//            .environmentObject(EventTabRouter())
-//            .environment(\.managedObjectContext, DataManager.shared.moc)
-//}
+#Preview {
+    NavigationStack{
+        BPCreateEditEventView(event: LocalEvent(context: DataManager.shared.moc))
+    }
+            .environmentObject(GlobalSettings())
+            .environmentObject(GlobalSessionStorage())
+            .environmentObject(EventTabRouter())
+            .environment(\.managedObjectContext, DataManager.shared.moc)
+}

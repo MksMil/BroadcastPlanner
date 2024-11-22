@@ -1,32 +1,20 @@
 import SwiftUI
-//import UIKit
 
 struct ClubSheetView: View {
     @StateObject var vm: ClubSheetViewModel
     @Namespace var clubNS
-    
-    @State var isAcceptDissabled: Bool = true
-    
+
     let cancelAction: ()->Void
     let acceptAction: (LocalClub)->Void
-    let createNewClubAction: ()->Void
-    let editClubAction: (LocalClub)->Void
-    
-    var buttonTitle: String {
-        guard let selectedClub = vm.selectedClub else {return "Choose Club" }
-        return "Edit \(selectedClub.viewTitle)"
-    }
-    
+    let defineLocation: (LocalClub)->Void
     @FetchRequest<LocalClub>(sortDescriptors: []) var clubs
     
     init(cancelAction: @escaping () -> Void = {},
          acceptAction: @escaping (LocalClub) -> Void = {_ in },
-         createNewClubAction: @escaping () -> Void = {},
-         editClubAction: @escaping (LocalClub) -> Void = {_ in }){
+         defineLocation: @escaping (LocalClub)->Void){
         self.cancelAction = cancelAction
         self.acceptAction = acceptAction
-        self.createNewClubAction = createNewClubAction
-        self.editClubAction = editClubAction
+        self.defineLocation = defineLocation
         self._vm = StateObject(wrappedValue: ClubSheetViewModel())
     }
     
@@ -36,7 +24,8 @@ struct ClubSheetView: View {
 #endif
         if !vm.isEditState{
             VStack(spacing: 20){
-                ConfirmationButtonGroupView(height: 50, isAcceptDisabled: $isAcceptDissabled) {
+                //header group
+                ConfirmationButtonGroupView(height: 50, isAcceptDisabled: vm.isAcceptDissabled) {
                     cancelAction()
                 } acceptAction: {
                     //accept club to selected point
@@ -49,7 +38,7 @@ struct ClubSheetView: View {
                             vm.isEditState = true
                         }
                     } label: {
-                        Text(vm.selectedClub == nil ? "Choose Club":buttonTitle)
+                        Text(vm.selectedClub == nil ? "Choose Club":vm.buttonTitle)
                             .lineLimit(2)
                             .frame(width: 250)
                             .frame(height: 50)
@@ -64,13 +53,12 @@ struct ClubSheetView: View {
                                     }
                             }
                     }
-                    .disabled(isAcceptDissabled)
+                    .disabled(vm.isAcceptDissabled)
                 }
                 .disabled(vm.isEditState)
                 .padding(.horizontal,10)
                 .padding(.top, 10)
                 .font(.title3)
-                
                 
                 ScrollView{
                     LazyVStack{
@@ -93,7 +81,6 @@ struct ClubSheetView: View {
                                 .onTapGesture {
                                     withAnimation{
                                         vm.selectedClub = club
-                                        isAcceptDissabled = false
                                     }
                                 }
                             }
@@ -115,14 +102,17 @@ struct ClubSheetView: View {
                 .onTapGesture {
                     withAnimation{
                         vm.selectedClub = nil
-                        isAcceptDissabled = true
                     }
                 }
             }
         } else {
             if let selectedClub = vm.selectedClub{
                 AddEditClubView(club: selectedClub) { title, uiimage,contacts ,urlString, location in
-                    vm.updateClubWith(title: title, uiimage: uiimage, contacts: contacts, urlString: urlString, location: location)
+                    vm.updateClubWith(title: title,
+                                      uiimage: uiimage,
+                                      contacts: contacts,
+                                      urlString: urlString,
+                                      location: location)
                 } cancelAction: {
                     withAnimation{
                         vm.selectedClub = nil
@@ -130,7 +120,13 @@ struct ClubSheetView: View {
                     }
                 } removeAction: {
                     vm.removeSelectedClub()
+                } defineLocation: { club in
+                    defineLocation(club)
                 }
+            } else {
+                // TODO: Error and return
+                Text("Error: No club")
+                    
             }
         }
     }
@@ -140,7 +136,6 @@ struct ClubSheetView: View {
     ClubSheetView(
         cancelAction: {},
         acceptAction: {_ in },
-        createNewClubAction: {},
-        editClubAction: {_ in })
+        defineLocation: {_ in})
     .environment(\.managedObjectContext, DataManager.shared.moc)
 }

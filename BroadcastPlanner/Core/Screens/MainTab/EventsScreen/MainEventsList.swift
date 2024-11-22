@@ -92,11 +92,9 @@ struct MainEventsList: View {
                 case .createEdit(let event):
                     BPCreateEditEventView(event: event)
                 case .addEditLocation(let location):
-                    AddEditLocation(location: location,cancelAction: {}) { _ in
-                        
-                    }
+                    AddEditLocation(location: location,cancelAction: {}) {}
                 case .addEditClub(let club):
-                    AddEditClubView(club: club,acceptAction: {_,_,_,_,_ in },cancelAction: {}, removeAction: {})
+                    AddEditClubView(club: club,acceptAction: {_,_,_,_,_ in },cancelAction: {}, removeAction: {}, defineLocation: {_ in})
                 case .stadPointsEdit:
                     Text("")
                 case .carPointsEdit:

@@ -7,7 +7,6 @@ final class AddEditEventBackgroundViewViewModel: ObservableObject{
     @Published var selectedImage: LocalImage?
     var eventBackgroundItem: PhotosPickerItem?{
         willSet{
-    
             guard let item = newValue else { return }
             Task{
                 if let data = try? await item.loadTransferable(type: Data.self),
@@ -24,8 +23,6 @@ final class AddEditEventBackgroundViewViewModel: ObservableObject{
     init(){
 
     }
-
-    
     func createNewLocalImageWith(uiimage: UIImage){
         Task{
             let _ = DataManager

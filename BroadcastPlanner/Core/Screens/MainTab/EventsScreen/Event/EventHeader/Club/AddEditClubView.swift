@@ -1,6 +1,19 @@
 import SwiftUI
 import PhotosUI
 
+final class AddEditClubViewModel: ObservableObject{
+    var selectedPhoto: PhotosPickerItem?
+    @State var showedImage: Image = Image(systemName: "plus")
+    @State var uiimage: UIImage?
+    
+    @State private var title: String = ""
+    @State private var urlString: String = ""
+    @State private var contacts: String = ""
+    
+    @State var location: LocalLocation?
+}
+
+
 struct AddEditClubView: View {
     
     let club: LocalClub
@@ -18,14 +31,12 @@ struct AddEditClubView: View {
     let acceptAction: (String, UIImage?,String,String, LocalLocation?)->Void
     let cancelAction: ()->Void
     let removeAction: ()->Void
-
-    func updateClub(){
-    }
+    let defineLocation: (LocalClub)->Void
     
     var body: some View {
         VStack(spacing: 15){
             
-            ConfirmationButtonGroupView(isAcceptDisabled: .constant(false)) {
+            ConfirmationButtonGroupView(isAcceptDisabled: false) {
                 cancelAction()
             } acceptAction: {
                 acceptAction(title, uiimage, contacts,urlString,location)
@@ -81,7 +92,7 @@ struct AddEditClubView: View {
                 
                 //id = UUID().uuidString
                 Button {
-                    
+                    defineLocation(club)
                 } label: {
                     Text( location?.title ?? "Add Location" )
                         .font(.title)
@@ -126,5 +137,5 @@ struct AddEditClubView: View {
 }
 
 #Preview {
-    AddEditClubView(club: LocalClub(context: DataManager.preview.moc), acceptAction: {_,_,_,_,_ in }, cancelAction: {}, removeAction: {})
+    AddEditClubView(club: LocalClub(context: DataManager.preview.moc), acceptAction: {_,_,_,_,_ in }, cancelAction: {}, removeAction: {},defineLocation: {_ in})
 }

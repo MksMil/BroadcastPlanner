@@ -11,14 +11,14 @@ enum PlanSectionType: String, Identifiable {
 struct BPCreateEditEventView: View {
 
     @EnvironmentObject var eventRouter: EventTabRouter
-    @StateObject var editManager: EditPlanPointsManager =
-        EditPlanPointsManager()
+    @StateObject var editManager: EditPlanPointsManager = EditPlanPointsManager()
 
     @State var event: LocalEvent
 
     @State private var type: PlanSectionType?
     var editable: Bool {
         //        event.owners.contains { $0 == globalStorage.id }
+//        false
         true
     }
 
@@ -140,6 +140,17 @@ struct BPCreateEditEventView: View {
                         }
                     } label: {
                         Image(systemName: "trash")
+                    }
+                }
+            } else {
+                //back to eventList if !editMode
+                ToolbarItem(placement: .cancellationAction) {
+                    Button {
+                        Task {
+                            eventRouter.routeStepBack()
+                        }
+                    } label: {
+                        Image(systemName: "chevron.left")
                     }
                 }
             }

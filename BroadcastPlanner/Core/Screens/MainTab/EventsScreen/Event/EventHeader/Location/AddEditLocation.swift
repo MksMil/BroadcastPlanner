@@ -3,37 +3,22 @@ import UIKit
 import PhotosUI
 
 struct AddEditLocation: View {
-    
-    @StateObject var vm: AddEditLocationViewModel
-    
+
     let lenght: Double = 75
-    
     let location: LocalLocation
     
     let cancelAction: ()->Void
-    let acceptAction: (LocalLocation)->Void
-    
-    @Environment(\.dismiss) var dismiss
-    
-    @State private var title: String = ""
-    @State private var address: String = ""
+    let acceptAction: ()->Void
+//    let removeAction:
 
-//    @State private var locationPhotos: [PhotosPickerItem] = []
-//    @State private var localImages: [Image] = []
-    
-    @State private var eventBackground: PhotosPickerItem?
-    @State private var locationBackground: Image = Image(systemName:"compass.drawing")
-    
-    @State private var isShowingDialog: Bool = false
+    @StateObject var vm: AddEditLocationViewModel
+    @FetchRequest<LocalImage>(sortDescriptors: []) var images
+            
     @State private var removedLocalImage: LocalImage?
-    
+    @State private var isShowingDialog: Bool = false
     @State private var isBackSheetShowed: Bool = false
     
-//    @State var backgroundImages: [Image] = []
-//    
-//    @FetchRequest<LocalImage>(sortDescriptors: [],predicate: NSPredicate(format: "type == %@", GlobalProperties.ImageType.eventBackground.rawValue)) var backgroundLocalImages
-    
-    init(location: LocalLocation, cancelAction: @escaping ()->Void, acceptAction: @escaping (LocalLocation)->Void){
+    init(location: LocalLocation, cancelAction: @escaping ()->Void, acceptAction: @escaping ()->Void){
         self.location = location
         self._vm = StateObject(wrappedValue: AddEditLocationViewModel(location: location))
         self.cancelAction = cancelAction
@@ -42,12 +27,16 @@ struct AddEditLocation: View {
     
     
     var body: some View {
+#if DEBUG
+        let _ = Self._printChanges()
+#endif
         VStack{
-            ConfirmationButtonGroupView(isAcceptDisabled: .constant(false), cancelAction: {
+            ConfirmationButtonGroupView(isAcceptDisabled: false, cancelAction: {
                 cancelAction()
             }, acceptAction: {
-                acceptAction(location)
+                acceptAction()
             })
+                .padding(.top,10)
                 .padding(.horizontal)
                 .font(.title)
                 .bold()
@@ -82,7 +71,7 @@ struct AddEditLocation: View {
                     .overlay {
                         ScrollView(.horizontal){
                             HStack{
-                                ForEach(vm.localImages){ image in
+                                ForEach(images){ image in
                                     LocationPreview(image: image,
                                                     removeAction: {
                                         removedLocalImage = image
@@ -107,11 +96,8 @@ struct AddEditLocation: View {
                 .padding(.vertical,10)
                 Divider()
                     .padding(.vertical,5)
-                
-                
                 //event background representation
-
-                    locationBackground
+                vm.locationBackground
                         .resizable()
                         .scaledToFit()
                         .frame(height: 100)
@@ -137,7 +123,6 @@ struct AddEditLocation: View {
                 Spacer(minLength: 50)
                 
                 Button("Remove location"){
-//                    dismiss()
                     Task{
                         DataManager.shared.removeLocalLocation(location, inContext: .main)
                         
@@ -145,24 +130,25 @@ struct AddEditLocation: View {
                 }
                 .buttonStyle(.borderedProminent)
             }
+//            .task{
+//                images.nsPredicate = NSPredicate(format: "parentLocationImage == %@", location)
+//            }
+            
             .padding()
             .fullScreenCover(isPresented: $isBackSheetShowed, content: {
-              
-                AddEditEventBackgroundView(){ _ in
+                AddEditEventBackgroundView {
+                    isBackSheetShowed.toggle()
+                } acceptAction: { localImage in
+                    guard let localImage else {
+                        isBackSheetShowed.toggle()
+                        return
+                    }
+                    vm.locationBackground = localImage.mediumImage
+                    isBackSheetShowed.toggle()
                 }
 
-            })
 
-            .onChange(of: eventBackground) { bgItem in
-//                Task{
-//                    guard let item = bgItem,
-//                          let data = try? await item.loadTransferable(type: Data.self),
-//                          let uiimage = UIImage(data: data) else { return }
-////                    locationBackground = Image(uiImage: uiimage)
-//                    let newLocalImage = globalStorage.conteiner.createOrUpdateLocalImageWithId(UUID().uuidString, withImage: uiimage, andType: GlobalProperties.ImageType.eventBackground.rawValue)
-//                    eventBackground = nil
-//                }
-            }
+            })
             .confirmationDialog(
                 Text("Permanently erase the items in the trash?"),
                 isPresented: $isShowingDialog
@@ -171,27 +157,28 @@ struct AddEditLocation: View {
                     // Handle empty trash action.
                     guard let removedLocalImage else { return }
                     print("remove")
-                    withAnimation{
-//                        let _ = localImages.remove(at: removedPhotoIndex)
-                    }
-//                    self.removedPhotoIndex = nil
+                    DataManager.shared.removeLocalImage(removedLocalImage, inContext: .main)
+                    DataManager.shared.saveContext(type: .main, publish: .none, id: [])
                 }
             }
         }
-        
-        .task {
-            title = location.viewTitle
-            address = location.viewAddress
-            locationBackground = Image(uiImage: location.viewBackground)
-//            localImages = location.viewImages
-        }
+//        .task{
+//            Task{
+//                let request = LocalImage.fetchRequest()
+//                let images = try  DataManager.shared.moc.fetch(request)
+//                for image in images {
+//                    DataManager.shared.removeLocalImage(image, inContext: .main)
+//                    print("deleted")
+//                    DataManager.shared.saveContext(type: .main, publish: .none, id: [])
+//                }
+//            }
+//            
+//        }
     }
-    
-   
 }
 
 #Preview {
-    AddEditLocation(location: LocalLocation(context: DataManager.shared.moc),cancelAction: {}, acceptAction: {_ in })
+    AddEditLocation(location: LocalLocation(context: DataManager.shared.moc),cancelAction: {}, acceptAction: { })
         .environment(\.managedObjectContext, DataManager.shared.moc)
 }
 

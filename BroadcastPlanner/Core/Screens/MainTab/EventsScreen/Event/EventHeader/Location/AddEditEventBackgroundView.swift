@@ -4,11 +4,10 @@ import PhotosUI
 
 struct AddEditEventBackgroundView: View {
     @StateObject var vm = AddEditEventBackgroundViewViewModel()
-    @Environment(\.dismiss) var dismiss
     @Namespace var ns
     @FetchRequest<LocalImage>(sortDescriptors: [],predicate: NSPredicate(format: "type == %@", GlobalProperties.ImageType.eventTemplate.rawValue)) var backgroundLocalImages
-    
-    let acceptAction: (LocalImage) -> Void
+    let cancellAction: ()->Void
+    let acceptAction: (LocalImage?) -> Void
     
     
     var body: some View {
@@ -16,53 +15,12 @@ struct AddEditEventBackgroundView: View {
         let _ = Self._printChanges()
 #endif
         VStack{
-            HStack{
-                Button {
-                    dismiss()
-                } label: {
-                    Image(systemName: "xmark")
-                        .resizable()
-                        .scaledToFit()
-                        .bold()
-                        .padding()
-                        .background {
-                            Rectangle()
-                                .fill(.red
-                                    .opacity(0.3))
-                                .overlay {
-                                    Rectangle()
-                                        .stroke(Color
-                                            .red
-                                            .opacity(0.5),
-                                                lineWidth: 2)
-                                }
-                        }
-                        .frame(width: 50)
-                }
-                .frame(alignment: .leading)
-                
-                Spacer()
-                
-                Button{
-                    //                    saveAction()
-                    dismiss()
-                } label: {
-                    Image(systemName: "checkmark")
-                        .resizable()
-                        .scaledToFit()
-                        .bold()
-                        .padding()
-                        .background {
-                            Rectangle().fill(.green.opacity(0.3))
-                                .overlay {
-                                    Rectangle().stroke(Color.green.opacity(0.5),
-                                                       lineWidth: 2)
-                                }
-                        }
-                        .frame(width: 50)
-                }
-                .frame( alignment: .trailing)
-            }
+            ConfirmationButtonGroupView(isAcceptDisabled: false,
+                                        cancelAction: {
+                cancellAction()
+            }, acceptAction: {
+                acceptAction(vm.selectedImage)
+            })
             .padding(.horizontal)
             .font(.title)
             .bold()
@@ -108,6 +66,6 @@ struct AddEditEventBackgroundView: View {
 }
 
 #Preview {
-    AddEditEventBackgroundView(acceptAction: {_ in })
+    AddEditEventBackgroundView(cancellAction: {},acceptAction: {_ in })
         .environment(\.managedObjectContext, DataManager.shared.moc)
 }

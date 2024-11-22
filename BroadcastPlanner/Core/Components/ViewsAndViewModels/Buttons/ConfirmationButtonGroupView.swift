@@ -5,20 +5,20 @@ import SwiftUI
 
 struct ConfirmationButtonGroupView<T: View>: View {
     let height: Double
-    @Binding var isAcceptDisabled: Bool
+    let isAcceptDisabled: Bool
     let cancelAction: ()->Void
     let acceptAction: ()->Void
  
     @ViewBuilder var content: () -> T
         
     init(height: Double = 50,
-         isAcceptDisabled: Binding<Bool>,
+         isAcceptDisabled: Bool,
          cancelAction: @escaping () -> Void,
          acceptAction: @escaping () -> Void,
          content: (@escaping ()->T) = {EmptyView()} ) {
         self.height = height
         self.cancelAction = cancelAction
-        self._isAcceptDisabled =  Binding(projectedValue: isAcceptDisabled)
+        self.isAcceptDisabled = isAcceptDisabled
         self.acceptAction = acceptAction
         self.content = content
     }
@@ -78,7 +78,7 @@ struct ConfirmationButtonGroupView<T: View>: View {
 
 #Preview {
     ConfirmationButtonGroupView(height: 50,
-                                isAcceptDisabled: .constant(false)) {
+                                isAcceptDisabled: false) {
         
     } acceptAction: {
         
