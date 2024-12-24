@@ -2,7 +2,7 @@
 //  LocalLocationPoint+CoreDataClass.swift
 //  BroadcastPlanner
 //
-//  Created by Миляев Максим on 14.10.2024.
+//  Created by Миляев Максим on 23.12.2024.
 //
 //
 

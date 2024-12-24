@@ -1,11 +1,17 @@
-import SwiftUI
+//
+//  LocalImage+CoreDataProperties.swift
+//  BroadcastPlanner
+//
+//  Created by Миляев Максим on 19.12.2024.
+//
+//
+
 import UIKit
+import SwiftUI
 import CoreData
 
 
 extension LocalImage {
-    
-    
 
     @nonobjc public class func fetchRequest() -> NSFetchRequest<LocalImage> {
         return NSFetchRequest<LocalImage>(entityName: "LocalImage")
@@ -19,6 +25,8 @@ extension LocalImage {
     @NSManaged public var parentLocationImage: LocalLocation?
     @NSManaged public var parentObVan: LocalOBVan?
     @NSManaged public var parentUser: LocalUser?
+    @NSManaged public var parentLocationPreviewEvent: LocalEvent?
+    @NSManaged public var parentObvanPreviewEvent: LocalEvent?
 
 }
 
@@ -45,43 +53,57 @@ extension LocalImage : Identifiable {
     }
     
     var viewType: GlobalProperties.ImageType{
-        GlobalProperties.ImageType.init(rawValue: type ?? "none") ?? .none
+        if let newtype  = self.type {
+            return GlobalProperties.ImageType.init(rawValue: newtype) ?? .none
+        } else {
+            return .none
+        }
     }
     
     var originImage: Image {
-        makeImageWithSize(size: .originImages)
+        makeImageWithSize(size: .originImages, type: viewType)
+    }
+    
+    var largeImage: Image{
+        makeImageWithSize(size: .largeImages, type: viewType)
     }
     
     var mediumImage: Image{
-        makeImageWithSize(size: .mediumImages)
+        makeImageWithSize(size: .mediumImages, type: viewType)
     }
     
     var smallImage: Image {
-        makeImageWithSize(size: .smallImages)
+        makeImageWithSize(size: .smallImages, type: viewType)
     }
     
-    func makeImageWithSize(size: ImageSizes) -> Image{
+    func makeImageWithSize(size: ImageSizes, type: GlobalProperties.ImageType) -> Image{
         let imageManager = ImagesManager()
+        print("try to load image \(viewId), size: \(size.rawValue)")
         if let result = imageManager.loadImage(type: size, id: viewId){
             return Image(uiImage: result)
         } else {
+            print("cant load image")
             switch viewType {
-            case .user:
-                return Image(systemName: "person")
-            case .eventTemplate:
-                return Image(systemName: "compass.drawing")
-            case .club:
-                return Image(systemName: "rhombus")
-            case .broadcaster:
-                return Image(systemName: "antenna.radiowaves.left.and.right")
-            case .location:
-                return Image(systemName: "photo")
-            case .obvan:
-                return Image(systemName: "truck.box")
-            case .none:
-                return Image(systemName: "camera")
-            @unknown default:
-                return Image(systemName: "camera")
+                case .user:
+                    return Image(systemName: "person")
+                case .eventTemplate:
+                    return Image(systemName: "compass.drawing")
+                case .club:
+                    return Image(systemName: "rhombus")
+                case .broadcaster:
+                    return Image(systemName: "antenna.radiowaves.left.and.right")
+                case .location:
+                    return Image(systemName: "photo")
+                case .obvan:
+                    return Image(systemName: "truck.box")
+                case .locationPreview:
+                    return Image(systemName: "sportscourt")
+                case .obvanPreview:
+                    return Image(systemName: "truck.box")
+                case .none:
+                    return Image(systemName: "camera")
+                @unknown default:
+                    return Image(systemName: "camera")
             }
         }
     }
@@ -92,6 +114,6 @@ extension LocalImage : Identifiable {
     }
     func uploadImage(uiimage: UIImage){
         let imageManager = ImagesManager()
-        let _ = imageManager.saveResizedImages(image: uiimage, id: viewId)
+        let _ = imageManager.saveResizedImages(image: uiimage, id: viewId, type: viewType)
     }
 }

@@ -64,6 +64,7 @@ final class PersonalScreenViewModel: ObservableObject {
     }
     @MainActor
     func saveNewDataToLocalUser() async {
+            localUser.id = id
             localUser.firstName = firstName
             localUser.lastName = lastName
             localUser.email = email
@@ -75,7 +76,8 @@ final class PersonalScreenViewModel: ObservableObject {
         if let image = inputImage,let localImage =  localUser.image{
             localImage.uploadImage(uiimage: image)
             }
-            DataManager.shared.saveContext(type: .main,
+        
+          await DataManager.shared.saveContext(type: .main,
                                            publish: .none,
                                            id: [])
             await NetworkManager.shared

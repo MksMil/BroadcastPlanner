@@ -4,9 +4,6 @@
     "" : {
 
     },
-    ":" : {
-
-    },
     "%@" : {
 
     },
@@ -20,12 +17,6 @@
         }
       }
     },
-    "+ new broadcaster" : {
-
-    },
-    "+ new car" : {
-
-    },
     "1" : {
 
     },
@@ -38,7 +29,13 @@
     "Add background photos" : {
 
     },
+    "Add Club" : {
+
+    },
     "Add event background" : {
+
+    },
+    "Add location" : {
 
     },
     "Add Location" : {
@@ -50,10 +47,19 @@
     "ButtonName" : {
 
     },
+    "Cancel" : {
+
+    },
     "Change E-mail" : {
 
     },
     "Change Password" : {
+
+    },
+    "Choose Location" : {
+
+    },
+    "Club and Location Edit" : {
 
     },
     "Confirm" : {
@@ -75,6 +81,9 @@
 
     },
     "EDIT" : {
+
+    },
+    "Edit location" : {
 
     },
     "Email and Password" : {
@@ -158,7 +167,16 @@
     "password: %@" : {
 
     },
-    "Permanently erase the items in the trash?" : {
+    "Permanently erase background template in the trash?" : {
+
+    },
+    "Permanently erase the Club in the trash?" : {
+
+    },
+    "Permanently erase the Location in the trash?" : {
+
+    },
+    "Permanently erase the photo in the trash?" : {
 
     },
     "Press me" : {
@@ -170,10 +188,13 @@
     "regularMaterial" : {
 
     },
+    "Remove Background Template" : {
+
+    },
     "Remove Club" : {
 
     },
-    "Remove location" : {
+    "Remove Location" : {
 
     },
     "Remove Photo" : {
@@ -204,9 +225,6 @@
 
     },
     "Sign Up" : {
-
-    },
-    "Status" : {
 
     },
     "Tab Label 1" : {

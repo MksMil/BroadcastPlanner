@@ -1,19 +1,12 @@
 import SwiftUI
 
 struct TimeEditView: View {
-    
     @State var newDate: Date
-    
     let cancelAction: ()->()
     let acceptAction: (Date)->Void
-    
     @State private var selectedTime: (Int,Int) = (1,1)
-    
     @Namespace var hourNs
     @Namespace var minNs
-    
-    
-    
     var body: some View {
         VStack{
             ConfirmationButtonGroupView(height: 50, isAcceptDisabled: false) {
@@ -23,10 +16,8 @@ struct TimeEditView: View {
             } content: {
                 Text("\(newDate.formatted(date: .omitted, time: .shortened))")
                     .font(.title)
-                    .fixedSize()
                     .bold()
-                    .padding(.vertical,5)
-                    .padding(.horizontal,15)
+                    .frame(maxWidth: .infinity,maxHeight: .infinity)
                     .background {
                         RoundedRectangle(cornerRadius: 5).fill(.ultraThinMaterial)
                             .overlay {
@@ -34,15 +25,10 @@ struct TimeEditView: View {
                                                                          lineWidth: 1)
                             }
                     }
-                    .font(.title)
             }
             .padding(.horizontal,10)
             .padding(.top,20)
             .foregroundStyle(.black)
-            
-            
-           
-            
             Text("Hours")
                 .foregroundStyle(.gray)
             ScrollViewReader{ proxy in
@@ -55,7 +41,6 @@ struct TimeEditView: View {
                                     .bold()
                             }
                             .id(num)
-                            
                             .padding()
                             .background {
                                 RoundedRectangle(cornerRadius: 5).fill(.ultraThinMaterial)

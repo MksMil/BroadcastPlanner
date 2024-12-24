@@ -15,7 +15,7 @@ struct OBVanUnit: Codable, Identifiable,BPDataProtocol{
 
 // MARK: - map LocalUnit to OBVanUnit for firebase storage
 extension OBVanUnit{
-    static func mapToObvan(localUnit: LocalOBVanUnit) -> OBVanUnit{
+    static func mapToObvan(localUnit: LocalObvanUnit) -> OBVanUnit{
         OBVanUnit(id: localUnit.viewId,
                   position: localUnit.viewPosition,
                   coordinateX: localUnit.viewX,

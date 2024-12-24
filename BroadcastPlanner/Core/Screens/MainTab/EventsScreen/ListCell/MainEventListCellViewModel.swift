@@ -1,66 +1,43 @@
-import Foundation
+import SwiftUI
 import Combine
 
 final class MainEventListCellViewModel: ObservableObject{
     
-    var event: LocalEvent
+    let event: LocalEvent
     
-    @Published var timer = Timer.publish(every: 1,
-                                         on: .main,
-                                         in: .common)
-        .autoconnect()
+    @Published var date: Date
     @Published var eventDate: String = ""
-    @Published var counter: String = "counter here"
     @Published var title: String
     @Published var address: String
+    @Published var homeImage: Image
+    @Published var guestImage: Image
     
-    var cancellables: Set<AnyCancellable> = []
-    
-    var timeRemaining: TimeInterval {
-        max(event.viewRemainingDate.timeIntervalSinceNow, 0)
-        }
+    var firstDate: String{
+        BPDateFormater.formatDate(date: date)
+    }
+    var secondDate: String{
+        BPDateFormater.formatTime(date: date)
+    }
     
     init(event: LocalEvent) {
         self.event = event
-        self.eventDate = BPDateFormater.format(date: event.viewRemainingDate)
-        self.counter = ""
+        
+        self.date = event.viewRemainingDate
+        self.eventDate = event.viewDate
         self.title = event.viewTitle
         self.address = event.viewAddress
-        //publisher
-        makePublisher()
+        self.homeImage = event.homeImage
+        self.guestImage = event.guestImage
+
     }
-   
-    func makePublisher(){
-        self.timer.sink { [weak self] timer in
-            self?.updateCounter()
-        }
-        .store(in: &cancellables)
-    }
-    
-    var countdownFormatter: DateComponentsFormatter {
-        let formatter = DateComponentsFormatter()
-        formatter.allowedUnits = [.day, .hour, .minute, .second]
-        formatter.unitsStyle = .positional
-        formatter.zeroFormattingBehavior = .pad
-        return formatter
-    }
-    
-    func getDate(date: Date) -> String {
-        return BPDateFormater.format(date: date)
-    }
-    
-    func updateCounter() {
-        if timeRemaining > 0 {
-            counter = "\(countdownFormatter.string(from: timeRemaining) ?? "Time's up!")"
-        } else {
-            counter = "Time Up!"
-        }
-    }
-    
+
     func update(){
         title = event.viewTitle
         address = event.viewAddress
-        eventDate = getDate(date: event.viewRemainingDate)
+        eventDate = event.viewDate
+        date = event.viewRemainingDate
+        homeImage = event.homeImage
+        guestImage = event.guestImage
     }
     
     

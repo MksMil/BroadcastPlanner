@@ -4,27 +4,29 @@ import FirebaseFirestoreSwift
 import FirebaseStorage
 import UIKit
 
+
+//firebase newtwork manager
+
 final class NetworkManager: ObservableObject {
-
+    
     var db: Firestore = Firestore.firestore()
-//    var dataManager: DataManager = DataManager.shared
-
+    
     static let shared = NetworkManager()
-
-    var id: String = ""
     private init() {}
-
+    
     func startToObserveChanges() {
-        observeUsersUpdates()
-        //        observeEventsUpdates()
-        //        observeLocationsUpdates()
-        //        observeClubUpdates()
-        //        observeBroadcastersUpdates()
-        //        observeImages()
+//        observeUsersUpdates()
+//        observeEventsUpdates()
+//                observeLocationsUpdates()
+//                observeClubUpdates()
+//                observeBroadcastersUpdates()
+//        observeImages()
     }
     
     // MARK: - Generic for listeners
-    func makeSnapshotListener<T>(forType type: GlobalProperties.PublishChanges,completionOnAddModified: @escaping (T)->Void, completionOnRemoved: @escaping (T)-> Void) where T: Decodable & BPDataProtocol{
+    func makeSnapshotListener<T>(forType type: GlobalProperties.PublishChanges,
+                                 completionOnAddModified: @escaping (T)->Void,
+                                 completionOnRemoved: @escaping (T)-> Void) where T: Decodable & BPDataProtocol{
         var ids: [String] = []
         db.collection("\(type.rawValue)")
             .addSnapshotListener {(snapshot, error) in
@@ -41,7 +43,7 @@ final class NetworkManager: ObservableObject {
                                     // refresh / add data in Core Data
                                 case .added, .modified:
                                     group.addTask {
-                                            completionOnAddModified(remoteData)
+                                        completionOnAddModified(remoteData)
                                     }
                                     // data removed
                                 case .removed:
@@ -60,7 +62,7 @@ final class NetworkManager: ObservableObject {
                         //wait for all changes done
                         await group.waitForAll()
                         //after all changes in context -> it's time to save context and publish changes for those who needs
-                        DataManager.shared.saveContext(type: .bg, publish: type, id: ids)
+                        await DataManager.shared.saveContext(type: .bg, publish: type, id: ids)
                     }
                 }
             }
@@ -71,214 +73,80 @@ final class NetworkManager: ObservableObject {
     func observeUsersUpdates() {
         self.makeSnapshotListener(forType: .users) {
             //if 'new' user, or user data updated
-                let _ = DataManager.shared.createOrUpdateLocalUserWithUser($0, inContext: .bg)
+            print("NetworkManager: received user update signal from firebase:")
+            let _ = DataManager.shared.createOrUpdateLocalUserWithUser($0, inContext: .bg)
         } completionOnRemoved: {
             //if user removed
+            print("NetworkManager: received user remove signal from firebase")
             DataManager.shared.removeUser($0, inContext: .bg)
         }
     }
     
-
+    
     // MARK: - Observe Events
     func observeEventsUpdates() {
         makeSnapshotListener(forType: .events) { bpevent in
-            print("event added")
+            print("NetworkManager: received event update signal from firebase")
             let _ = DataManager.shared.createOrUpdateLocalEventWithEvent(bpevent,inContext: .bg)
-            for point in bpevent.locationPoints{
-                let _ = DataManager.shared.createOrUpdateLocalPointWithLocationPoint(point,inContext: .bg)
-                for cam in point.cameras{
-                    let _ = DataManager.shared.createOrUpdateCamera(cam, inContext: .bg)
-                }
-                for sound in point.sounds{
-                    let _ = DataManager.shared.createOrUpdateSound(sound, inContext: .bg)
-                }
-                for light in point.lights{
-                    let _ = DataManager.shared.createOrUpdateLocalLightWithLight(light, inContext: .bg)
-                }
-            }
-            for unit in bpevent.obVanUnits{
-                let _ = DataManager.shared.createOrUpdateLocalObvanUnitWithObvanUnit(unit, inContext: .bg)
-                for hardware in unit.hardwares{
-                    let _ =  DataManager.shared.createOrUpdateLocalHardwareWithHardware(hardware, inContext: .bg)
-                }
-            }
+            
         } completionOnRemoved: { bpevent in
-            print("event removed")
-            //need check of existing?
-            for point in bpevent.locationPoints{
-                for cam in point.cameras{
-                    let _ = DataManager.shared.removeCamera(camera: cam, inContext: .bg)
-                }
-                for sound in point.sounds{
-                    let _ = DataManager.shared.removeSound(sound: sound, inContext: .bg)
-                }
-                for light in point.lights{
-                    let _ = DataManager.shared.removeLight(light: light, inContext: .bg)
-                }
-                DataManager.shared.removeLocationPoint(point,inContext: .bg)
-            }
-            for unit in bpevent.obVanUnits{
-                for hardware in unit.hardwares{
-                    let _ =  DataManager.shared.removeHardware(hardware, inContext: .bg)
-                }
-                DataManager.shared.removeObvanUnit(unit: unit, inContext: .bg)
-            }
+            print("NetworkManager: received event remove signal from firebase: \(bpevent)")
+            
             DataManager.shared.removeEvent(bpevent,inContext: .bg)
         }
     }
     // MARK: - Observe locations
     func observeLocationsUpdates() {
-        db.collection("\(GlobalProperties.Path.locations.rawValue)")
-            .addSnapshotListener { (snapshot, error) in
-                guard
-                    let snapshot
-                else { return }  // error handling!?
-
-                for diff in snapshot.documentChanges {
-                    do {
-                        let data = diff.document.data()
-                        let remoteLocation = try Firestore.Decoder().decode(
-                            Location.self, from: data)
-                        switch diff.type {
-                        // refresh / add event in Core Data
-                        case .added, .modified:
-                            let _ =
-                            DataManager.shared.createOrUpdateLocalLocationWithLocation(
-                                    remoteLocation, inContext: .bg)
-                        //remove event
-                        case .removed:
-                            DataManager.shared.removeLocation(
-                                location: remoteLocation, inContext: .bg)
-                        }
-//                        DataManager.shared.saveContext(type: .bg,publish: .locations, id: "")
-                    } catch {
-                        print(
-                            "DEBUG: NetworkManager / error event decoding: \(error.localizedDescription)"
-                        )
-                        // TODO: error handling
-                        continue
-                    }
-                }
-              
-            }
+        makeSnapshotListener(forType: .locations) { location in
+            let _ = DataManager.shared.createOrUpdateLocalLocationWithLocation(location, inContext: .bg)
+        } completionOnRemoved: { removedLocation in
+            let _ = DataManager.shared.removeLocation(location: removedLocation, inContext: .bg)
+        }
     }
     // MARK: - Observe Clubs
     func observeClubUpdates() {
-        db.collection("\(GlobalProperties.Path.clubs.rawValue)")
-            .addSnapshotListener { (snapshot, error) in
-                guard 
-                    let snapshot
-                else { return }  // error handling!?
-
-                for diff in snapshot.documentChanges {
-                    do {
-                        let data = diff.document.data()
-                        let remoteClub = try Firestore.Decoder().decode(
-                            Club.self, from: data)
-                        switch diff.type {
-                        // refresh / add event in Core Data
-                        case .added, .modified:
-                            let _ = DataManager.shared.createOrUpdateLocalClubWithClub(
-                                remoteClub, inContext: .bg)
-                        //remove event
-                        case .removed:
-                            DataManager.shared.removeClub(
-                                club: remoteClub, inContext: .bg)
-                        }
-//                        DataManager.shared.saveContext(type: .bg,publish: .clubs, id: "")
-                    } catch {
-                        print(
-                            "DEBUG: NetworkManager / error event decoding: \(error.localizedDescription)"
-                        )
-                        // TODO: error handling
-                        continue
-                    }
-                }
-                
-            }
+        makeSnapshotListener(forType: .clubs) { club in
+            print("club update signal received")
+            let _ = DataManager.shared.createOrUpdateLocalClubWithClub(
+                club, inContext: .bg)
+        } completionOnRemoved: { removedClub in
+            DataManager.shared.removeClub(
+                club: removedClub, inContext: .bg)
+        }
     }
     // MARK: - Observe Broadcasters and obvans
     func observeBroadcastersUpdates() {
-//        db.collection("\(GlobalProperties.Path.broadcasters.rawValue)")
-//            .addSnapshotListener { [weak self] (snapshot, error) in
-//                guard let self,
-//                    let snapshot
-//                else { return }  // error handling!?
-//
-//                for diff in snapshot.documentChanges {
-//                    do {
-//                        let data = diff.document.data()
-//                        let remoteBroadcaster = try Firestore.Decoder().decode(
-//                            Broadcaster.self, from: data)
-//                        switch diff.type {
-//                        // refresh / add event in Core Data
-//                        case .added, .modified:
-//                            DataManager.shared
-//                                .createOrUpdateLocalBroadcasterWithBroadcaster(
-//                                    remoteBroadcaster, inContext: .bg
-//                                )
-//                            for obvan in remoteBroadcaster.obVans {
-//                                DataManager.shared.createOrUpdateLocalObvanWithObvan(
-//                                    obvan, inContext: .bg
-//                                )
-//                            }
-//                        //remove event
-//                        case .removed:
-//                            for obvan in remoteBroadcaster.obVans {
-//                                DataManager.shared.removeObvan(obvan, inContext: .bg)
-//                            }
-//                            DataManager.shared.removeBroadcaster(
-//                                broadcaster: remoteBroadcaster, inContext: .bg)
-//                        }
-////                        DataManager.shared.saveContext(type: .bg,publish: .broadcasters, id:  "")
-//                    } catch {
-//                        print(
-//                            "DEBUG: NetworkManager / error event decoding: \(error.localizedDescription)"
-//                        )
-//                        // TODO: error handling
-//                        continue
-//                    }
-//                }
-//               
-//            }
+        makeSnapshotListener(forType: .broadcasters) { remoteBroadcaster in
+            let _ = DataManager.shared
+                .createOrUpdateLocalBroadcasterWithBroadcaster(
+                    remoteBroadcaster, inContext: .bg
+                )
+        } completionOnRemoved: { removedBroadcaster in
+            DataManager.shared.removeBroadcaster(
+                broadcaster: removedBroadcaster, inContext: .bg)
+        }
     }
-
+    
     // MARK: - Observe Images
     func observeImages() {
         makeSnapshotListener(forType: .images) { image in
-                 self.loadImageFromGlobalStorage(
-                    id: image.id
-                ) { uiimage in
-                    let _ = DataManager.shared.createOrUpdateLocalImageWithImageData(imageData: image,
-                                                                                     withImage: uiimage,
-                                                                                     inContext: .bg)
-                }
+            print("received signal from snapshotlistener")
+            self.loadImageFromGlobalStorage(id: image.id) { uiimage in
+                let _ = DataManager.shared.createOrUpdateLocalImageWithImageData(imageData: image, withImage: uiimage, inContext: .bg)
+            }
         } completionOnRemoved: { imageData in
             DataManager.shared.removeImageWithId(imageData.id, inContext: .bg)
         }
     }
-    // MARK: - Load Image with ID and store to coredate conteiner
-    func loadImageFromGlobalStorage(id: String, completion: @escaping (UIImage) -> Void)  {
-        //load from firebase
-        let storageRef = Storage.storage().reference()
-        let imageRef = storageRef.child(
-            "\(GlobalProperties.Path.images.rawValue)/\(id)")
-        imageRef.getData(maxSize: 3 * 1024 * 1024) { data, error in
-            if error != nil {
-                print("NetworkManager download Image error occured")
-            }
-            if let data {
-                print("data loaded item: \(imageRef.name)")
-                if let image = UIImage(data: data) {
-                    completion(image)
-                } else {
-                    print("decoding image problem")
-                }
-            }
-        }
-    }
+}
 
-    // MARK: - Get Current session info
+// MARK: - save/load Club
+extension NetworkManager{
+    
+}
+
+// MARK: - Get Current session info
+extension NetworkManager{
     @MainActor
     func getCurrentSessionUserInfo() async -> SessionUser? {
         guard let currentUser = Auth.auth().currentUser else { return nil }
@@ -327,26 +195,19 @@ final class NetworkManager: ObservableObject {
 
 }
 // MARK: - Save/Load Images
-// TODO: thread problem
 extension NetworkManager {
-    func saveImageToGlobalStorage(id: String, uiimage: UIImage, type: GlobalProperties.ImageType)
-        async
-    {
-        guard let data = uiimage.jpegData(compressionQuality: 1) else { return }
-        let userRef = db.collection("\(GlobalProperties.Path.images.rawValue)")
-        do {
-            //            let data = try Firestore.Encoder().encode(user)
-            try await userRef.document(id).setData(["type": type.rawValue, "id":id])
-
-        } catch {
-            #if DEBUG
-                print(
-                    "DEBUG: /NetworkManager/ save user Image error: \(error.localizedDescription)"
-                )
-            #endif
-        }
-
-        //save to global
+    //save image to firebase
+    func saveImageToGlobalStorage(id: String, uiimage: UIImage, type: GlobalProperties.ImageType) async {
+        var data: Data
+        //png for alpha
+        if //type == .club || type == .eventTemplate,
+           let imageData = uiimage.pngData(){
+            data = imageData
+        } else if let imageData = uiimage.jpegData(compressionQuality: 1) {
+            data = imageData
+        } else { return }
+        
+        //save imageData to global storage
         let storageRef = Storage.storage().reference()
         let imageRef = storageRef.child(
             "\(GlobalProperties.Path.images.rawValue)/\(id)")
@@ -359,38 +220,37 @@ extension NetworkManager {
                 )
             #endif
         }
+        //save image properties to global storage
+        let userRef = db.collection("\(GlobalProperties.Path.images.rawValue)")
+        do {
+            try await userRef.document(id).setData(["type": type.rawValue, "id":id])
+        } catch {
+            #if DEBUG
+                print(
+                    "DEBUG: /NetworkManager/ save user Image error: \(error.localizedDescription)"
+                )
+            #endif
+        }
     }
-
-    @MainActor
-    func loadImagesFromGlobalStorage(
-        completion: @escaping (String, UIImage) -> Void
-    ) async {
+    //Load Image with ID and store to coredate conteiner
+    func loadImageFromGlobalStorage(id: String, completion: @escaping (UIImage) -> Void)  {
         //load from firebase
         let storageRef = Storage.storage().reference()
-        let imagesRef = storageRef.child(
-            "\(GlobalProperties.Path.images.rawValue)")
-        do {
-            let result = try await imagesRef.listAll()
-
-            for item in result.items {
-                item.getData(maxSize: 3 * 1024 * 1024) { data, error in
-                    if error != nil {
-                        print("download error occured")
-                    }
-                    if let data {
-                        print("data loaded item: \(item.name)")
-                        if let image = UIImage(data: data) {
-                            completion(item.name, image)
-                        } else {
-                            print("decoding image problem")
-                        }
-                    }
+        let imageRef = storageRef.child(
+            "\(GlobalProperties.Path.images.rawValue)/\(id)")
+        imageRef.getData(maxSize: 3 * 1024 * 1024) { data, error in
+            if error != nil {
+                print("NetworkManager download Image error occured: \(String(describing: error?.localizedDescription))")
+            }
+            if let data {
+                print("data loaded item: \(imageRef.name)")
+                if let image = UIImage(data: data) {
+                    completion(image)
+                } else {
+                    print("decoding image problem")
                 }
             }
-        } catch {
-            print("download error catched")
         }
-
     }
 }
 
@@ -411,7 +271,66 @@ extension NetworkManager {
 
     func removeEventWithId(_ id: String) async {
         do {
-            try await db.collection("\(GlobalProperties.Path.events.rawValue)")
+            print("removed event with id: \(id)")
+            try await db.collection("\(GlobalProperties.Path.events.rawValue)").document(id).delete()
+        } catch {
+            #if DEBUG
+                print(
+                    "DEBUG: remove event error: \(error.localizedDescription)")
+            #endif
+        }
+    }
+
+}
+
+// MARK: - Location
+extension NetworkManager {
+    func saveLocation(_ location: Location) async {
+        //        guard let id = event.id else { return }
+        let locationRef = db.collection("\(GlobalProperties.Path.locations.rawValue)")
+        do {
+            let data = try Firestore.Encoder().encode(location)
+            try await locationRef.document(location.id).setData(data)
+        } catch {
+            #if DEBUG
+                print("DEBUG: save event error: \(error.localizedDescription)")
+            #endif
+        }
+    }
+
+    func removeLocationWithId(_ id: String) async {
+        do {
+            try await db.collection("\(GlobalProperties.Path.locations.rawValue)").document(id).delete()
+        } catch {
+            #if DEBUG
+                print(
+                    "DEBUG: remove event error: \(error.localizedDescription)")
+            #endif
+        }
+    }
+
+}
+
+
+// MARK: - Club
+extension NetworkManager {
+    func saveClub(_ club: Club) async {
+        //        guard let id = event.id else { return }
+        let clubRef = db.collection("\(GlobalProperties.Path.clubs.rawValue)")
+        do {
+            let data = try Firestore.Encoder().encode(club)
+            try await clubRef.document(club.id).setData(data)
+            print("club saved")
+        } catch {
+            #if DEBUG
+                print("DEBUG: save event error: \(error.localizedDescription)")
+            #endif
+        }
+    }
+
+    func removeClubWithId(_ id: String) async {
+        do {
+            try await db.collection("\(GlobalProperties.Path.clubs.rawValue)")
                 .document(id).delete()
         } catch {
             #if DEBUG
@@ -421,20 +340,50 @@ extension NetworkManager {
         }
     }
 
-    func getEvents() async -> [BPEvent]? {
-        let usersRef = db.collection("\(GlobalProperties.Path.events.rawValue)")
-        do {
-            let usersSnapshot = try await usersRef.getDocuments()
-            let events = usersSnapshot.documents.compactMap {
-                try? $0.data(as: BPEvent.self)
-            }
-            return events
+}
+
+
+// MARK: - Broadcaster
+
+// MARK: - Save/load/remove generics
+
+extension NetworkManager {
+    func saveData(_ data: [String: Any],withId id: String, withType type: GlobalProperties.Path) async {
+        let dataRef = db.collection("\(type.rawValue)")
+        do{
+            try await dataRef.document(id).setData(data)
+        }catch{
+#if DEBUG
+            print(
+                "DEBUG: NetworkManager: generic \(type.rawValue) data save error: \(error.localizedDescription)")
+#endif
+        }
+    }
+    
+    func loadDataOfType(_ type: GlobalProperties.Path, id: String) async ->[String: Any]? {
+        let dataRef = db.collection("\(type.rawValue)").document(id)
+        do{
+            let data = try await dataRef.getDocument().data()
+            return data
         } catch {
-            #if DEBUG
-                print("DEBUG: getUsers flow error: \(error)")
-            #endif
+#if DEBUG
+            print(
+                "DEBUG: NetworkManager: generic \(type.rawValue) data load with id:\(id)error: \(error.localizedDescription)")
+#endif
         }
         return nil
+    }
+    
+    func removeDataOfType(_ type: GlobalProperties.Path, withId id: String) async {
+        let dataRef = db.collection("\(type)").document(id)
+        do {
+            try await dataRef.delete()
+        } catch {
+#if DEBUG
+            print(
+                "DEBUG: NetworkManager: generic \(type.rawValue) datawith id:\(id) remove error: \(error.localizedDescription)")
+#endif
+        }
     }
 }
 // MARK: - Messages

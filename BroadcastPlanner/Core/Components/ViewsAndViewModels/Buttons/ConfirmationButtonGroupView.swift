@@ -33,21 +33,23 @@ struct ConfirmationButtonGroupView<T: View>: View {
                     .scaledToFit()
                     .bold()
                     .padding(height / 4)
+                    .frame(height: height)
                     .background {
                         RoundedRectangle(cornerRadius: 5)
-                            .fill(.red
+                            .fill(.ultraThickMaterial
                                 .opacity(0.3))
                             .overlay {
                                 RoundedRectangle(cornerRadius: 5)
-                                    .stroke(Color
-                                        .red
+                                    .stroke(
+                                        .ultraThickMaterial
                                         .opacity(0.5),
                                             lineWidth: 2)
                             }
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
             }
+            .fixedSize()
             content()
+                .frame(height: height)
                 .frame(maxWidth: .infinity, alignment: .center)
             Button{
                 acceptAction()
@@ -57,33 +59,35 @@ struct ConfirmationButtonGroupView<T: View>: View {
                     .scaledToFit()
                     .bold()
                     .padding(height / 4)
+                    .frame(height: height)
+
                     .background {
                         RoundedRectangle(cornerRadius: 5)
-                            .fill(isAcceptDisabled ? .gray.opacity(0.3) :.green.opacity(0.3))
+                            .fill(.ultraThinMaterial)//isAcceptDisabled ? .ultraThinMaterial.opacity(0.3) : .ultraThinMaterial.opacity(0.5))
                             .overlay {
                                 RoundedRectangle(cornerRadius: 5)
-                                    .stroke(isAcceptDisabled ?
-                                            Color.gray.opacity(0.3) :Color.green.opacity(0.5),
+                                    .stroke(.ultraThinMaterial,//isAcceptDisabled ?
+//                                        .ultraThinMaterial.opacity(0.3) :.ultraThinMaterial.opacity(0.5),
                                             lineWidth: 2)
                             }
                     }
-                    .frame(maxWidth: .infinity, alignment: .trailing)
+                    .fixedSize()
             }
             .disabled(isAcceptDisabled)
         }
-        .frame(height: height)
+//        .frame(height: height)
         
     }
 }
 
 #Preview {
-    ConfirmationButtonGroupView(height: 50,
+    ConfirmationButtonGroupView(height: 60,
                                 isAcceptDisabled: false) {
         
     } acceptAction: {
         
     } content: {
-        Color.red
+        Color.gray
             .frame(maxWidth: .infinity)
             
     }

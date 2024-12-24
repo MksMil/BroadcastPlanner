@@ -2,9 +2,27 @@ import SwiftUI
 import CoreData
 import Combine
 
+final class MainEventListViewModel: ObservableObject{
+    
+    
+    var localUser: LocalUser?
+    
+    func fetchUserWithId(id: String?){
+        if let id {
+            localUser = DataManager.shared.fetchOrCreateUserWithId(id, inContext: .main)
+        }
+    }
+    
+//    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    
+}
+
+
 struct MainEventsList: View {
     @EnvironmentObject var session: GlobalSessionStorage
+    
     @StateObject private var eventRouter = EventTabRouter()
+    @StateObject var vm: MainEventListViewModel = MainEventListViewModel()
     
     @FetchRequest<LocalEvent>(sortDescriptors: []) var events
     
@@ -17,10 +35,14 @@ struct MainEventsList: View {
                     events.nsPredicate = nil
                     return "All Events"
                 case .userOwned:
-                events.nsPredicate = NSPredicate(format: "owners CONTAINS %@", session.userSession?.id ?? "")
+                    if let user = vm.localUser{
+                        events.nsPredicate = NSPredicate(format: "owners CONTAINS %@", user)
+                    }
                     return "My own Events"
                 case .userPartisipation:
-                    events.nsPredicate = NSPredicate(format: "users CONTAINS %@", session.userSession?.id ?? "")
+                    if let user = vm.localUser{
+                        events.nsPredicate = NSPredicate(format: "users CONTAINS %@", user)
+                    }
                     return "My participation"
             }
     }
@@ -30,6 +52,7 @@ struct MainEventsList: View {
             ZStack{
                 // MARK: - Background View
                 MainBackground()
+            
                 VStack{
                     Rectangle().fill(.ultraThinMaterial)
                         .frame(maxWidth: .infinity)
@@ -42,7 +65,7 @@ struct MainEventsList: View {
                     List {
                         ForEach(events) { event in
                             MainEventListCell(event: event)
-                                .frame(height: 70)
+//                                .frame(height: 70)
                                 .transition(.slide)
                                 .listRowBackground(Color.clear)
                                 .onTapGesture {
@@ -55,8 +78,13 @@ struct MainEventsList: View {
                         .onDelete(perform: { indexSet in
                             guard let index = indexSet.first else { return }
                             let eventToDelete = events[index]
+                            Task{
+                              await  DataManager.shared.saveContext(type: .main, publish: .none, id: [])
+                            }
                             DataManager.shared.removeLocalEvent(eventToDelete, inContext: .main)
-                            DataManager.shared.saveContext(type: .main, publish: .none, id: [])
+                            Task{
+                                await DataManager.shared.saveContext(type: .main, publish: .events, id: [ ])
+                            }
                         })
                     }
                     .padding(.horizontal,8)
@@ -76,6 +104,8 @@ struct MainEventsList: View {
                         Task{
                             let newEvent = DataManager.shared.fetchOrCreateEventWithId(UUID().uuidString,
                                                                         inContext: .main)
+                            //user -> owner of event
+                            //event -> user.ownedEvents
                             eventRouter.routeToCreateEdit(event: newEvent)
                         }
                     }label: {
@@ -90,11 +120,7 @@ struct MainEventsList: View {
             .navigationDestination(for: EventTabPath.self) { path in
                 switch path{
                 case .createEdit(let event):
-                    BPCreateEditEventView(event: event)
-                case .addEditLocation(let location):
-                    AddEditLocation(location: location,cancelAction: {}) {}
-                case .addEditClub(let club):
-                    AddEditClubView(club: club,acceptAction: {_,_,_,_,_ in },cancelAction: {}, removeAction: {}, defineLocation: {_ in})
+                        BPCreateEditEventView(event: event, userId: session.userSession?.id ?? "")
                 case .stadPointsEdit:
                     Text("")
                 case .carPointsEdit:
@@ -103,6 +129,9 @@ struct MainEventsList: View {
             }
             
         }
+        .onAppear(perform: {
+            vm.fetchUserWithId(id: session.userSession?.id)
+        })
         .environmentObject(eventRouter)
     }
 }

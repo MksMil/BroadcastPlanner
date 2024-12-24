@@ -17,6 +17,14 @@ extension LocalLocation {
     @NSManaged public var homeClub: NSSet?
     @NSManaged public var images: NSSet?
 
+    func mapToLocation() -> Location{
+        return Location(id: viewId,
+                        title: viewTitle,
+                        address: viewAddress,
+                        imagesIds: viewLocalImages.compactMap{$0.id},
+                        locationBackgroundId: background?.id)
+    }
+    
 }
 
 // MARK: Generated accessors for events
@@ -72,7 +80,7 @@ extension LocalLocation {
 
 extension LocalLocation : Identifiable {
     var viewId: String {
-        id ?? UUID().uuidString
+        id ?? ""
     }
     var viewAddress: String {
         address ?? ""
@@ -86,12 +94,16 @@ extension LocalLocation : Identifiable {
         background?.makeUIImage() ?? UIImage(imageLiteralResourceName: "stadium")
     }
     
+    var viewBackgroundPreview: Image{
+        background?.mediumImage ?? Image(systemName: "compass.drawing")
+    }
+    
     var viewEvents: [LocalEvent] {
         events?.allObjects as? [LocalEvent] ?? []
     }
     
     var viewImages: [Image] {
-        (images?.allObjects as? [LocalImage] ?? []).compactMap{$0.mediumImage}
+        (images?.allObjects as? [LocalImage] ?? []).compactMap{$0.largeImage}
     }
     
     var viewLocalImages: [LocalImage]{

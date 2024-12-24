@@ -1,3 +1,11 @@
+//
+//  LocalLocationPoint+CoreDataProperties.swift
+//  BroadcastPlanner
+//
+//  Created by Миляев Максим on 23.12.2024.
+//
+//
+
 import SwiftUI
 import CoreData
 
@@ -16,12 +24,13 @@ extension LocalLocationPoint {
     @NSManaged public var pointDescription: String?
     @NSManaged public var rotation: Int16
     @NSManaged public var task: String?
+    @NSManaged public var scaleFactor: Float
     @NSManaged public var cameras: NSSet?
     @NSManaged public var event: LocalEvent?
+    @NSManaged public var image: LocalImage?
     @NSManaged public var lights: NSSet?
     @NSManaged public var sounds: NSSet?
     @NSManaged public var user: NSSet?
-    @NSManaged public var image: LocalImage?
 
 }
 
@@ -104,6 +113,10 @@ extension LocalLocationPoint : Identifiable {
     }
     var viewRotation: Double{
         Double(rotation)
+    }
+
+    var viewScaleFactor: Double{
+        Double(scaleFactor)
     }
     var viewId: String{
         id ?? UUID().uuidString

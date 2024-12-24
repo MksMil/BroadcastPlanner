@@ -13,21 +13,7 @@ struct GlobalProperties {
     }
     
     enum ImageType: String{
-        case user, eventTemplate, club, broadcaster, location,obvan, none
+        case user, eventTemplate, club, broadcaster, location, obvan, locationPreview, obvanPreview, none
     }
 }
 
-enum TeamLogos: String, CaseIterable, Identifiable {
-    case Chernomorets, Dynamo, Ingulets, Kolos, Krivbass, LNZ, Lviv, Metalist1925, Minaj, Oleksandriya, Rukh,SC_Dnipro_1, Shakhtar, Veres, Vorskla, Zorya
-    var id: Self { self }
-}
-
-enum Stadiums: String, CaseIterable, Identifiable{
-    var id: Self {self}
-    case Krivbass_1_stad, Krivbass_2_stad, Krivbass_3_stad, LNZ_stad, Oleksandria_stad
-    var description: String {
-        String(self.rawValue.prefix { character in
-            character != "_"
-        })
-    }
-}

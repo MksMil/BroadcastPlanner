@@ -134,7 +134,7 @@ extension DataManager {
             }
         }
     }
-//bg
+
     func createOrUpdateLocalEventWithEvent(_ event: BPEvent,
                                            inContext contextType: ContextType) -> LocalEvent{
         let localEvent = fetchOrCreateEventWithId(event.id, inContext: contextType)
@@ -146,26 +146,44 @@ extension DataManager {
         let context = contextFromType(contextType)
         context.performAndWait{
             localEvent.date = event.date
-            let broadcaster = self.fetchOrCreateBroadcasterWithId(event.broadcasterId, inContext: contextType)
-            localEvent.broadcaster = broadcaster
-            broadcaster.addToEvents(localEvent)
+            if let broadcasterId = event.broadcasterId{
+                let broadcaster = self.fetchOrCreateBroadcasterWithId(broadcasterId, inContext: contextType)
+                localEvent.broadcaster = broadcaster
+                broadcaster.addToEvents(localEvent)
+            }
+            if let obvanId = event.obVanId{
+                let obvan = self.fetchOrCreateObvanWithId(obvanId, inContext: contextType)
+                localEvent.obVan = obvan
+                obvan.addToEvents(localEvent)
+            }
             
-            let obvan = self.fetchOrCreateObvanWithId(event.obVanId, inContext: contextType)
-            localEvent.obVan = obvan
-            obvan.addToEvents(localEvent)
+            if let locationID = event.locationID{
+                let location = self.fetchOrCreateLocationWithId(locationID, inContext: contextType)
+                localEvent.location = location
+                location.addToEvents(localEvent)
+            }
             
-            let location = self.fetchOrCreateLocationWithId(event.locationID, inContext: contextType)
-            localEvent.location = location
-            location.addToEvents(localEvent)
+            if let homeClubId = event.homeClubId{
+                let homeClub = self.fetchOrCreateClubWithId(homeClubId, inContext: contextType)
+                localEvent.homeClub = homeClub
+                homeClub.addToHomeEvent(localEvent)
+            }
             
-            let homeClub = self.fetchOrCreateClubWithId(event.homeClubId, inContext: contextType)
-            localEvent.homeClub = homeClub
-            homeClub.addToHomeEvent(localEvent)
-            
-            let guestClub = self.fetchOrCreateClubWithId(event.guestClubId, inContext: contextType)
-            localEvent.guestClub = guestClub
-            guestClub.addToGuestEvent(localEvent)
-            
+            if let guestClubId = event.guestClubId{
+                let guestClub = self.fetchOrCreateClubWithId(guestClubId, inContext: contextType)
+                localEvent.guestClub = guestClub
+                guestClub.addToGuestEvent(localEvent)
+            }
+            if let locationPreviewId = event.locationPreviewId{
+                let localImage = self.fetchOrCreateImageWithId(locationPreviewId, inContext: contextType)
+                localEvent.locationPreview = localImage
+                localImage.parentLocationPreviewEvent = localEvent
+            }
+            if let obvanPreviewId = event.obvanPreviewId{
+                let localImage = self.fetchOrCreateImageWithId(obvanPreviewId, inContext: contextType)
+                localEvent.obvanPreview = localImage
+                localImage.parentObvanPreviewEvent = localEvent
+            }
             for ownerId in event.ownersIds {
                 let user = self.fetchOrCreateUserWithId(ownerId, inContext: contextType)
                 localEvent.addToOwners(user)
@@ -248,15 +266,19 @@ extension DataManager {
                                         andType type: GlobalProperties.ImageType,
                                         inContext contextType: ContextType) -> LocalImage {
         let localImage = fetchOrCreateImageWithId(id, inContext: contextType)
-        let _ = ImagesManager().saveResizedImages(image: image, id: id)
+        let _ = ImagesManager().saveResizedImages(image: image, id: id, type: type)
         assignType(type: type.rawValue, toLocalImage: localImage, inContext: contextType)
         return localImage
     }
 
     func createOrUpdateLocalImageWithImageData(imageData: ImageData, withImage image: UIImage, inContext contextType: ContextType) -> LocalImage{
         let localImage = fetchOrCreateImageWithId(imageData.id, inContext: contextType)
-        let _ = ImagesManager().saveResizedImages(image: image, id: imageData.id)
         assignType(type: imageData.type, toLocalImage: localImage, inContext: contextType)
+        var type: GlobalProperties.ImageType = .none
+        if let newType = GlobalProperties.ImageType.init(rawValue: imageData.type){
+            type = newType
+        }
+        let _ = ImagesManager().saveResizedImages(image: image, id: imageData.id,type: type)
         return localImage
     }
     
@@ -321,10 +343,12 @@ extension DataManager {
                 localLocation.addToImages(image)
                 image.parentLocationImage = localLocation
             }
-            let backgroundImage = self.fetchOrCreateImageWithId(
-                location.locationBackground, inContext: contextType)
-            localLocation.background = backgroundImage
-            backgroundImage.parentLocationBackground = localLocation
+            if let imageId = location.locationBackgroundId{
+                let backgroundImage = self.fetchOrCreateImageWithId(
+                    imageId, inContext: contextType)
+                localLocation.background = backgroundImage
+                backgroundImage.parentLocationBackground = localLocation
+            }
         }
     }
 
@@ -526,9 +550,11 @@ extension DataManager {
             localClub.urlString = club.urlString
             let image = self.fetchOrCreateImageWithId(club.id, inContext: contextType)
             localClub.imageLogo = image
-            let location = self.fetchOrCreateLocationWithId(club.homeLocationID, inContext: contextType)
-            localClub.homeLocation = location
-            location.addToHomeClub(localClub)
+            if let clubId = club.homeLocationID{
+                let location = self.fetchOrCreateLocationWithId(clubId, inContext: contextType)
+                localClub.homeLocation = location
+                location.addToHomeClub(localClub)
+            }
         }
     }
 
@@ -565,6 +591,38 @@ extension DataManager {
                     location.addToHomeClub(club)
                 }
             }
+        }
+    }
+    
+    func updateClubWithClub(
+        club: LocalClub, title: String, uiimage: UIImage?, contacts: String,
+        urlString: String, location: LocalLocation?,
+        inContext contextType: ContextType
+    ) async {
+        let context = contextFromType(contextType)
+        await context.perform {
+                club.title = title
+                if let uiimage {
+                    if let localImage = club.imageLogo {
+                        localImage.uploadImage(uiimage: uiimage)
+                    } else {
+                        let localImage =
+                            self.createOrUpdateLocalImageWithId(
+                                UUID().uuidString,
+                                withImage: uiimage,
+                                andType: GlobalProperties.ImageType.club,
+                                inContext: contextType)
+                        localImage.uploadImage(uiimage: uiimage)
+                        club.imageLogo = localImage
+                        localImage.parentClubLogo = club
+                    }
+                }
+                club.contacts = contacts
+                club.urlString = urlString
+                if let location {
+                    club.homeLocation = location
+                    location.addToHomeClub(club)
+                }
         }
     }
 
@@ -620,6 +678,14 @@ extension DataManager {
         }
     }
     
+    func linkLocalCamera(_ camera: LocalCamera ,WithPoint point:LocalLocationPoint,InContext contextType: ContextType){
+        let context = contextFromType(contextType)
+        context.perform {
+            camera.point = point
+            point.addToCameras(camera)
+        }
+    }
+    
     func removeCamera(camera: Camera, inContext contextType: ContextType) {
         let context = contextFromType(contextType)
         let request = LocalCamera.fetchRequest()
@@ -663,6 +729,15 @@ extension DataManager {
             localSound.windDefence = sound.windDefence.rawValue
         }
     }
+    
+    func linkLocalSound(_ sound: LocalSound ,WithPoint point:LocalLocationPoint,InContext contextType: ContextType){
+        let context = contextFromType(contextType)
+        context.perform {
+            sound.point = point
+            point.addToSounds(sound)
+        }
+    }
+    
     func removeSound(sound: Sound, inContext contextType: ContextType) {
         let context = contextFromType(contextType)
         let request = LocalSound.fetchRequest()
@@ -705,6 +780,14 @@ extension DataManager {
         let context = contextFromType(contextType)
         context.performAndWait{
             localLight.lightType = light.lightType.rawValue
+        }
+    }
+    
+    func linkLocalLight(_ light: LocalLight ,WithPoint point:LocalLocationPoint,InContext contextType: ContextType){
+        let context = contextFromType(contextType)
+        context.perform {
+            light.point = point
+            point.addToLights(light)
         }
     }
 
@@ -753,6 +836,14 @@ extension DataManager {
         context.performAndWait{
             localHardware.type = hardware.envType.rawValue
             localHardware.channels = hardware.chanels.joined(separator: ",")
+        }
+    }
+    
+    func linkLocalHardware(_ hardware: LocalHardware ,WithUnit unit:LocalObvanUnit,InContext contextType: ContextType){
+        let context = contextFromType(contextType)
+        context.perform {
+            hardware.obVanUnit = unit
+            unit.hardware = hardware
         }
     }
 
@@ -873,15 +964,15 @@ extension DataManager {
     }
 
     //Obvan unit
-    func fetchOrCreateObvanUnitWithId(_ id: String, inContext contextType: ContextType) -> LocalOBVanUnit {
+    func fetchOrCreateObvanUnitWithId(_ id: String, inContext contextType: ContextType) -> LocalObvanUnit {
         let context = contextFromType(contextType)
-        let request = LocalOBVanUnit.fetchRequest()
+        let request = LocalObvanUnit.fetchRequest()
         request.predicate = NSPredicate(format: "id == %@", id)
         return  context.performAndWait {
             if let value = try? context.fetch(request).first {
                 return value
             } else {
-                let newUnit = LocalOBVanUnit(context: context)
+                let newUnit = LocalObvanUnit(context: context)
                 newUnit.id = id
                 return newUnit
             }
@@ -889,14 +980,14 @@ extension DataManager {
     }
 
     func createOrUpdateLocalObvanUnitWithObvanUnit(_ obvanUnit: OBVanUnit,
-                                                   inContext contextType: ContextType) -> LocalOBVanUnit {
+                                                   inContext contextType: ContextType) -> LocalObvanUnit {
         let localUnit = fetchOrCreateObvanUnitWithId(obvanUnit.id, inContext: contextType)
         updateLocalUnit(localUnit, withUnit: obvanUnit, inContext: contextType)
         return localUnit
 
     }
 
-    func updateLocalUnit(_ localUnit: LocalOBVanUnit,
+    func updateLocalUnit(_ localUnit: LocalObvanUnit,
                          withUnit unit: OBVanUnit,
                          inContext contextType: ContextType) {
         let context = contextFromType(contextType)
@@ -919,7 +1010,7 @@ extension DataManager {
 
     func removeObvanUnit(unit: OBVanUnit, inContext contextType: ContextType) {
         let context = contextFromType(contextType)
-        let request = LocalOBVanUnit.fetchRequest()
+        let request = LocalObvanUnit.fetchRequest()
         request.predicate = NSPredicate(format: "id == %@", unit.id)
         context.perform {
             if let unitToRemove = try? context.fetch(request).first {
@@ -928,7 +1019,7 @@ extension DataManager {
         }
     }
 
-    func removeLocalObvanUnit(_ unit: LocalOBVanUnit, inContext contextType: ContextType) {
+    func removeLocalObvanUnit(_ unit: LocalObvanUnit, inContext contextType: ContextType) {
         let context = contextFromType(contextType)
         context.perform {
             if let hardware = unit.hardware{
@@ -941,10 +1032,11 @@ extension DataManager {
 
 // MARK: - Save context and publish changes to update ui
 extension DataManager {
-    func saveContext(type contextType: ContextType, publish: GlobalProperties.PublishChanges, id: [String])  {
+    func saveContext(type contextType: ContextType, publish: GlobalProperties.PublishChanges, id: [String]) async {
         let context = contextFromType(contextType)
         print("save context comand received")
-        Task{
+        print("changes: \(publish.rawValue)")
+//        Task{
             await context.perform {
                 if context.hasChanges {
                     do {
@@ -957,13 +1049,16 @@ extension DataManager {
                                 }
                             }
                         }
+                        print("context saved")
                     } catch {
                         print("error save context: \(error.localizedDescription)")
                     }
+                } else {
+                    print("no changes")
                 }
-                print("context saved")
+                
             }
-        }
+//        }
     }
 }
 

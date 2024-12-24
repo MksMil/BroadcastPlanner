@@ -21,7 +21,7 @@ final class AddEditEventBackgroundViewViewModel: ObservableObject{
     }
     
     init(){
-
+        
     }
     func createNewLocalImageWith(uiimage: UIImage){
         Task{
@@ -31,9 +31,19 @@ final class AddEditEventBackgroundViewViewModel: ObservableObject{
                                                 withImage: uiimage,
                                                 andType: GlobalProperties.ImageType.eventTemplate,
                                                 inContext: .bg)
-            DataManager.shared.saveContext(type: .bg,
+            await  DataManager.shared.saveContext(type: .bg,
                                            publish: .none,
                                            id: [])
+        }
+    }
+
+    func removeImage(){
+        if let localImageToRemove = selectedImage{
+            selectedImage = nil
+            DataManager.shared.removeLocalImage(localImageToRemove, inContext: .main)
+            Task{
+                await DataManager.shared.saveContext(type: .main, publish: .none, id: [])
+            }
         }
     }
 }

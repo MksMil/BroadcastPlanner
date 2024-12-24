@@ -4,22 +4,26 @@ import SpriteKit
 struct BPEditStadiumView: View {
     
     @Environment(\.dismiss) var dismiss
-    @EnvironmentObject var editManager: EditPlanPointsManager
+    
+    @StateObject var vm: BPEditStadiumViewModel
     @EnvironmentObject var settings: GlobalSettings
     
-    @Binding var event: LocalEvent
+    let event: LocalEvent
     
     @State var title: String = ""
     
     //if user cant edit(he is not owner)
     var editable: Bool
         
-    //templates control
-    var addTemplate: () -> Void = {}
-    var updateTemplate: () -> Void = {}
-    var removeTemplate: () -> Void = {}
+    let acceptAction: ()->Void
+    let cancelActon: ()->Void
     
-    @State var isEdit: Bool = false
+    //templates control
+//    var addTemplate: () -> Void = {}
+//    var updateTemplate: () -> Void = {}
+//    var removeTemplate: () -> Void = {}
+    
+//    @State var isEdit: Bool = false
     
     @State private var stadiumFilter: BPEventPlanPointStadiumFilter = .all
     
@@ -42,36 +46,39 @@ struct BPEditStadiumView: View {
 //                }
 //        }
 //    }
+    
+    init( event: LocalEvent, editable: Bool, acceptAction: @escaping ()->(), cancelAction: @escaping ()->()) {
+        self.event = event
+        self.editable = editable
+        self._vm = StateObject(wrappedValue: BPEditStadiumViewModel())
+        self.acceptAction = acceptAction
+        self.cancelActon = cancelAction
+    }
 
     var body: some View {
         ZStack{
             MainBackground()
+            
             VStack{
                 //filter section
-                Rectangle().fill(.ultraThinMaterial)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 55)
-                    .overlay {
-                        HStack(spacing: 0){
-                            //dissmiss
-                            Button {
+
+                            ConfirmationButtonGroupView(height: 50, isAcceptDisabled: false) {
+                                // cancel
+                                //rollback
                                 dismiss()
-                                editManager.resetScale(type: .stadium)
-                                // TODO: selected point = nil!!!!
-                                editManager.selectedEventPoint = nil
-                                editManager.renderPitchScene.deselect()
-                                isEdit = false
-                            } label: {
-                                Image(systemName: "chevron.down")
-                                    .font(.title)
+
+                            } acceptAction: {
+                                dismiss()
+                                vm.resetScale(type: .stadium)
+                                vm.selectedEventPoint = nil
+                                vm.renderPitchScene.deselect()
+                                vm.isEdit = false
+                            } content: {
+                                BPEventFilterCaseTabView(selectedTab:  $stadiumFilter)
+                                
                             }
-                            .padding(.leading,30)
-                            
-                            //filter
-                            BPEventFilterCaseTabView(selectedTab:  $stadiumFilter)
-                        }
-                    }
-                
+                            .padding(.horizontal)
+
                 //templates choise
                 if editable{
                     //remove template
@@ -135,51 +142,42 @@ struct BPEditStadiumView: View {
                 }
                 //SKView
                 
-                    SpriteView(scene: editManager.renderPitchScene)
+                SpriteView(scene: vm.renderPitchScene)
                     .aspectRatio(1.5, contentMode: .fit)
                     .frame(maxWidth: .infinity)
                     .clipShape(RoundedRectangle(cornerRadius: 10))
                     .padding(.horizontal)
                     
-                  
                 //control panel
                 // TODO: editable control
                 HStack(spacing: 30){
                     if editable{
-                        SaveEditControlPanelView(addAction: {editManager.addPoint()},
-                                                 deleteAction: {editManager.deletePoint()},
-                                                 saveAction: {editManager.save()},
-                                                 isEdit: $isEdit)
+                        SaveEditControlPanelView(addAction: {vm.addPoint()},
+                                                 deleteAction: {vm.deletePoint()},
+                                                 saveAction: {vm.save()},
+                                                 isEdit: vm.isEdit)
                     } else {
                         Spacer()
                     }
-                    BPEditEventControlPanel(scaleUpAction: {editManager.scaleUp(type: .stadium)},
-                                            scaleDownAction: {editManager.scaleDown(type: .stadium)},
-                                            resetScaleAction: {editManager.resetScale(type: .stadium)})
+                    BPEditEventControlPanel(scaleUpAction: {vm.scaleUp(type: .stadium)},
+                                            scaleDownAction: {vm.scaleDown(type: .stadium)},
+                                            resetScaleAction: {vm.resetScale(type: .stadium)})
                 }
                 .padding(.horizontal)
                 
                 //users collection
                 
                 // TODO: editable control
-//                BPEditEventBottomGroup(eventPlan: event.eventPlan,
-//                                       isEdit: $isEdit)
+                BPEditEventJoystickInfoPanel(vm: vm)
+                    .border(.red, width: 2)
                 .padding(.horizontal)
+                Spacer()
             }
         }
-        .onReceive(editManager.$selectedEventPoint, perform: { value in
-            if value != nil{
-                isEdit = true
-            } else {
-                isEdit = false
-            }
-        })
     }
 }
 
-//#Preview {
-//    BPEditStadiumView(event: .constant(MockData.sampleEvent),
-//                      editable: true)
-//    .environmentObject(EditPlanPointsManager())
-//    .environmentObject(MockData.sampleSettings)
-//}
+#Preview {
+    BPEditStadiumView(event: DataManager.shared.fetchOrCreateEventWithId("123", inContext: .main) , editable: true,acceptAction: {},cancelAction: {})
+    .environmentObject(BPEditStadiumViewModel())
+}

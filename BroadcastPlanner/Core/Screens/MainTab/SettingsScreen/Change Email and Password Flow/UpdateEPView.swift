@@ -10,7 +10,6 @@ struct UpdateEPView: View {
         case firstField, secondField
     }
     
-    @Environment(\.dismiss) var dismiss
     @FocusState private var isFocus: FieldInFocus?
     
     var currentValue: String
@@ -19,6 +18,7 @@ struct UpdateEPView: View {
     @State private var newValue: String = ""
     
     var updEP: UpdatedEP
+    let cancelAction: ()->Void
     let updateAction: (String) -> Void
     
     var body: some View {
@@ -52,11 +52,10 @@ struct UpdateEPView: View {
                     
                     // MARK: - Confirm Button
                     Button{
-                        print("Confirm Button tapped")
                         Task{
                             isFocus = nil
                             updateAction(newValue)
-                            dismiss()
+                            
                         }
                     } label: {
                         Text("Confirm")
@@ -72,6 +71,24 @@ struct UpdateEPView: View {
                             .padding(.horizontal)
                     }
                     .padding(.top,20)
+                    Button{
+                        Task{
+                            isFocus = nil
+                            cancelAction()
+                        }
+                    } label: {
+                        Text("Cancel")
+                            .font(.title)
+                            .foregroundStyle(Color.accent)
+                        
+                    }
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 50)
+                    .background {
+                        RoundedRectangle(cornerRadius: 25.0)
+                            .foregroundColor(Color.white.opacity(0.7))
+                            .padding(.horizontal)
+                    }
                     Spacer()
                 }
                 .padding(.top,100)
@@ -82,11 +99,8 @@ struct UpdateEPView: View {
 }
 
 #Preview {
-    UpdateEPView(currentValue: "", updEP: .password, updateAction: {_ in })
-//        .environmentObject(GlobalStorage())
-    
+    UpdateEPView(currentValue: "", updEP: .password, cancelAction: {}, updateAction: {_ in })
 }
 #Preview {
-    UpdateEPView(currentValue: "", updEP: .email, updateAction: {_ in })
-//        .environmentObject(GlobalStorage())
+    UpdateEPView(currentValue: "", updEP: .email, cancelAction: {}, updateAction: {_ in })
 }

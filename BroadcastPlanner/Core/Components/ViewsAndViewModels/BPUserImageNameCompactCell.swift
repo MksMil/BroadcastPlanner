@@ -11,27 +11,31 @@ import SDWebImageSwiftUI
 
 struct BPUserImageNameCompactCell: View {
     
-    @State var user: BPUser?
+    let users: [LocalUser]
     
     var body: some View {
         HStack{
             Image(systemName: "person.fill")
             
             Spacer()
-            Text(user?.firstName ?? "unnamed")
+            List{
+                ForEach(users){ user in
+                    Text(user.userLastName)
+                }
+            }
             Spacer()
         }
     }
 }
 
 struct BPPositionCompactCell: View {
-    @State var pointPositionName: String?
+    let pointPositionName: String
     
     var body: some View {
         HStack{
             Image(systemName: "mappin.and.ellipse")
             Spacer()
-            Text(pointPositionName ?? "---")
+            Text(pointPositionName)
                 .font(.caption2)
             Spacer()
         }
@@ -39,15 +43,15 @@ struct BPPositionCompactCell: View {
 }
 
 struct BPCameraCompactCell: View {
-    @State var camDescription: String?
+    let camDescription: String
     
     var body: some View {
         HStack{
             Image(systemName: "video.circle")
                 .frame(width: 30)
-                .border(.red)
+                
             Spacer()
-            Text(camDescription ?? "---")
+            Text(camDescription)
 //                .font(.caption2)
             Spacer()
         }
@@ -55,15 +59,14 @@ struct BPCameraCompactCell: View {
 }
 
 struct BPMicCompactCell: View {
-    @State var micDescription: String?
+    let micDescription: String
     
     var body: some View {
         HStack{
             Image(systemName: "music.mic.circle")
                 .frame(width: 30)
-                .border(.red)
             Spacer()
-            Text(micDescription ?? "---")
+            Text(micDescription)
 //                .font(.caption2)
             Spacer()
         }
@@ -71,15 +74,14 @@ struct BPMicCompactCell: View {
 }
 
 struct BPLightCompactCell: View {
-    @State var lightDescription: String?
+    let lightDescription: String
     
     var body: some View {
         HStack{
             Image(systemName: "lightbulb.max")
                 .frame(width: 30)
-                .border(.red)
             Spacer()
-            Text(lightDescription ?? "---")
+            Text(lightDescription)
 //                .font(.caption2)
             Spacer()
         }
@@ -87,15 +89,14 @@ struct BPLightCompactCell: View {
 }
 
 struct BPEnvCompactCell: View {
-    @State var envDescription: String?
+    let envDescription: String
     
     var body: some View {
         HStack{
             Image(systemName: "arcade.stick.console")
                 .frame(width: 30)
-                .border(.red)
             Spacer()
-            Text(envDescription ?? "---")
+            Text(envDescription)
 //                .font(.caption2)
             Spacer()
         }

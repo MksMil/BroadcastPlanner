@@ -2,8 +2,7 @@ import SwiftUI
 
 enum EventTabPath: Hashable{
     case createEdit(LocalEvent)
-    case addEditClub(LocalClub)
-    case addEditLocation(LocalLocation)
+
     case stadPointsEdit
     case carPointsEdit
 }
@@ -18,14 +17,6 @@ final class EventTabRouter: ObservableObject {
     
     func routeToCreateEdit(event: LocalEvent){
         path.append(EventTabPath.createEdit(event))
-    }
-    
-    func routeToAddEditLocation(location: LocalLocation){
-        path.append(EventTabPath.addEditLocation(location))
-    }
-    
-    func routeToAddEditClub(club: LocalClub){
-        path.append(EventTabPath.addEditClub(club))
     }
     
     func routeToStadPointsEdit(){

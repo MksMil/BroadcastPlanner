@@ -8,6 +8,7 @@ struct LocationPoint: Identifiable, Equatable,Hashable, Codable,BPDataProtocol {
     var coordinateX: Double
     var coordinateY: Double
     var rotation: Double
+//    var scale: Double
 
     var imageId: String
     

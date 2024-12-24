@@ -1,6 +1,8 @@
 import UIKit
 import SwiftUI
 import CoreData
+import FirebaseFirestore
+import FirebaseFirestoreSwift
 
 
 extension LocalUser {
@@ -48,10 +50,10 @@ extension LocalUser {
 extension LocalUser {
 
     @objc(addObVanUnitsObject:)
-    @NSManaged public func addToObVanUnits(_ value: LocalOBVanUnit)
+    @NSManaged public func addToObVanUnits(_ value: LocalObvanUnit)
 
     @objc(removeObVanUnitsObject:)
-    @NSManaged public func removeFromObVanUnits(_ value: LocalOBVanUnit)
+    @NSManaged public func removeFromObVanUnits(_ value: LocalObvanUnit)
 
     @objc(addObVanUnits:)
     @NSManaged public func addToObVanUnits(_ values: NSSet)
@@ -98,38 +100,15 @@ extension LocalUser {
 //data unwrapping
 
 extension LocalUser : Identifiable {
-    var userId: String {
-        id ?? "N/A"
-    }
-    
-    var userFirstName: String{
-        firstName ?? "N/A"
-    }
-    
-    var userLastName: String {
-        lastName ?? "N/A"
-    }
-    var userEmail: String {
-        email ?? "N/A"
-    }
-    var userPhoneNumber: String{
-        phoneNumber ?? "N/A"
-    }
-    var userAddress: String{
-        homeAddress ?? "N/A"
-    }
-    
-    var userIsOnline: Bool {
-        isOnline
-    }
-    
-    var userCreationDate: Date{
-        creationDate ?? Date()
-    }
-    
-    var userLeaveDate: Date {
-        leaveDate ?? Date()
-    }
+    var userId: String { id ?? "" }
+    var userFirstName: String{ firstName ?? "" }
+    var userLastName: String { lastName ?? "" }
+    var userEmail: String { email ?? "" }
+    var userPhoneNumber: String{ phoneNumber ?? "" }
+    var userAddress: String{ homeAddress ?? "" }
+    var userIsOnline: Bool { isOnline }
+    var userCreationDate: Date{ creationDate ?? Date() }
+    var userLeaveDate: Date { leaveDate ?? Date() }
     
     //an image or system Person.circle symbol
     var userImage: Image{
@@ -160,4 +139,6 @@ extension LocalUser : Identifiable {
         return participateEvents?.allObjects as? [LocalEvent] ?? []
     }
 }
+
+
 

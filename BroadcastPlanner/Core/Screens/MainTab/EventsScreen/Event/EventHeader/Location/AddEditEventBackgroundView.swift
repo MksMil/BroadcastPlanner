@@ -4,26 +4,35 @@ import PhotosUI
 
 struct AddEditEventBackgroundView: View {
     @StateObject var vm = AddEditEventBackgroundViewViewModel()
+    @State private var isRemoveEventTeamplate: Bool = false
     @Namespace var ns
-    @FetchRequest<LocalImage>(sortDescriptors: [],predicate: NSPredicate(format: "type == %@", GlobalProperties.ImageType.eventTemplate.rawValue)) var backgroundLocalImages
+    @FetchRequest<LocalImage>(sortDescriptors: [],predicate: NSPredicate(format: "type == %@", GlobalProperties.ImageType.eventTemplate.rawValue),animation: .easeInOut) var backgroundLocalImages
     let cancellAction: ()->Void
     let acceptAction: (LocalImage?) -> Void
     
     
     var body: some View {
-#if DEBUG
-        let _ = Self._printChanges()
-#endif
         VStack{
-            ConfirmationButtonGroupView(isAcceptDisabled: false,
+            ConfirmationButtonGroupView(isAcceptDisabled: vm.selectedImage == nil,
                                         cancelAction: {
                 cancellAction()
             }, acceptAction: {
                 acceptAction(vm.selectedImage)
+            }, content: {
+                Image(systemName: "trash.square")
+                    .resizable()
+                    .scaledToFit()
+                    .onTapGesture {
+                        isRemoveEventTeamplate.toggle()
+                    }
+                    .foregroundStyle(.black, .gray)
+                    .fontWeight(.light)
+                    .disabled(vm.selectedImage == nil)
+                    .opacity(vm.selectedImage == nil ? 0.3: 1)
             })
             .padding(.horizontal)
-            .font(.title)
-            .bold()
+            
+            
             ScrollView{
                 SmartLayout(hSpacing: 4, vSpacing: 4){
                     PhotosPicker(selection: $vm.eventBackgroundItem) {
@@ -43,7 +52,7 @@ struct AddEditEventBackgroundView: View {
                                                    isSource: true)
                             .onTapGesture {
                                 withAnimation{
-                                    vm.selectedImage = image
+                                    (vm.selectedImage == image) ? (vm.selectedImage = nil): (vm.selectedImage = image)
                                 }
                             }
                     }
@@ -62,6 +71,16 @@ struct AddEditEventBackgroundView: View {
             .scrollIndicators(.hidden)
             .padding()
         }
+        //background template remove confirmation dialog
+               .confirmationDialog(
+                   Text("Permanently erase background template in the trash?"),
+                   isPresented: $isRemoveEventTeamplate
+               ) {
+                   Button("Remove Background Template", role: .destructive) {
+                       // Handle empty trash action.
+                           vm.removeImage()
+                   }
+               }
     }
 }
 

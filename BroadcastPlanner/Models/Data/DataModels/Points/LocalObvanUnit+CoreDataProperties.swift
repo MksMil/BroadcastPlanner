@@ -1,8 +1,8 @@
 //
-//  LocalOBVanUnit+CoreDataProperties.swift
+//  LocalObvanUnit+CoreDataProperties.swift
 //  BroadcastPlanner
 //
-//  Created by Миляев Максим on 15.10.2024.
+//  Created by Миляев Максим on 23.12.2024.
 //
 //
 
@@ -10,10 +10,10 @@ import Foundation
 import CoreData
 
 
-extension LocalOBVanUnit {
+extension LocalObvanUnit {
 
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<LocalOBVanUnit> {
-        return NSFetchRequest<LocalOBVanUnit>(entityName: "LocalOBVanUnit")
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<LocalObvanUnit> {
+        return NSFetchRequest<LocalObvanUnit>(entityName: "LocalObvanUnit")
     }
 
     @NSManaged public var coordinateX: Float
@@ -21,13 +21,14 @@ extension LocalOBVanUnit {
     @NSManaged public var id: String?
     @NSManaged public var position: String?
     @NSManaged public var rotation: Int16
+    @NSManaged public var scaleFactor: Float
     @NSManaged public var event: LocalEvent?
     @NSManaged public var hardware: LocalHardware?
     @NSManaged public var user: LocalUser?
 
 }
 
-extension LocalOBVanUnit : Identifiable {
+extension LocalObvanUnit : Identifiable {
     var viewId: String{
         id ?? "N/A"
     }
@@ -41,7 +42,12 @@ extension LocalOBVanUnit : Identifiable {
     
     var viewRotation: Double {
         Double(rotation)
+        
     }
+    var viewScaleFactor: Double{
+        Double(scaleFactor)
+    }
+    
     var viewPosition: UserSpecialization{
         UserSpecialization(rawValue: position ?? "") ?? UserSpecialization.producer
     }
@@ -54,7 +60,7 @@ extension LocalOBVanUnit : Identifiable {
         guard let hardware else { return [] }
        return [Hardware(id: hardware.veiwId, envType: hardware.viewType, chanels: hardware.viewChannels)]
      }
-//    
+//
 //    var viewLocalHardware: [LocalHardware]{
 //        guard let hardware else { return [] }
 //       return [Hardware(id: hardware.veiwId, envType: hardware.viewType, chanels: hardware.viewChannels)]

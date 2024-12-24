@@ -1,202 +1,247 @@
+import PhotosUI
 import SwiftUI
 import UIKit
-import PhotosUI
 
 struct AddEditLocation: View {
 
     let lenght: Double = 75
     let location: LocalLocation
-    
-    let cancelAction: ()->Void
-    let acceptAction: ()->Void
-//    let removeAction:
+
+    let cancelAction: () -> Void
+    let acceptAction: () -> Void
+    let removeAction: () -> Void
 
     @StateObject var vm: AddEditLocationViewModel
-    @FetchRequest<LocalImage>(sortDescriptors: []) var images
-            
-    @State private var removedLocalImage: LocalImage?
+
     @State private var isShowingDialog: Bool = false
+    @State private var isRemoveLocationDialog: Bool = false
     @State private var isBackSheetShowed: Bool = false
-    
-    init(location: LocalLocation, cancelAction: @escaping ()->Void, acceptAction: @escaping ()->Void){
+
+    init(
+        location: LocalLocation, cancelAction: @escaping () -> Void,
+        acceptAction: @escaping () -> Void, removeAction: @escaping () -> Void
+    ) {
         self.location = location
-        self._vm = StateObject(wrappedValue: AddEditLocationViewModel(location: location))
+        self._vm = StateObject(
+            wrappedValue: AddEditLocationViewModel(location: location))
         self.cancelAction = cancelAction
         self.acceptAction = acceptAction
+        self.removeAction = removeAction
     }
-    
-    
+
     var body: some View {
-#if DEBUG
-        let _ = Self._printChanges()
-#endif
-        VStack{
-            ConfirmationButtonGroupView(isAcceptDisabled: false, cancelAction: {
-                cancelAction()
-            }, acceptAction: {
-                acceptAction()
-            })
-                .padding(.top,10)
+        ZStack{
+            Color.mainBackground.ignoresSafeArea()
+            VStack {
+                ConfirmationButtonGroupView(
+                    isAcceptDisabled: false,
+                    cancelAction: {
+                        cancelAction()
+                    },
+                    acceptAction: {
+                        Task {
+                            await vm.updateLocation()
+                            acceptAction()
+                        }
+                    },
+                    content: {
+                        Image(systemName: "trash.square")
+                            .resizable()
+                            .scaledToFit()
+                            .onTapGesture {
+                                isRemoveLocationDialog.toggle()
+                            }
+                            .fontWeight(.light)
+                            .foregroundStyle(.black, .gray)
+                    }
+                )
+                .padding(.top, 10)
                 .padding(.horizontal)
-                .font(.title)
-                .bold()
                 
-            ScrollView{
-                // TODO: Make component for title and textfield
-                Text("Location Title")
-                    .font(.title3)
-                    .bold()
-                TextField("enter title", text: $vm.title)
-                    .padding(.horizontal)
-                    .textFieldStyle(.roundedBorder)
-                    .autocorrectionDisabled()
-                
-                Divider()
-                
-                Text("Location Address")
-                    .font(.title3)
-                    .bold()
-                TextField("enter address", text: $vm.address,axis: .vertical)
-                    .lineLimit(3)
-                    .padding(.horizontal)
-                    .textFieldStyle(.roundedBorder)
-                    .autocorrectionDisabled()
-                
-                Divider()
-                    .padding(.vertical)
-                //location photos collection
-                
-                RoundedRectangle(cornerRadius: 5).fill(.gray.opacity(0.3))
-                    .frame(height: lenght + 10)
-                    .overlay {
-                        ScrollView(.horizontal){
-                            HStack{
-                                ForEach(images){ image in
-                                    LocationPreview(image: image,
-                                                    removeAction: {
-                                        removedLocalImage = image
-                                        isShowingDialog.toggle()
-                                    })
-                                .frame( height: lenght)
-                                
+                ScrollView {
+                    // TODO: Make component for title and textfield
+                    Text("Location Title")
+                        .font(.title3)
+                        .bold()
+                    TextField("enter title", text: $vm.title)
+                        .padding(.horizontal)
+                        .textFieldStyle(.roundedBorder)
+                        .autocorrectionDisabled()
+                    
+                    Divider()
+                    
+                    Text("Location Address")
+                        .font(.title3)
+                        .bold()
+                    TextField("enter address", text: $vm.address)
+                        .padding(.horizontal)
+                        .textFieldStyle(.roundedBorder)
+                        .autocorrectionDisabled(true)
+                    Divider()
+                    //                    .padding(.vertical)
+                    //location photos collection
+                    
+                    RoundedRectangle(cornerRadius: 5).fill(.gray.opacity(0.3))
+                        .frame(height: lenght + 10)
+                        .overlay {
+                            ScrollView(.horizontal) {
+                                HStack {
+                                    //saved in locationEntity photos
+                                    ForEach(vm.localImages) { localImage in
+                                        LocationPreview(
+                                            image: localImage.mediumImage,
+                                            removeAction: {
+                                                vm.localImageToRemove = localImage
+                                                isShowingDialog.toggle()
+                                            }
+                                        )
+                                        .frame(height: lenght)
+                                    }
+                                    //newAdded photos
+                                    ForEach(0..<vm.newImages.count, id: \.self) {
+                                        index in
+                                        LocationPreview(
+                                            image: Image(
+                                                uiImage: vm.newImages[index])
+                                        ) {
+                                            vm.indexSetToRemove = index
+                                            isShowingDialog.toggle()
+                                        }
+                                        .frame(height: lenght)
+                                    }
                                 }
                             }
+                            .padding(.horizontal)
+                            .scrollIndicators(.hidden)
                         }
-                        .padding(.horizontal)
-                        .scrollIndicators(.hidden)
+                    PhotosPicker(selection: $vm.locationPhotos) {
+                        Text("Add background photos")
+                            .padding(5)
+                            .padding(.horizontal, 10)
+                            .background {
+                                Capsule().fill(.gray.opacity(0.7))
+                            }
                     }
-                PhotosPicker(selection: $vm.locationPhotos) {
-                    Text("Add background photos")
-                        .padding(5)
-                        .padding(.horizontal,10)
-                        .background {
-                            Capsule().fill(.gray.opacity(0.4))
-                        }
-                }
-                .padding(.vertical,10)
-                Divider()
-                    .padding(.vertical,5)
-                //event background representation
-                vm.locationBackground
+                    .padding(.vertical, 10)
+                    Divider()
+                    //event background representation
+                    vm.locationBackgroundPreview
                         .resizable()
                         .scaledToFit()
                         .frame(height: 100)
                         .clipShape(RoundedRectangle(cornerRadius: 5))
                         .padding()
                         .background {
-                            RoundedRectangle(cornerRadius: 5).fill(.gray.opacity(0.2))
+                            RoundedRectangle(cornerRadius: 5).fill(
+                                .gray.opacity(0.2))
                         }
                         .onTapGesture {
                             isBackSheetShowed.toggle()
                         }
-                Text("Add event background")
+                    Text("Add event background")
                         .padding(5)
-                        .padding(.horizontal,10)
+                        .padding(.horizontal, 10)
                         .background {
-                            Capsule().fill(.gray.opacity(0.4))
+                            Capsule().fill(.gray.opacity(0.7))
                         }
                         .onTapGesture {
                             isBackSheetShowed.toggle()
                         }
-                .padding(.vertical,10)
+                        .padding(.vertical, 10)
+                    
+                    Spacer(minLength: 50)
+                }
+                .padding()
+                .scrollDismissesKeyboard(.immediately)
                 
-                Spacer(minLength: 50)
-                
-                Button("Remove location"){
-                    Task{
-                        DataManager.shared.removeLocalLocation(location, inContext: .main)
+                .fullScreenCover(
+                    isPresented: $isBackSheetShowed,
+                    content: {
+                        AddEditEventBackgroundView {
+                            isBackSheetShowed.toggle()
+                        } acceptAction: { localImage in
+                            guard let localImage else {
+                                isBackSheetShowed.toggle()
+                                return
+                            }
+                            vm.locationBackground = localImage
+                            isBackSheetShowed.toggle()
+                        }
                         
                     }
-                }
-                .buttonStyle(.borderedProminent)
-            }
-//            .task{
-//                images.nsPredicate = NSPredicate(format: "parentLocationImage == %@", location)
-//            }
-            
-            .padding()
-            .fullScreenCover(isPresented: $isBackSheetShowed, content: {
-                AddEditEventBackgroundView {
-                    isBackSheetShowed.toggle()
-                } acceptAction: { localImage in
-                    guard let localImage else {
-                        isBackSheetShowed.toggle()
-                        return
+                )
+                //background photo remove confirmation dialog
+                .confirmationDialog(
+                    Text("Permanently erase the photo in the trash?"),
+                    isPresented: $isShowingDialog
+                ) {
+                    Button("Remove Photo", role: .destructive) {
+                        // Handle empty trash action.
+                        withAnimation {
+                            if let localImageToRemove = vm.localImageToRemove {
+                                vm.localImages.removeAll {
+                                    $0 == localImageToRemove
+                                }
+                                DataManager.shared.removeLocalImage(
+                                    localImageToRemove, inContext: .main)
+                                Task {
+                                    await DataManager.shared.saveContext(
+                                        type: .main, publish: .none, id: [])
+                                }
+                            } else if let index = vm.indexSetToRemove {
+                                vm.removeElementAtIndex(index)
+                            }
+                        }
                     }
-                    vm.locationBackground = localImage.mediumImage
-                    isBackSheetShowed.toggle()
                 }
-
-
-            })
-            .confirmationDialog(
-                Text("Permanently erase the items in the trash?"),
-                isPresented: $isShowingDialog
-            ) {
-                Button("Remove Photo", role: .destructive) {
-                    // Handle empty trash action.
-                    guard let removedLocalImage else { return }
-                    print("remove")
-                    DataManager.shared.removeLocalImage(removedLocalImage, inContext: .main)
-                    DataManager.shared.saveContext(type: .main, publish: .none, id: [])
+                //location remove confirmation dialog
+                .confirmationDialog(
+                    Text("Permanently erase the Location in the trash?"),
+                    isPresented: $isRemoveLocationDialog
+                ) {
+                    Button("Remove Location", role: .destructive) {
+                        // Handle empty trash action.
+                        
+                        Task {
+                            await NetworkManager.shared.removeLocationWithId(location.viewId)
+                            DataManager.shared.removeLocalLocation(
+                                location, inContext: .main)
+                            await DataManager.shared.saveContext(
+                                type: .main, publish: .locations, id: [])
+                            removeAction()
+                        }
+                    }
                 }
             }
         }
-//        .task{
-//            Task{
-//                let request = LocalImage.fetchRequest()
-//                let images = try  DataManager.shared.moc.fetch(request)
-//                for image in images {
-//                    DataManager.shared.removeLocalImage(image, inContext: .main)
-//                    print("deleted")
-//                    DataManager.shared.saveContext(type: .main, publish: .none, id: [])
-//                }
-//            }
-//            
-//        }
+        .navigationBarBackButtonHidden()
     }
 }
 
 #Preview {
-    AddEditLocation(location: LocalLocation(context: DataManager.shared.moc),cancelAction: {}, acceptAction: { })
-        .environment(\.managedObjectContext, DataManager.shared.moc)
+    AddEditLocation(
+        location: DataManager.shared.fetchOrCreateLocationWithId(
+            "123", inContext: .main), cancelAction: {}, acceptAction: {},
+        removeAction: {}
+    )
+    .environment(\.managedObjectContext, DataManager.shared.moc)
 }
 
-
 struct LocationPreview: View {
-    
-    let image: LocalImage
-    let removeAction: ()->Void
-    
+
+    let image: Image
+    let removeAction: () -> Void
+
     var body: some View {
-        ZStack(alignment: .topTrailing){
-            image.mediumImage
-            .resizable()
-            .scaledToFill()
-            .clipShape(RoundedRectangle(cornerRadius: 5))
-            .overlay {
-                RoundedRectangle(cornerRadius: 5).stroke(.white, lineWidth: 2)
-            }
+        ZStack(alignment: .topTrailing) {
+            image
+                .resizable()
+                .scaledToFill()
+                .clipShape(RoundedRectangle(cornerRadius: 5))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 5).stroke(
+                        .white, lineWidth: 2)
+                }
             Image(systemName: "xmark")
                 .resizable()
                 .frame(width: 8, height: 8)
@@ -209,7 +254,7 @@ struct LocationPreview: View {
                 .background {
                     Circle().fill(.gray.opacity(0.7))
                         .overlay {
-                            Circle().stroke(.white, lineWidth: 2)
+                            Circle().stroke(.white, lineWidth: 1)
                         }
                 }
                 .padding(3)

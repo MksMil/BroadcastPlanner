@@ -14,7 +14,7 @@ struct SaveEditControlPanelView: View {
     let deleteAction: () -> Void
     let saveAction: () -> Void
     
-    @Binding var isEdit: Bool
+    let isEdit: Bool
     
     var body: some View {
         HStack {
@@ -31,7 +31,7 @@ struct SaveEditControlPanelView: View {
                             } else {
                                 addAction()
                             }
-                            isEdit.toggle()
+//                            isEdit.toggle()
                         }
                     }, label: {
                         Text(isEdit ? "DELETE":"ADD")
@@ -51,7 +51,7 @@ struct SaveEditControlPanelView: View {
                             } else {
                                 
                             }
-                            isEdit.toggle()
+//                            isEdit.toggle()
                         }
                     }, label: {
                         Text(isEdit ?  "SAVE":"EDIT")
@@ -65,5 +65,5 @@ struct SaveEditControlPanelView: View {
 }
 
 #Preview {
-    SaveEditControlPanelView(addAction: {}, deleteAction: {}, saveAction: {}, isEdit: .constant(false))
+    SaveEditControlPanelView(addAction: {}, deleteAction: {}, saveAction: {}, isEdit: false)
 }

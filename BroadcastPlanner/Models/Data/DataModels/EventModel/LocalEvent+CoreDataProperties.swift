@@ -1,5 +1,15 @@
+//
+//  LocalEvent+CoreDataProperties.swift
+//  BroadcastPlanner
+//
+//  Created by Миляев Максим on 19.12.2024.
+//
+//
+
+import UIKit
 import SwiftUI
 import CoreData
+
 
 extension LocalEvent {
 
@@ -18,6 +28,8 @@ extension LocalEvent {
     @NSManaged public var obVanUnits: NSSet?
     @NSManaged public var owners: NSSet?
     @NSManaged public var users: NSSet?
+    @NSManaged public var locationPreview: LocalImage?
+    @NSManaged public var obvanPreview: LocalImage?
 
 }
 
@@ -42,10 +54,10 @@ extension LocalEvent {
 extension LocalEvent {
 
     @objc(addObVanUnitsObject:)
-    @NSManaged public func addToObVanUnits(_ value: LocalOBVanUnit)
+    @NSManaged public func addToObVanUnits(_ value: LocalObvanUnit)
 
     @objc(removeObVanUnitsObject:)
-    @NSManaged public func removeFromObVanUnits(_ value: LocalOBVanUnit)
+    @NSManaged public func removeFromObVanUnits(_ value: LocalObvanUnit)
 
     @objc(addObVanUnits:)
     @NSManaged public func addToObVanUnits(_ values: NSSet)
@@ -91,7 +103,7 @@ extension LocalEvent {
 
 extension LocalEvent : Identifiable {
     var viewId: String {
-        id ?? "N/A"
+        id ?? ""
     }
     var viewDate: String{
         let date = date ?? Date()
@@ -102,7 +114,7 @@ extension LocalEvent : Identifiable {
     }
     
     var viewBroadcasterName: String{
-        broadcaster?.viewTitle ?? "mystic broadcaster"
+        broadcaster?.viewTitle ?? ""
     }
     var viewUsers: [LocalUser] {
         users?.allObjects.compactMap{$0 as? LocalUser} ?? []
@@ -115,17 +127,17 @@ extension LocalEvent : Identifiable {
         locationPoints?.allObjects.compactMap{$0 as? LocalLocationPoint} ?? []
     }
     
-    var viewObvanUnits: [LocalOBVanUnit]{
-        obVanUnits?.allObjects.compactMap{$0 as? LocalOBVanUnit} ?? []
+    var viewObvanUnits: [LocalObvanUnit]{
+        obVanUnits?.allObjects.compactMap{$0 as? LocalObvanUnit} ?? []
     }
     
     var viewTitle: String {
-        guard let title = location?.title else { return "N/A"}
+        guard let title = location?.title else { return ""}
         return title
     }
     
     var viewAddress: String {
-        guard let address = location?.address else { return "N/A"}
+        guard let address = location?.address else { return ""}
         return address
     }
     
@@ -143,5 +155,17 @@ extension LocalEvent : Identifiable {
     
     var guestImage : Image {
         guestClub?.imageLogo?.mediumImage ?? Image(systemName: "plus")
+    }
+    
+    var viewLocationBackgroundImages: [Image] {
+        location?.viewImages ?? [Image("neutral")]
+    }
+    
+    var viewLocationPreview: Image {
+        locationPreview?.originImage ?? Image(systemName: "sportscourt")
+    }
+    
+    var viewObvanPreview: Image {
+        obvanPreview?.originImage ?? Image(systemName: "truck.box")
     }
 }

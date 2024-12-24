@@ -11,24 +11,26 @@ struct BPEventFilterCaseTabView<T: RawRepresentable & CaseIterable>: View  where
     @Namespace var ns
     
     var body: some View {
-        HStack{
+        HStack(spacing: 0){
             ForEach(tabs.indices, id: \.self) { tabIndex in
 
                 Image(systemName: "\(tabs[tabIndex].rawValue)")
+                    .resizable()
+                    .scaledToFit()
                     .font(.title)
-                    .padding(.horizontal,10)
-                    .padding(.vertical,5)
+                    .padding(12)
                     .onTapGesture {
                         withAnimation{
                             self.selectedTab = tabs[tabIndex]
                         }
                     }
+//                    .border(.blue, width: 2)
 //                })
                 //data about geometry added to tabIndex Id in ns namespace
                     .matchedGeometryEffect(id: tabs[tabIndex].rawValue , in: ns)
             }
         }
-        .padding(.horizontal)
+//        .padding(.horizontal)
 //        .overlay {
 //            Rectangle()
 //                .fill(Color.accentColor)
@@ -47,11 +49,17 @@ struct BPEventFilterCaseTabView<T: RawRepresentable & CaseIterable>: View  where
     }
  }
 
-#Preview{
-    NavigationStack{
-        MainEventsList()
-    }
-    .environmentObject(GlobalSettings())
-    .environmentObject(GlobalTimer())
-    .environment(\.managedObjectContext, DataManager.shared.moc)
+
+
+#Preview {
+    BPEditStadiumView(event: DataManager.shared.fetchOrCreateEventWithId("123", inContext: .main) , editable: true,acceptAction: {},cancelAction: {})
+    .environmentObject(BPEditStadiumViewModel())
 }
+//#Preview{
+//    NavigationStack{
+//        MainEventsList()
+//    }
+//    .environmentObject(GlobalSettings())
+////    .environmentObject(GlobalTimer())
+//    .environment(\.managedObjectContext, DataManager.shared.moc)
+//}

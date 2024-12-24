@@ -35,7 +35,7 @@ struct SmartLayout: Layout{
         var width = Double.zero
         var height = subviews.isEmpty ? 0: subviews[0].sizeThatFits(.unspecified).height
         var maxAddedHeight = subviews[0].sizeThatFits(.unspecified).height
-        
+        var rows = 1
         
         for index in subviews.indices{
             
@@ -43,6 +43,7 @@ struct SmartLayout: Layout{
             
             if (width + size.width) > totalWidth {
                 //next row
+                rows += 1
                 //remove trailing spacing
                 totalWidth = width - hSpacing
                 if index == subviews.count - 1 {
@@ -66,6 +67,15 @@ struct SmartLayout: Layout{
                     maxAddedHeight = max(maxAddedHeight, size.height)
                     height += maxAddedHeight
                 }
+            }
+        }
+        
+        if rows == 1 {
+            totalWidth = subviews.reduce(0.0, { partialResult, view in
+                partialResult + view.sizeThatFits(.unspecified).width
+            }) + Double((subviews.count - 1)) * hSpacing
+             height = subviews.reduce(0) { partialResult, view in
+                max(partialResult, view.sizeThatFits(.unspecified).height)
             }
         }
         return CGSize(width: totalWidth, height: height)

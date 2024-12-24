@@ -58,15 +58,15 @@ extension LocalClub : Identifiable {
         id ?? "N/A"
     }
     var viewContacts: String {
-        contacts ?? "N/A"
+        contacts ?? ""
     }
     
     var viewTitle: String {
-        title ?? "mystic Club"
+        title ?? ""
     }
     
     var viewUrl: String {
-        urlString ?? "http://..."
+        urlString ?? ""
     }
     
     var viewGuestEvents: [LocalEvent] {

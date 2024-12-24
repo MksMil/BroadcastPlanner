@@ -3,62 +3,12 @@ import Combine
 
 struct MainEventListCell: View {
     
-    
-    
-//    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    var event: LocalEvent
+    let event: LocalEvent
     
     @StateObject var vm: MainEventListCellViewModel
-    
-//    @State private var eventDate: String = ""
-//    @State private var counter: String = "counter here"
-//    @State private var homeClub: LocalClub?
-//    @State private var guestClub: LocalClub?
-//    @State private var title: String
-//    @State private var address: String
-    
-//    var timeRemaining: TimeInterval {
-//        max(event.viewRemainingDate.timeIntervalSinceNow, 0)
-//        }
-//    
-//   
-//    
-//    private var countdownFormatter: DateComponentsFormatter {
-//        let formatter = DateComponentsFormatter()
-//        formatter.allowedUnits = [.day, .hour, .minute, .second]
-//        formatter.unitsStyle = .positional
-//        formatter.zeroFormattingBehavior = .pad
-//        return formatter
-//    }
-//    
-//    private func getDate(date: Date) -> String {
-//        return BPDateFormater.format(date: date)
-//    }
-    
-//    private func updateCounter() {
-//        if timeRemaining > 0 {
-//            counter = "\(countdownFormatter.string(from: timeRemaining) ?? "Time's up!")"
-//        } else {
-//            counter = "Time Up!"
-//        }
-//    }
-    
-//    private func update(){
-//        homeClub =  event.homeClub
-//        guestClub = event.guestClub
-//        title = event.viewTitle
-//        address = event.viewAddress
-//        eventDate = getDate(date: event.viewRemainingDate)
-//    }
-    
+
     init(event: LocalEvent){
         self.event = event
-//        self._homeClub = State(initialValue: event.homeClub)
-//        self._guestClub = State(initialValue: event.guestClub)
-//        self._title = State(initialValue: event.viewTitle)
-//        self._address = State(initialValue: event.viewAddress)
-//        self.eventDate = getDate(date: event.viewRemainingDate)
-        
         self._vm = StateObject(wrappedValue: MainEventListCellViewModel(event: event))
     }
     
@@ -69,71 +19,46 @@ struct MainEventListCell: View {
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                     .overlay {
                         HStack{
-                            Spacer()
-                            VStack(spacing: 0){
-                                HStack {
-                                    Text(vm.eventDate)
-                                        .font(.system(size: 10))
-                                        .minimumScaleFactor(0.5)
-                                        .fixedSize()
-                                }
-                                .padding(.vertical,10)
-                                
-                                Text(vm.counter)
-                                    .font(.system(size: 10))
-                                    .minimumScaleFactor(0.5)
-                                    .fixedSize()
-                                
+                            
+
+                            VStack{
+                                Spacer()
+                                Text("\(vm.firstDate)")
+                                    .font(.caption2)
+                                Spacer()
+                                Text("\(vm.secondDate)")
                                 Spacer()
                             }
                             .frame(width: geo.frame(in: .local).size.width / 3.5)
                             
-                            
                             Divider()
                                 .background(.ultraThinMaterial)
                             
                             VStack(spacing: 0){
-//                                Spacer()
-                                HStack{
-                                    //home team logo
-                                    
-                                    LogoImageView(image:event.homeSmallImage,
-                                                  logoSize: geo.size.height / 2)
-                                    
-                                    Text(":")
-                                    
-                                    //guest team logo
-                                    LogoImageView(image: event.guestSmallImage,
-                                                  logoSize: geo.size.height / 2)
+                                LogosCellImageView(homeImage: vm.homeImage,
+                                                   guestImage: vm.guestImage, size: geo.size.height / 2)
+                                    .frame(height: geo.size.height / 2)
 
-                                }
-                                .frame(height: geo.size.height / 2)
-
-                                VStack{
-                                    Text(vm.title)
-                                        .font(.caption2)
-                                        .lineLimit(1)
-                                        .minimumScaleFactor(0.35)
-                                    Text(vm.address)
-                                        .font(.caption2)
-                                        .lineLimit(1)
-                                        .minimumScaleFactor(0.35)
-                                }
-                                .padding(.top,5)
+                               
                             }
-                            
                             .frame(width: geo.frame(in: .local).size.width / 3.5)
-                            .padding(.vertical,5)
+                            .padding(.vertical,2)
                             
                             Divider()
                                 .background(.ultraThinMaterial)
-                            
-                            VStack(spacing: 5){
-                                //timer?
-                                
-                                Text("Status")
-                                
+
+                            VStack(alignment: .leading){
+                                Text(vm.title)
+                                    .font(.title3)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.35)
+                                Spacer()
+                                Text(vm.address)
+                                    .font(.caption)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.35)
                             }
+                            .padding(.vertical,10)
                             .frame(width: geo.frame(in: .local).size.width / 3.5)
                             Spacer()
                         }
@@ -145,12 +70,17 @@ struct MainEventListCell: View {
             }
             .foregroundStyle(Color.black)
         }
-        .onAppear{
-            vm.update()
+        .frame(height: 70)
+        .onReceive(DataManager.shared.updatePublisher) { value in
+            if value.0 == .events{
+                value.1.forEach { id in
+                    if id == event.viewId{
+                        print("in update block")
+                        vm.update()
+                    }
+                }
+            }
         }
-//        .onReceive(timer, perform: { _ in
-//            updateCounter()
-//        })
     }
     
     

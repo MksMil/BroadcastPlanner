@@ -19,7 +19,7 @@ extension LocalHardware {
     @NSManaged public var channels: String?
     @NSManaged public var type: String?
     @NSManaged public var id: String?
-    @NSManaged public var obVanUnit: LocalOBVanUnit?
+    @NSManaged public var obVanUnit: LocalObvanUnit?
 
 }
 

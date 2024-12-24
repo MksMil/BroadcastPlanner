@@ -4,7 +4,7 @@ import UIKit
 //class for resizing image and make thumbnails
 
 enum ImageSizes: String, CaseIterable{
-    case smallImages, mediumImages, originImages
+    case smallImages, mediumImages, largeImages, originImages
 }
 
 class ImagesManager{
@@ -28,39 +28,58 @@ class ImagesManager{
         
         return newImage!
     }
-    func saveResizedImages(image: UIImage?, id: String) -> [String: URL?] {
+    
+    //save locally
+    func saveResizedImages(image: UIImage?, id: String, type: GlobalProperties.ImageType) -> [String: URL?] {
         // directories for small, medium and large
         guard let image else { return [:]}
         let smallDir = createCustomDirectory(folderName: "\(ImageSizes.smallImages.rawValue)")
         let mediumDir = createCustomDirectory(folderName: "\(ImageSizes.mediumImages.rawValue)")
-        let largeDir = createCustomDirectory(folderName: "\(ImageSizes.originImages.rawValue)")
+        let largeDir = createCustomDirectory(folderName: "\(ImageSizes.largeImages.rawValue)")
+        let originDir = createCustomDirectory(folderName: "\(ImageSizes.originImages.rawValue)")
 
         // resizing image
         let smallImage = resizeImage(image: image, targetSize: CGSize(width: 75, height: 75))
         let mediumImage = resizeImage(image: image, targetSize: CGSize(width: 150, height: 150))
+        let largeImage = resizeImage(image: image, targetSize: CGSize(width: 400, height: 300))
         // save images to local directories
-        let smallImageURL = saveImageToDirectory(image: smallImage, directory: smallDir, id: id)
-        let mediumImageURL = saveImageToDirectory(image: mediumImage, directory: mediumDir, id: id)
-        let largeImageURL = saveImageToDirectory(image: image, directory: largeDir, id: id)
+        let smallImageURL = saveImageToDirectory(image: smallImage, directory: smallDir, id: id, type: type)
+        let mediumImageURL = saveImageToDirectory(image: mediumImage, directory: mediumDir, id: id, type: type)
+        let largeImageURL = saveImageToDirectory(image: largeImage, directory: largeDir, id: id, type: type)
+        let originImageURL = saveImageToDirectory(image: image, directory: originDir, id: id, type: type)
         
         return [
             "\(ImageSizes.smallImages.rawValue)": smallImageURL,
             "\(ImageSizes.mediumImages.rawValue)": mediumImageURL,
-            "\(ImageSizes.originImages.rawValue)": largeImageURL
+            "\(ImageSizes.largeImages.rawValue)": largeImageURL,
+            "\(ImageSizes.originImages.rawValue)": originImageURL
         ]
     }
     
-    func saveImageToDirectory(image: UIImage?, directory: URL?, id: String) -> URL? {
+    func saveImageToDirectory(image: UIImage?, directory: URL?, id: String, type: GlobalProperties.ImageType) -> URL? {
         guard let image = image, let directory = directory else { return nil }
         let fileURL = directory.appendingPathComponent(id)
-        guard let data = image.jpegData(compressionQuality: 0.8) else { return nil }
-        do {
-            try data.write(to: fileURL)
-            return fileURL
-        } catch {
-            print("Error saving image: \(error.localizedDescription)")
-            return nil
-        }
+        //png flow
+//        if type == .club || type == .eventTemplate {
+            guard let data = image.pngData() else { return nil }
+            do {
+                try data.write(to: fileURL)
+                return fileURL
+            } catch {
+                print("Error saving image: \(error.localizedDescription)")
+                return nil
+            }
+//        } else {
+//            // jpeg flow
+//            guard let data = image.jpegData(compressionQuality: 1) else { return nil }
+//            do {
+//                try data.write(to: fileURL)
+//                return fileURL
+//            } catch {
+//                print("Error saving image: \(error.localizedDescription)")
+//                return nil
+//            }
+//        }
     }
     
     func loadImage(type: ImageSizes ,id: String) -> UIImage? {

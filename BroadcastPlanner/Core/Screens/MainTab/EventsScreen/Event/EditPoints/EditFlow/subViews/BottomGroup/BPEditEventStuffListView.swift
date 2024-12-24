@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct BPEditEventStuffListView: View {
-    @EnvironmentObject var editManager: EditPlanPointsManager
+    @EnvironmentObject var editManager: BPEditStadiumViewModel
     
     let event: BPEvent
     @State var selectedEventPoint: LocationPoint?

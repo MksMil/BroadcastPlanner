@@ -2,7 +2,6 @@ import SwiftUI
 import Combine
 
 struct RootView: View {
-//    @EnvironmentObject var globalStorage: GlobalStorage
     @EnvironmentObject var sessionStorage: GlobalSessionStorage
     @EnvironmentObject var appState: ApplicationState
     @EnvironmentObject var globalSettings: GlobalSettings

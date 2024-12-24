@@ -1,21 +1,36 @@
 import SwiftUI
+import UIKit
 import FirebaseAuth
 import AuthenticationServices
 
+final class SettingsViewModel: ObservableObject{
+    @MainActor
+    func updateClub(with club: LocalClub,title: String, uiimage: UIImage?, contacts: String, urlString: String, location: LocalLocation?){
+        Task{
+            await DataManager.shared.updateClubWithClub(club: club,
+                                                  title: title,
+                                                  uiimage: uiimage,
+                                                  contacts: contacts,
+                                                  urlString: urlString,
+                                                  location: location,
+                                                  inContext: .main)
+           await DataManager.shared.saveContext(type: .main,
+                                           publish: .clubs,
+                                           id: [club.viewId])
+        }
+    }
+}
+
+
+
 struct SettingsView: View {
-    
+    @StateObject var settingsRouter: SettingsTabRouter = SettingsTabRouter()
     @EnvironmentObject var sessionStorage: GlobalSessionStorage
     @EnvironmentObject var appState: ApplicationState
     @Environment(\.authorizationController) private var authorizationController
-    
-    
-    @State var newEmail: String = ""
-    @State var newPassword: String = ""
-    
-    @State private var updEP: UpdatedEP?
-    
+    @StateObject private var vm = SettingsViewModel()
     var body: some View {
-//        NavigationStack{
+        NavigationStack(path: $settingsRouter.path){
             ZStack{
                 MainBackground()
                 ScrollView{
@@ -42,11 +57,13 @@ struct SettingsView: View {
                         }
                         Spacer()
                     }
+                    
                     VStack{
                         Section {
                             VStack(spacing: 15){
                                 Button {
-                                    updEP = .email
+//                                    updEP = .email
+                                    settingsRouter.path.append(SettingsTabPath.updateEmail)
                                 } label: {
                                     Text("Change E-mail")
                                         .frame(maxWidth: .infinity)
@@ -57,7 +74,8 @@ struct SettingsView: View {
                                 }
                                 
                                 Button {
-                                    updEP = .password
+//                                    updEP = .password
+                                    settingsRouter.path.append(SettingsTabPath.updatePassword)
                                 } label: {
                                     Text("Change Password")
                                         .frame(maxWidth: .infinity)
@@ -115,20 +133,50 @@ struct SettingsView: View {
                                 .foregroundStyle(Color.gray)
                         }
                     }.foregroundStyle(Color.accent)
-                    
+                    VStack{
+                        Section {
+                            
+                            Button {
+                                settingsRouter.path.append(SettingsTabPath.clubSheet)
+                            } label: {
+                                Text("Add Club")
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: 50)
+                                    .background {Color.white.opacity(30)}
+                                    .clipShape(RoundedRectangle(cornerRadius: 20))
+                                    .padding(.horizontal)
+                            }
+                            
+                            Button {
+                                settingsRouter.path.append(SettingsTabPath.locationSheet(nil))
+                            }label: {
+                                    Text("Add Location")
+                                        .frame(maxWidth: .infinity)
+                                        .frame(height: 50)
+                                        .background {Color.white.opacity(30)}
+                                        .clipShape(RoundedRectangle(cornerRadius: 20))
+                                        .padding(.horizontal)
+                                }
+                        } header: {
+                            Text("Club and Location Edit")
+                                .font(.title2)
+                                .fontWeight(.light)
+                                .foregroundStyle(Color.gray)
+                        }
+                    }
+                    .padding(.vertical)
                     // MARK: - "Sign out" button
                     VStack{
                         Spacer()
                         Button(action: {
                             Task{
                                 do{
-                                    // TODO: set user is offline 
+                                    // TODO: set user is offline
                                     print("try to log out")
                                     appState.userOnlineStatus = .offline
                                     try AuthenticationManager.shared.logOut()
                                     sessionStorage.userSession = nil
                                     appState.state = .notAuthorized
-//
                                 }catch {
                                     print("failed to signing out: \(error.localizedDescription)")
                                 }
@@ -170,31 +218,88 @@ struct SettingsView: View {
                     }.foregroundStyle(Color.accent)
                 }
             }
-//            .fullScreenCover(item: $updEP, content: { state in
-//                switch state {
-//                    case .email:
-//                        UpdateEPView(
-//                            currentValue: globalStorage.currentUser?.email ?? "",
-//                            updEP: .email){ value in
-//                                Task{
-//                                    await sessionStorage.updateEmailPassword(newValue: value, updEp: .email)
-//                                    updEP = nil
-//                                }
-//                            }
-//                    case .password:
-//                        UpdateEPView(
-//                            currentValue: sessionStorage.password,
-//                            updEP: .password){ value in
-//                                Task{
-//                                    await sessionStorage.updateEmailPassword(newValue: value, updEp: .password)
-//                                    updEP = nil
-//                                }
-//                            }
-//                }
-//                
-//            })
-            .navigationBarBackButtonHidden()
-//        }
+            // MARK: - Navigation Destination Paths
+            .navigationDestination(for: SettingsTabPath.self) { path in
+                switch path {
+                    case .updateEmail:
+                        UpdateEPView(
+                            currentValue: sessionStorage.email,
+                            updEP: .email, cancelAction: {                                settingsRouter.routeStepBack()
+                            }){ value in
+                                Task{
+                                    await sessionStorage.updateEmailPassword(newValue: value, updEp: .email)
+                                }
+                                settingsRouter.routeStepBack()
+                            }
+                    case .updatePassword:
+                        UpdateEPView(
+                            currentValue: sessionStorage.password,
+                            updEP: .password, cancelAction: {                                settingsRouter.routeStepBack()
+                            }){ value in
+                                Task{
+                                    await sessionStorage.updateEmailPassword(newValue: value, updEp: .password)
+                                }
+                                settingsRouter.routeStepBack()
+                            }
+                    case .clubSheet:
+                        ClubSheetView(editMode: true) {
+                            settingsRouter.routeStepBack()
+                        } acceptAction: { club in
+                            settingsRouter.routeStepBack()
+                        } addEditAction: {club in
+                            settingsRouter.path.append(SettingsTabPath.addEditClub(club))
+                        }
+                    case .locationSheet(let club):
+                        LocationSheetView(club: club) {
+                            settingsRouter.routeStepBack()
+                        } saveAction: { _ in
+                            settingsRouter.routeStepBack()
+                        } addEditAction: { location in
+                            settingsRouter.path.append(SettingsTabPath.addEditLocation(location))
+                        }
+                    case .addEditClub(let club):
+                        AddEditClubView(club: club) { title, uiimage, contacts, urlString, location in
+                            vm.updateClub(with: club, title: title, uiimage: uiimage, contacts: contacts, urlString: urlString, location: location)
+                            Task{
+                                await NetworkManager.shared.saveClub(Club.mapToClub(localClub: club))
+                            }
+                                settingsRouter.routeStepBack()
+                        } cancelAction: {
+                            DataManager.shared.moc.rollback()
+                            settingsRouter.routeStepBack()
+                        } removeAction: {
+                            Task{
+                                await NetworkManager.shared.removeClubWithId(club.viewId)
+                            }
+                            DataManager.shared.removeLocalClub(localClub: club, inContext: .main)
+                            Task{
+                                await DataManager.shared.saveContext(type: .main, publish: .clubs, id: [])
+                                settingsRouter.routeStepBack()
+                            }
+                        } defineLocation: {
+                            settingsRouter.path.append(SettingsTabPath.locationSheet(club))
+                        }
+                    case .addEditLocation(let location):
+                        AddEditLocation(location: location) {
+                            DataManager.shared.moc.rollback()
+
+                            settingsRouter.routeStepBack()
+
+                        } acceptAction: {
+                            
+                            settingsRouter.routeStepBack()
+
+                        } removeAction: {
+                            
+                            Task{
+                                await DataManager.shared.saveContext(type: .main, publish: .locations, id: [])
+                                settingsRouter.routeStepBack()
+                            }
+                        }
+                }
+            }
+        }
+            .environmentObject(settingsRouter)
     }
 }
 
@@ -202,6 +307,7 @@ struct SettingsView: View {
     SettingsView()
         .environmentObject(GlobalSessionStorage())
         .environmentObject(ApplicationState())
+        .environment(\.managedObjectContext, DataManager.shared.moc)
 }
 
 
