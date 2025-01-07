@@ -8,7 +8,7 @@ struct LocationPoint: Identifiable, Equatable,Hashable, Codable,BPDataProtocol {
     var coordinateX: Double
     var coordinateY: Double
     var rotation: Double
-//    var scale: Double
+    var scale: Double
 
     var imageId: String
     
@@ -41,7 +41,8 @@ extension LocationPoint{
                       userId: localPoint.viewUsers.map{$0.userId},
                       coordinateX: localPoint.viewX,
                       coordinateY: localPoint.viewY,
-                      rotation: localPoint.viewRotation,
+                      rotation: localPoint.viewRotation.radians,
+                      scale: localPoint.viewScaleFactor,
                       imageId: localPoint.viewImageId,
                       number: localPoint.viewNumber,
                       description: localPoint.viewDescription,

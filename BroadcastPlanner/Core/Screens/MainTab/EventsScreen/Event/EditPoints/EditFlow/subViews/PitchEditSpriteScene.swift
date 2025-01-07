@@ -2,7 +2,7 @@ import SwiftUI
 import SpriteKit
 
 enum SceneState{
-    case idle, movingPoint, movingCam//, pointSelected
+    case idle, touchingNewPoint,touchingSelectedPoint ,moved, movingCam//, pointSelected
 }
 
 // camera : move, scale
@@ -32,6 +32,7 @@ class PitchEditSpriteScene: SKScene{
     
     var selectedPointNode: SKNode?
     var editedNode: SKNode?
+    var bgNode: SKShapeNode?
     
     var pointNodes: [SKSpriteNode] = []
     
@@ -40,6 +41,9 @@ class PitchEditSpriteScene: SKScene{
         CGPoint(x: self.frame.width / 2,
                 y: self.frame.height / 2)
     }
+    
+    var deltaXinTouch: Double = 0
+    var deltaYinTouch: Double = 0
     
     override func didMove(to view: SKView) {
         size = view.frame.size
@@ -68,6 +72,7 @@ class PitchEditSpriteScene: SKScene{
                             point: LocalLocationPoint)
     {
         node.name = point.id
+        node.zPosition = 2
         if point.viewX == 0 && point.viewY == 0{
             node.position = CGPoint(x: size.width / 2,
                                     y: size.height / 2)
@@ -78,7 +83,7 @@ class PitchEditSpriteScene: SKScene{
 //        if let texture = textureFromSFSymbol(named: "video.fill"){
             node.texture = SKTexture(imageNamed: "cam1")//texture
 //        }
-        node.zRotation = point.viewRotation
+        node.zRotation = point.viewRotation.radians
     }
     
     func textureFromSFSymbol(named symbolName: String, pointSize: CGFloat = 10, weight: UIImage.SymbolWeight = .regular) -> SKTexture? {
@@ -107,12 +112,15 @@ class PitchEditSpriteScene: SKScene{
                                       y: size.height / 2)
     }
     func updateData(){
-//        if let selectedPointNode,
-//            let name = selectedPointNode.name{
-//            let coordinates = BPEventPlanPointCoordinate(x: selectedPointNode.position.x / size.width,
-//                                                         y: selectedPointNode.position.y / size.height, rotation: selectedPointNode.zRotation)
-//            updatePointCoordinatesAction(name, coordinates)
-//        }
+        if let selectedPointNode{
+            let angle = (Angle(radians: selectedPointNode.zRotation).degrees.truncatingRemainder(dividingBy: 360)).rounded()
+//            print("x: \(selectedPointNode.position.x),\ny: \(selectedPointNode.position.y), \nrotation: \(angle), \nscaleFactor: \(selectedPointNode.xScale)")
+            
+            pointDelegate?.updatePoint(x: selectedPointNode.position.x / size.width,
+                                       y: selectedPointNode.position.y / size.height,
+                                       rotation: angle,
+                                       scaleFactor: selectedPointNode.xScale)
+        }
     }
     
 }
@@ -170,22 +178,31 @@ extension PitchEditSpriteScene{
 extension PitchEditSpriteScene{
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
-        print("touch begin")
         guard let touch = touches.first else { return }
         let location = touch.location(in: self)
+        
+        //removing moving gap
         let node = atPoint(location)
+        let innerLocation = touch.location(in: node)
         
         if let selectedNode = selectedPointNode, selectedNode.name == node.name{
-            sceneState = .movingPoint
+            //current selected node
+            deltaXinTouch = innerLocation.x
+            deltaYinTouch = innerLocation.y
+            sceneState = .touchingSelectedPoint
         } else {
+            //select new node
             if let name = node.name, name != backgroundName{
                 selectedPointNode = node
                 selectedPointNode?.zPosition += 10
                 editedNode = selectedPointNode
                 //            selectAction(name)
                 pointDelegate?.selectPointWithId(name)
-                sceneState = .movingPoint
+                sceneState = .touchingNewPoint
+                deltaXinTouch = innerLocation.x
+                deltaYinTouch = innerLocation.y
             } else {
+                //background selected
                 sceneState = .idle
                 lastPanLocation = touch.location(in: view)
             }
@@ -195,15 +212,17 @@ extension PitchEditSpriteScene{
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesMoved(touches, with: event)
-        print("touch moved: state: \(sceneState)")
         guard let touch = touches.first else { return }
-        
-        
-        if sceneState == .movingPoint, let selectedPointNode {
+        if sceneState == .touchingNewPoint || sceneState == .moved || sceneState == .touchingSelectedPoint, let selectedPointNode {
             let location = touch.location(in: self)
+            let deltaPoint = CGPoint(x: location.x - deltaXinTouch * selectedPointNode.xScale,
+                                     y: location.y - deltaYinTouch * selectedPointNode.xScale)
+            
             let optimalLocation = optimalPositionForNode(selectedPointNode,
-                                                         location: location)
+                                                         location: deltaPoint)
+            
             self.selectedPointNode?.position = optimalLocation
+            sceneState = .moved
             //eventManager closure: point location = ...
         } else {
             sceneState = .movingCam
@@ -220,34 +239,30 @@ extension PitchEditSpriteScene{
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesEnded(touches, with: event)
-        print("touch ednded")
-        if sceneState == .movingPoint{
-            print("in movingPoint")
+        if sceneState == .moved || sceneState == .touchingNewPoint{
 //            selectedPointNode?.zPosition -= 10
             updateData()
-        } else if sceneState == .idle{
-            print("in idle")
-            if editedNode != nil {
-                pointDelegate?.deselectPoint()
-                editedNode = nil
-            }
-                selectedPointNode = nil
-        } else {
+        } else if sceneState == .touchingSelectedPoint{
+//            if editedNode != nil {
+//                editedNode = nil
+//            }
+//                selectedPointNode = nil
+            
+            deselect()
+        } else if sceneState == .movingCam{
             //movingcam
-            print("in movingCam")
             if let editedNode{
                 self.selectedPointNode = editedNode
-            } else {
-                selectedPointNode = nil
-            }
 //            pointDelegate?.selectPointWithId(editedNode?.name ?? "")
+            }
+        } else {
+            deselect()
         }
         sceneState = .idle
     }
     
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesCancelled(touches, with: event)
-        print("touch canceled")
         sceneState = .idle
     }
 
@@ -266,6 +281,8 @@ extension PitchEditSpriteScene{
     
     func select(point: LocalLocationPoint){
         if let node = childNode(withName: point.viewId){
+            //selection animation
+            
             selectedPointNode = node
             if node.name != backgroundName{
 //                selectedPointNode?.run(SKAction.scale(to: 1.5, duration: 1))
@@ -283,6 +300,7 @@ extension PitchEditSpriteScene{
     func deselect(){
 //        selectedPointNode?.run(SKAction.scale(to: 1,
 //                                              duration: animationDuration))
+        pointDelegate?.deselectPoint()
         editedNode = nil
         selectedPointNode = nil
     }
@@ -290,9 +308,6 @@ extension PitchEditSpriteScene{
     func removeSelectedPoint(){
         if let selectedPointNode, selectedPointNode.isNotBackground(backgroundName){
             pointNodes.removeAll(where: {$0.name == selectedPointNode.name})
-//            if let node = selectedPointNode {
-//                node.removeFromParent()
-//            }
             selectedPointNode.removeFromParent()
             editedNode = nil
             self.selectedPointNode = nil
@@ -300,9 +315,9 @@ extension PitchEditSpriteScene{
     }
     
     func addPoint(point: LocalLocationPoint){
-        print("In addPoint method")
-        let node = SKSpriteNode(color: .blue, size: CGSize(width: 2 * step,
-                                                           height: 2 * step ))
+        let node = SKSpriteNode(color: .blue,
+                                size: CGSize(width: 2 * step,
+                                             height: 2 * step ))
         configurePointNode(node: node,
                            point: point)
         pointNodes.append(node)
@@ -412,7 +427,8 @@ extension PitchEditSpriteScene{
             let newScale = cameraNode.xScale - 0.1
             var action: SKAction = SKAction()
             if let selectedPointNode , selectedPointNode.isNotBackground(backgroundName) {
-                let position = selectedPointNode.position
+                //different variant for scaling center?
+                let position =  optimalCamPosition(newLocation: selectedPointNode.position)
                 action = SKAction.group([SKAction.move(to: position, duration: animationDuration),SKAction.scale(to: newScale, duration: animationDuration)])
             } else {
                 action = SKAction.scale(to: newScale, duration: animationDuration)
@@ -439,13 +455,18 @@ extension PitchEditSpriteScene{
     }
 }
 
-#Preview {
-    BPEditStadiumView(event: DataManager.shared.fetchOrCreateEventWithId("123", inContext: .main) , editable: true,acceptAction: {},cancelAction: {})
-        .environment(\.managedObjectContext, DataManager.shared.moc)
-}
-
 extension SKNode{
     func isNotBackground(_ name: String)->Bool{
         return self.name != name
     }
+}
+
+
+
+
+
+
+#Preview {
+    BPEditStadiumView(event: DataManager.shared.fetchOrCreateEventWithId("123", inContext: .main) , editable: true,acceptAction: {},cancelAction: {})
+        .environment(\.managedObjectContext, DataManager.shared.moc)
 }

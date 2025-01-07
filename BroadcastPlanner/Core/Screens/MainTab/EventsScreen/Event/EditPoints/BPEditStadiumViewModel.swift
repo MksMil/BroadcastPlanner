@@ -1,5 +1,4 @@
 import UIKit
-//import SwiftUI
 import SpriteKit
 import Combine
 
@@ -8,16 +7,17 @@ protocol BPSKViewDelegate: AnyObject {
     func selectPointWithId(_ id: String)
     func deselectPoint() //id?
     
-    func updatePoint(x: Double, y: Double) //x,y
+    func updatePoint(x: Double, y: Double, rotation: Double, scaleFactor: Double) //x,y,rotation,scaleFactor
 }
 
 final class BPEditStadiumViewModel: ObservableObject {
     
-    var initialPoints: [LocalLocationPoint]
+//    var initialPoints: [LocalLocationPoint]
     
     @Published var selectedEventPoint: LocalLocationPoint?
     @Published var isEdit: Bool = false
-    var localPoints: [LocalLocationPoint] = []
+    
+    var localPoints: [LocalLocationPoint]
 //    @Published var selectedBroadcaster: LocalBroadcaster?
 //    @Published var selectedCar: LocalOBVan?
 //    
@@ -27,7 +27,7 @@ final class BPEditStadiumViewModel: ObservableObject {
 //    var renderCarScene: CarEditSpriteScene = CarEditSpriteScene()
   
     init(points: [LocalLocationPoint] = []){
-        self.initialPoints = points
+        self.localPoints = points
         self.renderPitchScene = PitchEditSpriteScene()
         renderPitchScene.pointDelegate = self
     }
@@ -65,6 +65,14 @@ final class BPEditStadiumViewModel: ObservableObject {
 //        selectedCar = event.broadcastCar
         
     }
+    
+    func changeState(){
+        if selectedEventPoint != nil{
+            isEdit = true
+        } else {
+            isEdit = false
+        }
+    }
 }
 
 //// MARK: - CarEditScene managment
@@ -92,6 +100,7 @@ extension BPEditStadiumViewModel{
     func addPoint(){
         let  point = DataManager.shared.fetchOrCreateLocationPointWithId(UUID().uuidString, inContext: .main)
         renderPitchScene.addPoint(point: point)
+        localPoints.append(point)
         selectedEventPoint = point
         isEdit = true
     }
@@ -99,7 +108,14 @@ extension BPEditStadiumViewModel{
     func deletePoint(){
         renderPitchScene.removeSelectedPoint()
         // TODO: remove LocalLocationPoint
+        if let selectedEventPoint {
+            localPoints.removeAll { pointToDelete in
+                pointToDelete.viewId == selectedEventPoint.viewId
+            }
+            DataManager.shared.removeLocalLocationPoint(selectedEventPoint, inContext: .main)
+        }
         isEdit = false
+        selectedEventPoint = nil
     }
     
     func save(){
@@ -107,6 +123,12 @@ extension BPEditStadiumViewModel{
         // TODO: save LocalLocationPoint
         selectedEventPoint = nil
         isEdit = false
+    }
+    
+    func selectPoint(point: LocalLocationPoint){
+        selectedEventPoint = point
+        renderPitchScene.select(point: point)
+//        isEdit = true
     }
 }
  
@@ -145,7 +167,7 @@ extension BPEditStadiumViewModel {
     
 }
 
-// MARK: - Control Points in Stadium Edit Scene
+// MARK: - Control (move,scale,rotate) Points in Stadium Edit Scene
 extension BPEditStadiumViewModel{
     func moveUp(){
         renderPitchScene.moveUP()
@@ -164,7 +186,7 @@ extension BPEditStadiumViewModel{
     }
     
     func rotateClockwise(){
-        print("rotztion clockwise")
+        print("rotation clockwise")
         renderPitchScene.rotateClockwise()
     }
     
@@ -190,13 +212,7 @@ extension BPEditStadiumViewModel{
 // MARK: - BPSKViewDelegate
 extension BPEditStadiumViewModel: BPSKViewDelegate {
     func selectPointWithId(_ id: String){
-//        withAnimation{
-            selectedEventPoint = initialPoints.first(where: {$0.viewId == id})
-            isEdit = true
-//        }
-//        if let point = initialPoints.first(where: {$0.viewId == id}) {
-//            selectedEventPoint = point
-//        }
+        selectedEventPoint = localPoints.first(where: {$0.viewId == id})
     }
     
     func deselectPoint(){
@@ -205,11 +221,71 @@ extension BPEditStadiumViewModel: BPSKViewDelegate {
         }
         isEdit = false
     }
+    
+    func deselectPointForRender(){
+        if selectedEventPoint != nil {
+            self.selectedEventPoint = nil
+            renderPitchScene.deselect()
+        }
+        isEdit = false
+    }
     //id?
     
-    func updatePoint(x: Double, y: Double){
+    func updatePoint(x: Double, y: Double, rotation: Double, scaleFactor: Double){
         // TODO: update LocalLocationPoint
     } //x,y
+}
+
+// MARK: - Point data control
+extension BPEditStadiumViewModel {
+    func addUser(user: LocalUser){
+        guard let selectedEventPoint else { return }
+        if !selectedEventPoint.viewUsers.contains([user]) {
+            DataManager.shared.moc.perform {
+                selectedEventPoint.addToUser(user)
+            }
+        } else {
+            print("this user: \(user.userLastName) exist in point")
+        }
+    }
+    
+    func acceptNubmer(num: Int){
+        guard let selectedEventPoint else { return }
+        DataManager.shared.moc.perform {
+            selectedEventPoint.number = Int16(num)
+        }
+    }
+    
+    func addCam(cam: LocalCamera){
+        guard let selectedEventPoint else { return }
+        DataManager.shared.moc.perform {
+            selectedEventPoint.addToCameras(cam)
+        }
+        
+    }
+    
+    func addSound(sound: LocalSound){
+        guard let selectedEventPoint else { return }
+        DataManager.shared.moc.perform {
+            selectedEventPoint.addToSounds(sound)
+        }
+        
+    }
+    
+    func addLight(light: LocalLight){
+        guard let selectedEventPoint else { return }
+        DataManager.shared.moc.perform {
+            selectedEventPoint.addToLights(light)
+        }
+        
+    }
+    
+    func addDescription(desc: String){
+        guard let selectedEventPoint else { return }
+        DataManager.shared.moc.perform {
+            selectedEventPoint.pointDescription = desc
+        }
+    }
 }
 
 

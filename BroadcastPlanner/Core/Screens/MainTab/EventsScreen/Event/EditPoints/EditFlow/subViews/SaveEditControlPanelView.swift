@@ -13,6 +13,7 @@ struct SaveEditControlPanelView: View {
     let addAction: () -> Void
     let deleteAction: () -> Void
     let saveAction: () -> Void
+    let isEditAction: () -> Void
     
     let isEdit: Bool
     
@@ -47,11 +48,9 @@ struct SaveEditControlPanelView: View {
                         withAnimation {
                             if isEdit {
                                 saveAction()
-                                
                             } else {
-                                
+                                isEditAction()
                             }
-//                            isEdit.toggle()
                         }
                     }, label: {
                         Text(isEdit ?  "SAVE":"EDIT")
@@ -65,5 +64,5 @@ struct SaveEditControlPanelView: View {
 }
 
 #Preview {
-    SaveEditControlPanelView(addAction: {}, deleteAction: {}, saveAction: {}, isEdit: false)
+    SaveEditControlPanelView(addAction: {}, deleteAction: {}, saveAction: {}, isEditAction: {}, isEdit: false)
 }

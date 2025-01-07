@@ -6,6 +6,7 @@ struct BPEditStadiumView: View {
     @Environment(\.dismiss) var dismiss
     
     @StateObject var vm: BPEditStadiumViewModel
+    
     @EnvironmentObject var settings: GlobalSettings
     
     let event: LocalEvent
@@ -61,23 +62,22 @@ struct BPEditStadiumView: View {
             
             VStack{
                 //filter section
-
-                            ConfirmationButtonGroupView(height: 50, isAcceptDisabled: false) {
-                                // cancel
-                                //rollback
-                                dismiss()
-
-                            } acceptAction: {
-                                dismiss()
-                                vm.resetScale(type: .stadium)
-                                vm.selectedEventPoint = nil
-                                vm.renderPitchScene.deselect()
-                                vm.isEdit = false
-                            } content: {
-                                BPEventFilterCaseTabView(selectedTab:  $stadiumFilter)
-                                
-                            }
-                            .padding(.horizontal)
+                
+                ConfirmationButtonGroupView(height: 50, isAcceptDisabled: false) {
+                    // cancel
+                    //rollback
+                    dismiss()
+                    
+                } acceptAction: {
+                    dismiss()
+                    vm.resetScale(type: .stadium)
+                    vm.selectedEventPoint = nil
+                    vm.renderPitchScene.deselect()
+                    vm.isEdit = false
+                } content: {
+                    BPEventFilterCaseTabView(selectedTab:  $stadiumFilter)
+                }
+                .padding(.horizontal)
 
                 //templates choise
                 if editable{
@@ -155,6 +155,7 @@ struct BPEditStadiumView: View {
                         SaveEditControlPanelView(addAction: {vm.addPoint()},
                                                  deleteAction: {vm.deletePoint()},
                                                  saveAction: {vm.save()},
+                                                 isEditAction: {vm.changeState()},
                                                  isEdit: vm.isEdit)
                     } else {
                         Spacer()
@@ -168,8 +169,8 @@ struct BPEditStadiumView: View {
                 //users collection
                 
                 // TODO: editable control
-                BPEditEventJoystickInfoPanel(vm: vm)
-                    .border(.red, width: 2)
+                BPEditEventJoystickInfoPanel()
+                    .environmentObject(vm)
                 .padding(.horizontal)
                 Spacer()
             }
@@ -180,4 +181,5 @@ struct BPEditStadiumView: View {
 #Preview {
     BPEditStadiumView(event: DataManager.shared.fetchOrCreateEventWithId("123", inContext: .main) , editable: true,acceptAction: {},cancelAction: {})
     .environmentObject(BPEditStadiumViewModel())
+    .environment(\.managedObjectContext, DataManager.shared.moc)
 }

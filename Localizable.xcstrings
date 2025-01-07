@@ -17,6 +17,9 @@
         }
       }
     },
+    "%lld" : {
+
+    },
     "1" : {
 
     },
@@ -29,16 +32,28 @@
     "Add background photos" : {
 
     },
+    "Add camera" : {
+
+    },
     "Add Club" : {
 
     },
     "Add event background" : {
 
     },
+    "Add light" : {
+
+    },
     "Add location" : {
 
     },
     "Add Location" : {
+
+    },
+    "Add mic" : {
+
+    },
+    "Add user" : {
 
     },
     "BP" : {
@@ -177,6 +192,9 @@
 
     },
     "Permanently erase the photo in the trash?" : {
+
+    },
+    "Points" : {
 
     },
     "Press me" : {

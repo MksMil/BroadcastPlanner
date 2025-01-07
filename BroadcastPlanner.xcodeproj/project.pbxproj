@@ -79,6 +79,7 @@
 		29C041D82AC55D4A008B3E1F /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041D72AC55D4A008B3E1F /* Location.swift */; };
 		29C041DB2AC5620A008B3E1F /* StadiumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041DA2AC5620A008B3E1F /* StadiumView.swift */; };
 		29C041F22ACBF45B008B3E1F /* Color+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041F12ACBF45B008B3E1F /* Color+Ext.swift */; };
+		29C1AC732D1D6F6300D4BB26 /* PointInfoPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C1AC722D1D6F6300D4BB26 /* PointInfoPanelView.swift */; };
 		29C51B8E2C933F9C00ED2178 /* CarEditSpriteScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C51B8D2C933F9C00ED2178 /* CarEditSpriteScene.swift */; };
 		29C8F9472CC24FD000A7D5D2 /* UserInfoTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C8F9462CC24FD000A7D5D2 /* UserInfoTextField.swift */; };
 		29CB0F642C98B24E003B30C4 /* CarUnitEnableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29CB0F632C98B24E003B30C4 /* CarUnitEnableCellView.swift */; };
@@ -184,6 +185,7 @@
 		29C041D72AC55D4A008B3E1F /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
 		29C041DA2AC5620A008B3E1F /* StadiumView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StadiumView.swift; sourceTree = "<group>"; };
 		29C041F12ACBF45B008B3E1F /* Color+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Ext.swift"; sourceTree = "<group>"; };
+		29C1AC722D1D6F6300D4BB26 /* PointInfoPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PointInfoPanelView.swift; sourceTree = "<group>"; };
 		29C51B8D2C933F9C00ED2178 /* CarEditSpriteScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarEditSpriteScene.swift; sourceTree = "<group>"; };
 		29C8F9462CC24FD000A7D5D2 /* UserInfoTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfoTextField.swift; sourceTree = "<group>"; };
 		29CB0F632C98B24E003B30C4 /* CarUnitEnableCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarUnitEnableCellView.swift; sourceTree = "<group>"; };
@@ -325,6 +327,7 @@
 			children = (
 				2916E6062C4E82690025DCC6 /* BPEditEventStuffListView.swift */,
 				2916E6082C4E83650025DCC6 /* BPEditEventJoystickInfoPanel.swift */,
+				29C1AC722D1D6F6300D4BB26 /* PointInfoPanelView.swift */,
 			);
 			path = BottomGroup;
 			sourceTree = "<group>";
@@ -912,6 +915,7 @@
 				2955C9822B57C1BE003F9ADC /* SessionUser.swift in Sources */,
 				29CCF2F12C80895100BCEF34 /* EmailPasswordStackView.swift in Sources */,
 				293752AA2BF8CD950044924D /* BPEventFilterCaseTabView.swift in Sources */,
+				29C1AC732D1D6F6300D4BB26 /* PointInfoPanelView.swift in Sources */,
 				295114332C4E73F5005E4BF8 /* BPEditStadiumView.swift in Sources */,
 				299916AC2CB66A890003B521 /* Club.swift in Sources */,
 				29CCF2EC2C807FE000BCEF34 /* GlobalSessionStorage.swift in Sources */,

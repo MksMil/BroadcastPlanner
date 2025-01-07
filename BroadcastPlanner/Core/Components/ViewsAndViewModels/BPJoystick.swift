@@ -43,7 +43,6 @@ struct BPJoystick: View {
                 .gesture( SimultaneousGesture(LongPressGesture(minimumDuration: .infinity)
                     .updating($upGest) { current, state, tr in
                         state = current
-                        print("\(state)")
                     }, TapGesture().onEnded({ _ in
                         upAction()
                     }))
@@ -57,7 +56,6 @@ struct BPJoystick: View {
                 .gesture( SimultaneousGesture(LongPressGesture(minimumDuration: .infinity)
                     .updating($downGest) { current, state, tr in
                         state = current
-                        print("\(state)")
                     }, TapGesture().onEnded({ _ in
                         downAction()
                     }))

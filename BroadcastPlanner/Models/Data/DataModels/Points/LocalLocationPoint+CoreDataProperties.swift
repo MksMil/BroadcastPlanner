@@ -111,8 +111,8 @@ extension LocalLocationPoint : Identifiable {
     var viewY: Double {
         Double(coordinateY)
     }
-    var viewRotation: Double{
-        Double(rotation)
+    var viewRotation: Angle{
+        Angle(degrees: Double(rotation))
     }
 
     var viewScaleFactor: Double{
@@ -156,7 +156,7 @@ extension LocalLocationPoint : Identifiable {
     }
     
     var viewDescription: String {
-        pointDescription ?? "no description"
+        pointDescription ?? "Choose position"
     }
     
     var viewTask: String {

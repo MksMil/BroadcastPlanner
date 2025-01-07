@@ -16,7 +16,7 @@ struct BPEventFilterCaseTabView<T: RawRepresentable & CaseIterable>: View  where
 
                 Image(systemName: "\(tabs[tabIndex].rawValue)")
                     .resizable()
-                    .scaledToFit()
+                    .aspectRatio(1, contentMode: .fit)
                     .font(.title)
                     .padding(12)
                     .onTapGesture {

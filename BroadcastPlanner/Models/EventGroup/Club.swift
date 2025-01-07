@@ -1,7 +1,5 @@
 import UIKit
 
-
-
 struct Club: Codable, Hashable, Identifiable,BPDataProtocol{
     var id: String
     var title: String

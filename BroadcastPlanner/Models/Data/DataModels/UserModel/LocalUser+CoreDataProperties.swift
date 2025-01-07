@@ -103,6 +103,9 @@ extension LocalUser : Identifiable {
     var userId: String { id ?? "" }
     var userFirstName: String{ firstName ?? "" }
     var userLastName: String { lastName ?? "" }
+    var userCompactName: String{
+        userFirstName.prefix(1).uppercased() + "." + userLastName
+    }
     var userEmail: String { email ?? "" }
     var userPhoneNumber: String{ phoneNumber ?? "" }
     var userAddress: String{ homeAddress ?? "" }
@@ -137,6 +140,16 @@ extension LocalUser : Identifiable {
     }
     var userParticipatedEvents: [LocalEvent] {
         return participateEvents?.allObjects as? [LocalEvent] ?? []
+    }
+    
+    func isAvailableToEvent(event: LocalEvent) -> Bool{
+        for existEvent in userParticipatedEvents{
+            if event.date?.formatted(date: .abbreviated, time: .omitted) == existEvent.date?.formatted(date: .abbreviated, time: .omitted){
+                print("user \(userLastName) has event in this date")
+                return false
+            }
+        }
+        return true
     }
 }
 
