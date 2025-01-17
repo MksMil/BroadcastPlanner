@@ -14,6 +14,7 @@ final class AddEditLocationViewModel: ObservableObject{
     @Published var newImages: [UIImage] = []
     
     @Published var localImages: [LocalImage] = []
+    
     var localImageToRemove: LocalImage?
     var indexSetToRemove: Int?
     
@@ -27,7 +28,6 @@ final class AddEditLocationViewModel: ObservableObject{
     
     
     func makePublisher(){
-        
         $locationPhotos.sink { [weak self] newValue in
             guard let self else { return }
             if !newValue.isEmpty{
@@ -47,53 +47,52 @@ final class AddEditLocationViewModel: ObservableObject{
         }
         .store(in: &cancellables)
     }
-    @MainActor
-    func updateLocation() async{
-        await withTaskGroup(of: Void.self) { group in
-            for localImage in self.newImages{
-                group.addTask { [weak self] in
-                    guard let self else { return }
-                    //backgroundImages add to set
-                    print("create new LocalImage")
-                    let newImage = DataManager.shared.createOrUpdateLocalImageWithImageData(imageData: ImageData(id: UUID().uuidString, type: GlobalProperties.ImageType.location.rawValue), withImage: localImage, inContext: .main)
-                    await DataManager.shared.moc.perform {
-                        print("linking LocalImage and location")
-                        self.localLocation.addToImages(newImage)
-                        newImage.parentLocationImage = self.localLocation
-                    }
-                }
-            }
-                group.addTask { [weak self] in
-                    guard let self else { return }
-                    //add backgroundToEvent
-                    if let locationBackground =  self.locationBackground {
-                        print("creating back in cd")
-                        await DataManager.shared.moc.perform {
-                            print("saving and linking location")
-                            self.localLocation.background = locationBackground
-                            locationBackground.parentLocationBackground = self.localLocation
-                        }
-                    }
-                    
-                    await DataManager.shared.moc.perform {
-                        print("saving title and address")
-                        self.localLocation.title = self.title
-                        self.localLocation.address = self.address
-                    }
-                }
-                await group.waitForAll()
-//            print("updating final save context")
-              await DataManager.shared.saveContext(type: .main,
-                                                   publish: .locations,
-                                               id: [])
-            
-            await NetworkManager.shared.saveLocation(localLocation.mapToLocation())
-            
-        }
-        
-    }
+//    @MainActor
+//    func updateLocation() async{
+//        await withTaskGroup(of: Void.self) { group in
+//            for localImage in self.newImages{
+//                group.addTask { [weak self] in
+//                    guard let self else { return }
+//                    //backgroundImages add to set
+//                    print("create new LocalImage")
+//                    let newImage = DataManager.shared.createOrUpdateLocalImageWithImageData(imageData: ImageData(id: UUID().uuidString, type: GlobalProperties.ImageType.location.rawValue), withImage: localImage, inContext: .main)
+//                    await DataManager.shared.moc.perform {
+//                        print("linking LocalImage and location")
+//                        self.localLocation.addToImages(newImage)
+//                        newImage.parentLocationImage = self.localLocation
+//                    }
+//                }
+//            }
+//                group.addTask { [weak self] in
+//                    guard let self else { return }
+//                    //add backgroundToEvent
+//                    if let locationBackground =  self.locationBackground {
+//                        print("creating back in cd")
+//                        await DataManager.shared.moc.perform {
+//                            print("saving and linking location")
+//                            self.localLocation.background = locationBackground
+//                            locationBackground.parentLocationBackground = self.localLocation
+//                        }
+//                    }
+//                    
+//                    await DataManager.shared.moc.perform {
+//                        print("saving title and address")
+//                        self.localLocation.title = self.title
+//                        self.localLocation.address = self.address
+//                    }
+//                }
+//                await group.waitForAll()
+////            print("updating final save context")
+//              await DataManager.shared.saveContext(type: .main,
+//                                                   publish: .locations,
+//                                               id: [])
+//            
+//            await NetworkManager.shared.saveLocation(localLocation.mapToLocation())
+//            
+//        }
+//        
+//    }
     func removeElementAtIndex(_ indexSet: Int){
-        
         let index = IndexSet(integer: indexSet)
         newImages.remove(atOffsets: index)
     }

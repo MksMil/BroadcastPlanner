@@ -47,7 +47,7 @@ struct BPUserDataListCellView: View {
     
 }
 
-#Preview {
-    BPUserDataListCellView(user: LocalUser(context: DataManager.preview.moc), text: "text")
-}
+//#Preview {
+//    BPUserDataListCellView(user: LocalUser(context: DataManager.preview.moc), text: "text")
+//}
 

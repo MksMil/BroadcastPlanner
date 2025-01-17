@@ -3,42 +3,11 @@ import Combine
 
 final class LocationSheetViewModel: ObservableObject{
     @Published var selectedLocation: LocalLocation?
-    
-    var locationToRoute: LocalLocation {
-        if let selectedLocation{
-            return selectedLocation
-        } else {
-            return DataManager.shared.fetchOrCreateLocationWithId(UUID().uuidString, inContext: .main)
-        }
-    }
-    
-    func removeLocationAtIndex(_ location: LocalLocation){
-        DataManager.shared.removeLocalLocation(location,
-                                               inContext: .main)
-        Task{
-            await DataManager.shared.saveContext(type: .main,
-                                                 publish: .none,
-                                                 id: [])
-        }
-        if let idToRemove = location.id{
-            Task {
-                await NetworkManager.shared.removeLocationWithId(idToRemove)
-            }
-        }
-    }
-    
-//    func removeAll(locations: FetchedResults<LocalLocation>){
-//        for location in locations {
-//            DataManager.shared.removeLocalLocation(location,
-//                                                   inContext: .main)
-//        }
-//        DataManager.shared.saveContext(type: .main,
-//                                       publish: .none,
-//                                       id: [])
-//    }
 }
 
 struct LocationSheetView: View {
+    @EnvironmentObject var mdm: MainDataManager
+    
     @StateObject var vm: LocationSheetViewModel
     
     @FetchRequest<LocalLocation>(sortDescriptors: [SortDescriptor(\.address)]) var locations
@@ -66,17 +35,17 @@ struct LocationSheetView: View {
     }
         
     var body: some View {
-
         ZStack{
-            Color.mainBackground
-                .ignoresSafeArea()
+            MainBackground()
+            
             VStack{
                 ConfirmationButtonGroupView(isAcceptDisabled: vm.selectedLocation == nil, cancelAction: {
                     cancelAction()
                 }, acceptAction: {
-                    if let club, let location = vm.selectedLocation{
+                    if let club,
+                       let location = vm.selectedLocation{
                         Task{
-                            DataManager.shared.moc.perform {
+                            mdm.localDataManager.moc.perform {
                                 club.homeLocation = location
                             }
                         }
@@ -96,7 +65,7 @@ struct LocationSheetView: View {
                         }
                         .onTapGesture {
                             if isEditMode {
-                                addEditAction(vm.locationToRoute)
+                                addEditAction(vm.selectedLocation ?? mdm.getNewLocation() )
                             }
                         }
                 }
@@ -122,8 +91,10 @@ struct LocationSheetView: View {
                     }
                     .onDelete { index in
                         if let ind = index.first{
-                            vm.removeLocationAtIndex(locations[ind])
-                            vm.selectedLocation = nil
+                            Task{
+                                await mdm.removeLocation(locations[ind])
+                                vm.selectedLocation = nil
+                            }
                         }
                     }
                     .listRowBackground(Color.clear)
@@ -143,7 +114,7 @@ struct LocationSheetView: View {
             }
             
         }
-        .onReceive(DataManager.shared.updatePublisher, perform: { value in
+        .onReceive(mdm.localDataManager.updatePublisher, perform: { value in
             if value.0 == .locations{
                 if value.1.isEmpty{
                     vm.selectedLocation = nil
@@ -157,7 +128,7 @@ struct LocationSheetView: View {
 #Preview {
     ZStack{
         LocationSheetView(club: nil, cancelAction: {}, saveAction: {_ in }, addEditAction: {_ in})
-            .environment(\.managedObjectContext, DataManager.shared.moc)
+//            .environment(\.managedObjectContext, DataManager.shared.moc)
     }
 }
 

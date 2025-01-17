@@ -176,8 +176,8 @@ struct AddEditClubView: View {
     }
 }
 
-#Preview {
-    AddEditClubView(club: LocalClub(context: DataManager.preview.moc),
-                    acceptAction: {_,_,_,_,_ in }, cancelAction: {},
-                    removeAction: {},defineLocation: {})
-}
+//#Preview {
+//    AddEditClubView(club: LocalClub(context: DataManager.preview.moc),
+//                    acceptAction: {_,_,_,_,_ in }, cancelAction: {},
+//                    removeAction: {},defineLocation: {})
+//}

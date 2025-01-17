@@ -78,7 +78,7 @@ struct ClubSheetCellView: View {
         cancelAction: {},
         acceptAction: {_ in },
         addEditAction: {_ in })
-    .environment(\.managedObjectContext, DataManager.shared.moc)
+//    .environment(\.managedObjectContext, DataManager.shared.moc)
 }
 
 

@@ -7,31 +7,33 @@ struct BPEditEventJoystickInfoPanel: View {
         HStack(alignment: .top){
             // TODO: More useful customize
             //InfoPanel
-            
-            if vm.isEdit, vm.selectedEventPoint != nil {
-                PointInfoPanelView(point: vm.selectedEventPoint)
-            } else {
-                SmartLayout(hSpacing: 3, vSpacing: 3){
-
-                    ForEach(points){ point in
-                        Circle().fill( vm.selectedEventPoint?.viewId == point.viewId ?  .red:.gray)
-                            .frame(width: 40, height: 40)
-                            .overlay {
-                                Text("\(point.viewNumber)")
-                            }
-                            .onTapGesture {
-                                withAnimation{
-                                    if vm.selectedEventPoint == point{
-                                        vm.deselectPointForRender()
-                                    } else {
-                                        vm.selectPoint(point: point)
+            VStack{
+                if vm.isEdit, vm.selectedEventPoint != nil {
+                    PointInfoPanelView(point: vm.selectedEventPoint)
+                        .layoutPriority(1)
+                } else {
+                    SmartLayout(hSpacing: 3, vSpacing: 3){
+                        ForEach(points.sorted(by: {$0.viewNumber < $1.viewNumber})){ point in
+                            Circle().fill( vm.selectedEventPoint?.viewId == point.viewId ?  .red:.gray)
+                                .frame(width: 40, height: 40)
+                                .overlay {
+                                    Text("\(point.viewNumber)")
+                                }
+                                .onTapGesture {
+                                    withAnimation{
+                                        if vm.selectedEventPoint == point{
+                                            vm.deselectPointForRender()
+                                        } else {
+                                            vm.selectPoint(point: point)
+                                        }
                                     }
                                 }
-                            }
-                            .animation(.easeInOut, value: vm.selectedEventPoint)
+                                .animation(.easeInOut, value: vm.selectedEventPoint)
+                        }
                     }
+                    .padding(2)
                 }
-                .padding(2)
+                Spacer()
             }
             Spacer()
             //joystick
@@ -47,35 +49,28 @@ struct BPEditEventJoystickInfoPanel: View {
                     scaleUp: vm.scaleUpPoint,
                     scaleDown: vm.scaleDownPoint
                 )
-                .frame(width: 140, height: 140)
+                .aspectRatio(1, contentMode: .fit)
                 .padding(5)
                 .overlay {
                     RoundedRectangle(cornerRadius: 5).stroke(.ultraThinMaterial, lineWidth: 2)
                 }
-                .padding(5)
-
-//                }
-//                .padding(.top)
-//                .padding(.trailing)
+                // Task managment
+                TaskDescriptionView(text: vm.selectedEventPoint?.viewTask ?? "", isEditMode: vm.isEdit)
                 
-//                BPEventPlanPointImage()
-//                    .frame(width: 75, height: 75)
-//                    .border(.ultraThickMaterial, width: 1)
-//                    .padding(.trailing)
-
             }
+            .padding(5)
+            .frame(width: 140)
         }
-        .frame(maxWidth: .infinity)
     }
 }
 
 
 #Preview {
-    BPEditStadiumView(event: DataManager.shared.fetchOrCreateEventWithId("123", inContext: .main),
-                      editable: true,
-                      acceptAction: {},
-                      cancelAction: {})
-        .environment(\.managedObjectContext, DataManager.shared.moc)
+    let mdm = MainDataManager(localDataManager: DataManager(), globalDataManager: NetworkManager(),userId: "123")
+    
+    BPEditStadiumView(event: mdm.localDataManager.fetchOrCreateEventWithId("123", inContext: .main) , editable: true)
+    .environmentObject(BPEditStadiumViewModel())
+    .environmentObject(mdm)
 }
 
 //#Preview {

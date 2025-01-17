@@ -1,7 +1,6 @@
 // Data model for authenticated user
 
 import Foundation
-//import FirebaseAuth
 import Firebase
 
 struct SessionUser {

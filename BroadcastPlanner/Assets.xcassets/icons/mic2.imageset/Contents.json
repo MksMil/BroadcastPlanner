@@ -1,11 +1,11 @@
 {
   "images" : [
     {
-      "filename" : "LNZ_stad_1440px.jpeg",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "mic2.png",
       "idiom" : "universal",
       "scale" : "2x"
     },

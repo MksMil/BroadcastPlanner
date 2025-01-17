@@ -3,9 +3,14 @@ import NavigationTransitions
 
 struct Home: View {
     
-    @EnvironmentObject var session: GlobalSessionStorage
+    @EnvironmentObject var session: SessionManager
     @State private var selection: Int = 1
-   
+    @StateObject var mdm: MainDataManager
+    
+    init(localDataManager: DataManager, globalDataManager: NetworkManager,userId: String?) {
+        self._mdm = StateObject(wrappedValue: MainDataManager(localDataManager: localDataManager, globalDataManager: globalDataManager,userId: userId))
+    }
+    
     var body: some View {
         ZStack(alignment:.bottom){
             
@@ -17,7 +22,7 @@ struct Home: View {
                     .transition(.opacity)
 //                
 //                // MyInfo Screen
-                BPAccountInfoView(id: session.userSession?.id ?? "")
+                BPAccountInfoView(id: session.sessionUser?.id ?? "")
                     .tabItem { Label("Info", systemImage: "figure.mind.and.body") }
                     .tag(1)
                     .padding(.bottom,1)
@@ -37,14 +42,15 @@ struct Home: View {
             }
         }
         .navigationBarBackButtonHidden()
+        .environment(\.managedObjectContext, mdm.localDataManager.moc)
+        .environmentObject(mdm)
     }
 }
 
 #Preview {
-   Home()
+    Home(localDataManager: DataManager(),
+         globalDataManager: NetworkManager(), userId: "123")
         .environmentObject(GlobalSettings())
-        .environmentObject(GlobalSessionStorage())
+        .environmentObject(SessionManager())
         .environmentObject(ApplicationState())
-        .environment(\.managedObjectContext, DataManager.shared.moc)
-
 }

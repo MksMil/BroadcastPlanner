@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct BPResetPasswordView: View {
-    
+    @EnvironmentObject var sessionManager: SessionManager
     @State private var email: String = ""
     
     var body: some View {
@@ -16,7 +16,7 @@ struct BPResetPasswordView: View {
                 .padding(.bottom,40)
                 
                 Button {
-                    AuthenticationManager.shared.sendResetPassword(with: email)
+                    sessionManager.sendResetPassword(with: email)
                 } label: {
                     Text("Send")
                         .font(.title)

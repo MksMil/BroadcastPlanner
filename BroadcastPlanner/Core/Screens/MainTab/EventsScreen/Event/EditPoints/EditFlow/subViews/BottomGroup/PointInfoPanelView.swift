@@ -20,9 +20,6 @@ final class PointInfoPanelViewModel: ObservableObject {
     @Published var sounds: [LocalSound] = []
     @Published var lights: [LocalLight] = []
     
-    @Published var task: String = ""
-    
-    
     @Published var availableUsers: [LocalUser] = []
    
     var selectedPoint: LocalLocationPoint?
@@ -51,7 +48,6 @@ final class PointInfoPanelViewModel: ObservableObject {
             self.cameras = point.viewLocalCameras
             self.sounds = point.viewLocalSounds
             self.lights = point.viewLocalLights
-            self.task = point.viewTask
         }
     }
     
@@ -65,14 +61,21 @@ final class PointInfoPanelViewModel: ObservableObject {
         }
     }
     
+    func removeUser(user: LocalUser){
+        users.removeAll(where: {$0 == user})
+    }
+    
     func acceptNubmer(num: Int){
        
         self.num = num
     }
     
     func addCam(cam: LocalCamera){
-       
         cameras.append(cam)
+    }
+    
+    func removeCamera(cam: LocalCamera){
+        cameras.removeAll(where: {$0 == cam})
     }
     
     func addSound(sound: LocalSound){
@@ -80,9 +83,16 @@ final class PointInfoPanelViewModel: ObservableObject {
         sounds.append(sound)
     }
     
+    func removeSound(sound: LocalSound){
+        sounds.removeAll(where: {$0 == sound})
+    }
+    
     func addLight(light: LocalLight){
-        
         lights.append(light)
+    }
+    
+    func removeLight(light: LocalLight){
+        lights.removeAll(where: {$0 == light})
     }
     
     func addDescription(desc: String){
@@ -111,7 +121,7 @@ struct PointInfoPanelView: View {
             VStack(spacing: 5) {
                 //number position stack
                 HStack(alignment: .center) {
-                    //point number
+//                    //point number
                     Circle()
                         .fill(.ultraThinMaterial)
                         .frame(width: 45)
@@ -189,42 +199,53 @@ struct PointInfoPanelView: View {
                 Divider()
                 
                 
+                //user section
+                BPEventFilterCaseTabView(selectedTab: $vm.selectedFilter)
+                    .frame(height: 45)
                 VStack {
-                    //user section
-                    BPEventFilterCaseTabView(selectedTab: $vm.selectedFilter)
                     switch vm.selectedFilter {
                         case .users:
-                            PanelUserCollectionView(users: vm.users){
-                                
-                            } action: {
-                                
+                            PanelUserCollectionView(users: vm.users){ user in
+                                vm.addUser(user: user)
+                                pointManager.addUser(user: user)
+                            } removeAction: { user in
+                                vm.removeUser(user: user)
+                                pointManager.removeUserFromPoint(user: user)
                             }
                         case .cam:
-                            PanelCameraCollectionView(cameras: vm.cameras) {
-                                
-                            } action: {
-                                
+                            PanelCameraCollectionView(cameras: vm.cameras) { cam in
+                                vm.addCam(cam: cam)
+                                pointManager.addCam(cam: cam)
+                            } removeAction: { cam in
+                                vm.removeCamera(cam: cam)
+                                pointManager.removeCameraFromPoint(camera: cam)
                             }
                         case .mic:
-                            PanelSoundCollectionView(sounds: vm.sounds) {
-                                
-                            } action: {
-                                
+                            PanelSoundCollectionView(sounds: vm.sounds) { sound in
+                                vm.addSound(sound: sound)
+                                pointManager.addSound(sound: sound)
+                            } removeAction: { sound in
+                                vm.removeSound(sound: sound)
+                                pointManager.removeSoundFromPoint(sound: sound)
                             }
                             
                         case .light:
-                            PanelLightCollectionView(lights: vm.lights) {
-                                
-                            } action: {
-                                
+                            PanelLightCollectionView(lights: vm.lights) { light in
+                                vm.addLight(light: light)
+                                pointManager.addLight(light: light)
+                            } removeAction: { light in
+                                vm.removeLight(light: light)
+                                pointManager.removeLightFromPoint(light: light)
                             }
                     }
                 }
+                .padding(.vertical,10)
             }
         .padding(.horizontal, 10)
         .background(
             RoundedRectangle(cornerRadius: 15)
                 .fill(.ultraThinMaterial))
+//        .border(.blue, width: 3)
         .onReceive(pointManager.$selectedEventPoint) { point in
             if let point {
                 vm.update(point: point)
@@ -238,12 +259,11 @@ struct PointInfoPanelView: View {
 //}
 // MARK: - Preview
 #Preview {
-    BPEditStadiumView(
-        event: DataManager.shared.fetchOrCreateEventWithId(
-            "123", inContext: .main), editable: true, acceptAction: {},
-        cancelAction: {}
-    )
-    .environment(\.managedObjectContext, DataManager.shared.moc)
+    let mdm = MainDataManager(localDataManager: DataManager(), globalDataManager: NetworkManager(), userId: "123")
+    
+    BPEditStadiumView(event: mdm.localDataManager.fetchOrCreateEventWithId("123", inContext: .main) , editable: true)
+    .environmentObject(BPEditStadiumViewModel())
+    .environmentObject(mdm)
 }
 
 

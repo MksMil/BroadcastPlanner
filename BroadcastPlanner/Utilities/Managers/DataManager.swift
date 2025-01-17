@@ -14,15 +14,15 @@ class DataManager: ObservableObject {
     
     var cancellables: Set<AnyCancellable> = []
     
-    public static let shared = DataManager(forPreview: false)
-    public static let preview = DataManager(forPreview: true)
+//    public static let shared = DataManager(forPreview: false)
+//    public static let preview = DataManager(forPreview: true)
 
     public let persistentContainer: NSPersistentContainer
 
-    public let backgroundContext: NSManagedObjectContext
-    public let moc: NSManagedObjectContext
+    var backgroundContext: NSManagedObjectContext
+    var moc: NSManagedObjectContext
     // MARK: - Init
-    private init(forPreview: Bool = false) {
+     init(forPreview: Bool = false) {
         if forPreview {
             self.persistentContainer = NSPersistentContainer(
                 name: "BroadcastPlanner")
@@ -350,6 +350,50 @@ extension DataManager {
                 backgroundImage.parentLocationBackground = localLocation
             }
         }
+    }
+    
+    func updateLocalLocation(_ location: LocalLocation, withTitle title: String, address: String, localImages: [UIImage], locationBackground: LocalImage?) async {
+                await withTaskGroup(of: Void.self) { group in
+                    for localImage in localImages{
+                        group.addTask { [weak self] in
+                            guard let self else { return }
+                            //backgroundImages add to set
+                            print("create new LocalImage")
+                            let newImage = createOrUpdateLocalImageWithImageData(imageData: ImageData(id: UUID().uuidString, type: GlobalProperties.ImageType.location.rawValue), withImage: localImage, inContext: .main)
+                            await moc.perform {
+                                print("linking LocalImage and location")
+                                location.addToImages(newImage)
+                                newImage.parentLocationImage = location
+                            }
+                        }
+                    }
+                    group.addTask { [weak self] in
+                        guard let self else { return }
+                        //add backgroundToEvent
+                        if let locationBackground = locationBackground {
+                            print("creating back in cd")
+                            await moc.perform {
+                                print("saving and linking location")
+                                location.background = locationBackground
+                                locationBackground.parentLocationBackground = location
+                            }
+                        }
+                        
+                        await moc.perform {
+                            print("saving title and address")
+                            location.title = title
+                            location.address = address
+                        }
+                    }
+                    await group.waitForAll()
+        //            print("updating final save context")
+                    await saveContext(type: .main,
+                                      publish: .locations,
+                                      id: [])
+        //
+        //            await NetworkManager.shared.saveLocation(localLocation.mapToLocation())
+        //
+                }
     }
 
     func removeLocation(location: Location, inContext contextType: ContextType){
@@ -1034,9 +1078,6 @@ extension DataManager {
 extension DataManager {
     func saveContext(type contextType: ContextType, publish: GlobalProperties.PublishChanges, id: [String]) async {
         let context = contextFromType(contextType)
-        print("save context comand received")
-        print("changes: \(publish.rawValue)")
-//        Task{
             await context.perform {
                 if context.hasChanges {
                     do {
@@ -1044,12 +1085,10 @@ extension DataManager {
                         if publish != .none {
                             Task{
                                 await MainActor.run {
-                                    print("comand to publisher here")
                                     self.updatePublisher.send((publish,id))
                                 }
                             }
                         }
-                        print("context saved")
                     } catch {
                         print("error save context: \(error.localizedDescription)")
                     }
@@ -1058,7 +1097,6 @@ extension DataManager {
                 }
                 
             }
-//        }
     }
 }
 
@@ -1076,11 +1114,3 @@ extension DataManager {
     }
 }
 
-#if DEBUG
-    // MARK: - Mock data
-    extension DataManager {
-        func addMockData() {
-
-        }
-    }
-#endif

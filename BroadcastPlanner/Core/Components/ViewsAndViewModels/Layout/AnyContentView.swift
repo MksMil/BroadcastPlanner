@@ -197,7 +197,7 @@ public struct AnyContentViewSizePreferenceKey: PreferenceKey{
 #Preview {
     
     BPAccountInfoView(id: "123")
-        .environmentObject(GlobalSessionStorage())
+        .environmentObject(SessionManager())
 }
 
 extension GeometryProxy: @retroactive @unchecked Sendable{

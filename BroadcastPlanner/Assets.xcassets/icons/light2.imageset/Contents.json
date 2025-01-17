@@ -1,11 +1,11 @@
 {
   "images" : [
     {
-      "filename" : "Krivbass_stad_2.jpg",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "light2.png",
       "idiom" : "universal",
       "scale" : "2x"
     },

@@ -3,53 +3,84 @@ import SwiftUI
 struct PanelUserCollectionView: View {
     
     let users: [LocalUser]
-    let addAction: ()->()
-    let action: ()->()
+    let addAction: (LocalUser)->()
+    let removeAction: (LocalUser)->()
     
-    init(users: [LocalUser],addAction: @escaping ()->()  ,action: @escaping ()->()) {
+    @State private var isSelect: Bool = false
+    @State private var isConfirm: Bool = false
+    @State private var userToRemove: LocalUser?
+    
+    init(users: [LocalUser],addAction: @escaping (LocalUser)->(), removeAction: @escaping (LocalUser)->()) {
         self.users = users
         self.addAction = addAction
-        self.action = action
+        self.removeAction = removeAction
     }
     
     var body: some View {
         ScrollView{
-            ForEach(users){user in
-                BPUserImageNameCompactCell(user: user){
-                    action()
-                }
-            }
             Button{
-                addAction()
+                isSelect = true
             } label: {
                 HStack(spacing: 0){
                     Image(systemName: "plus")
                         .resizable()
                         .scaledToFit()
-                        .padding(10)
+                        .padding(5)
                         .background {
                             Circle().fill(.ultraThinMaterial)
                         }
-                        .padding(.horizontal,5)
+                        .padding(3)
                     Divider()
                         .padding(.vertical,3)
                     
                     Text("Add user")
-                        .lineLimit(2)
+                        .font(.system(size: 14))
+                        .lineLimit(1)
                         .minimumScaleFactor(0.2)
                         .padding(.horizontal,5)
                     Spacer()
                 }
                 .frame(maxWidth: .infinity)
-                .padding(2)
                 .frame(height: 40)
                 .background(.ultraThinMaterial)
                 .overlay {
                     RoundedRectangle(cornerRadius: 5).stroke(.ultraThickMaterial, lineWidth: 2)
                 }
+                .padding(2)
             }
-            .buttonStyle(.plain)
+            
+            ForEach(users){user in
+                BPUserImageNameCompactCell(user: user){
+                    userToRemove = user
+                    isConfirm = true
+                }
+            }
+            
        }
+        .sheet(isPresented: $isSelect) {
+            SmartLayout(hSpacing: 5, vSpacing: 5){
+                ForEach(users){ user in
+                    //user cell
+                    Text("\(user.userFirstName) \(user.userLastName)")
+                        .onTapGesture {
+                            addAction(user)
+                            isSelect = false
+                        }
+                }
+                .listRowBackground(Color.clear)
+            }
+            .scrollContentBackground(.hidden)
+            .listStyle(.inset)
+            .presentationBackground(.ultraThinMaterial)
+            .presentationDetents([.fraction(0.5)])
+        }
+        .confirmationDialog("", isPresented: $isConfirm) {
+            Button("Remove user", role: .destructive) {
+                if let userToRemove{
+                    removeAction(userToRemove)
+                }
+            }
+        }
     }
 }
 
@@ -59,35 +90,45 @@ struct BPUserImageNameCompactCell: View {
     let action: ()->Void
     
     var body: some View {
-        HStack{
+        HStack(spacing: 0){
             
             user.userImage
                 .resizable()
                 .scaledToFit()
-                .padding(10)
+                .frame(width: 20)
+                .padding(5)
                 .background {
                     Circle().fill(.ultraThinMaterial)
                 }
-                .padding(.horizontal,5)
+                .padding(3)
             Divider()
                 .padding(.vertical,3)
             
             Text(user.userCompactName)
-                .lineLimit(2)
+                .font(.system(size: 14))
+                .lineLimit(1)
                 .minimumScaleFactor(0.2)
                 .padding(.horizontal,5)
             Spacer()
+            Image(systemName: "trash")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 15)
+                .frame(maxHeight: .infinity)
+                .padding(5)
+                .background {
+                    Rectangle().fill(.ultraThickMaterial)
+                }
+                .onTapGesture {
+                    action()
+                }
         }
         .frame(maxWidth: .infinity)
-        .padding(2)
         .frame(height: 40)
         .overlay {
             RoundedRectangle(cornerRadius: 5).stroke(.ultraThickMaterial, lineWidth: 2)
         }
-        .onTapGesture {
-            action()
-        }
-
+        .padding(2)
     }
 }
 
@@ -108,53 +149,83 @@ struct BPPositionCompactCell: View {
 struct PanelCameraCollectionView: View {
     
     let cameras: [LocalCamera]
-    let addAction: ()->()
-    let action: ()->()
+    let addAction: (LocalCamera)->()
+    let removeAction: (LocalCamera)->()
     
-    init(cameras: [LocalCamera],addAction: @escaping ()->()  ,action: @escaping ()->()) {
+    @State private var isSelect: Bool = false
+    @State private var isConfirm: Bool = false
+    @State private var cameraToRemove: LocalCamera?
+    
+    init(cameras: [LocalCamera],addAction: @escaping (LocalCamera)->()  ,removeAction: @escaping (LocalCamera)->()) {
         self.cameras = cameras
         self.addAction = addAction
-        self.action = action
+        self.removeAction = removeAction
     }
     
     var body: some View {
+        
         ScrollView{
-            ForEach(cameras){cam in
-                BPCameraCompactCell(camera: cam){
-                    action()
-                }
-            }
             Button{
-                addAction()
+                isSelect = true
             } label: {
                 HStack(spacing: 0){
                     Image(systemName: "plus")
                         .resizable()
                         .scaledToFit()
-                        .padding(10)
+                        .padding(5)
                         .background {
                             Circle().fill(.ultraThinMaterial)
                         }
-                        .padding(.horizontal,5)
+                        .padding(3)
                     Divider()
                         .padding(.vertical,3)
-                    
                     Text("Add camera")
+                        .font(.system(size: 14))
                         .lineLimit(2)
                         .minimumScaleFactor(0.2)
                         .padding(.horizontal,5)
                     Spacer()
                 }
                 .frame(maxWidth: .infinity)
-                .padding(2)
                 .frame(height: 40)
                 .background(.ultraThinMaterial)
                 .overlay {
                     RoundedRectangle(cornerRadius: 5).stroke(.ultraThickMaterial, lineWidth: 2)
                 }
+                .padding(2)
             }
-            .buttonStyle(.plain)
-       }
+            
+            ForEach(cameras){cam in
+                BPCameraCompactCell(camera: cam){
+                    cameraToRemove = cam
+                    isConfirm = true
+                }
+            }
+        }
+        .sheet(isPresented: $isSelect) {
+            List {
+                ForEach(Camera.OpticType.allCases){ cam in
+                    Text(cam.rawValue)
+                        .onTapGesture {
+                            let newCamera = DataManager.shared.createOrUpdateCamera(Camera(id: UUID().uuidString, optic: cam), inContext: .main)
+                            addAction(newCamera)
+                            isSelect = false
+                        }
+                }
+                .listRowBackground(Color.clear)
+            }
+            .scrollContentBackground(.hidden)
+            .listStyle(.inset)
+            .presentationBackground(.ultraThinMaterial)
+            .presentationDetents([.fraction(0.8)])
+        }
+        .confirmationDialog("", isPresented: $isConfirm) {
+            Button("Remove camera environment", role: .destructive) {
+                if let cameraToRemove{
+                    removeAction(cameraToRemove)
+                }
+            }
+        }
     }
 }
 
@@ -164,87 +235,129 @@ struct BPCameraCompactCell: View {
     let action: ()->Void
     
     var body: some View {
-        HStack{
+        HStack(spacing: 0){
             
-            Image(systemName: "camera")
+            Image("cam2")
                 .resizable()
                 .scaledToFit()
-                .padding(10)
+                .padding(3)
                 .background {
                     Circle().fill(.ultraThinMaterial)
                 }
-                .padding(.horizontal,5)
+                .padding(3)
             Divider()
                 .padding(.vertical,3)
             
             Text(camera.viewOptic.rawValue)
+                .font(.system(size: 14))
                 .lineLimit(2)
                 .minimumScaleFactor(0.2)
                 .padding(.horizontal,5)
+                
             Spacer()
+            Image(systemName: "trash")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 15)
+                .padding(5)
+                .frame(height: 40)
+                .background {
+                    Rectangle().fill(.ultraThickMaterial)
+                }
+                .onTapGesture {
+                    action()
+                }
         }
         .frame(maxWidth: .infinity)
-        .padding(2)
         .frame(height: 40)
         .overlay {
             RoundedRectangle(cornerRadius: 5).stroke(.ultraThickMaterial, lineWidth: 2)
         }
-        .onTapGesture {
-            action()
-        }
-
+        .padding(2)
     }
 }
 
 struct PanelSoundCollectionView: View {
     let sounds: [LocalSound]
-    let addAction: ()->()
-    let action: ()->()
+    let addAction: (LocalSound)->()
+    let removeAction: (LocalSound)->()
     
-    init(sounds: [LocalSound],addAction: @escaping ()->()  ,action: @escaping ()->()) {
+    @State private var isSelect: Bool = false
+    @State private var isConfirm: Bool = false
+    @State private var soundToRemove: LocalSound?
+    
+    init(sounds: [LocalSound], addAction: @escaping (LocalSound)->()  ,removeAction: @escaping (LocalSound)->()) {
         self.sounds = sounds
         self.addAction = addAction
-        self.action = action
+        self.removeAction = removeAction
     }
     
     var body: some View {
         ScrollView{
-            ForEach(sounds){sound in
-                BPSoundCompactCell(sound: sound){
-                    action()
-                }
-            }
+            
             Button{
-                addAction()
+                isSelect = true
             } label: {
                 HStack(spacing: 0){
                     Image(systemName: "plus")
                         .resizable()
                         .scaledToFit()
-                        .padding(10)
+                        .padding(5)
                         .background {
                             Circle().fill(.ultraThinMaterial)
                         }
-                        .padding(.horizontal,5)
+                        .padding(3)
                     Divider()
                         .padding(.vertical,3)
                     
                     Text("Add mic")
+                        .font(.system(size: 14))
                         .lineLimit(2)
                         .minimumScaleFactor(0.2)
                         .padding(.horizontal,5)
                     Spacer()
                 }
                 .frame(maxWidth: .infinity)
-                .padding(2)
                 .frame(height: 40)
                 .background(.ultraThinMaterial)
                 .overlay {
                     RoundedRectangle(cornerRadius: 5).stroke(.ultraThickMaterial, lineWidth: 2)
                 }
+                .padding(2)
             }
-            .buttonStyle(.plain)
-       }
+            
+            ForEach(sounds){sound in
+                BPSoundCompactCell(sound: sound){
+                    soundToRemove = sound
+                    isConfirm = true
+                }
+            }
+      }
+        .sheet(isPresented: $isSelect) {
+            List{
+                ForEach(Sound.PlaceType.allCases){ placeType in
+                    Text(placeType.rawValue)
+                        .onTapGesture {
+                            let newSound = DataManager.shared.createOrUpdateSound(Sound(id: UUID().uuidString, windDefence: .none, placeType: placeType), inContext: .main)
+                            addAction(newSound)
+                            isSelect = false
+                        }
+                }
+                .listRowBackground(Color.clear)
+            }
+            .scrollContentBackground(.hidden)
+            .listStyle(.inset)
+            .presentationBackground(.ultraThinMaterial)
+            .presentationDetents([.fraction(0.5)])
+        }
+        .confirmationDialog("", isPresented: $isConfirm) {
+            Button("Remove sound hardware", role: .destructive) {
+                if let soundToRemove {
+                    removeAction(soundToRemove)
+                }
+            }
+        }
+    
     }
 }
 
@@ -254,96 +367,134 @@ struct BPSoundCompactCell: View {
     let action: ()->Void
     
     var body: some View {
-        HStack{
-            
-            Image(systemName: "mic")
+        HStack(spacing: 0){
+            Image("mic1")
                 .resizable()
                 .scaledToFit()
-                .padding(10)
+                .padding(3)
                 .background {
                     Circle().fill(.ultraThinMaterial)
                 }
-                .padding(.horizontal,5)
+                .padding(3)
             Divider()
                 .padding(.vertical,3)
             
             VStack{
                 Text(sound.viewPlaceType.rawValue)
-                    .font(.title)
+                    .font(.system(size: 14))
                     .lineLimit(1)
                     .minimumScaleFactor(0.2)
                     .padding(.horizontal,5)
                 Text(sound.viewWindDefence.rawValue)
-                    .font(.caption2)
+                    .font(.system(size: 11))
                     .lineLimit(1)
                     .minimumScaleFactor(0.2)
                     .padding(.horizontal,5)
             }
             Spacer()
+            Image(systemName: "trash")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 15)
+                .padding(5)
+                .frame(height: 40)
+                .background {
+                    Rectangle().fill(.ultraThickMaterial)
+                }
+                .onTapGesture {
+                    action()
+                }
         }
         .frame(maxWidth: .infinity)
-        .padding(2)
         .frame(height: 40)
         .overlay {
             RoundedRectangle(cornerRadius: 5).stroke(.ultraThickMaterial, lineWidth: 2)
         }
-        .onTapGesture {
-            action()
-        }
-
+        .padding(2)
     }
 }
 
 
 struct PanelLightCollectionView: View {
     let lights: [LocalLight]
-    let addAction: ()->()
-    let action: ()->()
+    let addAction: (LocalLight)->()
+    let removeAction: (LocalLight)->()
     
-    init(lights: [LocalLight],addAction: @escaping ()->()  ,action: @escaping ()->()) {
+    @State private var isSelect: Bool = false
+    @State private var isConfirm: Bool = false
+    @State private var lightToRemove: LocalLight?
+    
+    init(lights: [LocalLight],addAction: @escaping (LocalLight)->(), removeAction: @escaping (LocalLight)->()) {
         self.lights = lights
         self.addAction = addAction
-        self.action = action
+        self.removeAction = removeAction
     }
     
     var body: some View {
         ScrollView{
-            ForEach(lights){light in
-                BPLightCompactCell(light: light){
-                    action()
-                }
-            }
+            
             Button{
-                addAction()
+                isSelect = true
             } label: {
                 HStack(spacing: 0){
                     Image(systemName: "plus")
                         .resizable()
                         .scaledToFit()
-                        .padding(10)
+                        .padding(5)
                         .background {
                             Circle().fill(.ultraThinMaterial)
                         }
-                        .padding(.horizontal,5)
+                        .padding(3)
                     Divider()
                         .padding(.vertical,3)
                     
                     Text("Add light")
+                        .font(.system(size: 14))
                         .lineLimit(2)
                         .minimumScaleFactor(0.2)
                         .padding(.horizontal,5)
                     Spacer()
                 }
                 .frame(maxWidth: .infinity)
-                .padding(2)
                 .frame(height: 40)
                 .background(.ultraThinMaterial)
                 .overlay {
                     RoundedRectangle(cornerRadius: 5).stroke(.ultraThickMaterial, lineWidth: 2)
                 }
+                .padding(2)
             }
-            .buttonStyle(.plain)
+            
+            ForEach(lights){light in
+                BPLightCompactCell(light: light){
+                    lightToRemove = light
+                    isConfirm = true
+                }
+            }
        }
+        .sheet(isPresented: $isSelect) {
+            List{
+                ForEach(Light.LightType.allCases){ light in
+                    Text(light.rawValue)
+                        .onTapGesture {
+                            let newLight = DataManager.shared.createOrUpdateLocalLightWithLight(Light(id: UUID().uuidString, lightType: light), inContext: .main)
+                            addAction(newLight)
+                            isSelect = false
+                        }
+                }
+                .listRowBackground(Color.clear)
+            }
+            .scrollContentBackground(.hidden)
+            .listStyle(.inset)
+            .presentationBackground(.ultraThinMaterial)
+            .presentationDetents([.fraction(0.3)])
+        }
+        .confirmationDialog("", isPresented: $isConfirm) {
+            Button("Remove light hardware", role: .destructive) {
+                if let lightToRemove {
+                    removeAction(lightToRemove)
+                }
+            }
+        }
     }
 }
 
@@ -353,35 +504,44 @@ struct BPLightCompactCell: View {
     let action: ()->Void
     
     var body: some View {
-        HStack{
+        HStack(spacing: 0){
             
-            Image(systemName: "light")
+            Image("light2")
                 .resizable()
                 .scaledToFit()
-                .padding(10)
+                .padding(3)
                 .background {
                     Circle().fill(.ultraThinMaterial)
                 }
-                .padding(.horizontal,5)
+                .padding(3)
             Divider()
                 .padding(.vertical,3)
             
             Text(light.viewLightType.rawValue)
-                .lineLimit(2)
+                .font(.system(size: 14))
+                .lineLimit(1)
                 .minimumScaleFactor(0.2)
                 .padding(.horizontal,5)
             Spacer()
+            Image(systemName: "trash")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 15)
+                .padding(5)
+                .frame(height: 40)
+                .background {
+                    Rectangle().fill(.ultraThickMaterial)
+                }
+                .onTapGesture {
+                    action()
+                }
         }
         .frame(maxWidth: .infinity)
-        .padding(2)
         .frame(height: 40)
         .overlay {
             RoundedRectangle(cornerRadius: 5).stroke(.ultraThickMaterial, lineWidth: 2)
         }
-        .onTapGesture {
-            action()
-        }
-
+        .padding(2)
     }
 }
 
@@ -392,34 +552,42 @@ struct BPEnvCompactCell: View {
     
     var body: some View {
         HStack{
-            
             user.userImage
                 .resizable()
                 .scaledToFit()
-                .padding(10)
+                .padding(3)
                 .background {
                     Circle().fill(.ultraThinMaterial)
                 }
-                .padding(.horizontal,5)
+                .padding(3)
             Divider()
                 .padding(.vertical,3)
             
             Text(user.userCompactName)
+                .font(.system(size: 14))
                 .lineLimit(2)
                 .minimumScaleFactor(0.2)
                 .padding(.horizontal,5)
             Spacer()
+            Image(systemName: "trash")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 15)
+                .padding(5)
+                .frame(height: 40)
+                .background {
+                    Rectangle().fill(.ultraThickMaterial)
+                }
+                .onTapGesture {
+                    action()
+                }
         }
         .frame(maxWidth: .infinity)
-        .padding(2)
         .frame(height: 40)
         .overlay {
             RoundedRectangle(cornerRadius: 5).stroke(.ultraThickMaterial, lineWidth: 2)
         }
-        .onTapGesture {
-            action()
-        }
-
+        .padding(2)
     }
 }
 
@@ -430,12 +598,11 @@ struct BPEnvCompactCell: View {
 //}
 
 #Preview {
-    BPEditStadiumView(
-        event: DataManager.shared.fetchOrCreateEventWithId(
-            "123", inContext: .main), editable: true, acceptAction: {},
-        cancelAction: {}
-    )
-    .environment(\.managedObjectContext, DataManager.shared.moc)
+    let mdm = MainDataManager(localDataManager: DataManager(), globalDataManager: NetworkManager(),userId: "123")
+    
+    BPEditStadiumView(event: mdm.localDataManager.fetchOrCreateEventWithId("123", inContext: .main) , editable: true)
+    .environmentObject(BPEditStadiumViewModel())
+    .environmentObject(mdm)
 }
 
 //#Preview {

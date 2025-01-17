@@ -20,6 +20,18 @@
     "%lld" : {
 
     },
+    "♠️" : {
+
+    },
+    "♣️" : {
+
+    },
+    "♥️" : {
+
+    },
+    "♦️" : {
+
+    },
     "1" : {
 
     },
@@ -194,9 +206,6 @@
     "Permanently erase the photo in the trash?" : {
 
     },
-    "Points" : {
-
-    },
     "Press me" : {
 
     },
@@ -209,13 +218,25 @@
     "Remove Background Template" : {
 
     },
+    "Remove camera environment" : {
+
+    },
     "Remove Club" : {
+
+    },
+    "Remove light hardware" : {
 
     },
     "Remove Location" : {
 
     },
     "Remove Photo" : {
+
+    },
+    "Remove sound hardware" : {
+
+    },
+    "Remove user" : {
 
     },
     "Save" : {
@@ -252,6 +273,9 @@
 
     },
     "Tap to make choise of specialization" : {
+
+    },
+    "Task" : {
 
     },
     "thickMaterial" : {

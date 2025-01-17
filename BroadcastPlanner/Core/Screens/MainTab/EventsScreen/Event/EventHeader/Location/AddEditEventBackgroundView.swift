@@ -86,5 +86,5 @@ struct AddEditEventBackgroundView: View {
 
 #Preview {
     AddEditEventBackgroundView(cancellAction: {},acceptAction: {_ in })
-        .environment(\.managedObjectContext, DataManager.shared.moc)
+//        .environment(\.managedObjectContext, DataManager.shared.moc)
 }

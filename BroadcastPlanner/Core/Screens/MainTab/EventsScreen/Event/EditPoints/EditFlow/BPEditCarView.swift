@@ -72,7 +72,7 @@ struct BPEditCarView: View {
                                 .padding(.horizontal)
                             
                             Button {
-                                editManager.resetScale(type: .car)
+                                editManager.resetScale()
                                 saveToEvent()
                                 dismiss()
                             } label: {
@@ -145,9 +145,9 @@ struct BPEditCarView: View {
                           .shadow(radius: 1)
                           .frame(height: 45)
                     
-                    BPEditEventControlPanel(scaleUpAction: {editManager.scaleUp(type: .car)},
-                                            scaleDownAction: {editManager.scaleDown(type: .car)},
-                                            resetScaleAction: {editManager.resetScale(type: .car)})
+                    BPEditEventControlPanel(scaleUpAction: {editManager.scaleUp()},
+                                            scaleDownAction: {editManager.scaleDown()},
+                                            resetScaleAction: {editManager.resetScale()})
                     .padding(.horizontal)
                     
                     RoundedRectangle(cornerRadius: 10)
@@ -242,9 +242,9 @@ struct BPEditCarView: View {
     }
 }
 
-#Preview {
-    
-    return BPEditCarView(event: DataManager.shared.fetchOrCreateEventWithId("123", inContext: .main) , editable: true)
-        .environmentObject(BPEditStadiumViewModel())
-        .environment(\.managedObjectContext, DataManager.shared.moc)
-}
+//#Preview {
+//    
+//    return BPEditCarView(event: DataManager.shared.fetchOrCreateEventWithId("123", inContext: .main) , editable: true)
+//        .environmentObject(BPEditStadiumViewModel())
+//        .environment(\.managedObjectContext, DataManager.shared.moc)
+//}

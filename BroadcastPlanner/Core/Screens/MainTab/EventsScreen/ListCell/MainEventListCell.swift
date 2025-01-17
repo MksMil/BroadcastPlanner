@@ -87,12 +87,12 @@ struct MainEventListCell: View {
 }
 
 
-#Preview {
-    MainEventsList()
-        .environmentObject(GlobalSessionStorage())
-        .environmentObject(GlobalSettings())
-        .environment(\.managedObjectContext, DataManager.shared.moc)
-}
+//#Preview {
+//    MainEventsList()
+//        .environmentObject(SessionManager())
+//        .environmentObject(GlobalSettings())
+//        .environment(\.managedObjectContext, DataManager.shared.moc)
+//}
 
 
 

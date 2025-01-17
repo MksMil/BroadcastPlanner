@@ -7,19 +7,22 @@ struct AddEditLocation: View {
     let lenght: Double = 75
     let location: LocalLocation
 
+    let acceptAction: (String,String,[UIImage],LocalImage?) -> Void
     let cancelAction: () -> Void
-    let acceptAction: () -> Void
     let removeAction: () -> Void
 
     @StateObject var vm: AddEditLocationViewModel
+    @EnvironmentObject var mdm: MainDataManager
 
     @State private var isShowingDialog: Bool = false
     @State private var isRemoveLocationDialog: Bool = false
     @State private var isBackSheetShowed: Bool = false
 
     init(
-        location: LocalLocation, cancelAction: @escaping () -> Void,
-        acceptAction: @escaping () -> Void, removeAction: @escaping () -> Void
+        location: LocalLocation,
+        acceptAction: @escaping (String,String,[UIImage],LocalImage?) -> Void,
+        cancelAction: @escaping () -> Void,
+        removeAction: @escaping () -> Void
     ) {
         self.location = location
         self._vm = StateObject(
@@ -40,8 +43,9 @@ struct AddEditLocation: View {
                     },
                     acceptAction: {
                         Task {
-                            await vm.updateLocation()
-                            acceptAction()
+//                            await vm.updateLocation()
+                            //update location with fotos
+                            acceptAction(vm.title,vm.address,vm.newImages,vm.locationBackground)
                         }
                     },
                     content: {
@@ -218,14 +222,14 @@ struct AddEditLocation: View {
     }
 }
 
-#Preview {
-    AddEditLocation(
-        location: DataManager.shared.fetchOrCreateLocationWithId(
-            "123", inContext: .main), cancelAction: {}, acceptAction: {},
-        removeAction: {}
-    )
-    .environment(\.managedObjectContext, DataManager.shared.moc)
-}
+//#Preview {
+//    AddEditLocation(
+//        location: DataManager.shared.fetchOrCreateLocationWithId(
+//            "123", inContext: .main), cancelAction: {}, acceptAction: {},
+//        removeAction: {}
+//    )
+//    .environment(\.managedObjectContext, DataManager.shared.moc)
+//}
 
 struct LocationPreview: View {
 

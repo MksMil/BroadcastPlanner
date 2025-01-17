@@ -2,13 +2,6 @@ import Combine
 import SpriteKit
 import SwiftUI
 
-enum PlanSectionType: String, Identifiable {
-    case stadium
-    case car
-    var id: Self { self }
-}
-
-
 final class BPCreateEditEventViewModel: ObservableObject{
     let event: LocalEvent
     
@@ -19,7 +12,7 @@ final class BPCreateEditEventViewModel: ObservableObject{
     var user: LocalUser
     
     
-    init(event: LocalEvent, userId: String) {
+    init(event: LocalEvent, user: LocalUser) {
         self.event = event
         if let club = event.homeClub{
             homeClub = club
@@ -30,9 +23,8 @@ final class BPCreateEditEventViewModel: ObservableObject{
         if let location = event.location{
             self.location = location
         }
-        self.user = DataManager.shared.fetchOrCreateUserWithId(userId, inContext: .main)
+        self.user = user
         self.eventDate = event.date ?? Date()
-        
     }
 
     @MainActor
@@ -79,7 +71,7 @@ struct BPCreateEditEventView: View {
 
     let event: LocalEvent
 
-    @State private var type: PlanSectionType?
+    
     
     init(event: LocalEvent,userId: String) {
         self._vm = StateObject(wrappedValue: BPCreateEditEventViewModel(event: event, userId: userId))
@@ -154,14 +146,15 @@ struct BPCreateEditEventView: View {
                             .scaledToFit()
                             .frame(width: 3 * geo.size.width / 4)
                             .onTapGesture {
-                                type = .stadium
+//                                type = .stadium
+                                eventRouter.routeToStadPointsEdit(event: event, editable: editable)
                             }
                         event.viewObvanPreview
                             .resizable()
                             .scaledToFit()
                             .rotationEffect(Angle(degrees: -90))
                             .onTapGesture {
-                                type = .car
+                                eventRouter.routeToCarPointsEdit()
                             }
                     }
                     .frame(height: geo.size.width / 2)
@@ -187,19 +180,6 @@ struct BPCreateEditEventView: View {
                 .padding(.horizontal, 10)
                 Spacer()
             }
-        }
-        .fullScreenCover(item: $type) { type in
-            switch type {
-            case .stadium:
-                BPEditStadiumView(
-                    event: event,
-                    editable: editable,acceptAction: {},cancelAction: {})
-            case .car:
-                BPEditCarView(
-                    event: event,
-                    editable: editable)
-            }
-
         }
         .navigationTitle("Event")
         .navigationBarTitleDisplayMode(.inline)
@@ -242,17 +222,19 @@ struct BPCreateEditEventView: View {
         .task {
             editManager.configureWith(event: event)
         }
+        
         .environmentObject(editManager)
     }
 }
 
 #Preview {
-    NavigationStack {
+    let mdm = MainDataManager(localDataManager: DataManager(), globalDataManager: NetworkManager(),userId: "123")
+   NavigationStack {
         BPCreateEditEventView(
-            event: DataManager.shared.fetchOrCreateEventWithId("123", inContext: .main), userId: "123")
+            event: mdm.localDataManager.fetchOrCreateEventWithId("123", inContext: .main), userId: "123")
     }
-    .environmentObject(GlobalSessionStorage())
+    .environmentObject(SessionManager())
     .environmentObject(GlobalSettings())
     .environmentObject(EventTabRouter())
-    .environment(\.managedObjectContext, DataManager.shared.moc)
+    .environment(\.managedObjectContext, mdm.localDataManager.moc)
 }

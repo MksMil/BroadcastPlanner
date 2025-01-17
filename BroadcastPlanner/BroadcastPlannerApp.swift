@@ -25,8 +25,7 @@ struct BroadcastPlannerApp: App {
     
     @StateObject var appState: ApplicationState = ApplicationState()
     
-    @StateObject private var sessionStorage: GlobalSessionStorage = GlobalSessionStorage()
-//    @StateObject private var globalStorage: GlobalStorage = GlobalStorage()
+    @StateObject private var sessionManager: SessionManager = SessionManager()
     @StateObject private var globalSettings = GlobalSettings()
     
     var body: some Scene {
@@ -50,8 +49,7 @@ struct BroadcastPlannerApp: App {
                         }
                     }
                 })
-//                .environmentObject(globalStorage)
-                .environmentObject(sessionStorage)
+                .environmentObject(sessionManager)
                 .environmentObject(globalSettings)
                 .environmentObject(appState)
         }

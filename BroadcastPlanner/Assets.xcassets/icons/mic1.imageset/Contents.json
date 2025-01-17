@@ -1,11 +1,11 @@
 {
   "images" : [
     {
-      "filename" : "obolon.jpeg",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "mic1.png",
       "idiom" : "universal",
       "scale" : "2x"
     },

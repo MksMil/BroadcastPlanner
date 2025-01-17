@@ -4,7 +4,7 @@ import SwiftUI
 import UIKit
 
 struct BPAccountInfoView: View {
-
+    @EnvironmentObject var mdm: MainDataManager
     @StateObject var vm: PersonalScreenViewModel
 
     @FetchRequest<LocalUser>(sortDescriptors: []) var localUser
@@ -144,7 +144,7 @@ struct BPAccountInfoView: View {
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
         }
-        .onReceive(DataManager.shared.updatePublisher, perform: { value in
+        .onReceive(mdm.localDataManager.updatePublisher, perform: { value in
             if value.0 == .users, value.1.contains(where: { $0 == vm.id
             }){
                 vm.updateData()
@@ -192,6 +192,8 @@ struct SpecializationSection: View {
 }
 
 #Preview {
+    let mdm = MainDataManager(localDataManager: DataManager(), globalDataManager: NetworkManager(),userId: "123")
     BPAccountInfoView(id: "123")
-        .environment(\.managedObjectContext, DataManager.shared.moc)
+        .environment(\.managedObjectContext, mdm.localDataManager.moc)
+        .environmentObject(mdm)
 }

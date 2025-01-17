@@ -116,6 +116,7 @@ extension LocalUser : Identifiable {
     //an image or system Person.circle symbol
     var userImage: Image{
         if let image {
+            print("localImage loaded")
             return image.mediumImage
         } else {
             return Image(systemName: "person.circle")

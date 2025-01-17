@@ -1,11 +1,11 @@
 {
   "images" : [
     {
-      "filename" : "Krivbass_stad_3.jpg",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "poleCam1.png",
       "idiom" : "universal",
       "scale" : "2x"
     },

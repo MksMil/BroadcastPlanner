@@ -17,7 +17,7 @@ struct BPEventFilterCaseTabView<T: RawRepresentable & CaseIterable>: View  where
                 Image(systemName: "\(tabs[tabIndex].rawValue)")
                     .resizable()
                     .aspectRatio(1, contentMode: .fit)
-                    .font(.title)
+//                    .font(.title)
                     .padding(12)
                     .onTapGesture {
                         withAnimation{
@@ -30,6 +30,7 @@ struct BPEventFilterCaseTabView<T: RawRepresentable & CaseIterable>: View  where
                     .matchedGeometryEffect(id: tabs[tabIndex].rawValue , in: ns)
             }
         }
+        
 //        .padding(.horizontal)
 //        .overlay {
 //            Rectangle()
@@ -52,8 +53,11 @@ struct BPEventFilterCaseTabView<T: RawRepresentable & CaseIterable>: View  where
 
 
 #Preview {
-    BPEditStadiumView(event: DataManager.shared.fetchOrCreateEventWithId("123", inContext: .main) , editable: true,acceptAction: {},cancelAction: {})
+    let mdm = MainDataManager(localDataManager: DataManager(), globalDataManager: NetworkManager(), userId: "123")
+    
+    BPEditStadiumView(event: mdm.localDataManager.fetchOrCreateEventWithId("123", inContext: .main) , editable: true)
     .environmentObject(BPEditStadiumViewModel())
+    .environmentObject(mdm)
 }
 //#Preview{
 //    NavigationStack{

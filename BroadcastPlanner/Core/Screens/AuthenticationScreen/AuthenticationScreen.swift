@@ -6,9 +6,9 @@ import GoogleSignInSwift
 import SwiftUI
 
 struct AuthenticationScreen: View {
-    @EnvironmentObject var sessionStorage: GlobalSessionStorage
+    @EnvironmentObject var sessionManager: SessionManager
     @State private var isSignUp: Bool = false
-    let signUpHandler: (BPUser)->()
+//    let signUpHandler: (BPUser)->()
     
     var body: some View {
         ScrollView{
@@ -27,8 +27,8 @@ struct AuthenticationScreen: View {
                 Divider()
                 
                 // MARK: - Email/Password Textfields
-                EmailPasswordStack(email: $sessionStorage.email,
-                                     password: $sessionStorage.password)
+                EmailPasswordStack(email: $sessionManager.email,
+                                     password: $sessionManager.password)
                 
                 // MARK: - "Forget password" button
                 HStack{
@@ -44,7 +44,7 @@ struct AuthenticationScreen: View {
                 // MARK: - "Sign In"
                 Button(action: {
                     Task{
-                        await sessionStorage.signInWithEmailAndPassword()
+                        await sessionManager.signInWithEmailAndPassword()
                     }
                 },
                        label: {
@@ -62,7 +62,7 @@ struct AuthenticationScreen: View {
                 // MARK: - "Sign in with Google"
                 GoogleSignInButton(viewModel: GoogleSignInButtonViewModel(scheme: .light, style: .wide, state: .normal)) {
                     Task{
-                        await sessionStorage.signInWithGoogle()
+                        await sessionManager.signInWithGoogle()
                     }
                 }
                 .frame(height: 44)
@@ -73,11 +73,11 @@ struct AuthenticationScreen: View {
                 // MARK: - "Sign in with Apple"
                 SignInWithAppleButton { request in
                     request.requestedScopes = [.fullName, .email]
-                    sessionStorage.applCurrentNonce = AppleHelper.getRandomNonceString()
-                    request.nonce = AppleHelper.getSha256(sessionStorage.applCurrentNonce)
+                    sessionManager.getRandomNonceString()
+                    request.nonce = sessionManager.getSha256()
                 } onCompletion: { result in
                     Task{
-                        do { sessionStorage.userSession = try await AuthenticationManager.shared.signInWithAppleWithResult(result, currentNonce: sessionStorage.applCurrentNonce)
+                        do { try await sessionManager.signInWithAppleWithResult(result)
                         } catch {
 #if DEBUG
                             print("DEBUG: AuthenticationScreen/signInWithApple failed: \(error.localizedDescription)")
@@ -104,13 +104,12 @@ struct AuthenticationScreen: View {
             .padding(.top,25)
         }
         .fullScreenCover(isPresented: $isSignUp){
-            SignUpView(email: $sessionStorage.email, password: $sessionStorage.password) {
+            SignUpView(email: $sessionManager.email, password: $sessionManager.password) {
                 Task{
-                    await sessionStorage.signUp()
-                    guard let id = sessionStorage.userSession?.id else { return }
-                    var user = BPUser(id: id)
-                    user.email = sessionStorage.userSession?.email ?? ""
-                    signUpHandler(user)
+                    await sessionManager.signUp()
+//                    guard let id = sessionManager.sessionUser?.id else { return }
+//                    var user = BPUser(id: id)
+//                    signUpHandler(user)
                 }
             }
         }
@@ -121,15 +120,15 @@ struct AuthenticationScreen: View {
         .navigationBarBackButtonHidden()
         .accentColor(.black)
         .onDisappear{
-            sessionStorage.email = ""
-            sessionStorage.password = ""
+            sessionManager.email = ""
+            sessionManager.password = ""
         }
     }
 }
 
 // MARK: - Preview
 #Preview {
-    AuthenticationScreen(){_ in}
-        .environmentObject(GlobalSessionStorage())
+    AuthenticationScreen()
+        .environmentObject(SessionManager())
     
 }

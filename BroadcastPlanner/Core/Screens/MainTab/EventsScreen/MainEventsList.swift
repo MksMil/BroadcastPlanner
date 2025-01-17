@@ -19,7 +19,7 @@ final class MainEventListViewModel: ObservableObject{
 
 
 struct MainEventsList: View {
-    @EnvironmentObject var session: GlobalSessionStorage
+    @EnvironmentObject var session: SessionManager
     
     @StateObject private var eventRouter = EventTabRouter()
     @StateObject var vm: MainEventListViewModel = MainEventListViewModel()
@@ -120,9 +120,9 @@ struct MainEventsList: View {
             .navigationDestination(for: EventTabPath.self) { path in
                 switch path{
                 case .createEdit(let event):
-                        BPCreateEditEventView(event: event, userId: session.userSession?.id ?? "")
-                case .stadPointsEdit:
-                    Text("")
+                        BPCreateEditEventView(event: event, userId: session.sessionUser?.id ?? "")
+                case .stadPointsEdit(let event, let editable):
+                        BPEditStadiumView(event: event, editable: editable)
                 case .carPointsEdit:
                     Text("")
                 }
@@ -130,7 +130,7 @@ struct MainEventsList: View {
             
         }
         .onAppear(perform: {
-            vm.fetchUserWithId(id: session.userSession?.id)
+            vm.fetchUserWithId(id: session.sessionUser?.id)
         })
         .environmentObject(eventRouter)
     }
@@ -139,7 +139,7 @@ struct MainEventsList: View {
 
 #Preview {
         MainEventsList()
-        .environmentObject(GlobalSessionStorage())
+        .environmentObject(SessionManager())
         .environmentObject(GlobalSettings())
-        .environment(\.managedObjectContext, DataManager.shared.moc)
+//        .environment(\.managedObjectContext, DataManager.shared.moc)
 }

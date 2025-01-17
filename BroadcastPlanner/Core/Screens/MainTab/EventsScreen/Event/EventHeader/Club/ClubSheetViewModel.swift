@@ -14,20 +14,7 @@ final class ClubSheetViewModel: ObservableObject {
     var isAcceptDissabled: Bool {
         selectedClub == nil
     }
-    
-    var clubToRoute: LocalClub {
-        if let selectedClub {
-            return selectedClub
-        } else {
-            let newClub = DataManager.shared.fetchOrCreateClubWithId(UUID().uuidString, inContext: .main)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2){            
-                self.selectedClub = newClub
-            }
-            return newClub
-        }
-        
-    }
-
+ 
     init() {}
 
 }

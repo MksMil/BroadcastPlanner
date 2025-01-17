@@ -4,23 +4,22 @@ import FirebaseFirestoreSwift
 import FirebaseStorage
 import UIKit
 
-
 //firebase newtwork manager
 
 final class NetworkManager: ObservableObject {
     
-    var db: Firestore = Firestore.firestore()
+    let db: Firestore = Firestore.firestore()
     
-    static let shared = NetworkManager()
-    private init() {}
+//    static let shared = NetworkManager()
+    init() {}
     
     func startToObserveChanges() {
-//        observeUsersUpdates()
-//        observeEventsUpdates()
-//                observeLocationsUpdates()
-//                observeClubUpdates()
-//                observeBroadcastersUpdates()
-//        observeImages()
+        //        observeUsersUpdates()
+        //        observeEventsUpdates()
+        //                observeLocationsUpdates()
+        //                observeClubUpdates()
+        //                observeBroadcastersUpdates()
+        //        observeImages()
     }
     
     // MARK: - Generic for listeners
@@ -40,16 +39,16 @@ final class NetworkManager: ObservableObject {
                                 let remoteData = try diff.document.data(as: T.self)
                                 ids.append(remoteData.id)
                                 switch diff.type {
-                                    // refresh / add data in Core Data
-                                case .added, .modified:
-                                    group.addTask {
-                                        completionOnAddModified(remoteData)
-                                    }
-                                    // data removed
-                                case .removed:
-                                    group.addTask {
-                                        completionOnRemoved(remoteData)
-                                    }
+                                        // refresh / add data in Core Data
+                                    case .added, .modified:
+                                        group.addTask {
+                                            completionOnAddModified(remoteData)
+                                        }
+                                        // data removed
+                                    case .removed:
+                                        group.addTask {
+                                            completionOnRemoved(remoteData)
+                                        }
                                 }
                             } catch {
                                 print(
@@ -62,80 +61,96 @@ final class NetworkManager: ObservableObject {
                         //wait for all changes done
                         await group.waitForAll()
                         //after all changes in context -> it's time to save context and publish changes for those who needs
-                        await DataManager.shared.saveContext(type: .bg, publish: type, id: ids)
+//                        await DataManager.shared.saveContext(type: .bg, publish: type, id: ids)
                     }
                 }
             }
     }
-    
-    
+}
+
+// MARK: - Observe changes
+extension NetworkManager{
     // MARK: - Observe Users
-    func observeUsersUpdates() {
+    func observeUsersUpdates(updateAction: @escaping (BPUser)->Void,
+                             removeAction: @escaping (BPUser)->Void) {
         self.makeSnapshotListener(forType: .users) {
             //if 'new' user, or user data updated
             print("NetworkManager: received user update signal from firebase:")
-            let _ = DataManager.shared.createOrUpdateLocalUserWithUser($0, inContext: .bg)
+//            let _ = DataManager.shared.createOrUpdateLocalUserWithUser($0, inContext: .bg)
+            updateAction($0)
         } completionOnRemoved: {
             //if user removed
-            print("NetworkManager: received user remove signal from firebase")
-            DataManager.shared.removeUser($0, inContext: .bg)
+//            print("NetworkManager: received user remove signal from firebase")
+//            DataManager.shared.removeUser($0, inContext: .bg)
+            removeAction($0)
         }
     }
-    
-    
     // MARK: - Observe Events
-    func observeEventsUpdates() {
-        makeSnapshotListener(forType: .events) { bpevent in
-            print("NetworkManager: received event update signal from firebase")
-            let _ = DataManager.shared.createOrUpdateLocalEventWithEvent(bpevent,inContext: .bg)
-            
-        } completionOnRemoved: { bpevent in
-            print("NetworkManager: received event remove signal from firebase: \(bpevent)")
-            
-            DataManager.shared.removeEvent(bpevent,inContext: .bg)
+    func observeEventsUpdates(updateAction: @escaping (BPEvent)->Void,
+                              removeAction: @escaping (BPEvent)->Void) {
+        makeSnapshotListener(forType: .events) {
+//            print("NetworkManager: received event update signal from firebase")
+//            let _ = DataManager.shared.createOrUpdateLocalEventWithEvent(bpevent,inContext: .bg)
+            updateAction($0)
+        } completionOnRemoved: {
+//            print("NetworkManager: received event remove signal from firebase: \(bpevent)")
+//            
+//            DataManager.shared.removeEvent(bpevent,inContext: .bg)
+            removeAction($0)
         }
     }
     // MARK: - Observe locations
-    func observeLocationsUpdates() {
-        makeSnapshotListener(forType: .locations) { location in
-            let _ = DataManager.shared.createOrUpdateLocalLocationWithLocation(location, inContext: .bg)
-        } completionOnRemoved: { removedLocation in
-            let _ = DataManager.shared.removeLocation(location: removedLocation, inContext: .bg)
+    func observeLocationsUpdates(updateAction: @escaping (Location)->Void,
+                                 removeAction: @escaping (Location)->Void) {
+        makeSnapshotListener(forType: .locations) {
+//            let _ = DataManager.shared.createOrUpdateLocalLocationWithLocation(location, inContext: .bg)
+            updateAction($0)
+        } completionOnRemoved: {
+//            let _ = DataManager.shared.removeLocation(location: removedLocation, inContext: .bg)
+            removeAction($0)
         }
     }
     // MARK: - Observe Clubs
-    func observeClubUpdates() {
-        makeSnapshotListener(forType: .clubs) { club in
-            print("club update signal received")
-            let _ = DataManager.shared.createOrUpdateLocalClubWithClub(
-                club, inContext: .bg)
-        } completionOnRemoved: { removedClub in
-            DataManager.shared.removeClub(
-                club: removedClub, inContext: .bg)
+    func observeClubUpdates(updateAction: @escaping (Club)->Void,
+                            removeAction: @escaping (Club)->Void) {
+        makeSnapshotListener(forType: .clubs) {
+//            print("club update signal received")
+//            let _ = DataManager.shared.createOrUpdateLocalClubWithClub(
+//                club, inContext: .bg)
+            updateAction($0)
+        } completionOnRemoved: {
+//            DataManager.shared.removeClub(
+//                club: removedClub, inContext: .bg)
+            removeAction($0)
         }
     }
     // MARK: - Observe Broadcasters and obvans
-    func observeBroadcastersUpdates() {
-        makeSnapshotListener(forType: .broadcasters) { remoteBroadcaster in
-            let _ = DataManager.shared
-                .createOrUpdateLocalBroadcasterWithBroadcaster(
-                    remoteBroadcaster, inContext: .bg
-                )
-        } completionOnRemoved: { removedBroadcaster in
-            DataManager.shared.removeBroadcaster(
-                broadcaster: removedBroadcaster, inContext: .bg)
+    func observeBroadcastersUpdates(updateAction: @escaping (Broadcaster)->Void,
+                                    removeAction: @escaping (Broadcaster)->Void) {
+        makeSnapshotListener(forType: .broadcasters) {
+//            let _ = DataManager.shared
+//                .createOrUpdateLocalBroadcasterWithBroadcaster(
+//                    remoteBroadcaster, inContext: .bg
+            updateAction($0)
+                
+        } completionOnRemoved: {
+//            DataManager.shared.removeBroadcaster(
+//                broadcaster: removedBroadcaster, inContext: .bg)
+            removeAction($0)
         }
     }
-    
     // MARK: - Observe Images
-    func observeImages() {
+    func observeImages(updateAction: @escaping (ImageData,UIImage)->Void,
+                       removeAction: @escaping (ImageData)->Void) {
         makeSnapshotListener(forType: .images) { image in
             print("received signal from snapshotlistener")
-            self.loadImageFromGlobalStorage(id: image.id) { uiimage in
-                let _ = DataManager.shared.createOrUpdateLocalImageWithImageData(imageData: image, withImage: uiimage, inContext: .bg)
+            self.loadImageFromGlobalStorage(id: image.id) {
+//                let _ = DataManager.shared.createOrUpdateLocalImageWithImageData(imageData: image, withImage: uiimage, inContext: .bg)
+                updateAction(image,$0)
             }
-        } completionOnRemoved: { imageData in
-            DataManager.shared.removeImageWithId(imageData.id, inContext: .bg)
+        } completionOnRemoved: {
+//            DataManager.shared.removeImageWithId(imageData.id, inContext: .bg)
+            removeAction($0)
         }
     }
 }
@@ -147,19 +162,18 @@ extension NetworkManager{
 
 // MARK: - Get Current session info
 extension NetworkManager{
-    @MainActor
-    func getCurrentSessionUserInfo() async -> SessionUser? {
-        guard let currentUser = Auth.auth().currentUser else { return nil }
-        startToObserveChanges()
-        return SessionUser(user: currentUser)
-    }
+//    @MainActor
+//    func getCurrentSessionUserInfo() async -> SessionUser? {
+//        guard let currentUser = Auth.auth().currentUser else { return nil }
+//        startToObserveChanges()
+//        return SessionUser(user: currentUser)
+//    }
 
     @MainActor
-    func createUser(id: String, email: String) async {
+    func createUser(id: String) async {
         var user = BPUser()
         user.id = id
-        user.email = email
-
+        
         let userRef = db.collection("\(GlobalProperties.Path.users.rawValue)")
         do {
             let data = try Firestore.Encoder().encode(user)
@@ -252,6 +266,20 @@ extension NetworkManager {
             }
         }
     }
+    
+    func removeImage(localImage: LocalImage) async {
+        //localImage
+        do{
+        let storageRef = Storage.storage().reference()
+        let imageRef = storageRef.child(
+            "\(GlobalProperties.Path.images.rawValue)/\(localImage.viewId)")
+            try await imageRef.delete()
+        //remove from storage
+            try await db.collection(GlobalProperties.Path.images.rawValue).document(localImage.viewId).delete()
+        } catch{
+            print("NetworkManager: remove image error :\(error.localizedDescription)")
+        }
+    }
 }
 
 // MARK: - Events
@@ -297,6 +325,17 @@ extension NetworkManager {
             #endif
         }
     }
+    
+    func removeLocation(_ location: LocalLocation) async {
+        for image in location.viewLocalImages{
+            await removeImage(localImage: image)
+        }
+        if let background = location.background{
+            await removeImage(localImage: background)
+        }
+        
+        await removeLocationWithId(location.viewId)
+    }
 
     func removeLocationWithId(_ id: String) async {
         do {
@@ -328,6 +367,13 @@ extension NetworkManager {
         }
     }
 
+    func removeClub(club: LocalClub) async {
+        if let image = club.imageLogo{
+            await removeImage(localImage: image)
+        }
+        await removeClubWithId(club.viewId)
+    }
+    
     func removeClubWithId(_ id: String) async {
         do {
             try await db.collection("\(GlobalProperties.Path.clubs.rawValue)")
@@ -403,8 +449,8 @@ extension NetworkManager {
 
         } catch {
             #if DEBUG
-                print(
-                    "DEBUG: error going online: \(error.localizedDescription)")
+            print("DEBUG: error going online: \(error.localizedDescription)")
+//            Logger().debug("\(userRef, format : .)")
             #endif
         }
     }

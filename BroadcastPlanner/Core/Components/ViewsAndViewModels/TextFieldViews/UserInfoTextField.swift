@@ -31,7 +31,7 @@ struct UserInfoTextField: View {
     }
 }
 
-#Preview {
-    BPAccountInfoView(id: "123")
-        .environment(\.managedObjectContext, DataManager.shared.moc)
-}
+//#Preview {
+//    BPAccountInfoView(id: "123")
+//        .environment(\.managedObjectContext, DataManager.shared.moc)
+//}
