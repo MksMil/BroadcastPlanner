@@ -7,7 +7,7 @@ class CarEditSpriteScene: SKScene{
     //data
     
     let cameraNode = SKCameraNode()
-    var backGroundNode = SKSpriteNode(texture: SKTexture(imageNamed: "empty_obvan"))
+    var backGroundNode = SKSpriteNode(texture: SKTexture(imageNamed: "empty_starbird"))
     
     var lastPanLocation: CGPoint?
     var selectedPointNode: SKNode?
@@ -240,12 +240,4 @@ extension CarEditSpriteScene {
     }
 }
 
-//#Preview {
-//    let manager = EditPlanPointsManager()
-//    manager.loadScene()
-//    return BPEditCarView(event: .constant(MockData.sampleEvent),
-//                  editable: true)
-//    .environmentObject(manager)
-//    .environmentObject(MockData.sampleSettings)
-//    .environmentObject(GlobalStorage())
-//}
+

@@ -116,7 +116,6 @@ extension LocalUser : Identifiable {
     //an image or system Person.circle symbol
     var userImage: Image{
         if let image {
-            print("localImage loaded")
             return image.mediumImage
         } else {
             return Image(systemName: "person.circle")
@@ -146,11 +145,14 @@ extension LocalUser : Identifiable {
     func isAvailableToEvent(event: LocalEvent) -> Bool{
         for existEvent in userParticipatedEvents{
             if event.date?.formatted(date: .abbreviated, time: .omitted) == existEvent.date?.formatted(date: .abbreviated, time: .omitted){
-                print("user \(userLastName) has event in this date")
                 return false
             }
         }
         return true
+    }
+    
+    var userLocationPoints: [LocalLocationPoint] {
+        locationPoints?.allObjects as? [LocalLocationPoint] ?? []
     }
 }
 

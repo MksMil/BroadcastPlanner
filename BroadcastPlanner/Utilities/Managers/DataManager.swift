@@ -59,6 +59,7 @@ extension DataManager {
                 return user
             } else {
                 let user = LocalUser(context: context)
+                user.id = id
                 return user
             }
         }
@@ -114,6 +115,17 @@ extension DataManager {
                 self.removeLocalImage(imageToRemove, inContext: contextType)
             }
             context.delete(localUser)
+        }
+    }
+    
+    func fetchUsersAvailableToEvent(_ event: LocalEvent) -> [LocalUser]{
+        let request = LocalUser.fetchRequest()
+        do {
+            let users = try moc.fetch(request)
+            return users.filter{ $0.isAvailableToEvent(event: event)}
+        } catch {
+            print("DataManager: error fetching available users")
+            return []
         }
     }
 }
@@ -207,7 +219,7 @@ extension DataManager {
             }
         }
     }
-
+@MainActor
     func removeEvent(_ event: BPEvent, inContext contextType: ContextType) {
         let context = contextFromType(contextType)
         let request = LocalEvent.fetchRequest()
@@ -221,6 +233,7 @@ extension DataManager {
         }
     }
 
+    @MainActor
     func removeLocalEvent(_ localEvent: LocalEvent, inContext contextType: ContextType) {
         let context = contextFromType(contextType)
         context.perform{
@@ -868,6 +881,7 @@ extension DataManager {
         }
     }
 
+
     func createOrUpdateLocalHardwareWithHardware(_ hardware: Hardware,
                                                  inContext contextType: ContextType) -> LocalHardware {
         let localHardware = fetchOrCreateHardwareWithId(hardware.id, inContext: contextType)
@@ -933,6 +947,18 @@ extension DataManager {
         return localPoint
 
     }
+    
+    func updateLocalPoint(_ localPoint: LocalLocationPoint, withX x: Double, y: Double, rotation: Int, scaleFactor: Double, inContext contextType: ContextType){
+        let context = contextFromType(contextType)
+        context.performAndWait{
+            localPoint.coordinateX = Float(x)
+            localPoint.coordinateY = Float(y)
+            localPoint.rotation = Int16(rotation)
+            localPoint.scaleFactor = Float(scaleFactor)
+        }
+        
+    }
+    
     func updateLocalPoint( _ localPoint: LocalLocationPoint,
                            withLocationPoint point: LocationPoint,
                            inContext contextType: ContextType)  {
@@ -941,6 +967,7 @@ extension DataManager {
             localPoint.coordinateX = Float(point.coordinateX)
             localPoint.coordinateY = Float(point.coordinateY)
             localPoint.rotation = Int16(point.rotation)
+            localPoint.scaleFactor = Float(point.scale)
             localPoint.number = Int16(point.number)
             
             let image = fetchOrCreateImageWithId(point.imageId, inContext: contextType)
@@ -974,6 +1001,41 @@ extension DataManager {
             }
         }
     }
+    
+    func updateLocalPoint( _ localPoint: LocalLocationPoint,
+                           withTemplatePoint point: LocalTemplatePoint,
+                           inContext contextType: ContextType)  {
+        let context = contextFromType(contextType)
+        context.performAndWait{
+            localPoint.coordinateX = point.coordinateX
+            localPoint.coordinateY = point.coordinateY
+            localPoint.rotation = point.rotation
+            localPoint.scaleFactor = point.scaleFactor
+            localPoint.number = point.number
+            
+            localPoint.pointDescription = point.pointDescription
+            localPoint.task = point.task
+            
+            for sound in point.viewSounds {
+                let localSound = createOrUpdateSound(sound, inContext: contextType)
+                localPoint.addToSounds(localSound)
+                localSound.point = localPoint
+            }
+            for cam in point.viewCameras {
+                let camera = createOrUpdateCamera(cam, inContext: contextType)
+                localPoint.addToCameras(camera)
+                camera.point = localPoint
+                
+            }
+            for light in point.viewLights {
+                let localLight = createOrUpdateLocalLightWithLight(light, inContext: contextType)
+                localPoint.addToLights(localLight)
+                localLight.point = localPoint
+            }
+        }
+    }
+    
+    
     func removeLocationPoint(_ point: LocationPoint, inContext contextType: ContextType) {
         let context = contextFromType(contextType)
         let request = LocalLocationPoint.fetchRequest()
@@ -1031,6 +1093,15 @@ extension DataManager {
 
     }
 
+    func createOrUpdateLocalObvanUnitWithUser(_ user: LocalUser, andPosition position: String, andHardware hardware: Hardware.ReplayType?,
+                                                   inContext contextType: ContextType) -> LocalObvanUnit {
+        let localUnit = fetchOrCreateObvanUnitWithId(UUID().uuidString, inContext: contextType)
+        updateLocalUnit(localUnit,
+                        withPosition: position, andUser: user, andHardware: hardware, inContext: contextType)
+        return localUnit
+
+    }
+    
     func updateLocalUnit(_ localUnit: LocalObvanUnit,
                          withUnit unit: OBVanUnit,
                          inContext contextType: ContextType) {
@@ -1051,7 +1122,29 @@ extension DataManager {
             }
         }
     }
+    
+    func updateLocalUnit(_ localUnit: LocalObvanUnit,
+                         withPosition position: String,
+                         andUser user: LocalUser,
+                         andHardware hardware: Hardware.ReplayType?,
+                         inContext contextType: ContextType) {
+        let context = contextFromType(contextType)
+        context.performAndWait{
+            localUnit.position = position
+            
+            localUnit.user = user
+            user.addToObVanUnits(localUnit)
+            
+            if let hardware {
+                let localHardware = fetchOrCreateHardwareWithId(UUID().uuidString, inContext: .main)
+                localHardware.type = hardware.rawValue
+                localUnit.hardware = localHardware
+                localHardware.obVanUnit = localUnit
+            }
+        }
+    }
 
+    @MainActor
     func removeObvanUnit(unit: OBVanUnit, inContext contextType: ContextType) {
         let context = contextFromType(contextType)
         let request = LocalObvanUnit.fetchRequest()
@@ -1062,7 +1155,7 @@ extension DataManager {
             }
         }
     }
-
+    @MainActor
     func removeLocalObvanUnit(_ unit: LocalObvanUnit, inContext contextType: ContextType) {
         let context = contextFromType(contextType)
         context.perform {
@@ -1071,6 +1164,167 @@ extension DataManager {
             }
             context.delete(unit)
         }
+    }
+}
+// MARK: - Template / TemplatePoints
+extension DataManager {
+    //template
+    func fetchOrCreateLocalTemlateWithId(_ id: String, inContext contextType: ContextType) -> LocalTemplate{
+        let context = contextFromType(contextType)
+        let request = LocalTemplate.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", id)
+        return  context.performAndWait {
+            if let localTemplate = try? context.fetch(request).first {
+                return localTemplate
+            } else {
+                let newTemplate = LocalTemplate(context: context)
+                newTemplate.id = id
+                return newTemplate
+            }
+        }
+    }
+    
+    func createOrUpdateLocalTemplateWithTemplate(_ template: Template, inConext contextType: ContextType){
+        let localTemplate = fetchOrCreateLocalTemlateWithId(template.id, inContext: contextType)
+        updateLocalTemplate(localTemplate, WithTemplate: template, inConext: contextType)
+    }
+    
+    func updateLocalTemplate(_ localtemplate: LocalTemplate, WithTemplate template: Template, inConext contextType: ContextType){
+        let context = contextFromType(contextType)
+        context.performAndWait {
+            localtemplate.id = template.id
+            localtemplate.name = template.name
+            for point in template.templatePoints {
+               let localTemplatePoint =  createOrUpdateLocalTemplatePointWithTemplatePoint(point, inContext: contextType)
+                localtemplate.addToTemplatePoints(localTemplatePoint)
+            }
+        }
+    }
+    func removeLocalTemplate(_ template: LocalTemplate, inContext contextType: ContextType){
+        let context = contextFromType(contextType)
+        context.performAndWait {
+            for point in template.viewPoints {
+                removeLocalTemplatePoint(point, inContext: contextType)
+            }
+            context.delete(template)
+        }
+    }
+    
+    //templatePoint
+    
+    func fetchOrCreateLocalTemplatePointWithId(_ id: String, inContext contextType: ContextType)->LocalTemplatePoint{
+        let context = contextFromType(contextType)
+        let request = LocalTemplatePoint.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", id)
+        
+        return  context.performAndWait {
+            if let localTemplatePoint = try? context.fetch(request).first {
+                return localTemplatePoint
+            } else {
+                let newTemplatePoint = LocalTemplatePoint(context: context)
+                newTemplatePoint.id = id
+                return newTemplatePoint
+            }
+        }
+    }
+    
+    func createOrUpdateLocalTemplatePointWithTemplatePoint(_ point: TemplatePoint, inContext contextType: ContextType) -> LocalTemplatePoint{
+        let localPoint = fetchOrCreateLocalTemplatePointWithId(point.id, inContext: contextType)
+        updateLocalTemplatePoint(localPoint, withTemplatePoint: point, inContext: contextType)
+        return localPoint
+    }
+    
+    func updateLocalTemplatePoint(_ localPoint: LocalTemplatePoint, withTemplatePoint point: TemplatePoint, inContext contextType: ContextType){
+        let context = contextFromType(contextType)
+        context.performAndWait {
+            localPoint.coordinateX = Float(point.coordinateX)
+            localPoint.coordinateY = Float(point.coordinateY)
+            localPoint.rotation = Int16(point.rotation)
+            localPoint.scaleFactor = Float(point.scaleFactor)
+            localPoint.number = Int16(point.number)
+            localPoint.pointDescription = point.pointDescription
+            localPoint.task = point.task
+            localPoint.cameras = point.cameras.map{$0.optic.rawValue}.joined(separator: ",")
+            localPoint.sounds = point.sounds.map{$0.placeType.rawValue}.joined(separator: ",")
+            localPoint.lights = point.lights.map{$0.lightType.rawValue}.joined(separator: ",")
+        }
+    }
+    func removeLocalTemplatePoint(_ point: LocalTemplatePoint, inContext contextType: ContextType){
+        let context = contextFromType(contextType)
+        context.delete(point)
+    }
+}
+
+// MARK: - map TemplatePoint to LocalLocationPoint
+extension DataManager{
+    func createLocalLocationPointFromTemplatePoint(_ templatePoint: LocalTemplatePoint, inContext contextType: ContextType) -> LocalLocationPoint{
+        let context = contextFromType(contextType)
+        let localLocationPoint = fetchOrCreateLocationPointWithId(UUID().uuidString, inContext: contextType)
+        context.performAndWait {
+            localLocationPoint.coordinateX = templatePoint.coordinateX
+            localLocationPoint.coordinateY = templatePoint.coordinateY
+            localLocationPoint.rotation = templatePoint.rotation
+            localLocationPoint.scaleFactor = templatePoint.scaleFactor
+            localLocationPoint.pointDescription = templatePoint.pointDescription
+            localLocationPoint.number = templatePoint.number
+            localLocationPoint.task = templatePoint.task
+            for camera in templatePoint.viewCameras{
+                localLocationPoint.addToCameras(createOrUpdateCamera(camera, inContext: contextType))
+            }
+            for sound in templatePoint.viewSounds {
+                localLocationPoint.addToSounds(createOrUpdateSound(sound, inContext: contextType))
+            }
+            for light in templatePoint.viewLights{
+                localLocationPoint.addToLights(createOrUpdateLocalLightWithLight(light, inContext: contextType))
+            }
+        }
+        return localLocationPoint
+    }
+    
+    func mapTemplateToLocationPoints(template: LocalTemplate,
+                                     inContext contextType: ContextType) -> [LocalLocationPoint]{
+        
+        var array = [LocalLocationPoint]()
+        for point in template.viewPoints {
+            array.append(createLocalLocationPointFromTemplatePoint(point, inContext: contextType))
+        }
+        return array
+    }
+    
+    func createTemplateWithLocalLocationPoints(_ points: [LocalLocationPoint],
+                                               andName name: String,
+                                               inContext contextType: ContextType ) -> LocalTemplate{
+        let context = contextFromType(contextType)
+        let template = fetchOrCreateLocalTemlateWithId(name, inContext: contextType)
+        
+        context.performAndWait {
+            template.name = name
+            for point in points {
+                let localTemplatePoint = createTemplatePointFromLocalLocationPoint(point, inContext: contextType)
+                //localLocaltionPoint -> LocalTemplatePoint
+                template.addToTemplatePoints(localTemplatePoint)
+                localTemplatePoint.parentTemplate = template
+            }
+        }
+        return template
+    }
+    
+    func createTemplatePointFromLocalLocationPoint(_ point: LocalLocationPoint, inContext contextType: ContextType) -> LocalTemplatePoint{
+        let context = contextFromType(contextType)
+        let tp = fetchOrCreateLocalTemplatePointWithId(UUID().uuidString, inContext: contextType)
+        context.performAndWait {
+            tp.coordinateX = point.coordinateX
+            tp.coordinateY = point.coordinateY
+            tp.number = point.number
+            tp.pointDescription = point.pointDescription
+            tp.task = point.task
+            tp.scaleFactor = point.scaleFactor
+            tp.rotation = point.rotation
+            tp.cameras = point.viewLocalCameras.map{$0.viewOptic.rawValue}.joined(separator: ",")
+            tp.sounds = point.viewLocalSounds.map{$0.viewPlaceType.rawValue}.joined(separator: ",")
+            tp.lights = point.viewLocalLights.map{$0.viewLightType.rawValue}.joined(separator: ",")
+        }
+        return tp
     }
 }
 

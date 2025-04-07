@@ -9,6 +9,7 @@ import UIKit
 final class NetworkManager: ObservableObject {
     
     let db: Firestore = Firestore.firestore()
+    let storageRef = Storage.storage().reference()
     
 //    static let shared = NetworkManager()
     init() {}
@@ -222,7 +223,6 @@ extension NetworkManager {
         } else { return }
         
         //save imageData to global storage
-        let storageRef = Storage.storage().reference()
         let imageRef = storageRef.child(
             "\(GlobalProperties.Path.images.rawValue)/\(id)")
         do {
@@ -249,7 +249,6 @@ extension NetworkManager {
     //Load Image with ID and store to coredate conteiner
     func loadImageFromGlobalStorage(id: String, completion: @escaping (UIImage) -> Void)  {
         //load from firebase
-        let storageRef = Storage.storage().reference()
         let imageRef = storageRef.child(
             "\(GlobalProperties.Path.images.rawValue)/\(id)")
         imageRef.getData(maxSize: 3 * 1024 * 1024) { data, error in
@@ -266,16 +265,16 @@ extension NetworkManager {
             }
         }
     }
-    
-    func removeImage(localImage: LocalImage) async {
+    // TODO: change argument from LocalImage to id: String
+    func removeImage(localImageId: String) async {
         //localImage
+        guard !localImageId.isEmpty else { return }
         do{
-        let storageRef = Storage.storage().reference()
-        let imageRef = storageRef.child(
-            "\(GlobalProperties.Path.images.rawValue)/\(localImage.viewId)")
+            let imageRef = storageRef.child(
+                "\(GlobalProperties.Path.images.rawValue)/\(localImageId)")
             try await imageRef.delete()
-        //remove from storage
-            try await db.collection(GlobalProperties.Path.images.rawValue).document(localImage.viewId).delete()
+            //remove from storage
+            try await db.collection(GlobalProperties.Path.images.rawValue).document(localImageId).delete()
         } catch{
             print("NetworkManager: remove image error :\(error.localizedDescription)")
         }
@@ -325,20 +324,21 @@ extension NetworkManager {
             #endif
         }
     }
-    
-    func removeLocation(_ location: LocalLocation) async {
-        for image in location.viewLocalImages{
-            await removeImage(localImage: image)
+    // TODO: change to receive removable id's
+    func removeLocation(_ locationId: String, imagesIds: [String], backgroundId: String) {
+        Task{
+            for imageId in imagesIds{
+                await removeImage(localImageId: imageId)
+            }
+            await removeImage(localImageId: backgroundId)
+            await removeLocationWithId(locationId)
         }
-        if let background = location.background{
-            await removeImage(localImage: background)
-        }
-        
-        await removeLocationWithId(location.viewId)
     }
 
     func removeLocationWithId(_ id: String) async {
+        guard id.count > 0 else { return }
         do {
+            print("id: \(id), \(id.count)")
             try await db.collection("\(GlobalProperties.Path.locations.rawValue)").document(id).delete()
         } catch {
             #if DEBUG
@@ -354,7 +354,6 @@ extension NetworkManager {
 // MARK: - Club
 extension NetworkManager {
     func saveClub(_ club: Club) async {
-        //        guard let id = event.id else { return }
         let clubRef = db.collection("\(GlobalProperties.Path.clubs.rawValue)")
         do {
             let data = try Firestore.Encoder().encode(club)
@@ -367,11 +366,9 @@ extension NetworkManager {
         }
     }
 
-    func removeClub(club: LocalClub) async {
-        if let image = club.imageLogo{
-            await removeImage(localImage: image)
-        }
-        await removeClubWithId(club.viewId)
+    func removeClub(clubId: String, logoId: String) async {
+        await removeImage(localImageId: logoId)
+        await removeClubWithId(clubId)
     }
     
     func removeClubWithId(_ id: String) async {
@@ -386,6 +383,40 @@ extension NetworkManager {
         }
     }
 
+}
+// MARK: - Templates
+extension NetworkManager{
+    func saveTemplate(_ template: Template) async {
+        let templateRef = db.collection("\(GlobalProperties.Path.templates.rawValue)")
+        do {
+            let data = try Firestore.Encoder().encode(template)
+            try await templateRef.document(template.id).setData(data)
+            print("club saved")
+        } catch {
+            #if DEBUG
+                print("DEBUG: save event error: \(error.localizedDescription)")
+            #endif
+        }
+    }
+    
+    // TODO: change or remove 'Template' func
+    func removeTemplate(_ templateId: String) async {
+        await removeTemplateWihId(templateId)
+    }
+    
+    func removeTemplateWihId(_ id: String) async {
+        guard !id.isEmpty else { return }
+        do {
+            try await db.collection("\(GlobalProperties.Path.templates.rawValue)")
+                .document(id).delete()
+        } catch {
+            #if DEBUG
+                print(
+                    "DEBUG: remove event error: \(error.localizedDescription)")
+            #endif
+        }
+    }
+    
 }
 
 

@@ -30,7 +30,7 @@ struct BPUser: Identifiable, Codable,BPDataProtocol {
     init(id: String = UUID().uuidString){
         self.id = id
     }
-    
+
     func toLocalUser(user: LocalUser){
         user.firstName = firstName
         user.lastName = lastName

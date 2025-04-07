@@ -43,27 +43,18 @@ struct BPEventFilterCaseTabView<T: RawRepresentable & CaseIterable>: View  where
 //        }
         .background{
             RoundedRectangle(cornerRadius: 8)
-                .fill(.ultraThinMaterial)
+                .fill(.white.opacity(0.4))
             //receives data about geometry from ns namespaces by selectedtab Id and apply to rect
                 .matchedGeometryEffect(id: selectedTab.rawValue, in: ns, isSource: false)
         }
     }
  }
 
-
-
 #Preview {
-    let mdm = MainDataManager(localDataManager: DataManager(), globalDataManager: NetworkManager(), userId: "123")
+    let mdm = MainDataManager(localDataManager: DataManager(), globalDataManager: NetworkManager(),userId: "123")
     
-    BPEditStadiumView(event: mdm.localDataManager.fetchOrCreateEventWithId("123", inContext: .main) , editable: true)
-    .environmentObject(BPEditStadiumViewModel())
-    .environmentObject(mdm)
+   return BPEditStadiumView(event: mdm.localDataManager.fetchOrCreateEventWithId("123", inContext: .main) , editable: true)
+        .environmentObject(mdm)
 }
-//#Preview{
-//    NavigationStack{
-//        MainEventsList()
-//    }
-//    .environmentObject(GlobalSettings())
-////    .environmentObject(GlobalTimer())
-//    .environment(\.managedObjectContext, DataManager.shared.moc)
-//}
+
+

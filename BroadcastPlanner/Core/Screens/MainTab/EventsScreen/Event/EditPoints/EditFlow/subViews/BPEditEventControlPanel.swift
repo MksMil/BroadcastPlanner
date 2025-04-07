@@ -8,7 +8,7 @@ struct BPEditEventControlPanel: View {
 
     var body: some View {
       RoundedRectangle(cornerRadius: 10)
-            .fill(.ultraThinMaterial)
+            .fill(.white.opacity(0.4))
             .shadow(radius: 1)
             .frame(width: 130, height: 45)
             .overlay {

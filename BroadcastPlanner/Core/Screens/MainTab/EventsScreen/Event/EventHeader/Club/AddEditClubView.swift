@@ -35,7 +35,9 @@ final class AddEditClubViewModel: ObservableObject{
         self.contacts = club.viewContacts
         self.urlString = club.viewUrl
         self.showedImage = club.viewImageMediumLogo
-//        self.location = club.homeLocation
+        if let location = club.homeLocation{
+            self.location = location
+        }
     }
     
     func update(){
@@ -69,7 +71,7 @@ struct AddEditClubView: View {
     
     var body: some View {
         ZStack{
-            Color.mainBackground.ignoresSafeArea()
+            MainBackground()
             VStack(spacing: 15){
                 ConfirmationButtonGroupView(isAcceptDisabled: false) {
                     cancelAction()
@@ -95,10 +97,8 @@ struct AddEditClubView: View {
                              photoLibrary: .shared()) {
                     vm.showedImage
                         .resizable()
-                    //                .scaledToFit()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 150,height: 150)
-                    //                .padding(2)
                         .clipShape(Circle())
                         .padding(5)
                         .background{
@@ -155,7 +155,6 @@ struct AddEditClubView: View {
                     }
                 }
                 .padding(.horizontal)
-                //location ? add location?
                 Spacer()
             }
         }

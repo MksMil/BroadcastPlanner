@@ -109,6 +109,12 @@ extension LocalEvent : Identifiable {
         let date = date ?? Date()
         return BPDateFormater.format(date: date)
     }
+    
+    var viewDayDate: String {
+        let date = date ?? Date()
+        return BPDateFormater.formatDate(date: date)
+    }
+    
     var viewRemainingDate: Date {
         date ?? Date()
     }

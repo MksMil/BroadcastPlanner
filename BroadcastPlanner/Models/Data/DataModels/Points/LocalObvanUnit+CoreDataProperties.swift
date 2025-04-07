@@ -2,7 +2,7 @@
 //  LocalObvanUnit+CoreDataProperties.swift
 //  BroadcastPlanner
 //
-//  Created by Миляев Максим on 23.12.2024.
+//  Created by Миляев Максим on 05.02.2025.
 //
 //
 
@@ -22,6 +22,7 @@ extension LocalObvanUnit {
     @NSManaged public var position: String?
     @NSManaged public var rotation: Int16
     @NSManaged public var scaleFactor: Float
+    @NSManaged public var task: String?
     @NSManaged public var event: LocalEvent?
     @NSManaged public var hardware: LocalHardware?
     @NSManaged public var user: LocalUser?
@@ -60,6 +61,10 @@ extension LocalObvanUnit : Identifiable {
         guard let hardware else { return [] }
        return [Hardware(id: hardware.veiwId, envType: hardware.viewType, chanels: hardware.viewChannels)]
      }
+    
+    var viewTask: String {
+        task ?? "Task"
+    }
 //
 //    var viewLocalHardware: [LocalHardware]{
 //        guard let hardware else { return [] }

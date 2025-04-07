@@ -171,3 +171,4 @@ extension LocalLocationPoint : Identifiable {
         image?.smallImage ?? Image("cam1")
     }
 }
+

@@ -14,14 +14,7 @@ struct BPEditEventStuffListView: View {
                         .fixedSize()
                         .padding(10)
                         .frame(width: 115, height: 50)
-//                        .background(selectedEventPoint?.id == point.id ?  .ultraThickMaterial : .ultraThinMaterial
-//                        )
-//                        .onTapGesture {
-//                            withAnimation {
-//                                selectAction(point)
-//                            }
-//                        }
-//            }
+
             .scrollContentBackground(.hidden)
             .listStyle(.inset)
             .padding()

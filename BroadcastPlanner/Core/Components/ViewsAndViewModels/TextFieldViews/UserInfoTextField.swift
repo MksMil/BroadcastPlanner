@@ -6,7 +6,8 @@ struct UserInfoTextField: View {
     var isEdit: Bool
     var imageName: String
     var prompt: String
-    var axis: Axis
+    var scaleFactor: Double
+    
     
     var body: some View {
         HStack{
@@ -18,13 +19,14 @@ struct UserInfoTextField: View {
             }
             
             // TODO: Text content type?
-            TextField("", text: $text, prompt: Text(prompt), axis: axis)
+            TextField("", text: $text, prompt: Text(prompt))
                 .autocorrectionDisabled()
                 .font(.title)
+                .minimumScaleFactor(scaleFactor)
                 .padding(.vertical,4)
                 .padding(.horizontal,5)
                 .background {
-                    RoundedRectangle(cornerRadius: 5.0).fill(.ultraThinMaterial).opacity(isEdit ? 0.5 : 0)
+                    RoundedRectangle(cornerRadius: 5.0).fill(.white.opacity(0.4)).opacity(isEdit ? 0.5 : 0)
                 }
         }
         .frame(height: 40)

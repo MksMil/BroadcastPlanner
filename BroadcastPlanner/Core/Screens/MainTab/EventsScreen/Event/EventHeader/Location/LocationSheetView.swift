@@ -57,10 +57,10 @@ struct LocationSheetView: View {
                         .frame(maxWidth: .infinity,maxHeight: .infinity)
                         .background {
                             RoundedRectangle(cornerRadius: 5)
-                                .fill(.gray.opacity(0.3))
+                                .fill(.ultraThickMaterial.opacity(0.3))
                                 .overlay {
                                     RoundedRectangle(cornerRadius: 5)
-                                        .stroke(Color.gray.opacity(0.3), lineWidth: 2)
+                                        .stroke(.ultraThickMaterial.opacity(0.5), lineWidth: 2)
                                 }
                         }
                         .onTapGesture {
@@ -91,10 +91,8 @@ struct LocationSheetView: View {
                     }
                     .onDelete { index in
                         if let ind = index.first{
-                            Task{
-                                await mdm.removeLocation(locations[ind])
-                                vm.selectedLocation = nil
-                            }
+                            mdm.removeLocation(locations[ind])
+                            vm.selectedLocation = nil
                         }
                     }
                     .listRowBackground(Color.clear)
@@ -112,7 +110,6 @@ struct LocationSheetView: View {
                 .listStyle(.inset)
                 .scrollContentBackground(.hidden)
             }
-            
         }
         .onReceive(mdm.localDataManager.updatePublisher, perform: { value in
             if value.0 == .locations{
@@ -125,53 +122,11 @@ struct LocationSheetView: View {
     }
 }
 
-#Preview {
-    ZStack{
-        LocationSheetView(club: nil, cancelAction: {}, saveAction: {_ in }, addEditAction: {_ in})
-//            .environment(\.managedObjectContext, DataManager.shared.moc)
-    }
-}
-
 //#Preview {
-//    NavigationStack{
-//        BPCreateEditEventView(event: LocalEvent(context: DataManager.shared.moc))
+//    ZStack{
+//        LocationSheetView(club: nil, cancelAction: {}, saveAction: {_ in }, addEditAction: {_ in})
 //    }
-//            .environmentObject(GlobalSettings())
-//            .environmentObject(GlobalSessionStorage())
-//            .environmentObject(EventTabRouter())
-//            .environment(\.managedObjectContext, DataManager.shared.moc)
 //}
 
-struct LocationCell: View {
-    
-    var title: String
-    let address: String
-    
-    init(title: String, address: String) {
-        self.title = title
-        self.address = address
-        
-    }
-    
-    var body: some View {
-        HStack{
-            VStack(alignment: .leading, spacing: 2){
-                Text("\(title)")
-                    .font(.title3)
-                Divider()
-                Text("\(address)")
-                    .lineLimit(3)
-                    .font(.caption)
-            }
-        }
-        .frame(maxWidth: .infinity,alignment: .leading)
-        .padding(.vertical,8)
-        .padding(.horizontal,12)
-        .background {
-            RoundedRectangle(cornerRadius: 5).fill(.ultraThinMaterial)
-        }
-        .shadow(color: .gray.opacity(0.4),
-                radius: 4,
-                x: 1, y: 3)
-    }
-}
+
+

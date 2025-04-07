@@ -22,7 +22,7 @@ final class ClubSheetCellViewModel: ObservableObject{
 }
 
 struct ClubSheetCellView: View {
-
+    @EnvironmentObject var mdm: MainDataManager
     @StateObject private var vm: ClubSheetCellViewModel
     let club: LocalClub
     
@@ -33,7 +33,6 @@ struct ClubSheetCellView: View {
     
     var body: some View {
         VStack{
-//            club.viewImageMediumLogo
             vm.image
                 .resizable()
                 .scaledToFit()
@@ -56,7 +55,7 @@ struct ClubSheetCellView: View {
                 }
                 
         }
-        .onReceive(DataManager.shared.updatePublisher) { value in
+        .onReceive(mdm.localDataManager.updatePublisher) { value in
             if value.0 == .clubs, let  id = value.1.first{
                 if id == club.viewId{
                     vm.update()

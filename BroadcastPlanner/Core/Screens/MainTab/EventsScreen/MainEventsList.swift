@@ -2,49 +2,38 @@ import SwiftUI
 import CoreData
 import Combine
 
-final class MainEventListViewModel: ObservableObject{
+struct MainEventsList: View {
+//    @EnvironmentObject var session: SessionManager
+    @EnvironmentObject var mdm: MainDataManager
     
+    @StateObject private var eventRouter = EventTabRouter()
+    @FetchRequest<LocalEvent>(sortDescriptors: []) var events
     
-    var localUser: LocalUser?
+    @State private var selectedEvent: LocalEvent?
     
-    func fetchUserWithId(id: String?){
-        if let id {
-            localUser = DataManager.shared.fetchOrCreateUserWithId(id, inContext: .main)
+    private var eventToRoute: LocalEvent {
+        if let selectedEvent {
+            return  selectedEvent
+        } else {
+            let newEvent = mdm.createEventWithCurrentUserOwnerInContextType(.main)
+            selectedEvent = newEvent
+            return newEvent
         }
     }
     
-//    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    
-}
-
-
-struct MainEventsList: View {
-    @EnvironmentObject var session: SessionManager
-    
-    @StateObject private var eventRouter = EventTabRouter()
-    @StateObject var vm: MainEventListViewModel = MainEventListViewModel()
-    
-    @FetchRequest<LocalEvent>(sortDescriptors: []) var events
-    
-    @State var selectedEvent: LocalEvent?
-    
-    @State var filter: FilterEventCases = .notFiltered
+    @State private var filter: FilterEventCases = .notFiltered
     var title: String {
-            switch filter {
-                case .notFiltered:
-                    events.nsPredicate = nil
-                    return "All Events"
-                case .userOwned:
-                    if let user = vm.localUser{
-                        events.nsPredicate = NSPredicate(format: "owners CONTAINS %@", user)
-                    }
-                    return "My own Events"
-                case .userPartisipation:
-                    if let user = vm.localUser{
-                        events.nsPredicate = NSPredicate(format: "users CONTAINS %@", user)
-                    }
-                    return "My participation"
-            }
+        switch filter {
+            case .notFiltered:
+                events.nsPredicate = nil
+                return "All Events"
+            case .userOwned:
+                events.nsPredicate = NSPredicate(format: "owners CONTAINS %@", mdm.currentUser)
+                return "My owned events"
+            case .userPartisipation:
+                events.nsPredicate = NSPredicate(format: "users CONTAINS %@", mdm.currentUser)
+                return "My participation"
+        }
     }
     
     var body: some View {
@@ -54,7 +43,7 @@ struct MainEventsList: View {
                 MainBackground()
             
                 VStack{
-                    Rectangle().fill(.ultraThinMaterial)
+                    Rectangle().fill(.white.opacity(0.4))
                         .frame(maxWidth: .infinity)
                         .frame(height: 55)
                         .overlay {
@@ -65,26 +54,18 @@ struct MainEventsList: View {
                     List {
                         ForEach(events) { event in
                             MainEventListCell(event: event)
-//                                .frame(height: 70)
                                 .transition(.slide)
                                 .listRowBackground(Color.clear)
                                 .onTapGesture {
                                     selectedEvent = event
-                                    if let selectedEvent {
-                                        eventRouter.routeToCreateEdit(event: selectedEvent)
-                                    }
+                                    eventRouter.routeToCreateEdit()
                                 }
                         }
                         .onDelete(perform: { indexSet in
                             guard let index = indexSet.first else { return }
                             let eventToDelete = events[index]
-                            Task{
-                              await  DataManager.shared.saveContext(type: .main, publish: .none, id: [])
-                            }
-                            DataManager.shared.removeLocalEvent(eventToDelete, inContext: .main)
-                            Task{
-                                await DataManager.shared.saveContext(type: .main, publish: .events, id: [ ])
-                            }
+                            mdm.removeEvent(event: eventToDelete)
+                            mdm.saveContext(type: .main, publish: .events, id: [])
                         })
                     }
                     .padding(.horizontal,8)
@@ -101,13 +82,8 @@ struct MainEventsList: View {
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button{
-                        Task{
-                            let newEvent = DataManager.shared.fetchOrCreateEventWithId(UUID().uuidString,
-                                                                        inContext: .main)
-                            //user -> owner of event
-                            //event -> user.ownedEvents
-                            eventRouter.routeToCreateEdit(event: newEvent)
-                        }
+                        selectedEvent = nil
+                        eventRouter.routeToCreateEdit()
                     }label: {
                         Image(systemName: "calendar.badge.plus")
                             .resizable()
@@ -118,28 +94,28 @@ struct MainEventsList: View {
                 }
             }
             .navigationDestination(for: EventTabPath.self) { path in
+
                 switch path{
-                case .createEdit(let event):
-                        BPCreateEditEventView(event: event, userId: session.sessionUser?.id ?? "")
-                case .stadPointsEdit(let event, let editable):
-                        BPEditStadiumView(event: event, editable: editable)
-                case .carPointsEdit:
-                    Text("")
+                case .createEdit:
+                        BPCreateEditEventView(event: eventToRoute)
+                case .stadPointsEdit(let editable):
+                        BPEditStadiumView(event: eventToRoute, editable: editable)
+                case .carPointsEdit(let editable):
+                        BPEditCarView(event: eventToRoute, editable: editable)
                 }
             }
-            
         }
-        .onAppear(perform: {
-            vm.fetchUserWithId(id: session.sessionUser?.id)
-        })
         .environmentObject(eventRouter)
     }
 }
     
 
 #Preview {
-        MainEventsList()
-        .environmentObject(SessionManager())
+    let mdm = MainDataManager(localDataManager: DataManager(),
+                              globalDataManager: NetworkManager(),
+                              userId: "123")
+      return MainEventsList()
         .environmentObject(GlobalSettings())
-//        .environment(\.managedObjectContext, DataManager.shared.moc)
+        .environmentObject(mdm)
+        .environment(\.managedObjectContext, mdm.localDataManager.moc)
 }

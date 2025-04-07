@@ -78,11 +78,9 @@ extension LocalImage : Identifiable {
     
     func makeImageWithSize(size: ImageSizes, type: GlobalProperties.ImageType) -> Image{
         let imageManager = ImagesManager()
-        print("try to load image \(viewId), size: \(size.rawValue)")
         if let result = imageManager.loadImage(type: size, id: viewId){
             return Image(uiImage: result)
         } else {
-            print("cant load image")
             switch viewType {
                 case .user:
                     return Image(systemName: "person")

@@ -1,10 +1,9 @@
 import SwiftUI
-import SDWebImageSwiftUI
+//import SDWebImageSwiftUI
 
 struct BPUserProfileView: View {
     
-    var user: BPUser
-    var image: UIImage?
+    let user: LocalUser
     
     var body: some View {
             
@@ -17,14 +16,6 @@ struct BPUserProfileView: View {
                     Spacer()
                 }
             }
-            .navigationTitle(Text(user.isOnline ? "Online": "Offline"))
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                }
-            }
-            .toolbarBackground(.visible, for: .navigationBar)
-            .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
         
     }
    
@@ -32,7 +23,7 @@ struct BPUserProfileView: View {
         VStack{
             //photo here
             HStack {
-                    makeImage()
+                user.userImage
                         .resizable()
                         .scaledToFill()
                         .frame(width: 100,height: 100)
@@ -46,11 +37,11 @@ struct BPUserProfileView: View {
                         .padding(.trailing,15)
                 
                     VStack(alignment: .leading){
-                        Text(user.firstName)
+                        Text(user.userFirstName)
                             .padding(.vertical,4)
                             .padding(.horizontal,5)
                         Divider()
-                        Text(user.lastName)
+                        Text(user.userLastName)
                             .padding(.vertical,4)
                             .padding(.horizontal,5)
                         Divider()
@@ -69,8 +60,8 @@ struct BPUserProfileView: View {
                             .frame(width: 30,height: 30)
                             .scaledToFill()
                         
-                        Link(user.phoneNumber,
-                             destination: URL(string:"tel:\(user.phoneNumber)")!)
+                        Link(user.userPhoneNumber,
+                             destination: URL(string:"tel:\(user.userPhoneNumber)")!)
                             .padding(.vertical,4)
                             .padding(.horizontal,5)
                         Spacer()
@@ -82,8 +73,8 @@ struct BPUserProfileView: View {
                             .frame(width: 30,height: 30)
                             .scaledToFill()
                         
-                        Link(user.email,
-                             destination: URL(string: "mailto:\(user.email)")!)
+                        Link(user.userEmail,
+                             destination: URL(string: "mailto:\(user.userEmail)")!)
                             .padding(.vertical,4)
                             .padding(.horizontal,5)
                         Spacer()
@@ -95,7 +86,7 @@ struct BPUserProfileView: View {
                             .frame(width: 30,height: 30)
                             .scaledToFill()
 
-                        Text(user.homeAddress)
+                        Text(user.userAddress)
                             .padding(.vertical,4)
                             .padding(.horizontal,5)
                         Spacer()
@@ -111,8 +102,8 @@ struct BPUserProfileView: View {
     @ViewBuilder func specializationSection() -> some View {
         VStack{
             SmartLayout(hSpacing: 5, vSpacing: 5){
-                ForEach(user.specialization,id: \.self) { text in
-                    BPSpecializationCellView(text: text)
+                ForEach(user.userSpecialization,id: \.self) { text in
+                    BPSpecializationCellView(text: text.rawValue)
                 }
             }
             .padding(.horizontal,20)
@@ -121,15 +112,7 @@ struct BPUserProfileView: View {
                 .padding(.horizontal,20)
         }
     }
-    
-    
-    // MARK: - Image loader
-    func makeImage() -> Image{
-        guard let image else {
-            return Image(systemName: "person.crop.circle")
-        }
-        return Image(uiImage: image)
-    }
+
 }
 
 //#Preview {

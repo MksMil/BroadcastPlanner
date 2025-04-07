@@ -18,7 +18,7 @@ struct TaskDescriptionView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 8)
-        .background(.ultraThinMaterial)
+        .background(.white.opacity(0.4))
         .clipShape(UnevenRoundedRectangle(cornerRadii: .init(topLeading: 0, bottomLeading: 10, bottomTrailing: 10, topTrailing: 0)))
         .onTapGesture {
             isEditMode = true
@@ -31,15 +31,17 @@ struct TaskDescriptionView: View {
                 CustomTextEditor(text: $text)
             }
             .padding(.horizontal)
-            .presentationBackground(.black.opacity(0.5))
+            .presentationBackground(.black.opacity(0.8))
         }
         .toolbar{
-            ToolbarItemGroup(placement: .keyboard) {
-                Spacer()
-                Button("Done"){
-                    isEditMode = false
+            if isEditMode{
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done"){
+                        isEditMode = false
+                    }
+                    .foregroundStyle(.blue)
                 }
-                .foregroundStyle(.blue)
             }
         }
     }
@@ -56,7 +58,7 @@ struct CustomTextEditor: View {
                 .focused($isFocused)
                 .autocorrectionDisabled()
                 .textInputAutocapitalization(.never)
-                .background(.ultraThinMaterial)
+                .background(.white.opacity(0.4))
                 .foregroundStyle(.black)
                 .scrollContentBackground(.hidden)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
@@ -73,9 +75,8 @@ struct CustomTextEditor: View {
 #Preview {
     let mdm = MainDataManager(localDataManager: DataManager(), globalDataManager: NetworkManager(),userId: "123")
     
-    BPEditStadiumView(event: mdm.localDataManager.fetchOrCreateEventWithId("123", inContext: .main) , editable: true)
-    .environmentObject(BPEditStadiumViewModel())
-    .environmentObject(mdm)
+   return BPEditStadiumView(event: mdm.localDataManager.fetchOrCreateEventWithId("123", inContext: .main) , editable: true)
+        .environmentObject(mdm)
 }
 
 //#Preview {

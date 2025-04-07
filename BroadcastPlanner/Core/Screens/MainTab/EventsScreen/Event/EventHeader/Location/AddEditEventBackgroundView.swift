@@ -3,21 +3,41 @@ import UIKit
 import PhotosUI
 
 struct AddEditEventBackgroundView: View {
-    @StateObject var vm = AddEditEventBackgroundViewViewModel()
+    @EnvironmentObject var mdm: MainDataManager
+    
     @State private var isRemoveEventTeamplate: Bool = false
-    @Namespace var ns
-    @FetchRequest<LocalImage>(sortDescriptors: [],predicate: NSPredicate(format: "type == %@", GlobalProperties.ImageType.eventTemplate.rawValue),animation: .easeInOut) var backgroundLocalImages
+    @State var selectedImage: LocalImage?
+    @State var eventBackgroundItem: PhotosPickerItem?{
+        willSet{
+            guard let item = newValue else { return }
+            Task{
+                if let data = try? await item.loadTransferable(type: Data.self),
+                   let uiimage = UIImage(data: data){
+                    mdm.createNewLocalImageWith(uiimage: uiimage)
+                }
+            }
+        }
+        didSet{
+            eventBackgroundItem = nil
+        }
+    }
+    @FetchRequest<LocalImage>(sortDescriptors: [],
+                              predicate: NSPredicate(format: "type == %@",
+                                                     GlobalProperties.ImageType.eventTemplate.rawValue),
+                              animation: .easeInOut) var backgroundLocalImages
+    
     let cancellAction: ()->Void
     let acceptAction: (LocalImage?) -> Void
     
+    @Namespace var ns
     
     var body: some View {
         VStack{
-            ConfirmationButtonGroupView(isAcceptDisabled: vm.selectedImage == nil,
+            ConfirmationButtonGroupView(isAcceptDisabled: selectedImage == nil,
                                         cancelAction: {
                 cancellAction()
             }, acceptAction: {
-                acceptAction(vm.selectedImage)
+                acceptAction(selectedImage)
             }, content: {
                 Image(systemName: "trash.square")
                     .resizable()
@@ -27,21 +47,20 @@ struct AddEditEventBackgroundView: View {
                     }
                     .foregroundStyle(.black, .gray)
                     .fontWeight(.light)
-                    .disabled(vm.selectedImage == nil)
-                    .opacity(vm.selectedImage == nil ? 0.3: 1)
+                    .disabled(selectedImage == nil)
+                    .opacity(selectedImage == nil ? 0.3: 1)
             })
             .padding(.horizontal)
             
-            
             ScrollView{
                 SmartLayout(hSpacing: 4, vSpacing: 4){
-                    PhotosPicker(selection: $vm.eventBackgroundItem) {
+                    PhotosPicker(selection: $eventBackgroundItem) {
                         Image(systemName: "plus")
                             .resizable()
                             .scaledToFit()
                             .padding(20)
                             .background {
-                                RoundedRectangle(cornerRadius: 5).fill(.ultraThinMaterial)
+                                RoundedRectangle(cornerRadius: 5).fill(.white.opacity(0.4))
                             }
                             .frame(width: 100, height: 100)
                     }
@@ -52,13 +71,13 @@ struct AddEditEventBackgroundView: View {
                                                    isSource: true)
                             .onTapGesture {
                                 withAnimation{
-                                    (vm.selectedImage == image) ? (vm.selectedImage = nil): (vm.selectedImage = image)
+                                    (selectedImage == image) ? (selectedImage = nil): (selectedImage = image)
                                 }
                             }
                     }
                 }
                 .overlay {
-                    if let selectedImage = vm.selectedImage{
+                    if let selectedImage {
                         RoundedRectangle(cornerRadius: 5).stroke(Color.green,
                                                                  lineWidth: 4)
                         .frame(width: 100, height: 100)
@@ -78,7 +97,7 @@ struct AddEditEventBackgroundView: View {
                ) {
                    Button("Remove Background Template", role: .destructive) {
                        // Handle empty trash action.
-                           vm.removeImage()
+                       mdm.removeImage(selectedImage: selectedImage)
                    }
                }
     }
@@ -86,5 +105,4 @@ struct AddEditEventBackgroundView: View {
 
 #Preview {
     AddEditEventBackgroundView(cancellAction: {},acceptAction: {_ in })
-//        .environment(\.managedObjectContext, DataManager.shared.moc)
 }

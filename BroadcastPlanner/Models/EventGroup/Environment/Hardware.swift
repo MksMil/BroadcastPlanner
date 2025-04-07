@@ -11,6 +11,15 @@ struct Hardware: Codable, Identifiable,BPDataProtocol {
         case blt = "BLT"
         case slomo = "SLOMO"
         case vmix = "V-MIX"
+        
+        static var withoutEmpty: [Hardware.ReplayType]{
+            Hardware.ReplayType.allCases.compactMap{
+                switch $0 {
+                    case .none: return nil
+                    default: return $0
+                }
+            }
+        }
     }
     var id: String
     var envType: ReplayType = .none

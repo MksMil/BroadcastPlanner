@@ -196,7 +196,7 @@ extension SessionManager{
                                                                       password: password)
         if let user = Auth.auth().currentUser{
             do{
-                let result = try await user.reauthenticate(with: credential)
+                let _ = try await user.reauthenticate(with: credential)
                 
                 switch type {
                     case .email:

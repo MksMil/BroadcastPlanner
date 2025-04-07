@@ -20,7 +20,7 @@ struct SaveEditControlPanelView: View {
     var body: some View {
         HStack {
             RoundedRectangle(cornerRadius: 10)
-                .fill(.ultraThinMaterial)
+                .fill(.white.opacity(0.4))
                 .shadow(radius: 1)
                 .frame(width: 80, height: 45)
                 .overlay {
@@ -40,7 +40,7 @@ struct SaveEditControlPanelView: View {
                 }
             Spacer()
             RoundedRectangle(cornerRadius: 10)
-                .fill(.ultraThinMaterial)
+                .fill(.white.opacity(0.4))
                 .shadow(radius: 1)
                 .frame(width: 80, height: 45)
                 .overlay {

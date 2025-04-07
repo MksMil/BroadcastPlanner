@@ -24,6 +24,9 @@ extension Date {
         Calendar.current.compare(self, to: Date(), toGranularity: .hour) == .orderedDescending
     }
     
+    func compareDate(withDate newDate: Date) -> Bool{
+        Calendar.current.compare(self, to: newDate, toGranularity: .day) == .orderedSame
+    }
     
     func format(_ format: String) -> String {
         let formatter = DateFormatter()

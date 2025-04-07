@@ -23,7 +23,9 @@ struct LogoImageView: View {
     let cancelAction: ()->Void
     let accessAction: (LocalClub)->Void
     
-    init(club: LocalClub?,logoSize: Double = 100, cancelAction: @escaping () -> Void, accessAction: @escaping (LocalClub) -> Void) {
+    init(club: LocalClub?,logoSize: Double = 100,
+         cancelAction: @escaping () -> Void,
+         accessAction: @escaping (LocalClub) -> Void) {
         self.logoSize = logoSize
         self.cancelAction = cancelAction
         self.accessAction = accessAction
@@ -31,9 +33,6 @@ struct LogoImageView: View {
     }
     
     var body: some View {
-#if DEBUG
-        let _ = Self._printChanges()
-#endif
         vm.image
             .resizable()
             .scaledToFit()
@@ -41,7 +40,7 @@ struct LogoImageView: View {
             .padding(logoSize / 10)
             .clipShape(Circle())
             .background{
-                Circle().fill( .ultraThinMaterial.opacity(0.9))
+                Circle().fill(.ultraThinMaterial)
             }
             .overlay {
                 Circle().stroke(Color.white, lineWidth: 3)
@@ -62,7 +61,7 @@ struct LogoImageView: View {
                     vm.isSheetPresented.toggle()
                 }, addEditAction: {_ in })
 //                .padding()
-                .presentationBackground(.ultraThinMaterial)
+//                .presentationBackground(.white.opacity(0.4))
                 .presentationContentInteraction(.scrolls)
 //                .presentationDetents(
 //                    [.fraction(0.6),.fraction(0.65) ,.fraction(0.9), .fraction(1)],

@@ -21,7 +21,7 @@ struct CarUnitEnableCellView: View {
         }
         .padding()
         .background {
-            RoundedRectangle(cornerRadius: 5).fill(.ultraThinMaterial)
+            RoundedRectangle(cornerRadius: 5).fill(.white.opacity(0.4))
         }
     }
 }

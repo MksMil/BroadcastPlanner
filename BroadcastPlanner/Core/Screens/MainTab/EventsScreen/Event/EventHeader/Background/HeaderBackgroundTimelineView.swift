@@ -2,17 +2,11 @@ import Combine
 import SwiftUI
 
 struct HeaderBackgroundTimelineView: View {
-    @StateObject var vm: HeaderBackgroundTimelineViewModel
-    init(images: [Image] = []) {
-        self._vm = StateObject(
-            wrappedValue: HeaderBackgroundTimelineViewModel(
-                images: images))
-    }
-
+    let image: Image
     var body: some View {
-        vm.image
+        image
             .resizable()
-            .aspectRatio(1.5, contentMode: .fill)
+        //            .aspectRatio(1.5, contentMode: .fill)
             .mask {
                 Rectangle().fill(
                     LinearGradient(
@@ -29,18 +23,8 @@ struct HeaderBackgroundTimelineView: View {
                     )
                 )
             }
-            .animation(.smooth(duration: 2),
-                       value: vm.counter)
+                        .animation(.smooth(duration: 3),
+                                   value: image)
             .frame(maxWidth: .infinity)
-            .onDisappear{ vm.stop() }
-            .onReceive(DataManager.shared.updatePublisher) {
-                if $0.0 == .images {
-                    vm.updateImages()
-                }
-            }
     }
-}
-
-#Preview {
-    HeaderBackgroundTimelineView(images: [])
 }

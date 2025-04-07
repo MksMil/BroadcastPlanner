@@ -36,7 +36,7 @@ struct BPEventPlanPointImage: View {
 //                    .position(x: w / 2, y: h / 10)
                 
             }
-//            .background(RoundedRectangle(cornerRadius: 5).fill(.ultraThinMaterial)
+//            .background(RoundedRectangle(cornerRadius: 5).fill(.white.opacity(0.4))
 //                .overlay(content: {
 //                RoundedRectangle(cornerRadius: 5).stroke(.black, lineWidth: 1)
 //            })

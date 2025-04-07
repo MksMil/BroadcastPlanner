@@ -44,7 +44,7 @@ struct BPTextFieldWithIcon: View {
         }
         .frame(height: 30)
         .padding()
-        .background(.ultraThinMaterial)
+        .background(.white.opacity(0.4))
         .foregroundColor(.accentColor)
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .padding(.horizontal)

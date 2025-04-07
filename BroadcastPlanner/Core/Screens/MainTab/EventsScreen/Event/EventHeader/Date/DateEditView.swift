@@ -27,7 +27,7 @@ struct DateEditView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background {
                         RoundedRectangle(cornerRadius: 5).fill(
-                            .ultraThinMaterial
+                            .ultraThickMaterial
                         )
                         .overlay {
                             RoundedRectangle(cornerRadius: 5).stroke(

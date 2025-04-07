@@ -2,18 +2,14 @@ import Combine
 import SpriteKit
 import SwiftUI
 
+
 final class BPCreateEditEventViewModel: ObservableObject{
-    let event: LocalEvent
-    
     var homeClub: LocalClub?
     var guestClub: LocalClub?
     var eventDate: Date
     var location: LocalLocation?
-    var user: LocalUser
     
-    
-    init(event: LocalEvent, user: LocalUser) {
-        self.event = event
+    init(event: LocalEvent){
         if let club = event.homeClub{
             homeClub = club
         }
@@ -23,161 +19,103 @@ final class BPCreateEditEventViewModel: ObservableObject{
         if let location = event.location{
             self.location = location
         }
-        self.user = user
         self.eventDate = event.date ?? Date()
     }
-
-    @MainActor
-    func updateEvent(){
-        DataManager.shared.moc.perform { [weak self] in
-            guard let self else { return }
-            self.event.homeClub = self.homeClub
-            self.event.guestClub = self.guestClub
-            self.event.date = self.eventDate
-            self.event.location = self.location
-            self.event.addToOwners(user)
-            Task{
-                await DataManager.shared.saveContext(type: .main, publish: .events, id: [self.event.viewId])
-            }
-        }
-        Task{
-            await NetworkManager.shared.saveEvent(BPEvent.mapLocalEventToEvent(localEvent: event))
-        }
-    }
-    
-    @MainActor
-    func removeEvent(){
-        Task {
-            // TODO: handle in vm
-            await  NetworkManager.shared.removeEventWithId(event.viewId)
-            DataManager.shared.removeLocalEvent(
-                event,
-                inContext: .main)
-            await DataManager.shared.saveContext(
-                type: .main,
-                publish: .events,
-                id: [])
-        }
-    }
-    
 }
-
 
 struct BPCreateEditEventView: View {
     let logoSize: Double = 90
+    
+    @StateObject private var vm: BPCreateEditEventViewModel
+    
     @EnvironmentObject var eventRouter: EventTabRouter
-    @StateObject var editManager: BPEditStadiumViewModel = BPEditStadiumViewModel()
-    @StateObject var vm: BPCreateEditEventViewModel
-
+    @EnvironmentObject var mdm: MainDataManager
+    
     let event: LocalEvent
 
+    @State private var isRemoveConfirm: Bool = false
     
-    
-    init(event: LocalEvent,userId: String) {
-        self._vm = StateObject(wrappedValue: BPCreateEditEventViewModel(event: event, userId: userId))
+//    @FetchRequest<LocalUser>(sortDescriptors: []) private var users
+ 
+    init(event: LocalEvent) {
+        self._vm = StateObject(wrappedValue: BPCreateEditEventViewModel(event: event))
         self.event = event
     }
     
     var editable: Bool {
-        //        event.owners.contains { $0 == globalStorage.id }
-//        false
+//        event.viewOwners.contains(where: { $0.userId == mdm.currentId})
         true
     }
 
-    @FetchRequest<LocalUser>(sortDescriptors: []) private var users
-
     var body: some View {
-#if DEBUG
-        let _ = Self._printChanges()
-#endif
+
         ZStack {
             MainBackground()
 //            Color.randomColor()
 
             VStack(alignment: .center, spacing: 5) {
                 //header: time, date, teams, location
-                ZStack{
-                    LocationSelectionView(location: vm.location) {
-                        
-                    } acceptAction: { newLocation in
-                        vm.location = newLocation
-                    }
-
-
-                    VStack(alignment: .center, spacing: 5){
-                        //team logos section
-                        HStack(alignment: .top) {
-                            //home team logo/selection action
-                            LogoImageView(club: event.homeClub,
-                                          logoSize: logoSize,
-                                          cancelAction: {},
-                                          accessAction: { club in
-                                vm.homeClub = club
-                            })
+                VStack{
+                    ZStack{
+                        LocationSelectionView(location: vm.location, offset: logoSize) {
                             
-                            //event date section
-                            TimeAndDateSelectionView(date: vm.eventDate,
-                                                     logoSize: logoSize) {newDate in
-                                vm.eventDate = newDate
-                                print("now eventdate is \(vm.eventDate.formatted())")
-                            }
-                            //guest team logo/selection action
-                            LogoImageView(club: event.guestClub,
-                                          logoSize: logoSize,
-                                          cancelAction: {},
-                                          accessAction: { club in
-                                vm.guestClub = club
-                            })
-                            .background {
-//                                Color.randomColor()
-                            }
+                        } acceptAction: { newLocation in
+                            vm.location = newLocation
                         }
-                        .padding(.top)
-                        Spacer()
+                        
+                        
+                        VStack(spacing: 5){
+                            //team logos section
+                            HStack(alignment: .top) {
+                                //home team logo/selection action
+                                LogoImageView(club: event.homeClub,
+                                              logoSize: logoSize,
+                                              cancelAction: {},
+                                              accessAction: { club in
+                                    vm.homeClub = club
+                                })
+                                
+                                //event date section
+                                TimeAndDateSelectionView(date: vm.eventDate,
+                                                         logoSize: logoSize) {newDate in
+                                    vm.eventDate = newDate
+                                }
+                                //guest team logo/selection action
+                                LogoImageView(club: event.guestClub,
+                                              logoSize: logoSize,
+                                              cancelAction: {},
+                                              accessAction: { club in
+                                    vm.guestClub = club
+                                })
+                            }
+                            .padding(.top)
+                            Spacer()
+                        }
+                        .padding()
                     }
-                    .padding()
-            }
-
+                }
+                .frame(height: 300)
+                
                 //preview + fsc editStad / editCar  views
-                GeometryReader { geo in
-                    HStack(spacing: 15) {
-                        event.viewLocationPreview
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 3 * geo.size.width / 4)
-                            .onTapGesture {
-//                                type = .stadium
-                                eventRouter.routeToStadPointsEdit(event: event, editable: editable)
-                            }
-                        event.viewObvanPreview
-                            .resizable()
-                            .scaledToFit()
-                            .rotationEffect(Angle(degrees: -90))
-                            .onTapGesture {
-                                eventRouter.routeToCarPointsEdit()
-                            }
-                    }
-                    .frame(height: geo.size.width / 2)
-                    .padding(.horizontal)
+                HStack(spacing: 15) {
+                    event.viewLocationPreview
+                        .resizable()
+                        .scaledToFit()
+                        .onTapGesture {
+                            eventRouter.routeToStadPointsEdit(editable: editable)
+                        }
+                    event.viewObvanPreview
+                        .resizable()
+                        .scaledToFit()
+                        .scaleEffect(0.5)
+//                        .rotationEffect(Angle(degrees: -90))
+                        .onTapGesture {
+                            eventRouter.routeToCarPointsEdit(editable: editable)
+                        }
                 }
-
-                //staff list
-                //                    EventUsersGridView(users: users,
-                //                                       images: globalStorage.usersImages)
-                // TODO: (struct: Hashable, id: comb(name+num)) for the grid !?!
-                ScrollView {
-                    //                        SmartLayout(hSpacing: 5, vSpacing: 5){
-                    //                            ForEach(users){ user in
-                    ////                                if let image = listUsers[user]{
-                    ////                                    BPUserDataListCellView(text: user,
-                    ////                                                           image: image)
-                    ////                                } else {
-                    //                                BPUserDataListCellView(user: user, text: "text")
-                    ////                                }
-                    //                            }
-                    //                        }
-                }
-                .padding(.horizontal, 10)
+                .padding(.horizontal)
+//                .border(.red, width: 2)
+                
                 Spacer()
             }
         }
@@ -185,13 +123,17 @@ struct BPCreateEditEventView: View {
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(editable)
         .toolbarBackground(.visible, for: .navigationBar)
-        .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
+        .toolbarBackground(.white.opacity(0.4), for: .navigationBar)
         .toolbar {
             if editable {
                 //save event and dismiss screen
                 ToolbarItem(placement: .confirmationAction) {
                     Button {
-                        vm.updateEvent()
+                        mdm.updateEvent(event,
+                                        homeClub: vm.homeClub,
+                                        guestClub: vm.guestClub,
+                                        eventDate: vm.eventDate,
+                                        location: vm.location)
                         eventRouter.routeStepBack()
                     } label: {
                         Image(systemName: "checkmark.circle")
@@ -200,8 +142,7 @@ struct BPCreateEditEventView: View {
                 ToolbarItem(placement: .cancellationAction) {
                     // TODO: 'Delete' Confirmation (Alert?)
                     Button {
-                        vm.removeEvent()
-                        eventRouter.routeStepBack()
+                        isRemoveConfirm = true
                     } label: {
                         Image(systemName: "trash")
                     }
@@ -219,22 +160,24 @@ struct BPCreateEditEventView: View {
                 }
             }
         }
-        .task {
-            editManager.configureWith(event: event)
+        .navigationBarBackButtonHidden()
+        .confirmationDialog("", isPresented: $isRemoveConfirm) {
+            Button("Delete Event", role: .destructive){
+                mdm.removeEvent(event: event)
+                eventRouter.routeStepBack()
+            }
         }
-        
-        .environmentObject(editManager)
     }
 }
 
 #Preview {
     let mdm = MainDataManager(localDataManager: DataManager(), globalDataManager: NetworkManager(),userId: "123")
-   NavigationStack {
-        BPCreateEditEventView(
-            event: mdm.localDataManager.fetchOrCreateEventWithId("123", inContext: .main), userId: "123")
-    }
-    .environmentObject(SessionManager())
-    .environmentObject(GlobalSettings())
-    .environmentObject(EventTabRouter())
-    .environment(\.managedObjectContext, mdm.localDataManager.moc)
+    
+    
+    return BPCreateEditEventView(event: mdm.localDataManager.fetchOrCreateEventWithId("123", inContext: .main))
+        .environmentObject(SessionManager())
+        .environmentObject(GlobalSettings())
+        .environmentObject(EventTabRouter())
+        .environment(\.managedObjectContext, mdm.localDataManager.moc)
+        .environmentObject(mdm)
 }

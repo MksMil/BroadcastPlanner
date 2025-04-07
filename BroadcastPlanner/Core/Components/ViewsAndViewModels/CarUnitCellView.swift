@@ -59,7 +59,7 @@ struct CarUnitCellView: View {
         }
         .padding(4)
         .background {
-            RoundedRectangle(cornerRadius: 15).fill(.ultraThinMaterial)
+            RoundedRectangle(cornerRadius: 15).fill(.white.opacity(0.4))
         }
     }
     

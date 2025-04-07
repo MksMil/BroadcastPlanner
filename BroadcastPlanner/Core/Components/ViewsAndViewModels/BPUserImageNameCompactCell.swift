@@ -3,15 +3,18 @@ import SwiftUI
 struct PanelUserCollectionView: View {
     
     let users: [LocalUser]
+    let availableUsers: [LocalUser]
     let addAction: (LocalUser)->()
     let removeAction: (LocalUser)->()
+    
     
     @State private var isSelect: Bool = false
     @State private var isConfirm: Bool = false
     @State private var userToRemove: LocalUser?
     
-    init(users: [LocalUser],addAction: @escaping (LocalUser)->(), removeAction: @escaping (LocalUser)->()) {
+    init(users: [LocalUser],availableUsers: [LocalUser],addAction: @escaping (LocalUser)->(), removeAction: @escaping (LocalUser)->()) {
         self.users = users
+        self.availableUsers = availableUsers
         self.addAction = addAction
         self.removeAction = removeAction
     }
@@ -27,7 +30,7 @@ struct PanelUserCollectionView: View {
                         .scaledToFit()
                         .padding(5)
                         .background {
-                            Circle().fill(.ultraThinMaterial)
+                            Circle().fill(.white.opacity(0.4))
                         }
                         .padding(3)
                     Divider()
@@ -42,7 +45,7 @@ struct PanelUserCollectionView: View {
                 }
                 .frame(maxWidth: .infinity)
                 .frame(height: 40)
-                .background(.ultraThinMaterial)
+                .background(.white.opacity(0.4))
                 .overlay {
                     RoundedRectangle(cornerRadius: 5).stroke(.ultraThickMaterial, lineWidth: 2)
                 }
@@ -59,7 +62,7 @@ struct PanelUserCollectionView: View {
        }
         .sheet(isPresented: $isSelect) {
             SmartLayout(hSpacing: 5, vSpacing: 5){
-                ForEach(users){ user in
+                ForEach(availableUsers){ user in
                     //user cell
                     Text("\(user.userFirstName) \(user.userLastName)")
                         .onTapGesture {
@@ -71,7 +74,7 @@ struct PanelUserCollectionView: View {
             }
             .scrollContentBackground(.hidden)
             .listStyle(.inset)
-            .presentationBackground(.ultraThinMaterial)
+            .presentationBackground(.white.opacity(0.4))
             .presentationDetents([.fraction(0.5)])
         }
         .confirmationDialog("", isPresented: $isConfirm) {
@@ -88,28 +91,31 @@ struct BPUserImageNameCompactCell: View {
     
     let user: LocalUser
     let action: ()->Void
+    @State private var isShowInfo: Bool = false
     
     var body: some View {
         HStack(spacing: 0){
-            
-            user.userImage
-                .resizable()
-                .scaledToFit()
-                .frame(width: 20)
-                .padding(5)
-                .background {
-                    Circle().fill(.ultraThinMaterial)
-                }
-                .padding(3)
-            Divider()
-                .padding(.vertical,3)
-            
-            Text(user.userCompactName)
-                .font(.system(size: 14))
-                .lineLimit(1)
-                .minimumScaleFactor(0.2)
-                .padding(.horizontal,5)
+            Section{
+                user.userImage
+                    .resizable()
+                    .scaledToFit()
+                    .clipShape(Circle())
+                    .frame(width: 36)
+                    .padding(3)
+                Divider()
+                    .padding(.vertical,3)
+                
+                Text(user.userCompactName)
+                    .font(.system(size: 14))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.2)
+                    .padding(.horizontal,5)
             Spacer()
+            }
+            .onTapGesture {
+                print("show info")
+                isShowInfo.toggle()
+            }
             Image(systemName: "trash")
                 .resizable()
                 .scaledToFit()
@@ -129,6 +135,9 @@ struct BPUserImageNameCompactCell: View {
             RoundedRectangle(cornerRadius: 5).stroke(.ultraThickMaterial, lineWidth: 2)
         }
         .padding(2)
+        .sheet(isPresented: $isShowInfo) {
+            BPUserProfileView(user: user)
+        }
     }
 }
 
@@ -147,6 +156,7 @@ struct BPPositionCompactCell: View {
 }
 
 struct PanelCameraCollectionView: View {
+    @EnvironmentObject var mdm: MainDataManager
     
     let cameras: [LocalCamera]
     let addAction: (LocalCamera)->()
@@ -174,7 +184,7 @@ struct PanelCameraCollectionView: View {
                         .scaledToFit()
                         .padding(5)
                         .background {
-                            Circle().fill(.ultraThinMaterial)
+                            Circle().fill(.white.opacity(0.4))
                         }
                         .padding(3)
                     Divider()
@@ -188,7 +198,7 @@ struct PanelCameraCollectionView: View {
                 }
                 .frame(maxWidth: .infinity)
                 .frame(height: 40)
-                .background(.ultraThinMaterial)
+                .background(.white.opacity(0.4))
                 .overlay {
                     RoundedRectangle(cornerRadius: 5).stroke(.ultraThickMaterial, lineWidth: 2)
                 }
@@ -207,7 +217,7 @@ struct PanelCameraCollectionView: View {
                 ForEach(Camera.OpticType.allCases){ cam in
                     Text(cam.rawValue)
                         .onTapGesture {
-                            let newCamera = DataManager.shared.createOrUpdateCamera(Camera(id: UUID().uuidString, optic: cam), inContext: .main)
+                            let newCamera = mdm.localDataManager.createOrUpdateCamera(Camera(id: UUID().uuidString, optic: cam), inContext: .main)
                             addAction(newCamera)
                             isSelect = false
                         }
@@ -216,7 +226,7 @@ struct PanelCameraCollectionView: View {
             }
             .scrollContentBackground(.hidden)
             .listStyle(.inset)
-            .presentationBackground(.ultraThinMaterial)
+            .presentationBackground(.white.opacity(0.4))
             .presentationDetents([.fraction(0.8)])
         }
         .confirmationDialog("", isPresented: $isConfirm) {
@@ -242,7 +252,7 @@ struct BPCameraCompactCell: View {
                 .scaledToFit()
                 .padding(3)
                 .background {
-                    Circle().fill(.ultraThinMaterial)
+                    Circle().fill(.white.opacity(0.4))
                 }
                 .padding(3)
             Divider()
@@ -278,6 +288,8 @@ struct BPCameraCompactCell: View {
 }
 
 struct PanelSoundCollectionView: View {
+    @EnvironmentObject var mdm: MainDataManager
+    
     let sounds: [LocalSound]
     let addAction: (LocalSound)->()
     let removeAction: (LocalSound)->()
@@ -304,7 +316,7 @@ struct PanelSoundCollectionView: View {
                         .scaledToFit()
                         .padding(5)
                         .background {
-                            Circle().fill(.ultraThinMaterial)
+                            Circle().fill(.white.opacity(0.4))
                         }
                         .padding(3)
                     Divider()
@@ -319,7 +331,7 @@ struct PanelSoundCollectionView: View {
                 }
                 .frame(maxWidth: .infinity)
                 .frame(height: 40)
-                .background(.ultraThinMaterial)
+                .background(.white.opacity(0.4))
                 .overlay {
                     RoundedRectangle(cornerRadius: 5).stroke(.ultraThickMaterial, lineWidth: 2)
                 }
@@ -338,7 +350,7 @@ struct PanelSoundCollectionView: View {
                 ForEach(Sound.PlaceType.allCases){ placeType in
                     Text(placeType.rawValue)
                         .onTapGesture {
-                            let newSound = DataManager.shared.createOrUpdateSound(Sound(id: UUID().uuidString, windDefence: .none, placeType: placeType), inContext: .main)
+                            let newSound = mdm.localDataManager.createOrUpdateSound(Sound(id: UUID().uuidString, windDefence: .none, placeType: placeType), inContext: .main)
                             addAction(newSound)
                             isSelect = false
                         }
@@ -347,7 +359,7 @@ struct PanelSoundCollectionView: View {
             }
             .scrollContentBackground(.hidden)
             .listStyle(.inset)
-            .presentationBackground(.ultraThinMaterial)
+            .presentationBackground(.white.opacity(0.4))
             .presentationDetents([.fraction(0.5)])
         }
         .confirmationDialog("", isPresented: $isConfirm) {
@@ -373,7 +385,7 @@ struct BPSoundCompactCell: View {
                 .scaledToFit()
                 .padding(3)
                 .background {
-                    Circle().fill(.ultraThinMaterial)
+                    Circle().fill(.white.opacity(0.4))
                 }
                 .padding(3)
             Divider()
@@ -416,6 +428,8 @@ struct BPSoundCompactCell: View {
 
 
 struct PanelLightCollectionView: View {
+    @EnvironmentObject var mdm: MainDataManager
+    
     let lights: [LocalLight]
     let addAction: (LocalLight)->()
     let removeAction: (LocalLight)->()
@@ -424,7 +438,9 @@ struct PanelLightCollectionView: View {
     @State private var isConfirm: Bool = false
     @State private var lightToRemove: LocalLight?
     
-    init(lights: [LocalLight],addAction: @escaping (LocalLight)->(), removeAction: @escaping (LocalLight)->()) {
+    init(lights: [LocalLight],
+         addAction: @escaping (LocalLight)->(),
+         removeAction: @escaping (LocalLight)->()) {
         self.lights = lights
         self.addAction = addAction
         self.removeAction = removeAction
@@ -442,7 +458,7 @@ struct PanelLightCollectionView: View {
                         .scaledToFit()
                         .padding(5)
                         .background {
-                            Circle().fill(.ultraThinMaterial)
+                            Circle().fill(.white.opacity(0.4))
                         }
                         .padding(3)
                     Divider()
@@ -457,7 +473,7 @@ struct PanelLightCollectionView: View {
                 }
                 .frame(maxWidth: .infinity)
                 .frame(height: 40)
-                .background(.ultraThinMaterial)
+                .background(.white.opacity(0.4))
                 .overlay {
                     RoundedRectangle(cornerRadius: 5).stroke(.ultraThickMaterial, lineWidth: 2)
                 }
@@ -476,7 +492,7 @@ struct PanelLightCollectionView: View {
                 ForEach(Light.LightType.allCases){ light in
                     Text(light.rawValue)
                         .onTapGesture {
-                            let newLight = DataManager.shared.createOrUpdateLocalLightWithLight(Light(id: UUID().uuidString, lightType: light), inContext: .main)
+                            let newLight = mdm.localDataManager.createOrUpdateLocalLightWithLight(Light(id: UUID().uuidString, lightType: light), inContext: .main)
                             addAction(newLight)
                             isSelect = false
                         }
@@ -485,7 +501,7 @@ struct PanelLightCollectionView: View {
             }
             .scrollContentBackground(.hidden)
             .listStyle(.inset)
-            .presentationBackground(.ultraThinMaterial)
+            .presentationBackground(.white.opacity(0.4))
             .presentationDetents([.fraction(0.3)])
         }
         .confirmationDialog("", isPresented: $isConfirm) {
@@ -511,7 +527,7 @@ struct BPLightCompactCell: View {
                 .scaledToFit()
                 .padding(3)
                 .background {
-                    Circle().fill(.ultraThinMaterial)
+                    Circle().fill(.white.opacity(0.4))
                 }
                 .padding(3)
             Divider()
@@ -557,7 +573,7 @@ struct BPEnvCompactCell: View {
                 .scaledToFit()
                 .padding(3)
                 .background {
-                    Circle().fill(.ultraThinMaterial)
+                    Circle().fill(.white.opacity(0.4))
                 }
                 .padding(3)
             Divider()
@@ -600,9 +616,8 @@ struct BPEnvCompactCell: View {
 #Preview {
     let mdm = MainDataManager(localDataManager: DataManager(), globalDataManager: NetworkManager(),userId: "123")
     
-    BPEditStadiumView(event: mdm.localDataManager.fetchOrCreateEventWithId("123", inContext: .main) , editable: true)
-    .environmentObject(BPEditStadiumViewModel())
-    .environmentObject(mdm)
+   return BPEditStadiumView(event: mdm.localDataManager.fetchOrCreateEventWithId("123", inContext: .main) , editable: true)
+        .environmentObject(mdm)
 }
 
 //#Preview {

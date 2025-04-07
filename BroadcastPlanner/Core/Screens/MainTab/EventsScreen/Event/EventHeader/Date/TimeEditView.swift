@@ -19,7 +19,7 @@ struct TimeEditView: View {
                     .bold()
                     .frame(maxWidth: .infinity,maxHeight: .infinity)
                     .background {
-                        RoundedRectangle(cornerRadius: 5).fill(.ultraThinMaterial)
+                        RoundedRectangle(cornerRadius: 5).fill(.ultraThickMaterial)
                             .overlay {
                                 RoundedRectangle(cornerRadius: 5).stroke(Color.black,
                                                                          lineWidth: 1)
@@ -43,7 +43,7 @@ struct TimeEditView: View {
                             .id(num)
                             .padding()
                             .background {
-                                RoundedRectangle(cornerRadius: 5).fill(.ultraThinMaterial)
+                                RoundedRectangle(cornerRadius: 5).fill(.white.opacity(0.4))
                                     .overlay {
                                         RoundedRectangle(cornerRadius: 5)
                                             .stroke(.black.opacity(0.4), lineWidth: 1)

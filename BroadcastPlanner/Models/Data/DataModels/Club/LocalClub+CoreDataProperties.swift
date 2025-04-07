@@ -55,7 +55,7 @@ extension LocalClub {
 
 extension LocalClub : Identifiable {
     var viewId: String {
-        id ?? "N/A"
+        id ?? ""
     }
     var viewContacts: String {
         contacts ?? ""

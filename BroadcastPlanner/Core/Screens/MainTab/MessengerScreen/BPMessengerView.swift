@@ -89,7 +89,7 @@ struct TF: View{
         TextField("sfdsfsdfds", text: $message, axis: .vertical)
             .padding()
             .background {
-                RoundedRectangle(cornerRadius: 8).fill(.ultraThinMaterial)
+                RoundedRectangle(cornerRadius: 8).fill(.white.opacity(0.4))
             }
             .padding(.horizontal)
     }

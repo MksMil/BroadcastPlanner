@@ -1,8 +1,10 @@
 import SwiftUI
 
 struct BPEditEventJoystickInfoPanel: View {
+    @EnvironmentObject var mdm: MainDataManager
     @EnvironmentObject var vm: BPEditStadiumViewModel
-    @FetchRequest<LocalLocationPoint>(sortDescriptors: []) var points
+//    @FetchRequest<LocalLocationPoint>(sortDescriptors: []) var points
+    
     var body: some View {
         HStack(alignment: .top){
             // TODO: More useful customize
@@ -13,12 +15,15 @@ struct BPEditEventJoystickInfoPanel: View {
                         .layoutPriority(1)
                 } else {
                     SmartLayout(hSpacing: 3, vSpacing: 3){
-                        ForEach(points.sorted(by: {$0.viewNumber < $1.viewNumber})){ point in
-                            Circle().fill( vm.selectedEventPoint?.viewId == point.viewId ?  .red:.gray)
-                                .frame(width: 40, height: 40)
-                                .overlay {
-                                    Text("\(point.viewNumber)")
-                                }
+                        ForEach(vm.filteredLocationPoints.sorted(by: {$0.viewNumber < $1.viewNumber})){ point in
+                            PointPanelCell(size: 45,
+                                           state: vm.stateForPoint(point),
+                                           number: point.viewNumber,
+                                           isCamera: !point.viewLocalCameras.isEmpty,
+                                           isSound: !point.viewLocalSounds.isEmpty,
+                                           isLight: !point.viewLocalLights.isEmpty,
+                                           isUser: !point.viewUsers.isEmpty,
+                                           selectedPoint: $vm.selectedEventPoint)
                                 .onTapGesture {
                                     withAnimation{
                                         if vm.selectedEventPoint == point{
@@ -52,10 +57,12 @@ struct BPEditEventJoystickInfoPanel: View {
                 .aspectRatio(1, contentMode: .fit)
                 .padding(5)
                 .overlay {
-                    RoundedRectangle(cornerRadius: 5).stroke(.ultraThinMaterial, lineWidth: 2)
+                    RoundedRectangle(cornerRadius: 5).stroke(.white.opacity(0.4), lineWidth: 2)
                 }
                 // Task managment
                 TaskDescriptionView(text: vm.selectedEventPoint?.viewTask ?? "", isEditMode: vm.isEdit)
+                    .disabled(vm.selectedEventPoint == nil)
+                    .opacity(vm.selectedEventPoint == nil ? 0.6 : 1)
                 
             }
             .padding(5)
@@ -68,9 +75,8 @@ struct BPEditEventJoystickInfoPanel: View {
 #Preview {
     let mdm = MainDataManager(localDataManager: DataManager(), globalDataManager: NetworkManager(),userId: "123")
     
-    BPEditStadiumView(event: mdm.localDataManager.fetchOrCreateEventWithId("123", inContext: .main) , editable: true)
-    .environmentObject(BPEditStadiumViewModel())
-    .environmentObject(mdm)
+   return BPEditStadiumView(event: mdm.localDataManager.fetchOrCreateEventWithId("123", inContext: .main), editable: true)
+        .environmentObject(mdm)
 }
 
 //#Preview {

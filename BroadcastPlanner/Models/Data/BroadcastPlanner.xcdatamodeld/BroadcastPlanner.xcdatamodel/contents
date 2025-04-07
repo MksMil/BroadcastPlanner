@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23605" systemVersion="24C101" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23605" systemVersion="24D60" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="LocalBroadcaster" representedClassName=".LocalBroadcaster" syncable="YES">
         <attribute name="id" optional="YES" attributeType="String"/>
         <attribute name="title" optional="YES" attributeType="String"/>
@@ -99,6 +99,7 @@
         <attribute name="position" optional="YES" attributeType="String"/>
         <attribute name="rotation" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="scaleFactor" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="task" optional="YES" attributeType="String"/>
         <relationship name="event" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalEvent" inverseName="obVanUnits" inverseEntity="LocalEvent"/>
         <relationship name="hardware" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalHardware" inverseName="obVanUnit" inverseEntity="LocalHardware"/>
         <relationship name="user" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalUser" inverseName="obVanUnits" inverseEntity="LocalUser"/>
@@ -108,6 +109,25 @@
         <attribute name="placeType" optional="YES" attributeType="String"/>
         <attribute name="windDefence" optional="YES" attributeType="String"/>
         <relationship name="point" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalLocationPoint" inverseName="sounds" inverseEntity="LocalLocationPoint"/>
+    </entity>
+    <entity name="LocalTemplate" representedClassName=".LocalTemplate" syncable="YES">
+        <attribute name="id" optional="YES" attributeType="String"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <relationship name="templatePoints" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LocalTemplatePoint" inverseName="parentTemplate" inverseEntity="LocalTemplatePoint"/>
+    </entity>
+    <entity name="LocalTemplatePoint" representedClassName=".LocalTemplatePoint" syncable="YES">
+        <attribute name="cameras" optional="YES" attributeType="String"/>
+        <attribute name="coordinateX" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="coordinateY" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="id" optional="YES" attributeType="String"/>
+        <attribute name="lights" optional="YES" attributeType="String"/>
+        <attribute name="number" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="pointDescription" optional="YES" attributeType="String"/>
+        <attribute name="rotation" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="scaleFactor" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="sounds" optional="YES" attributeType="String"/>
+        <attribute name="task" optional="YES" attributeType="String"/>
+        <relationship name="parentTemplate" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalTemplate" inverseName="templatePoints" inverseEntity="LocalTemplate"/>
     </entity>
     <entity name="LocalUser" representedClassName=".LocalUser" syncable="YES">
         <attribute name="creationDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>

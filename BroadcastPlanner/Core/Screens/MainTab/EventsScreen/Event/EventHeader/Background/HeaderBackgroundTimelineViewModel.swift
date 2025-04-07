@@ -1,24 +1,23 @@
 import Combine
 import SwiftUI
 
+@MainActor
 final class HeaderBackgroundTimelineViewModel: ObservableObject {
-    var images: [Image]
+    var images: [Image] = []
     var maxCount: Int { images.count}
     
-    @Published var image: Image
+    @Published var image: Image = Image("neitral")
     @Published var counter: Int = 0
     
-    let timer = Timer.publish(every: 8, on: .main, in: .common)
+    let timer = Timer.publish(every: 2, on: .main, in: .common)
     var timerCancellable: Cancellable?
 
     private var cancellables: Set<AnyCancellable> = []
 
-    init(images: [Image]) {
-        
-        self.images = images
-        self.image = images.first ?? Image("neitral")
-        updateImages()
+    init(){
+        print("vm init")
     }
+
     func start(){
         counter = 0
         configurePublisher()
@@ -46,13 +45,16 @@ final class HeaderBackgroundTimelineViewModel: ObservableObject {
         (counter < maxCount - 1) ? (counter += 1):(counter = 0)
     }
     
-    func updateImages(){
+    func updateImages(newImages: [Image]){
+        print("in update images block \(images)")
+        
         stop()
+        images = newImages
         counter = 0
         if images.isEmpty{
             images = [Image("neitral")]
         }
-        self.image = images.first!
+        self.image = images[counter]
         if images.count > 1 { start() }
     }
 }

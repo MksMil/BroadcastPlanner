@@ -2,7 +2,7 @@
 //  LocalObvanUnit+CoreDataClass.swift
 //  BroadcastPlanner
 //
-//  Created by Миляев Максим on 23.12.2024.
+//  Created by Миляев Максим on 05.02.2025.
 //
 //
 

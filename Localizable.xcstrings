@@ -4,6 +4,12 @@
     "" : {
 
     },
+    "---" : {
+
+    },
+    "?" : {
+
+    },
     "%@" : {
 
     },
@@ -17,25 +23,13 @@
         }
       }
     },
-    "%lld" : {
-
-    },
-    "♠️" : {
-
-    },
-    "♣️" : {
-
-    },
-    "♥️" : {
-
-    },
-    "♦️" : {
-
-    },
     "1" : {
 
     },
     "10:30 AM" : {
+
+    },
+    "Accept" : {
 
     },
     "ADD" : {
@@ -65,13 +59,19 @@
     "Add mic" : {
 
     },
+    "Add new template" : {
+
+    },
+    "Add new unit" : {
+
+    },
+    "Add Unit form here" : {
+
+    },
     "Add user" : {
 
     },
     "BP" : {
-
-    },
-    "ButtonName" : {
 
     },
     "Cancel" : {
@@ -101,6 +101,12 @@
     "Delete account" : {
 
     },
+    "Delete Event" : {
+
+    },
+    "Discard all changes and step back?" : {
+
+    },
     "Done" : {
 
     },
@@ -117,6 +123,9 @@
 
     },
     "email: %@" : {
+
+    },
+    "empty" : {
 
     },
     "enter address" : {
@@ -185,12 +194,6 @@
     "Not Registered?   Sign Up!" : {
 
     },
-    "Offline" : {
-
-    },
-    "Online" : {
-
-    },
     "password: %@" : {
 
     },
@@ -212,7 +215,7 @@
     "Private Info" : {
 
     },
-    "regularMaterial" : {
+    "Remove %@ template!" : {
 
     },
     "Remove Background Template" : {
@@ -239,13 +242,13 @@
     "Remove user" : {
 
     },
+    "Replay Hardware" : {
+
+    },
     "Save" : {
 
     },
     "SAVE" : {
-
-    },
-    "select" : {
 
     },
     "Send" : {
@@ -278,16 +281,7 @@
     "Task" : {
 
     },
-    "thickMaterial" : {
-
-    },
-    "thinMaterial" : {
-
-    },
-    "ultraThickMaterial" : {
-
-    },
-    "ultraThinMaterial" : {
+    "template title" : {
 
     },
     "Update %@" : {

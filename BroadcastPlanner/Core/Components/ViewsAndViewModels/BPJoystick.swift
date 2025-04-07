@@ -156,7 +156,7 @@ struct BPJoystick: View {
                 )
             
         }
-        .foregroundStyle(.ultraThinMaterial)
+        .foregroundStyle(.white.opacity(0.4))
         .onChange(of: upGest, perform: { value in
             if value {
                 timer = Timer(timeInterval: 0.1, repeats: true

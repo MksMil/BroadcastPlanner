@@ -43,7 +43,6 @@ struct AddEditLocation: View {
                     },
                     acceptAction: {
                         Task {
-//                            await vm.updateLocation()
                             //update location with fotos
                             acceptAction(vm.title,vm.address,vm.newImages,vm.locationBackground)
                         }
@@ -56,7 +55,7 @@ struct AddEditLocation: View {
                                 isRemoveLocationDialog.toggle()
                             }
                             .fontWeight(.light)
-                            .foregroundStyle(.black, .gray)
+                            .foregroundStyle(.black, .white)
                     }
                 )
                 .padding(.top, 10)
@@ -81,11 +80,11 @@ struct AddEditLocation: View {
                         .padding(.horizontal)
                         .textFieldStyle(.roundedBorder)
                         .autocorrectionDisabled(true)
+                   
                     Divider()
-                    //                    .padding(.vertical)
-                    //location photos collection
                     
-                    RoundedRectangle(cornerRadius: 5).fill(.gray.opacity(0.3))
+                    //location photos collection
+                    RoundedRectangle(cornerRadius: 5).fill(.white.opacity(0.3))
                         .frame(height: lenght + 10)
                         .overlay {
                             ScrollView(.horizontal) {
@@ -123,11 +122,13 @@ struct AddEditLocation: View {
                             .padding(5)
                             .padding(.horizontal, 10)
                             .background {
-                                Capsule().fill(.gray.opacity(0.7))
+                                Capsule().fill(.white.opacity(0.7))
                             }
                     }
                     .padding(.vertical, 10)
+                    
                     Divider()
+                    
                     //event background representation
                     vm.locationBackgroundPreview
                         .resizable()
@@ -137,7 +138,7 @@ struct AddEditLocation: View {
                         .padding()
                         .background {
                             RoundedRectangle(cornerRadius: 5).fill(
-                                .gray.opacity(0.2))
+                                .white.opacity(0.2))
                         }
                         .onTapGesture {
                             isBackSheetShowed.toggle()
@@ -146,7 +147,7 @@ struct AddEditLocation: View {
                         .padding(5)
                         .padding(.horizontal, 10)
                         .background {
-                            Capsule().fill(.gray.opacity(0.7))
+                            Capsule().fill(.white.opacity(0.7))
                         }
                         .onTapGesture {
                             isBackSheetShowed.toggle()
@@ -171,7 +172,6 @@ struct AddEditLocation: View {
                             vm.locationBackground = localImage
                             isBackSheetShowed.toggle()
                         }
-                        
                     }
                 )
                 //background photo remove confirmation dialog
@@ -186,12 +186,7 @@ struct AddEditLocation: View {
                                 vm.localImages.removeAll {
                                     $0 == localImageToRemove
                                 }
-                                DataManager.shared.removeLocalImage(
-                                    localImageToRemove, inContext: .main)
-                                Task {
-                                    await DataManager.shared.saveContext(
-                                        type: .main, publish: .none, id: [])
-                                }
+                                mdm.removeImage(selectedImage: localImageToRemove)
                             } else if let index = vm.indexSetToRemove {
                                 vm.removeElementAtIndex(index)
                             }
@@ -205,15 +200,8 @@ struct AddEditLocation: View {
                 ) {
                     Button("Remove Location", role: .destructive) {
                         // Handle empty trash action.
-                        
-                        Task {
-                            await NetworkManager.shared.removeLocationWithId(location.viewId)
-                            DataManager.shared.removeLocalLocation(
-                                location, inContext: .main)
-                            await DataManager.shared.saveContext(
-                                type: .main, publish: .locations, id: [])
-                            removeAction()
-                        }
+                        mdm.removeLocation(location)
+                        removeAction()
                     }
                 }
             }
@@ -222,46 +210,5 @@ struct AddEditLocation: View {
     }
 }
 
-//#Preview {
-//    AddEditLocation(
-//        location: DataManager.shared.fetchOrCreateLocationWithId(
-//            "123", inContext: .main), cancelAction: {}, acceptAction: {},
-//        removeAction: {}
-//    )
-//    .environment(\.managedObjectContext, DataManager.shared.moc)
-//}
 
-struct LocationPreview: View {
 
-    let image: Image
-    let removeAction: () -> Void
-
-    var body: some View {
-        ZStack(alignment: .topTrailing) {
-            image
-                .resizable()
-                .scaledToFill()
-                .clipShape(RoundedRectangle(cornerRadius: 5))
-                .overlay {
-                    RoundedRectangle(cornerRadius: 5).stroke(
-                        .white, lineWidth: 2)
-                }
-            Image(systemName: "xmark")
-                .resizable()
-                .frame(width: 8, height: 8)
-                .padding(3)
-                .onTapGesture {
-                    //remove photo
-                    removeAction()
-                }
-                .foregroundStyle(.white)
-                .background {
-                    Circle().fill(.gray.opacity(0.7))
-                        .overlay {
-                            Circle().stroke(.white, lineWidth: 1)
-                        }
-                }
-                .padding(3)
-        }
-    }
-}

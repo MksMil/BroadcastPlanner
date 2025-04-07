@@ -40,7 +40,7 @@ struct BPUserDataListCellView: View {
 //        .frame(maxWidth: .infinity)
         .padding(.horizontal,8)
         .padding(.vertical,4)
-        .background(.ultraThinMaterial)
+        .background(.white.opacity(0.4))
         .clipShape(RoundedRectangle(cornerRadius: 20))
     }
     

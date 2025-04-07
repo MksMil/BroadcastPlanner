@@ -2,7 +2,7 @@ import SwiftUI
 import Combine
 
 struct MainEventListCell: View {
-    
+    @EnvironmentObject var mdm : MainDataManager
     let event: LocalEvent
     
     @StateObject var vm: MainEventListCellViewModel
@@ -19,8 +19,6 @@ struct MainEventListCell: View {
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                     .overlay {
                         HStack{
-                            
-
                             VStack{
                                 Spacer()
                                 Text("\(vm.firstDate)")
@@ -32,7 +30,7 @@ struct MainEventListCell: View {
                             .frame(width: geo.frame(in: .local).size.width / 3.5)
                             
                             Divider()
-                                .background(.ultraThinMaterial)
+                                .background(.white.opacity(0.4))
                             
                             VStack(spacing: 0){
                                 LogosCellImageView(homeImage: vm.homeImage,
@@ -45,7 +43,7 @@ struct MainEventListCell: View {
                             .padding(.vertical,2)
                             
                             Divider()
-                                .background(.ultraThinMaterial)
+                                .background(.white.opacity(0.4))
 
                             VStack(alignment: .leading){
                                 Text(vm.title)
@@ -64,18 +62,17 @@ struct MainEventListCell: View {
                         }
                         .overlay {
                             RoundedRectangle(cornerRadius: 8)
-                                .strokeBorder(.ultraThinMaterial, lineWidth: 2)
+                                .strokeBorder(.white.opacity(0.4), lineWidth: 2)
                         }
                     }
             }
             .foregroundStyle(Color.black)
         }
         .frame(height: 70)
-        .onReceive(DataManager.shared.updatePublisher) { value in
+        .onReceive(mdm.localDataManager.updatePublisher) { value in
             if value.0 == .events{
                 value.1.forEach { id in
                     if id == event.viewId{
-                        print("in update block")
                         vm.update()
                     }
                 }

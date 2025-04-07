@@ -10,23 +10,25 @@ struct RootView: View {
     @StateObject var globalDataManager = NetworkManager()
 
     @State var isStarted: Bool = false
-
     var body: some View {
-        ZStack {
-            if appState.state == .notAuthorized {
-                AuthenticationScreen()
-            } else {
-                Home(localDataManager: localDataManager,
-                     globalDataManager: globalDataManager,
-                     userId: sessionManager.sessionUser?.id)
+            ZStack {
+                if appState.state == .authorized,
+                   let id = sessionManager.sessionUser?.id {
+                    Home(localDataManager: localDataManager,
+                         globalDataManager: globalDataManager,
+                         userId: id)
+                    .environmentObject(appState)
+                    .environmentObject(globalSettings)
+                    .environmentObject(sessionManager)
+                            } else {
+                                AuthenticationScreen()
+                            }
+                MainBackground()
+                    .opacity(isStarted ? 0 : 1)
+                AnimatedStart()
+                    .opacity(isStarted ? 0 : 1)
+                    .scaleEffect(isStarted ? 0 : 1)
             }
-            MainBackground()
-                .opacity(isStarted ? 0 : 1)
-            AnimatedStart()
-                .opacity(isStarted ? 0 : 1)
-                .scaleEffect(isStarted ? 0 : 1)
-        }
-        
         .onAppear {
             Task {
                 await sessionManager.getUserSession()

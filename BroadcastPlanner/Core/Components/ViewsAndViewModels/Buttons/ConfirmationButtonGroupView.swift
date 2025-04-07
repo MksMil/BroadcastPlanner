@@ -63,10 +63,10 @@ struct ConfirmationButtonGroupView<T: View>: View {
 
                     .background {
                         RoundedRectangle(cornerRadius: 5)
-                            .fill(.ultraThinMaterial)//isAcceptDisabled ? .ultraThinMaterial.opacity(0.3) : .ultraThinMaterial.opacity(0.5))
+                            .fill(.white.opacity(0.4))//isAcceptDisabled ? .ultraThinMaterial.opacity(0.3) : .ultraThinMaterial.opacity(0.5))
                             .overlay {
                                 RoundedRectangle(cornerRadius: 5)
-                                    .stroke(.ultraThinMaterial,//isAcceptDisabled ?
+                                    .stroke(.white.opacity(0.4),//isAcceptDisabled ?
 //                                        .ultraThinMaterial.opacity(0.3) :.ultraThinMaterial.opacity(0.5),
                                             lineWidth: 2)
                             }

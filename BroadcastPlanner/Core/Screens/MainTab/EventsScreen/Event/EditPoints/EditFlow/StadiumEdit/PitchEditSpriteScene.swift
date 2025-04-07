@@ -46,11 +46,14 @@ class PitchEditSpriteScene: SKScene{
     //camera control for move and zoom
     var lastPanLocation: CGPoint?
     
-    
+    //data source
     var points: [LocalLocationPoint] = []
+    
+    //control
     var selectedPointNode: SKNode?
     var editedNode: SKNode?
     var bgNode: SKShapeNode?
+    var selectedPointNodeRotation = CGFloat.zero
     
     var pointNodes: [SKShapeNode] = []
     
@@ -106,37 +109,48 @@ class PitchEditSpriteScene: SKScene{
         if point.viewScaleFactor != 0 {
             setScale(point.viewScaleFactor, toNode: node)
         }
-        node.zRotation = point.viewRotation.radians
     }
     
     func assignTexturesInNode(_ node: SKShapeNode, withPoint point: LocalLocationPoint){
+        var rotation = CGFloat.zero
+        if node == selectedPointNode {
+            rotation = selectedPointNodeRotation
+        } else {
+            rotation = point.viewRotation.radians
+        }
         if !point.viewLocalCameras.isEmpty{
+            
             addSpriteWithName(camSpriteName,
                               andType: .camera,
                               toNode: node,
-                              toZone: .main)
+                              toZone: .main,
+                              rotation: rotation)
             if !point.viewLocalSounds.isEmpty{
                 addSpriteWithName(soundSpriteName,
                                   andType: .sound,
                                   toNode: node,
-                                  toZone: .rightDown)
+                                  toZone: .rightDown,
+                                  rotation: rotation)
             }
             if !point.viewLocalLights.isEmpty{
                 addSpriteWithName(lightSpriteName,
                                   andType: .light,
                                   toNode: node,
-                                  toZone: .rightUp)
+                                  toZone: .rightUp,
+                                  rotation: rotation)
             }
         } else if !point.viewLocalSounds.isEmpty {
             addSpriteWithName(soundSpriteName,
                               andType: .sound,
                               toNode: node,
-                              toZone: .main)
+                              toZone: .main,
+                              rotation: rotation)
         } else if !point.viewLocalLights.isEmpty{
             addSpriteWithName(lightSpriteName,
                               andType: .light,
                               toNode: node,
-                              toZone: .main)
+                              toZone: .main,
+                              rotation: rotation)
         }
     }
     
@@ -154,7 +168,7 @@ class PitchEditSpriteScene: SKScene{
         }
     }
     
-    func addSpriteWithName(_ name: String,andType type: NodeType,toNode node: SKShapeNode ,toZone zone: NodeZone){
+    func addSpriteWithName(_ name: String,andType type: NodeType,toNode node: SKShapeNode ,toZone zone: NodeZone, rotation: CGFloat){
         
         let texture = SKTexture(imageNamed: name)
         
@@ -170,6 +184,9 @@ class PitchEditSpriteScene: SKScene{
         }
         
         resultNode.zPosition = 2
+        if zone == .main{
+            resultNode.zRotation = rotation
+        }
         resultNode.isUserInteractionEnabled = false
         
         node.addChild(resultNode)
@@ -199,6 +216,7 @@ class PitchEditSpriteScene: SKScene{
         }
         
         resultNode.position = nodePosition
+        
         addNameToSpriteNode(resultNode, withZone: zone)
     }
     
@@ -228,11 +246,11 @@ class PitchEditSpriteScene: SKScene{
     }
     func updateData(){
         if let selectedPointNode{
-            let angle = (Angle(radians: selectedPointNode.zRotation).degrees.truncatingRemainder(dividingBy: 360)).rounded()
-            
+            var angle: Double = 0
+            angle = (Angle(radians: selectedPointNodeRotation).degrees.truncatingRemainder(dividingBy: 360)).rounded()
             pointDelegate?.updatePoint(x: selectedPointNode.position.x / size.width,
                                        y: selectedPointNode.position.y / size.height,
-                                       rotation: angle,
+                                       rotation: angle,//in degrees
                                        scaleFactor: selectedPointNode.xScale)
         }
     }
@@ -268,6 +286,7 @@ extension PitchEditSpriteScene{
                            point: point)
         pointNodes.append(pointNode)
         self.addChild(pointNode)
+        selectedPointNodeRotation = CGFloat.zero
         if select {
             self.select(point: point)
         }
@@ -284,6 +303,9 @@ extension PitchEditSpriteScene{
         if let node = node as? SKShapeNode,let name = node.name{
             selectedPointNode = node
             editedNode = selectedPointNode
+            if let name = node.name{
+                selectedPointNodeRotation = points.first(where: {$0.viewId == name})?.viewRotation.radians ?? 0
+            }
             pointDelegate?.selectPointWithId(name)
             addSelectionAnimationToNode(node: node)
         }
@@ -297,10 +319,11 @@ extension PitchEditSpriteScene{
             //selection animation
             selectedPointNode = node
             editedNode = selectedPointNode
+            selectedPointNodeRotation = point.viewRotation.radians
             addSelectionAnimationToNode(node: node)
         } else {
 #if DEBUG
-            print("not found")
+            print("PitchEditSpriteScene: not found node for selection")
 #endif
         }
     }
@@ -327,7 +350,6 @@ extension PitchEditSpriteScene{
  
     func saveSelectedPoint(){
         deselect()
-        updateData()
     }
 }
 
@@ -442,7 +464,6 @@ extension PitchEditSpriteScene{
             
             self.selectedPointNode?.position = optimalLocation
             sceneState = .movedPoint
-            //eventManager closure: point location = ...
         } else {
             sceneState = .movingCam
             let location = touch.location(in: view)
@@ -459,8 +480,8 @@ extension PitchEditSpriteScene{
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesEnded(touches, with: event)
         if sceneState == .movedPoint || sceneState == .touchingNewPoint{
-//            selectedPointNode?.zPosition -= 10
             updateData()
+            pointDelegate?.saveAction()
         } else if sceneState == .touchingSelectedPoint{
             deselect()
         } else if sceneState == .movingCam{
@@ -521,6 +542,7 @@ extension PitchEditSpriteScene{
            let name = selectedPointNode.name,
            let node = selectedPointNode.childNode(withName: name + NodeZone.main.rawValue){
             node.run(SKAction.rotate(byAngle: angle, duration: animationDuration))
+            selectedPointNodeRotation += angle
             updateData()
         }
     }
@@ -531,6 +553,7 @@ extension PitchEditSpriteScene{
            let name = selectedPointNode.name,
            let node = selectedPointNode.childNode(withName: name + NodeZone.main.rawValue){
             node.run(SKAction.rotate(byAngle: -angle, duration: animationDuration))
+            selectedPointNodeRotation -= angle
             updateData()
         }
     }
@@ -542,6 +565,7 @@ extension PitchEditSpriteScene{
            let node = selectedPointNode.childNode(withName: name + NodeZone.main.rawValue){
             let newScale = node.xScale * (-1)
             node.run(SKAction.scaleX(to: newScale, duration: animationDuration / 2))
+            updateData()
         }
     }
     
@@ -560,9 +584,7 @@ extension PitchEditSpriteScene{
                     
                     let tempSize = CGSize(width: selectedPointNode.frame.width * (1 + xValue - newXScale), height: selectedPointNode.frame.height * (1 + yValue - newYScale))
                     
-                    
                     let newPosition = optimalPositionForSize(tempSize, location: selectedPointNode.position)
-                    print("\(selectedPointNode.position), new: \(newPosition)")
 
                     selectedPointNode.run(SKAction.group([SKAction.scaleX(to: newXScale, y: newYScale, duration: animationDuration),SKAction.move(to: newPosition, duration: animationDuration)]))
                 }
@@ -578,6 +600,7 @@ extension PitchEditSpriteScene{
                     selectedPointNode.run(SKAction.group([SKAction.scaleX(to: newXScale, y: newYScale, duration: animationDuration),SKAction.move(to: newPosition, duration: animationDuration)]))
                 }
             }
+            updateData()
         }
     }
     
@@ -598,6 +621,7 @@ extension PitchEditSpriteScene{
                     selectedPointNode.run(SKAction.scaleX(to: newXScale, y: newYScale, duration: animationDuration))
                 }
             }
+            updateData()
         }
     }
     
@@ -669,7 +693,6 @@ extension SKNode{
 #Preview {
     let mdm = MainDataManager(localDataManager: DataManager(), globalDataManager: NetworkManager(),userId: "123")
     
-    BPEditStadiumView(event: mdm.localDataManager.fetchOrCreateEventWithId("123", inContext: .main) , editable: true)
-    .environmentObject(BPEditStadiumViewModel())
-    .environmentObject(mdm)
+    return BPEditStadiumView(event: mdm.localDataManager.fetchOrCreateEventWithId("123", inContext: .main), editable: true)
+        .environmentObject(mdm)
 }

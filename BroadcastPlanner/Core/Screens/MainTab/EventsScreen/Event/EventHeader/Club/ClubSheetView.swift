@@ -55,7 +55,7 @@ struct ClubSheetView: View {
                     .font(.title3)
                     .background {
                         RoundedRectangle(cornerRadius: 5)
-                            .fill(.ultraThinMaterial)
+                            .fill(.white.opacity(0.4))
                             .overlay {
                                 RoundedRectangle(cornerRadius: 5)
                                     .stroke(
@@ -135,11 +135,11 @@ struct ClubSheetView: View {
     }
 }
 
-#Preview {
-    ClubSheetView(
-        editMode: true,
-        cancelAction: {},
-        acceptAction: { _ in },
-        addEditAction: { _ in })
-    //    .environment(\.managedObjectContext, DataManager.shared.moc)
-}
+//#Preview {
+//    ClubSheetView(
+//        editMode: true,
+//        cancelAction: {},
+//        acceptAction: { _ in },
+//        addEditAction: { _ in })
+//    //    .environment(\.managedObjectContext, DataManager.shared.moc)
+//}

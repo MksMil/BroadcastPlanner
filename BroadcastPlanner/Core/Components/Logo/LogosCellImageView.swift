@@ -23,7 +23,7 @@ struct LogosCellImageView: View {
                 .padding(size / 10)
                 .clipShape(Circle())
                 .background{
-                    Circle().fill( .ultraThinMaterial.opacity(0.9))
+                    Circle().fill(.white.opacity(0.4))
                 }
                 .overlay {
                     Circle().stroke(Color.white, lineWidth: 3)
@@ -37,7 +37,7 @@ struct LogosCellImageView: View {
                 .padding(size / 10)
                 .clipShape(Circle())
                 .background{
-                    Circle().fill( .ultraThinMaterial.opacity(0.9))
+                    Circle().fill(.white.opacity(0.4))
                 }
                 .overlay {
                     Circle().stroke(Color.white, lineWidth: 3)

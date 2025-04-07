@@ -7,13 +7,11 @@ struct BPAccountInfoView: View {
     @EnvironmentObject var mdm: MainDataManager
     @StateObject var vm: PersonalScreenViewModel
 
-    @FetchRequest<LocalUser>(sortDescriptors: []) var localUser
-
     @State private var isEdit: Bool = false
     @State private var isEditSpecialization: Bool = false
 
-    init(id: String) {
-        self._vm = StateObject(wrappedValue: PersonalScreenViewModel(id: id))
+    init(user: LocalUser) {
+        self._vm = StateObject(wrappedValue: PersonalScreenViewModel(localUser: user))
     }
 
     var body: some View {
@@ -49,7 +47,7 @@ struct BPAccountInfoView: View {
                                     isEdit: isEdit,
                                     imageName: "",
                                     prompt: "first name",
-                                    axis: .vertical)
+                                    scaleFactor: 0.2)
 
                                 Divider()
 
@@ -58,7 +56,7 @@ struct BPAccountInfoView: View {
                                     isEdit: isEdit,
                                     imageName: "",
                                     prompt: "last name",
-                                    axis: .vertical)
+                                    scaleFactor: 0.2)
 
                                 Divider()
                             }
@@ -76,7 +74,7 @@ struct BPAccountInfoView: View {
                                     isEdit: isEdit,
                                     imageName: "phone.circle.fill",
                                     prompt: "phone number",
-                                    axis: .horizontal)
+                                    scaleFactor: 0.2)
 
                                 Divider()
 
@@ -85,7 +83,7 @@ struct BPAccountInfoView: View {
                                     isEdit: isEdit,
                                     imageName: "envelope.circle.fill",
                                     prompt: "E-mail",
-                                    axis: .horizontal)
+                                    scaleFactor: 0.2)
 
                                 Divider()
                                 UserInfoTextField(
@@ -93,7 +91,7 @@ struct BPAccountInfoView: View {
                                     isEdit: isEdit,
                                     imageName: "map.circle.fill",
                                     prompt: "Address",
-                                    axis: .vertical)
+                                    scaleFactor: 0.2)
                                 Divider()
                             }
                         }
@@ -128,10 +126,13 @@ struct BPAccountInfoView: View {
                             }
                         }
                         if !isEdit {
-                            Task{
-                                await vm.saveNewDataToLocalUser()
-                            }
-                            
+                            mdm.updateUserData(firstName: vm.firstName,
+                                               lastName: vm.lastName,
+                                               email: vm.email,
+                                               phoneNumber: vm.phoneNumber,
+                                               address: vm.address,
+                                               userSpecialization: vm.userSpecialization,
+                                               inputImage: vm.inputImage)
                         }
                     } label: {
                         Text(isEdit ? "Save" : "Edit")
@@ -142,10 +143,10 @@ struct BPAccountInfoView: View {
                 }
             }
             .toolbarBackground(.visible, for: .navigationBar)
-            .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
+            .toolbarBackground(.white.opacity(0.4), for: .navigationBar)
         }
         .onReceive(mdm.localDataManager.updatePublisher, perform: { value in
-            if value.0 == .users, value.1.contains(where: { $0 == vm.id
+            if value.0 == .users, value.1.contains(where: { $0 == mdm.currentId
             }){
                 vm.updateData()
             }
@@ -167,7 +168,7 @@ struct SpecializationSection: View {
                 selectedContent: $specialization,
                 isEdit: $isEditSpecialization
             ) {
-                RoundedRectangle(cornerRadius: 10.0).fill(.ultraThinMaterial)
+                RoundedRectangle(cornerRadius: 10.0).fill(.white.opacity(0.4))
                     .opacity(isEdit ? 0.5 : 0)
             } cellView: { text in
                 BPSpecializationCellView(text: text)
@@ -178,7 +179,7 @@ struct SpecializationSection: View {
                     .padding(.vertical, 4)
                     .background {
                         RoundedRectangle(cornerRadius: 10).fill(
-                            .ultraThinMaterial)
+                            .white.opacity(0.4))
                     }
             } promptView: {
                 Text("Tap to make choise of specialization")
@@ -193,7 +194,7 @@ struct SpecializationSection: View {
 
 #Preview {
     let mdm = MainDataManager(localDataManager: DataManager(), globalDataManager: NetworkManager(),userId: "123")
-    BPAccountInfoView(id: "123")
+    return BPAccountInfoView(user: mdm.currentUser)
         .environment(\.managedObjectContext, mdm.localDataManager.moc)
         .environmentObject(mdm)
 }

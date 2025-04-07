@@ -50,7 +50,7 @@ struct TimeAndDateSelectionView: View {
     }
     
     var body: some View {
-        VStack(spacing: 40) {
+        VStack(spacing: 20) {
             Text(
                 vm.eventDate.formatted(
                     date: .abbreviated, time: .omitted)
@@ -58,6 +58,7 @@ struct TimeAndDateSelectionView: View {
             .fixedSize()
             .font(.subheadline)
             .padding(5)
+            
             .background {
                 RoundedRectangle(cornerRadius: 5).fill(
                     .ultraThinMaterial
@@ -66,6 +67,7 @@ struct TimeAndDateSelectionView: View {
                         .white, lineWidth: 1)
                 }
             }
+            .padding(.top, 20)
             .onTapGesture {
                 vm.isPresentedDatePicker = true
             }

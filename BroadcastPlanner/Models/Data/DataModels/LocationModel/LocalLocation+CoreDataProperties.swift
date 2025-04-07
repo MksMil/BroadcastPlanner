@@ -2,7 +2,6 @@ import SwiftUI
 import UIKit
 import CoreData
 
-
 extension LocalLocation {
 
     @nonobjc public class func fetchRequest() -> NSFetchRequest<LocalLocation> {
