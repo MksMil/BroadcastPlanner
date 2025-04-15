@@ -15,14 +15,6 @@ extension LocalLocation {
     @NSManaged public var events: NSSet?
     @NSManaged public var homeClub: NSSet?
     @NSManaged public var images: NSSet?
-
-    func mapToLocation() -> Location{
-        return Location(id: viewId,
-                        title: viewTitle,
-                        address: viewAddress,
-                        imagesIds: viewLocalImages.compactMap{$0.id},
-                        locationBackgroundId: background?.id)
-    }
     
 }
 
@@ -109,4 +101,13 @@ extension LocalLocation : Identifiable {
         images?.allObjects as? [LocalImage] ?? []
     }
     
+    var dto: LocationDTO{
+        LocationDTO(
+            id: viewId,
+            title: viewTitle,
+            address: viewAddress,
+            imagesIds: viewLocalImages.map{$0.viewId},
+            locationBackgroundId: background?.id
+        )
+    }
 }

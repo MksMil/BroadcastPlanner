@@ -9,9 +9,9 @@ struct AddUnitFormView: View {
     
     let availableUsers: [LocalUser]
     let cancelAction: ()->()
-    let addAction: (UserSpecialization, LocalUser,Hardware.ReplayType?)->()
+    let addAction: (UserSpecialization, LocalUser,ReplayType?)->()
     @State private var selectedSpecialization: UserSpecialization?
-    @State private var selectedHardware: Hardware.ReplayType?
+    @State private var selectedHardware: ReplayType?
 //    @State private var selectedUser: LocalUser?
     
     @State private var isShowInfo: Bool = false
@@ -64,7 +64,7 @@ struct AddUnitFormView: View {
                         .font(.title3)
                         .foregroundStyle(.white)
                     SmartLayout(hSpacing: 5, vSpacing: 5){
-                        ForEach(Hardware.ReplayType.withoutEmpty){ replay in
+                        ForEach(ReplayType.withoutEmpty){ replay in
                             Text(replay.rawValue)
                                 .font(.callout)
                                 .foregroundStyle(.black)
@@ -90,11 +90,10 @@ struct AddUnitFormView: View {
             
             List{
                 ForEach(filteredUsers){ user in
-                    AddUnitFormUserCell(image: user.userImage, text: user.userCompactName){
+                    AddUnitFormUserCell(user: user){
                         userForInfo = user
                         isShowInfo = true
                     }
-                    
                     .onTapGesture {
                         withAnimation{
                             if vm.selectedUser == user{
@@ -107,6 +106,7 @@ struct AddUnitFormView: View {
                     .listRowBackground(Color.clear)
                 }
             }
+            .listStyle(.plain)
             .scrollContentBackground(.hidden)
             
             Spacer()

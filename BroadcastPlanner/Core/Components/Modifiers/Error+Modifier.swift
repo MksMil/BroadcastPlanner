@@ -1,11 +1,3 @@
-//
-//  Error+Modifier.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 26.01.2024.
-//
-
-import Foundation
 import SwiftUI
 
 struct ErrorBPHandle: ViewModifier{

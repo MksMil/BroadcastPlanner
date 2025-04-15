@@ -26,12 +26,12 @@ struct TemplateGroup: View {
                     .resizable()
                     .scaledToFit()
                     .padding(8)
+                    .frame(width: 45,height: 45)
                     .background {
                         RoundedRectangle(cornerRadius: 10).fill(
-                            .white.opacity(0.4)
+                            .ultraThinMaterial
                         )
                     }
-                .frame(width: 45,height: 45)
             }
             .disabled(removeState)
             
@@ -55,11 +55,11 @@ struct TemplateGroup: View {
                     .minimumScaleFactor(0.2)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 15)
+                    .frame(height: 45)
                     .background {
                         RoundedRectangle(cornerRadius: 10).fill(
                             .white.opacity(0.4)
                         )
-                        .frame(height: 45)
                     }
             }
             Spacer()
@@ -67,16 +67,19 @@ struct TemplateGroup: View {
             Button {
                 isAddSheetshowed = true
             } label: {
-                Image(systemName: "plus")
+                Image(systemName: "folder.badge.plus")
                     .resizable()
                     .scaledToFit()
-                    .padding(8)
+                    .padding(.top,4)
+                    .padding(.bottom,8)
+                    .padding(.leading,8)
+                    .padding(.trailing,4)
+                    .frame(width: 45,height: 45)
                     .background {
                         RoundedRectangle(cornerRadius: 10).fill(
-                            .white.opacity(0.4)
+                            .ultraThinMaterial
                         )
                     }
-                    .frame(width: 45,height: 45)
             }
         }
         .fullScreenCover(isPresented: $isAddSheetshowed) {
@@ -115,9 +118,18 @@ struct TemplateGroup: View {
 //}
 
 #Preview {
-    let mdm = MainDataManager(localDataManager: DataManager(), globalDataManager: NetworkManager(),userId: "123")
-
-   return BPEditStadiumView(event: mdm.localDataManager.fetchOrCreateEventWithId("123", inContext: .main) , editable: true)
+    let lm = DataManager(forPreview: true)
+    let mdm = MainDataManager(localDataManager: lm,
+                              globalDataManager: NetworkManager(),
+                              userId: "123")
+    let localEvent = lm.fetchOrCreateObject(ofType: LocalEvent.self,
+                  predicate: NSPredicate(format: "id == %@", "id"),
+                                      in: lm.moc) {
+        let newEvent = LocalEvent(context: lm.moc)
+        newEvent.id = "id"
+        return newEvent
+    }
+    return BPEditStadiumView(event:localEvent , editable: true)
         .environmentObject(mdm)
         .environment(\.managedObjectContext, mdm.localDataManager.moc)
 }

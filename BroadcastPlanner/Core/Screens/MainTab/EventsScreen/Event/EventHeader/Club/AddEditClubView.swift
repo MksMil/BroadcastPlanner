@@ -50,10 +50,13 @@ struct AddEditClubView: View {
     
     @StateObject var vm: AddEditClubViewModel
     @State private var isRemoveClubDialog: Bool = false
+    
     let club: LocalClub
+    
     let acceptAction: (String, UIImage?,String,String, LocalLocation?)->Void
     let cancelAction: ()->Void
     let removeAction: ()->Void
+    
     let defineLocation: ()->Void
     
     init(club: LocalClub,
@@ -84,47 +87,45 @@ struct AddEditClubView: View {
                         .onTapGesture {
                             isRemoveClubDialog = true
                         }
-                        .foregroundStyle(.black, .gray)
+                        .foregroundStyle(.black, .white)
                         .fontWeight(.light)
                 }
                 .padding(.horizontal)
                 .padding(.top, 10)
-                //            .font(.title3)
                 
-                //photopicker -> logoImage -> LocalImage -> map
                 PhotosPicker(selection: $vm.selectedPhoto,
                              matching: .images,
                              photoLibrary: .shared()) {
                     vm.showedImage
                         .resizable()
-                        .aspectRatio(contentMode: .fit)
+                        .scaledToFit()
                         .frame(width: 150,height: 150)
+                        .padding(15)
                         .clipShape(Circle())
-                        .padding(5)
                         .background{
                             Circle()
-                                .fill(.ultraThickMaterial)
-                                .overlay {
-                                    Circle()
-                                        .stroke(.gray,
-                                                lineWidth: 10)
-                                }
+                                .fill(.ultraThinMaterial)
+                        }
+                        .overlay {
+                            Circle()
+                                .stroke(.white,
+                                        lineWidth: 3)
                         }
                 }
                 //club name -> title
                 Section{
-                    TextField("enter club name", text: $vm.title)
+                    TextField("club name", text: $vm.title)
                         .font(.title)
                         .textFieldStyle(.roundedBorder)
                     
                     //contacts
-                    TextField("enter contact info", text: $vm.contacts,axis: .vertical)
+                    TextField("contact info", text: $vm.contacts,axis: .vertical)
                         .lineLimit(3)
                         .font(.headline)
                         .textFieldStyle(.roundedBorder)
                     
                     //url
-                    TextField("enter url", text: $vm.urlString)
+                    TextField("url", text: $vm.urlString)
                         .font(.headline)
                         .textFieldStyle(.roundedBorder)
                     

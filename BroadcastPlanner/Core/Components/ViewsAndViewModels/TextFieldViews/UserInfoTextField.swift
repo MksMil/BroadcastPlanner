@@ -8,7 +8,6 @@ struct UserInfoTextField: View {
     var prompt: String
     var scaleFactor: Double
     
-    
     var body: some View {
         HStack{
             if !imageName.isEmpty{

@@ -5,7 +5,6 @@ import UIKit
 //@MainActor
 final class PersonalScreenViewModel: ObservableObject {
     
-//    let id: String
     var localUser: LocalUser
     
     @Published var showedImage: Image = Image(systemName: "person")

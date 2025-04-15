@@ -19,13 +19,12 @@ extension LocalEvent {
 
     @NSManaged public var date: Date?
     @NSManaged public var id: String?
-    @NSManaged public var broadcaster: LocalBroadcaster?
     @NSManaged public var guestClub: LocalClub?
     @NSManaged public var homeClub: LocalClub?
     @NSManaged public var location: LocalLocation?
-    @NSManaged public var locationPoints: NSSet?
-    @NSManaged public var obVan: LocalOBVan?
-    @NSManaged public var obVanUnits: NSSet?
+    @NSManaged public var points: NSSet?
+    @NSManaged public var obvan: LocalObvan?
+    @NSManaged public var units: NSSet?
     @NSManaged public var owners: NSSet?
     @NSManaged public var users: NSSet?
     @NSManaged public var locationPreview: LocalImage?
@@ -54,16 +53,16 @@ extension LocalEvent {
 extension LocalEvent {
 
     @objc(addObVanUnitsObject:)
-    @NSManaged public func addToObVanUnits(_ value: LocalObvanUnit)
+    @NSManaged public func addToObvanUnits(_ value: LocalUnit)
 
     @objc(removeObVanUnitsObject:)
-    @NSManaged public func removeFromObVanUnits(_ value: LocalObvanUnit)
+    @NSManaged public func removeFromObvanUnits(_ value: LocalUnit)
 
     @objc(addObVanUnits:)
-    @NSManaged public func addToObVanUnits(_ values: NSSet)
+    @NSManaged public func addToObvanUnits(_ values: NSSet)
 
     @objc(removeObVanUnits:)
-    @NSManaged public func removeFromObVanUnits(_ values: NSSet)
+    @NSManaged public func removeFromObvanUnits(_ values: NSSet)
 
 }
 
@@ -118,10 +117,7 @@ extension LocalEvent : Identifiable {
     var viewRemainingDate: Date {
         date ?? Date()
     }
-    
-    var viewBroadcasterName: String{
-        broadcaster?.viewTitle ?? ""
-    }
+
     var viewUsers: [LocalUser] {
         users?.allObjects.compactMap{$0 as? LocalUser} ?? []
     }
@@ -130,11 +126,11 @@ extension LocalEvent : Identifiable {
     }
     
     var viewLocationPoints: [LocalLocationPoint]{
-        locationPoints?.allObjects.compactMap{$0 as? LocalLocationPoint} ?? []
+        points?.allObjects.compactMap{$0 as? LocalLocationPoint} ?? []
     }
     
-    var viewObvanUnits: [LocalObvanUnit]{
-        obVanUnits?.allObjects.compactMap{$0 as? LocalObvanUnit} ?? []
+    var viewObvanUnits: [LocalUnit]{
+        units?.allObjects.compactMap{$0 as? LocalUnit} ?? []
     }
     
     var viewTitle: String {
@@ -173,5 +169,22 @@ extension LocalEvent : Identifiable {
     
     var viewObvanPreview: Image {
         obvanPreview?.originImage ?? Image(systemName: "truck.box")
+    }
+    
+     var dto: EventDTO  {
+        var event = EventDTO(id: viewId,
+                            date: viewRemainingDate,
+                            obVanId: obvan?.id,
+                             locationPoints: viewLocationPoints.compactMap{$0.dto},
+                             obvanUnits: viewObvanUnits.compactMap{ $0.dto},
+                            locationID: location?.id,
+                            homeClubId: homeClub?.id,
+                            guestClubId: guestClub?.id,
+                            locationPreviewId: locationPreview?.id,
+                            obvanPreviewId: obvanPreview?.id)
+        event.ownersIds = viewOwners.map({$0.userId})
+        event.usersIds = viewUsers.map({$0.userId})
+        
+        return event
     }
 }

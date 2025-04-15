@@ -17,11 +17,15 @@ extension LocalLight {
 extension LocalLight : Identifiable {
 
     var viewId: String {
-        id ?? "N/A"
+        id ?? ""
     }
     
-    var viewLightType: Light.LightType{
-        Light.LightType(rawValue: lightType ?? "---") ?? Light.LightType.none
+    var viewLightType: LightType{
+        LightType(rawValue: lightType ?? "---") ?? LightType.none
     }
     
+    var dto: LightDTO{
+        LightDTO(id: viewId,
+                 lightType: viewLightType)
+    }
 }

@@ -3,16 +3,16 @@ import SwiftUI
 
 struct AddUnitFormUserCell: View {
     
-//    let user: LocalUser
-    let image: Image
-    let text: String
+    let user: LocalUser
+//    let image: Image
+//    let text: String
 //    let selected: Bool
     let infoAction: ()->()
     
     var body: some View {
         HStack{
-//            user.userImage
-            image
+            user.userImage
+//            image
                 .resizable()
                 .scaledToFill()
                 .clipShape(Circle())
@@ -20,7 +20,7 @@ struct AddUnitFormUserCell: View {
                     Circle().stroke(Color.white, lineWidth: 2)
                 })
                 .frame(width: 40, height: 40)
-            Text(text)//("\(user.userCompactName)")
+            Text("\(user.userCompactName)")
             
             Spacer()
             Image(systemName: "info.circle")

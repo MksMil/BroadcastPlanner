@@ -16,7 +16,6 @@ struct BPUserProfileView: View {
                     Spacer()
                 }
             }
-        
     }
    
     @ViewBuilder func infoBlock() -> some View{
@@ -35,12 +34,13 @@ struct BPUserProfileView: View {
                                 .frame(width: 110,height: 110)
                         }
                         .padding(.trailing,15)
-                
+                        //configure minimum scale factor
                     VStack(alignment: .leading){
                         Text(user.userFirstName)
                             .padding(.vertical,4)
                             .padding(.horizontal,5)
                         Divider()
+                        //configure minimum scale factor
                         Text(user.userLastName)
                             .padding(.vertical,4)
                             .padding(.horizontal,5)
@@ -59,7 +59,7 @@ struct BPUserProfileView: View {
                             .resizable()
                             .frame(width: 30,height: 30)
                             .scaledToFill()
-                        
+                        //configure minimum scale factor
                         Link(user.userPhoneNumber,
                              destination: URL(string:"tel:\(user.userPhoneNumber)")!)
                             .padding(.vertical,4)
@@ -72,7 +72,7 @@ struct BPUserProfileView: View {
                             .resizable()
                             .frame(width: 30,height: 30)
                             .scaledToFill()
-                        
+                        //configure minimum scale factor
                         Link(user.userEmail,
                              destination: URL(string: "mailto:\(user.userEmail)")!)
                             .padding(.vertical,4)
@@ -85,7 +85,7 @@ struct BPUserProfileView: View {
                             .resizable()
                             .frame(width: 30,height: 30)
                             .scaledToFill()
-
+                        //configure minimum scale factor
                         Text(user.userAddress)
                             .padding(.vertical,4)
                             .padding(.horizontal,5)
@@ -100,17 +100,46 @@ struct BPUserProfileView: View {
         .padding(.top,10)
     }
     @ViewBuilder func specializationSection() -> some View {
-        VStack{
-            SmartLayout(hSpacing: 5, vSpacing: 5){
-                ForEach(user.userSpecialization,id: \.self) { text in
-                    BPSpecializationCellView(text: text.rawValue)
-                }
+//        VStack{
+//            SmartLayout(hSpacing: 5, vSpacing: 5){
+//                ForEach(user.userSpecialization,id: \.self) { text in
+//                    BPSpecializationCellView(text: text.rawValue)
+//                }
+//            }
+//            .padding(.horizontal,20)
+//            .padding(.vertical,5)
+//            Divider()
+//                .padding(.horizontal,20)
+//        }
+        VStack {
+            AnyContentView(
+                sourceContent: UserSpecialization.allCases.map { $0.rawValue },
+                selectedContent: .constant(user.userSpecialization.map {$0.rawValue}),
+                isEdit: .constant(false)
+            ) {
+                RoundedRectangle(cornerRadius: 10.0).fill(.white.opacity(0.4))
+                    
+            } cellView: { text in
+                BPSpecializationCellView(text: text)
+            } buttonView: {
+                EmptyView()
+//                Text("Done")
+//                    .fixedSize()
+//                    .padding(.horizontal, 20)
+//                    .padding(.vertical, 4)
+//                    .background {
+//                        RoundedRectangle(cornerRadius: 10).fill(
+//                            .white.opacity(0.4))
+//                    }
+            } promptView: {
+                EmptyView()
+//                Text("Tap to make choise of specialization")
+//                    .font(.body)
+//                    .fontWeight(.light)
+//                    .foregroundStyle(Color(.systemGray))
             }
-            .padding(.horizontal,20)
-            .padding(.vertical,5)
-            Divider()
-                .padding(.horizontal,20)
         }
+        .disabled(true)
     }
 
 }

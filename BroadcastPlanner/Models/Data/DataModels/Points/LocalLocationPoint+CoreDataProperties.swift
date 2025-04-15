@@ -119,31 +119,31 @@ extension LocalLocationPoint : Identifiable {
         Double(scaleFactor)
     }
     var viewId: String{
-        id ?? UUID().uuidString
+        id ?? ""
     }
     
     var viewNumber: Int {
         Int(number)
     }
     
-    var viewCameras: [Camera] {
-        (cameras?.allObjects as? [LocalCamera] ?? []).map{Camera(id: $0.viewId, optic: $0.viewOptic)}
+    var viewCameras: [CameraDTO] {
+        (cameras?.allObjects as? [LocalCamera] ?? []).map{CameraDTO(id: $0.viewId, optic: $0.viewOptic)}
     }
     
     var viewLocalCameras: [LocalCamera]{
         cameras?.allObjects as? [LocalCamera] ?? []
     }
     
-    var viewSounds: [Sound] {
-        (sounds?.allObjects as? [LocalSound] ?? []).map{Sound(id: $0.viewId, windDefence: $0.viewWindDefence, placeType: $0.viewPlaceType)}
+    var viewSounds: [SoundDTO] {
+        (sounds?.allObjects as? [LocalSound] ?? []).map{SoundDTO(id: $0.viewId, windDefence: $0.viewWindDefence, placeType: $0.viewPlaceType)}
     }
     
     var viewLocalSounds: [LocalSound] {
         sounds?.allObjects as? [LocalSound] ?? []
     }
     
-    var viewLights: [Light] {
-        (lights?.allObjects as? [LocalLight] ?? []).map{Light(id: $0.viewId, lightType: $0.viewLightType)}
+    var viewLights: [LightDTO] {
+        (lights?.allObjects as? [LocalLight] ?? []).map{LightDTO(id: $0.viewId, lightType: $0.viewLightType)}
     }
     
     var viewLocalLights: [LocalLight] {
@@ -169,6 +169,22 @@ extension LocalLocationPoint : Identifiable {
     
     var viewImage: Image {
         image?.smallImage ?? Image("cam1")
+    }
+    
+    var dto: PointDTO{
+        PointDTO(id: viewId,
+                 userId: viewUsers.map{$0.userId},
+                 coordinateX: viewX,
+                 coordinateY: viewY,
+                 rotation: viewRotation.radians,
+                 scale: viewScaleFactor,
+                 imageId: viewImageId,
+                 number: viewNumber,
+                 description: viewDescription,
+                 task: viewTask,
+                 cameras: viewCameras,
+                 sounds: viewSounds,
+                 lights: viewLights)
     }
 }
 

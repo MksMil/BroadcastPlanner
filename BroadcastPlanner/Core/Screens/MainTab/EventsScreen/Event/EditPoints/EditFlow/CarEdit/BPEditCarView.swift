@@ -4,13 +4,16 @@ import SwiftUI
 
 final class BPEditCarViewModel: ObservableObject {
     
-    var renderCarScene = SKScene()
+    var renderCarScene: CarEditSpriteScene
     
-    @Published var selectedCarPoint: LocalObvanUnit?
+    @Published var selectedUnit: LocalUnit?
+    
+    var localUnits: [LocalUnit] = []
+    var isEdit: Bool = false
+    
     init(event: LocalEvent) {
         self.renderCarScene = CarEditSpriteScene()
     }
-    
     // MARK: scene screenshot
     func makeSceneScreenshot()-> UIImage?{
         guard let view = renderCarScene.view else {
@@ -34,18 +37,104 @@ final class BPEditCarViewModel: ObservableObject {
         return image
     }
 }
+
+// MARK: - Points Managment
+extension BPEditCarViewModel{
+    func addUnit(unit: LocalUnit, image: UIImage){
+        localUnits.append(unit)
+//        renderCarScene.updateScene()
+        renderCarScene.addUnit(id: unit.viewId, image: image, select: true)
+        selectedUnit = unit
+        isEdit = true
+    }
+    
+    func deletePoint(){
+//        renderCarScene.removeSelectedPoint()
+//        if let selectedEventPoint {
+//            localPoints.removeAll { pointToDelete in
+//                pointToDelete.viewId == selectedEventPoint.viewId
+//            }
+//            filterPointsWithCase(stadiumFilter)
+//        }
+//        isEdit = false
+//        selectedEventPoint = nil
+    }
+    
+    func save(){
+//        renderCarScene.saveSelectedPoint()
+//        selectedEventPoint = nil
+//        isEdit = false
+    }
+    
+    func selectPoint(point: LocalLocationPoint){
+//        selectedEventPoint = point
+//        renderCarScene.select(point: point)
+//        isEdit = true
+    }
+    
+    func updatePoint(_ point: LocalLocationPoint){
+//        filterPointsWithCase(stadiumFilter)
+//        renderCarScene.updateSpritesWithPoint(point: point)
+    }
+}
+
+// MARK: - BPSKViewDelegate
+extension BPEditCarViewModel: BPSKViewDelegate{
+    func selectPointWithId(_ id: String){
+//        selectedEventPoint = localPoints.first(where: {$0.viewId == id})
+    }
+    
+    func deselectPoint(){
+//        if selectedEventPoint != nil {
+//            self.selectedEventPoint = nil
+//        }
+//        isEdit = false
+    }
+    
+    func deselectPointForRender(){
+//        if selectedEventPoint != nil {
+//            self.selectedEventPoint = nil
+//            renderPitchScene.deselect()
+//        }
+//        isEdit = false
+    }
+    //id?
+    
+    func updatePoint(x: Double?, y: Double?, rotation: Double?, scaleFactor: Double?){
+//        if let x {
+//            coordinateX = x
+//        }
+//        if let y {
+//            coordinateY = y
+//        }
+//        if let rotation {
+//            self.rotation = Int(rotation)
+//        }
+//        if let scaleFactor {
+//            self.scaleFactor = scaleFactor
+//        }
+        saveAction()
+    }
+    
+    func saveAction(){
+//        if let savePointAction {
+//            savePointAction()
+//        }
+    }
+}
+
 // MARK: - Scaling scenes
 extension BPEditCarViewModel {
     func scaleUp(){
-//        renderCarScene.scaleUp()
+        renderCarScene.scaleUp()
     }
     
     func scaleDown(){
-//        renderCarScene.scaleDown()
+        renderCarScene.scaleDown()
     }
     
     func resetScale(){
-//        renderCarScene.resetScale()
+        renderCarScene.resetScale()
     }
     
 }
@@ -53,19 +142,19 @@ extension BPEditCarViewModel {
 // MARK: - Control (move,scale,rotate) Points in Car Edit Scene
 extension BPEditCarViewModel{
     func moveUp(){
-//        renderCarScene.moveUP()
+        renderCarScene.moveUP()
     }
     
     func moveDown(){
-//        renderCarScene.moveDown()
+        renderCarScene.moveDown()
     }
     
     func moveLeft(){
-//        renderCarScene.moveLeft()
+        renderCarScene.moveLeft()
     }
     
     func moveRight(){
-//        renderCarScene.moveRight()
+        renderCarScene.moveRight()
     }
     
     func rotateCounterClockwise(){
@@ -88,6 +177,9 @@ extension BPEditCarViewModel{
 //        renderCarScene.scaleDownSelectedPoint()
     }
     
+    func changeObvan(car: LocalObvan){
+        
+    }
 }
 
 
@@ -100,16 +192,15 @@ struct BPEditCarView: View {
     @StateObject var vm: BPEditCarViewModel
     let event: LocalEvent
 
-    @FetchRequest<LocalBroadcaster>(sortDescriptors: []) var broadcasters
+    @FetchRequest<LocalObvan>(sortDescriptors: []) var obvans
 
     @State private var isConfirmDiscardChanges: Bool = false
 
     //if user cant edit(he is not owner)
     var editable: Bool
 
-    @State var broadcasterTitle: String = "choose broadcaster"
-    @State var carTitle: String = "choose car"
-    @State private var selectedUnit: LocalObvanUnit?
+    @State var obvanTitle: String = "choose car"
+    @State private var selectedUnit: LocalUnit?
   
     init(event: LocalEvent, editable: Bool) {
         self.event = event
@@ -128,56 +219,40 @@ struct BPEditCarView: View {
                     //save
                     eventRouter.routeStepBack()
                 } content: {
-                    Spacer()
-                }
-                
-                // TODO: Selecte broadcaster & car fsc view
-//                Menu {
-//                    ScrollView {
-//                        ForEach(broadcasters) { bc in
-//                            Button("\(bc.viewTitle)") {
-//                                broadcasterTitle = bc.viewTitle
-//                            }
-//                        }
-//                        Button("+ new broadcaster") {
-//                            // TODO: add broadcaster flow
-//                            print("add new broadcaster")
-//                        }
-//                    }
-//                } label: {
-//                    Text(broadcasterTitle)
-//                        .frame(maxWidth: .infinity)
-//                        .frame(height: 45)
-//                        .background {
-//                            RoundedRectangle(cornerRadius: 10).fill(
-//                                .white.opacity(0.4)
-//                            )
-//                        }
-//                }
-//                .padding(.horizontal, 25)
-//                
-//                //templates choise
-//                if editable {
-//                    HStack {
-//                        Menu {
-//                            
-//                        } label: {
-//                            Text(carTitle)
-//                                .frame(maxWidth: .infinity)
-//                                .background {
-//                                    RoundedRectangle(cornerRadius: 10).fill(
-//                                        .white.opacity(0.4)
-//                                    )
-//                                    .frame(height: 45)
+                    Menu {
+                        ScrollView {
+                            ForEach(obvans) { obvan in
+                                Text(obvan.viewName)
+                                //styling
+                                    .onTapGesture {
+                                        vm.changeObvan(car: obvan)
+                                    }
+                            }
+                        
+//                            ForEach(broadcasters) { bc in
+//                                Button("\(bc.viewTitle)") {
+//                                    broadcasterTitle = bc.viewTitle
+//                                    //vm.updateScene()
 //                                }
-//                        }
-//                        .padding(.horizontal, 65)
-//                    }
-//                    .padding(.vertical, 10)
-//                }
-                //SKView
-                
-                
+//                            }
+//                            Button("+ new broadcaster") {
+//                                // TODO: add broadcaster flow
+//                                print("add new broadcaster car")
+//                            }
+                        }
+                    } label: {
+                        Text(obvanTitle)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 45)
+                            .background {
+                                RoundedRectangle(cornerRadius: 5).fill(
+                                    .white.opacity(0.4)
+                                )
+                            }
+                    }
+                }
+                // TODO: Selecte broadcaster & car fsc view
+ 
                 SpriteView(
                     scene: vm.renderCarScene,
                     debugOptions: [.showsFPS, .showsNodeCount]
@@ -189,12 +264,15 @@ struct BPEditCarView: View {
                 HStack(alignment: .top){
                     StaffPanelView(event: event,
                                    addUnitAction: { user,specialization,hardware in
-                        let _ = mdm.createNewObvanUnitWithUser(user, andSpecialization: specialization, andHardware: hardware, inEvent: event)
-
-                        
+                        let unit = mdm.createUnitWithUser(user, andSpecialization: specialization, andHardware: hardware, inEvent: event)
+                        let id = unit.viewId
+                        var image = UIImage(systemName: "person")
+                        if let uiimage = user.image?.makeUIImage(){
+                            image = uiimage
+                        }
+//                        vm.addUnit(unit: unit, image: image )
                     }, removeUnitAction: { unitToRemove in
-
-                        mdm.removeObvanUnit(unitToRemove)
+                        mdm.removeUnit(unitToRemove)
                     }, editUnitAction: {
                         
                     })
@@ -224,7 +302,7 @@ struct BPEditCarView: View {
                             RoundedRectangle(cornerRadius: 5).stroke(.white.opacity(0.4), lineWidth: 2)
                         }
                         // Task managment
-                        TaskDescriptionView(text: vm.selectedCarPoint?.viewTask ?? "Task", isEditMode: true)
+//                        TaskDescriptionView(text: vm.selectedCarPoint?.viewTask ?? "Task", isEditMode: true)
                         //                        .disabled(vm.selectedEventPoint == nil)
                         //                        .opacity(vm.selectedEventPoint == nil ? 0.6 : 1)
                         
@@ -243,13 +321,20 @@ struct BPEditCarView: View {
 }
 
 #Preview {
-    let mdm = MainDataManager(
-        localDataManager: DataManager(), globalDataManager: NetworkManager(),
-        userId: "123")
+    let lm = DataManager(forPreview: true)
+    let mdm = MainDataManager(localDataManager: lm,
+                              globalDataManager: NetworkManager(),
+                              userId: "123")
+    let localEvent = lm.fetchOrCreateObject(ofType: LocalEvent.self,
+                  predicate: NSPredicate(format: "id == %@", "id"),
+                                      in: lm.moc) {
+        let newEvent = LocalEvent(context: lm.moc)
+        newEvent.id = "id"
+        return newEvent
+    }
 
     return BPEditCarView(
-        event: mdm.localDataManager.fetchOrCreateEventWithId(
-            "123", inContext: .main), editable: true
+        event: localEvent, editable: true
     )
     .environmentObject(mdm)
     .environment(\.managedObjectContext, mdm.localDataManager.moc)

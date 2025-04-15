@@ -20,10 +20,12 @@ struct Home: View {
         ZStack(alignment:.bottom){
             
             TabView(selection: $selection) {
+                //event list
                 MainEventsList()
-                    .tabItem { Label("Events", systemImage: "calendar")}
+                    .tabItem { Label("Hello", systemImage: "calendar") }
                     .tag(0)
                     .padding(.bottom,1)
+                    
 
                 // MyInfo Screen
                 BPAccountInfoView(user: mdm.currentUser)

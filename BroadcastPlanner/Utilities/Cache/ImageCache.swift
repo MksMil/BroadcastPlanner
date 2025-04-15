@@ -1,17 +1,10 @@
-//
-//  ImageCache.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 13.12.2024.
-//
-
-
 import SwiftUI
-
+//actor?
 class ImageCache {
     
     var cachedImages: [String: [Image]] = [:]
 
+    //async!
     func getImage(id: String, size: ImageSizes) -> Image{
         if let images = cachedImages[id]{
             switch size {

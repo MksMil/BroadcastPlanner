@@ -200,8 +200,10 @@ struct AddEditLocation: View {
                 ) {
                     Button("Remove Location", role: .destructive) {
                         // Handle empty trash action.
-                        mdm.removeLocation(location)
-                        removeAction()
+                        Task{
+                           await mdm.removeLocation(location)
+                            removeAction()
+                        }
                     }
                 }
             }

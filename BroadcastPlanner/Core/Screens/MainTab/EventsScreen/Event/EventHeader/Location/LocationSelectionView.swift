@@ -70,10 +70,19 @@ struct LocationSelectionView: View {
 }
 
 #Preview {
-    let mdm = MainDataManager(localDataManager: DataManager(), globalDataManager: NetworkManager(),userId: "123")
-    
-    
-    return BPCreateEditEventView(event: mdm.localDataManager.fetchOrCreateEventWithId("123", inContext: .main))
+    let lm = DataManager(forPreview: true)
+    let mdm = MainDataManager(localDataManager: lm,
+                              globalDataManager: NetworkManager(),
+                              userId: "123")
+    let localEvent = lm.fetchOrCreateObject(ofType: LocalEvent.self,
+                  predicate: NSPredicate(format: "id == %@", "id"),
+                                      in: lm.moc) {
+        let newEvent = LocalEvent(context: lm.moc)
+        newEvent.id = "id"
+        return newEvent
+    }
+
+    return BPCreateEditEventView(event:localEvent)
         .environmentObject(SessionManager())
         .environmentObject(GlobalSettings())
         .environmentObject(EventTabRouter())

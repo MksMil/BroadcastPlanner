@@ -48,5 +48,7 @@ struct LogosCellImageView: View {
 }
 
 #Preview {
-    LogosCellImageView(homeImage: Image(systemName: "plus"), guestImage: Image(systemName: "plus"),size: 100)
+    LogosCellImageView(homeImage: Image(systemName: "plus"),
+                       guestImage: Image(systemName: "plus"),
+                       size: 100)
 }

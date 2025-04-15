@@ -50,10 +50,10 @@ extension LocalUser {
 extension LocalUser {
 
     @objc(addObVanUnitsObject:)
-    @NSManaged public func addToObVanUnits(_ value: LocalObvanUnit)
+    @NSManaged public func addToObVanUnits(_ value: LocalUnit)
 
     @objc(removeObVanUnitsObject:)
-    @NSManaged public func removeFromObVanUnits(_ value: LocalObvanUnit)
+    @NSManaged public func removeFromObVanUnits(_ value: LocalUnit)
 
     @objc(addObVanUnits:)
     @NSManaged public func addToObVanUnits(_ values: NSSet)
@@ -153,6 +153,27 @@ extension LocalUser : Identifiable {
     
     var userLocationPoints: [LocalLocationPoint] {
         locationPoints?.allObjects as? [LocalLocationPoint] ?? []
+    }
+    
+    var dto: UserDTO {
+        var user = UserDTO(id: userId)
+        user.firstName = userFirstName
+        user.lastName = userLastName
+        user.email = userEmail
+        user.phoneNumber = userPhoneNumber
+        user.homeAddress = userAddress
+        user.specialization = userSpecialization.map{ $0.rawValue}
+        user.isOnline = true
+        if let date = creationDate{
+            user.creationDate = Timestamp(date: date )
+        }
+        if let date = leaveDate{
+            user.leaveDate = Timestamp(date: date)
+        }
+        user.ownedEventIds = userOwnedEvents.compactMap{$0.id}
+        user.participatedEventIds = userParticipatedEvents.compactMap{$0.id}
+        
+        return user
     }
 }
 

@@ -53,4 +53,9 @@ extension LocalTemplate : Identifiable {
         templatePoints?.allObjects as? [LocalTemplatePoint] ?? []
     }
     
+    var dto: TemplateDTO{
+        TemplateDTO(id: viewId,
+                    name: viewName,
+                    templatePoints: viewPoints.map{$0.dto})
+    }
 }

@@ -4,10 +4,6 @@ import Foundation
 
 class GlobalSettings: ObservableObject {
     
-    var stadiumTeamplates: [String: Any] = [:]
-    var obvanTeamplates: [String: Any] = [:]
-    var locationEditBackgroundTemplateIds: [String] = []
-    
     // MARK: - Initialization
     init() {
         

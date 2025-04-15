@@ -63,11 +63,10 @@ struct ConfirmationButtonGroupView<T: View>: View {
 
                     .background {
                         RoundedRectangle(cornerRadius: 5)
-                            .fill(.white.opacity(0.4))//isAcceptDisabled ? .ultraThinMaterial.opacity(0.3) : .ultraThinMaterial.opacity(0.5))
+                            .fill( .ultraThinMaterial.opacity(isAcceptDisabled ? 0.3 : 0.5))
                             .overlay {
                                 RoundedRectangle(cornerRadius: 5)
-                                    .stroke(.white.opacity(0.4),//isAcceptDisabled ?
-//                                        .ultraThinMaterial.opacity(0.3) :.ultraThinMaterial.opacity(0.5),
+                                    .stroke(.ultraThinMaterial.opacity(isAcceptDisabled ? 0.3: 0.5),
                                             lineWidth: 2)
                             }
                     }
@@ -75,22 +74,25 @@ struct ConfirmationButtonGroupView<T: View>: View {
             }
             .disabled(isAcceptDisabled)
         }
-//        .frame(height: height)
-        
     }
 }
 
 #Preview {
-    ConfirmationButtonGroupView(height: 60,
-                                isAcceptDisabled: false) {
-        
-    } acceptAction: {
-        
-    } content: {
-        Color.gray
-            .frame(maxWidth: .infinity)
+    ZStack{
+        Color.orange
+        ConfirmationButtonGroupView(height: 60,
+                                    isAcceptDisabled: false) {
             
+        } acceptAction: {
+            
+        } content: {
+            Color.gray
+                .frame(maxWidth: .infinity)
+            
+        }
+        .padding(.horizontal)
     }
+    .ignoresSafeArea()
 
 
 }

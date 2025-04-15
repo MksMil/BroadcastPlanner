@@ -23,7 +23,7 @@ extension LocalImage {
     @NSManaged public var parentClubLogo: LocalClub?
     @NSManaged public var parentLocationBackground: LocalLocation?
     @NSManaged public var parentLocationImage: LocalLocation?
-    @NSManaged public var parentObVan: LocalOBVan?
+    @NSManaged public var parentObvan: LocalObvan?
     @NSManaged public var parentUser: LocalUser?
     @NSManaged public var parentLocationPreviewEvent: LocalEvent?
     @NSManaged public var parentObvanPreviewEvent: LocalEvent?
@@ -49,7 +49,7 @@ extension LocalImage {
 
 extension LocalImage : Identifiable {
     var viewId: String {
-        id ?? "N/A"
+        id ?? ""
     }
     
     var viewType: GlobalProperties.ImageType{
@@ -88,8 +88,6 @@ extension LocalImage : Identifiable {
                     return Image(systemName: "compass.drawing")
                 case .club:
                     return Image(systemName: "rhombus")
-                case .broadcaster:
-                    return Image(systemName: "antenna.radiowaves.left.and.right")
                 case .location:
                     return Image(systemName: "photo")
                 case .obvan:
@@ -114,4 +112,5 @@ extension LocalImage : Identifiable {
         let imageManager = ImagesManager()
         let _ = imageManager.saveResizedImages(image: uiimage, id: viewId, type: viewType)
     }
+    
 }

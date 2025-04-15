@@ -51,9 +51,17 @@ struct BPEventFilterCaseTabView<T: RawRepresentable & CaseIterable>: View  where
  }
 
 #Preview {
-    let mdm = MainDataManager(localDataManager: DataManager(), globalDataManager: NetworkManager(),userId: "123")
+    let lm = DataManager(forPreview: true)
+    let mdm = MainDataManager(localDataManager: lm, globalDataManager: NetworkManager(),userId: "123")
+    let localEvent = lm.fetchOrCreateObject(ofType: LocalEvent.self,
+                  predicate: NSPredicate(format: "id == %@", "id"),
+                                      in: lm.moc) {
+        let newEvent = LocalEvent(context: lm.moc)
+        newEvent.id = "id"
+        return newEvent
+    }
     
-   return BPEditStadiumView(event: mdm.localDataManager.fetchOrCreateEventWithId("123", inContext: .main) , editable: true)
+   return BPEditStadiumView(event: localEvent, editable: true)
         .environmentObject(mdm)
 }
 

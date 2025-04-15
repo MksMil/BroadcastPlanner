@@ -61,13 +61,16 @@ struct BPEditStadiumView: View {
                         }
                         
                     } addAction: { name in
-                         mdm.saveTemplateFromSchema(localPoints: vm.localPoints, withName: name)
-                        
+                        Task{
+                           await mdm.saveTemplateFromSchema(localPoints: vm.localPoints, withName: name)
+                        }
                     } removeAction: {
                         withAnimation{
                             if let templateToRemove = vm.selectedTemplate{
-                                mdm.removeLocalTemplate(templateToRemove)
-                                vm.setEmptyTemplate()
+                                Task{
+                                  await mdm.removeLocalTemplate(templateToRemove)
+                                    vm.setEmptyTemplate()
+                                }
                             }
                         }
                     } setEmptyTemplateAction: {
@@ -157,9 +160,18 @@ struct BPEditStadiumView: View {
 }
 
 #Preview {
-    let mdm = MainDataManager(localDataManager: DataManager(), globalDataManager: NetworkManager(),userId: "123")
-
-   return BPEditStadiumView(event: mdm.localDataManager.fetchOrCreateEventWithId("123", inContext: .main) , editable: true)
+    let lm = DataManager(forPreview: true)
+    let mdm = MainDataManager(localDataManager: lm,
+                              globalDataManager: NetworkManager(),
+                              userId: "123")
+    let localEvent = lm.fetchOrCreateObject(ofType: LocalEvent.self,
+                  predicate: NSPredicate(format: "id == %@", "id"),
+                                      in: lm.moc) {
+        let newEvent = LocalEvent(context: lm.moc)
+        newEvent.id = "id"
+        return newEvent
+    }
+   return BPEditStadiumView(event: localEvent , editable: true)
         .environmentObject(mdm)
         .environment(\.managedObjectContext, mdm.localDataManager.moc)
 }

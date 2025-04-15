@@ -60,10 +60,13 @@ struct BPEditEventJoystickInfoPanel: View {
                     RoundedRectangle(cornerRadius: 5).stroke(.white.opacity(0.4), lineWidth: 2)
                 }
                 // Task managment
-                TaskDescriptionView(text: vm.selectedEventPoint?.viewTask ?? "", isEditMode: vm.isEdit)
+                TaskDescriptionView(point: vm.selectedEventPoint,
+                                    isEditMode: vm.isEdit){ text in
+                    vm.selectedEventPoint?.task = text
+                    vm.selectedEventPoint = vm.selectedEventPoint
+                }
                     .disabled(vm.selectedEventPoint == nil)
                     .opacity(vm.selectedEventPoint == nil ? 0.6 : 1)
-                
             }
             .padding(5)
             .frame(width: 140)
@@ -73,9 +76,18 @@ struct BPEditEventJoystickInfoPanel: View {
 
 
 #Preview {
-    let mdm = MainDataManager(localDataManager: DataManager(), globalDataManager: NetworkManager(),userId: "123")
-    
-   return BPEditStadiumView(event: mdm.localDataManager.fetchOrCreateEventWithId("123", inContext: .main), editable: true)
+    let lm = DataManager(forPreview: true)
+    let mdm = MainDataManager(localDataManager: lm,
+                              globalDataManager: NetworkManager(),
+                              userId: "123")
+    let localEvent = lm.fetchOrCreateObject(ofType: LocalEvent.self,
+                  predicate: NSPredicate(format: "id == %@", "id"),
+                                      in: lm.moc) {
+        let newEvent = LocalEvent(context: lm.moc)
+        newEvent.id = "id"
+        return newEvent
+    }
+   return BPEditStadiumView(event: localEvent, editable: true)
         .environmentObject(mdm)
 }
 

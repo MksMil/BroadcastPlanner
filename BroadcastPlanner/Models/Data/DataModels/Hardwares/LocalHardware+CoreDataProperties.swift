@@ -19,21 +19,26 @@ extension LocalHardware {
     @NSManaged public var channels: String?
     @NSManaged public var type: String?
     @NSManaged public var id: String?
-    @NSManaged public var obVanUnit: LocalObvanUnit?
+    @NSManaged public var obVanUnit: LocalUnit?
 
 }
 
 extension LocalHardware : Identifiable {
 
     var veiwId: String {
-        id ?? "N/A"
+        id ?? ""
     }
     
-    var viewType: Hardware.ReplayType{
-        Hardware.ReplayType(rawValue: type ?? "") ?? Hardware.ReplayType.none
+    var viewType: ReplayType{
+        ReplayType(rawValue: type ?? "") ?? ReplayType.none
     }
     var viewChannels: [String] {
         channels?.split(separator: ",") as? [String] ?? [String]()
     }
-    
+ 
+    var dto: HardwareDTO{
+        HardwareDTO(id: veiwId,
+                    envType: viewType,
+                    chanels: viewChannels)
+    }
 }

@@ -1,10 +1,3 @@
-//
-//  BPTextFieldWithIcon.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 10.01.2024.
-//
-
 import SwiftUI
 
 struct BPTextFieldWithIcon: View {
@@ -13,7 +6,6 @@ struct BPTextFieldWithIcon: View {
     var placeholder: String = "some text here"
     var imageName: String?
     var isSecureField: Bool = false
-    
     
     var body: some View {
         HStack{

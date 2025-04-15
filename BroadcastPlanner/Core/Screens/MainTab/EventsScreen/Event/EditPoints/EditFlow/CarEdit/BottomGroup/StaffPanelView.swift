@@ -8,15 +8,15 @@ struct StaffPanelView: View {
         users.filter{$0.isAvailableToEvent(event: event)}
     }
         
-    let addUnitAction: (LocalUser, UserSpecialization, Hardware.ReplayType?)->()
-    let removeUnitAction: (LocalObvanUnit)->()
+    let addUnitAction: (LocalUser, UserSpecialization, ReplayType?)->()
+    let removeUnitAction: (LocalUnit)->()
     let editUnitAction: ()->()
     
     @State private var isAddUnit: Bool = false
     
     init(event: LocalEvent,
-         addUnitAction: @escaping (LocalUser, UserSpecialization, Hardware.ReplayType?) -> Void,
-         removeUnitAction: @escaping (LocalObvanUnit) -> Void,
+         addUnitAction: @escaping (LocalUser, UserSpecialization, ReplayType?) -> Void,
+         removeUnitAction: @escaping (LocalUnit) -> Void,
          editUnitAction: @escaping () -> Void) {
         self.event = event
         self.addUnitAction = addUnitAction
@@ -62,14 +62,14 @@ struct StaffPanelView: View {
                 isAddUnit = false
                 addUnitAction(localUser, specialization, hardware)
             }
-            .presentationBackground(.black.opacity(0.8))
+            .presentationBackground(Color.black.opacity(0.8))
         }
     }
 }
 
 struct StaffPanelCellView: View {
     
-    let unit: LocalObvanUnit
+    let unit: LocalUnit
     
     var body: some View {
         HStack{
@@ -109,11 +109,18 @@ struct StaffPanelCellView: View {
 //})
 
 #Preview(body: {
-    let mdm = MainDataManager(localDataManager: DataManager(),
+    let lm = DataManager(forPreview: true)
+    let mdm = MainDataManager(localDataManager: lm,
                               globalDataManager: NetworkManager(),
                               userId: "123")
-    
-    return StaffPanelView(event: mdm.localDataManager.fetchOrCreateEventWithId("123", inContext: .main)) { _, _, _ in
+    let localEvent = lm.fetchOrCreateObject(ofType: LocalEvent.self,
+                  predicate: NSPredicate(format: "id == %@", "id"),
+                                      in: lm.moc) {
+        let newEvent = LocalEvent(context: lm.moc)
+        newEvent.id = "id"
+        return newEvent
+    }
+    return StaffPanelView(event:localEvent) { _, _, _ in
         
     } removeUnitAction: { _ in
         

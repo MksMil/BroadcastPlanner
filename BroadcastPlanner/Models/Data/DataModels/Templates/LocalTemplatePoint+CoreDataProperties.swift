@@ -12,7 +12,6 @@ import CoreData
 
 extension LocalTemplatePoint {
     
-    
     @nonobjc public class func fetchRequest() -> NSFetchRequest<LocalTemplatePoint> {
         return NSFetchRequest<LocalTemplatePoint>(entityName: "LocalTemplatePoint")
     }
@@ -66,13 +65,13 @@ extension LocalTemplatePoint : Identifiable {
     }
     
     //to dto map helper
-    var viewCameras: [Camera] {
-        var array = [Camera]()
+    var viewCameras: [CameraDTO] {
+        var array = [CameraDTO]()
         if let cameras {
           let results = cameras.split(separator: ",")
             for result in results {
-                if let optic = Camera.OpticType(rawValue: String(result)){
-                    array.append(Camera(id: UUID().uuidString,
+                if let optic = OpticType(rawValue: String(result)){
+                    array.append(CameraDTO(id: UUID().uuidString,
                                         optic: optic))
                 }
             }
@@ -80,26 +79,26 @@ extension LocalTemplatePoint : Identifiable {
         return array
     }
     //to dto map helper
-    var viewSounds: [Sound] {
-        var array = [Sound]()
+    var viewSounds: [SoundDTO] {
+        var array = [SoundDTO]()
         if let sounds {
             let results = sounds.split(separator: ",")
             for result in results {
-                if let placeType = Sound.PlaceType(rawValue: String(result)){
-                    array.append(Sound(id: UUID().uuidString,placeType: placeType))
+                if let placeType = PlaceType(rawValue: String(result)){
+                    array.append(SoundDTO(id: UUID().uuidString,placeType: placeType))
                 }
             }
         }
         return array
     }
     //to dto map helper
-    var viewLights: [Light] {
-        var array = [Light]()
+    var viewLights: [LightDTO] {
+        var array = [LightDTO]()
         if let lights {
             let results = lights.split(separator: ",")
             for result in results {
-                if let lightType = Light.LightType(rawValue: String(result)){
-                    array.append(Light(id: UUID().uuidString,
+                if let lightType = LightType(rawValue: String(result)){
+                    array.append(LightDTO(id: UUID().uuidString,
                                        lightType: lightType))
                 }
             }
@@ -107,4 +106,19 @@ extension LocalTemplatePoint : Identifiable {
         return array
     }
     
+    var dto: TemplatePointDTO{
+        TemplatePointDTO(
+            id: viewId,
+            coordinateX: viewX,
+            coordinateY: viewY,
+            rotation: viewRotation,
+            scaleFactor: viewScaleFactor,
+            cameras: viewCameras,
+            sounds: viewSounds,
+            lights: viewLights,
+            number: viewNumber,
+            pointDescription: viewPointDescription,
+            task: viewTask
+        )
+    }
 }

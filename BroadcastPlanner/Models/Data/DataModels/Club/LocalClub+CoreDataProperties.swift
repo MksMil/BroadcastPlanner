@@ -84,4 +84,14 @@ extension LocalClub : Identifiable {
     var viewImageMediumLogo: Image {
         imageLogo?.mediumImage ?? Image(systemName: "person.3")
     }
+    
+    var dto: ClubDTO{
+        ClubDTO(id: viewId,
+                title: viewTitle,
+                contacts: viewContacts,
+                urlString: viewUrl,
+                imageLogoID: imageLogo?.viewId,
+                homeLocationID: homeLocation?.viewId)
+
+    }
 }

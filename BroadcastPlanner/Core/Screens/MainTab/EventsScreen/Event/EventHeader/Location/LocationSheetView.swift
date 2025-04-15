@@ -91,8 +91,10 @@ struct LocationSheetView: View {
                     }
                     .onDelete { index in
                         if let ind = index.first{
-                            mdm.removeLocation(locations[ind])
-                            vm.selectedLocation = nil
+                            Task{
+                               await mdm.removeLocation(locations[ind])
+                                vm.selectedLocation = nil
+                            }
                         }
                     }
                     .listRowBackground(Color.clear)

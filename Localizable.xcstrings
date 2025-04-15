@@ -89,7 +89,13 @@
     "Club and Location Edit" : {
 
     },
+    "club name" : {
+
+    },
     "Confirm" : {
+
+    },
+    "contact info" : {
 
     },
     "Creation date: %@" : {
@@ -131,25 +137,16 @@
     "enter address" : {
 
     },
-    "enter club name" : {
-
-    },
-    "enter contact info" : {
-
-    },
     "enter title" : {
-
-    },
-    "enter url" : {
 
     },
     "Event" : {
 
     },
-    "Events" : {
+    "Forget password" : {
 
     },
-    "Forget password" : {
+    "Hello" : {
 
     },
     "Hours" : {
@@ -285,6 +282,9 @@
 
     },
     "Update %@" : {
+
+    },
+    "url" : {
 
     },
     "Welcome!\nselection: %lld" : {

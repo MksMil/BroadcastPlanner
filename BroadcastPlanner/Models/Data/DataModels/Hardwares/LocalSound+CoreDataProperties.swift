@@ -25,14 +25,20 @@ extension LocalSound {
 
 extension LocalSound : Identifiable {
     var viewId: String {
-        id ?? "N/A"
+        id ?? ""
     }
     
-    var viewPlaceType: Sound.PlaceType{
-        Sound.PlaceType(rawValue: placeType ?? "---") ?? Sound.PlaceType.none
+    var viewPlaceType: PlaceType{
+        PlaceType(rawValue: placeType ?? "---") ?? PlaceType.none
     }
     
-    var viewWindDefence: Sound.WindDefence {
-        Sound.WindDefence(rawValue: windDefence ?? "---") ?? Sound.WindDefence.none
+    var viewWindDefence: WindDefence {
+        WindDefence(rawValue: windDefence ?? "---") ?? WindDefence.none
+    }
+    
+    var dto: SoundDTO{
+        SoundDTO(id: viewId,
+                 windDefence: viewWindDefence,
+                 placeType: viewPlaceType)
     }
 }

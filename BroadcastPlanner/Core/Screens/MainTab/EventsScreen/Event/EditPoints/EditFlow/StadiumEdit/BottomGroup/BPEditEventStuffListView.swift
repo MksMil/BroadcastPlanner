@@ -3,9 +3,9 @@ import SwiftUI
 struct BPEditEventStuffListView: View {
     @EnvironmentObject var editManager: BPEditStadiumViewModel
     
-    let event: BPEvent
-    @State var selectedEventPoint: LocationPoint?
-    let selectAction: (LocationPoint) -> Void = { _ in }
+    let event: EventDTO
+    @State var selectedEventPoint: PointDTO?
+    let selectAction: (PointDTO) -> Void = { _ in }
     
     var body: some View {
         ScrollView{

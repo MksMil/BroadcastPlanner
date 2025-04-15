@@ -5,15 +5,15 @@ import Foundation
 struct GlobalProperties {
  
     enum Path: String{
-        case users, events, locations, clubs, broadcasters, obvans, images, cameras, sounds, lights, hardwares, templates, none
+        case users, events, locations, clubs, obvans, images, templates, cameras, sounds, lights, hardwares,  none
     }
     
     enum PublishChanges: String{
-        case currentUser, users, events, locations, clubs, broadcasters, obvans, images, cameras, sounds, lights, hardwares, templates,localPoint, obvanUnit, none
+        case currentUser, users, events, locations, clubs, obvans, images, cameras, sounds, lights, hardwares, templates, point, unit, none
     }
     
     enum ImageType: String{
-        case user, eventTemplate, club, broadcaster, location, obvan, locationPreview, obvanPreview, none
+        case user, eventTemplate, club, location, obvan, locationPreview, obvanPreview, none
     }
 }
 
