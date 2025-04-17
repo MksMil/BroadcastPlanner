@@ -498,8 +498,8 @@ extension MainDataManager {
 extension MainDataManager{
     func createObvanWithName(_ name: String,
                              broadcaster: String,
-                             image: UIImage?){
-        let localObvan = localDataManager.fetchOrCreateObject(ofType: LocalObvan.self, predicate: NSPredicate(format: "id == %@",UUID().uuidString),
+                             image: UIImage?) -> LocalObvan{
+        localDataManager.fetchOrCreateObject(ofType: LocalObvan.self, predicate: NSPredicate(format: "id == %@",UUID().uuidString),
                                              in: localDataManager.moc) {
             let newObvan = LocalObvan(context: localDataManager.moc)
             newObvan.id = UUID().uuidString

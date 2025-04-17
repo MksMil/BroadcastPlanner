@@ -40,10 +40,10 @@ final class BPEditCarViewModel: ObservableObject {
 
 // MARK: - Points Managment
 extension BPEditCarViewModel{
-    func addUnit(unit: LocalUnit, image: UIImage){
+    func addUnit(unit: LocalUnit, image: UIImage?){
         localUnits.append(unit)
 //        renderCarScene.updateScene()
-        renderCarScene.addUnit(id: unit.viewId, image: image, select: true)
+        renderCarScene.addUnit(id: unit.viewId, image: image ?? UIImage(), select: true)
         selectedUnit = unit
         isEdit = true
     }
@@ -265,12 +265,12 @@ struct BPEditCarView: View {
                     StaffPanelView(event: event,
                                    addUnitAction: { user,specialization,hardware in
                         let unit = mdm.createUnitWithUser(user, andSpecialization: specialization, andHardware: hardware, inEvent: event)
-                        let id = unit.viewId
+//                        let id = unit.viewId
                         var image = UIImage(systemName: "person")
                         if let uiimage = user.image?.makeUIImage(){
                             image = uiimage
                         }
-//                        vm.addUnit(unit: unit, image: image )
+                        vm.addUnit(unit: unit, image: image )
                     }, removeUnitAction: { unitToRemove in
                         mdm.removeUnit(unitToRemove)
                     }, editUnitAction: {

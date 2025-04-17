@@ -110,9 +110,7 @@ struct StaffPanelCellView: View {
 
 #Preview(body: {
     let lm = DataManager(forPreview: true)
-    let mdm = MainDataManager(localDataManager: lm,
-                              globalDataManager: NetworkManager(),
-                              userId: "123")
+
     let localEvent = lm.fetchOrCreateObject(ofType: LocalEvent.self,
                   predicate: NSPredicate(format: "id == %@", "id"),
                                       in: lm.moc) {

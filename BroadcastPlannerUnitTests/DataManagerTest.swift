@@ -4,7 +4,7 @@ import XCTest
 @testable import BroadcastPlanner
 
 final class DataManagerTests: XCTestCase {
-
+    
     var sut: DataManager!
     var container: NSPersistentContainer!
     var context: NSManagedObjectContext!
@@ -13,7 +13,7 @@ final class DataManagerTests: XCTestCase {
         super.setUp()
         sut = DataManager(forPreview: true)
         container = sut.persistentContainer
-        context = container.viewContext
+        context = sut.moc
     }
 
     override func tearDown() {
@@ -23,6 +23,39 @@ final class DataManagerTests: XCTestCase {
         
         super.tearDown()
     }
+    // MARK: - CoreData
+    func test_CoreDataStack_ShouldSaveAndFetchLocalImage() {
+        // 1. Проверяем, что контекст доступен
+//        let context = sut.persistentContainer.viewContext
+        XCTAssertNotNil(context, "Контекст Core Data не инициализирован")
+
+        // 2. Создаём и настраиваем объект
+        let testImage = LocalImage(context: context)
+        testImage.id = "test_image_id"
+        testImage.type = "test_type"
+
+        // 3. Сохраняем объект
+        do {
+            try context.save()
+        } catch {
+            XCTFail("Не удалось сохранить объект в Core Data: \(error)")
+        }
+
+        // 4. Делаем fetch
+        let request: NSFetchRequest<LocalImage> = LocalImage.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", "test_image_id")
+
+        do {
+            let results = try context.fetch(request)
+            XCTAssertEqual(results.count, 1, "Ожидался один объект LocalImage")
+            XCTAssertEqual(results.first?.id, "test_image_id", "ID объекта не совпадает")
+            XCTAssertEqual(results.first?.type, "test_type", "Тип объекта не совпадает")
+        } catch {
+            XCTFail("Ошибка при fetch запроса: \(error)")
+        }
+    }
+
+    
     // MARK: - Generic
     func test_fetchOrCreateObject_returnsExistingObject_whenFound() {
         // Given
@@ -200,7 +233,7 @@ final class DataManagerTests: XCTestCase {
         XCTAssertEqual(localEvent.viewId, id)
     }
     
-//    @MainActor
+    @MainActor
     func test_removeEvent_removesLocalEventUsingDTO(){
         let id = UUID().uuidString
         let eventDto = EventDTO.mock(id:id)
@@ -217,7 +250,7 @@ final class DataManagerTests: XCTestCase {
         let removeResults = try? context.fetch(request)
         XCTAssertEqual(removeResults?.count, 0)
     }
-//    @MainActor
+    @MainActor
     func test_removeLocalEvent_removesLocalEvent(){
         let id = UUID().uuidString
         let request = LocalEvent.fetchRequest()
@@ -239,9 +272,191 @@ final class DataManagerTests: XCTestCase {
     }
     
     // MARK: - Images
-    func test_(){
-        
+    func test_fetchImagesByType() async {
+        let image = UIImage(systemName: "photo")!
+        let id = UUID().uuidString
+        let type: GlobalProperties.ImageType = .obvan
+
+        _ = sut.createOrUpdateLocalImageWithId(
+            id,
+            withImage: image,
+            andType: type,
+            inContext: .main
+        )
+
+        let images = await sut.fetchImagesByType(type, inContext: .main)
+        XCTAssertTrue(images.contains { $0.id == id })
     }
+
+    
+    func test_сreateOrUpdateLocalImageWithId() {
+        let id = UUID().uuidString
+        let image = UIImage(systemName: "photo")!
+        let type: GlobalProperties.ImageType = .club
+
+        let localImage = sut.createOrUpdateLocalImageWithId(
+            id,
+            withImage: image,
+            andType: type,
+            inContext: .main
+        )
+
+        XCTAssertEqual(localImage.id, id)
+        XCTAssertEqual(localImage.type, type.rawValue)
+
+        let fileExists = ImageSizes.allCases.allSatisfy { size in
+            ImagesManager.loadImage(imageSize: size, id: id) != nil
+        }
+        XCTAssertTrue(fileExists)
+    }
+    
+    func test_createOrUpdateLocalImageWithImageData() {
+        let image = UIImage(systemName: "photo")!
+        let id = UUID().uuidString
+        let type: GlobalProperties.ImageType = .eventTemplate
+
+        let dto = ImageDTO(id: id, type: type.rawValue)
+
+        let localImage = sut.createOrUpdateLocalImageWithImageData(
+            imageData: dto,
+            withImage: image,
+            inContext: .main
+        )
+
+        XCTAssertEqual(localImage.id, id)
+        XCTAssertEqual(localImage.type, type.rawValue)
+
+        let fileExists = ImageSizes.allCases.allSatisfy { size in
+            ImagesManager.loadImage(imageSize: size, id: id) != nil
+        }
+        XCTAssertTrue(fileExists)
+    }
+
+    func test_removeImageWithId() async {
+        let image = UIImage(systemName: "photo")!
+        let id = UUID().uuidString
+        let type: GlobalProperties.ImageType = .club
+
+        _ = sut.createOrUpdateLocalImageWithId(
+            id,
+            withImage: image,
+            andType: type,
+            inContext: .main
+        )
+
+        try? await Task.sleep(nanoseconds: 200_000_000) // time to save (0.2s)
+
+        sut.removeImageWithId(id, inContext: .main)
+
+        try? await Task.sleep(nanoseconds: 200_000_000) // time to remove (0.2s)
+
+        let images = await sut.fetchImagesByType(type, inContext: .main)
+        XCTAssertFalse(images.contains { $0.id == id })
+
+        let filesExist = ImageSizes.allCases.contains {
+            ImagesManager.loadImage(imageSize: $0, id: id) != nil
+        }
+        XCTAssertFalse(filesExist)
+    }
+
+    // MARK: - Location
+    func test_createOrUpdateLocalLocationWithLocation_createsNewLocationAndAssignsData() async {
+        // Given
+        let id = UUID().uuidString
+        let imageId1 = UUID().uuidString
+        let imageId2 = UUID().uuidString
+        let backgroundId = UUID().uuidString
+        
+        let dto = LocationDTO(
+            id: id,
+            title: "Test Title",
+            address: "Test Address",
+            imagesIds: [imageId1, imageId2],
+            locationBackgroundId: backgroundId
+        )
+        
+        // When
+        var localLocation = await sut.createOrUpdateLocalLocationWithLocation(dto, inContext: .main)
+        
+        // Then
+        XCTAssertEqual(localLocation.id, id)
+        XCTAssertEqual(localLocation.title, dto.title)
+        XCTAssertEqual(localLocation.address, dto.address)
+        XCTAssertEqual(localLocation.viewLocalImages.count, 2)
+        XCTAssertEqual(localLocation.background?.id, backgroundId)
+        
+        let newDto = LocationDTO(
+            id: id,
+            title: "Test New Title",
+            address: "Test New Address",
+            imagesIds: [imageId1],
+            locationBackgroundId: nil
+        )
+        localLocation = await sut.createOrUpdateLocalLocationWithLocation(newDto, inContext: .main)
+        
+        XCTAssertEqual(localLocation.id, id)
+        XCTAssertEqual(localLocation.title, newDto.title)
+        XCTAssertEqual(localLocation.address, newDto.address)
+        XCTAssertEqual(localLocation.viewLocalImages.count, 1)
+        XCTAssertEqual(localLocation.background?.id, nil)
+    }
+    
+    func test_cleanImagesInLocalLocation_shouldRemoveAllImagesAndBackground() async {
+        // 1. Создаём изображения и location
+        let image1 = sut.createOrUpdateLocalImageWithId(
+            UUID().uuidString,
+            withImage: .testImage,
+            andType: .location,
+            inContext: .main
+        )
+
+        let image2 = sut.createOrUpdateLocalImageWithId(
+            UUID().uuidString,
+            withImage: .testImage,
+            andType: .location,
+            inContext: .main
+        )
+
+        let backgroundImage = sut.createOrUpdateLocalImageWithId(
+            UUID().uuidString,
+            withImage: .testImage,
+            andType: .location,
+            inContext: .main
+        )
+
+        let location = LocalLocation(context: sut.moc)
+        location.id = UUID().uuidString
+        location.title = "Test Location"
+        location.addToImages(image1)
+        location.addToImages(image2)
+        location.background = backgroundImage
+
+        // 2. Проверяем начальное состояние
+        XCTAssertEqual(location.viewLocalImages.count, 2)
+        XCTAssertNotNil(location.background)
+
+        // 3. Вызываем метод
+        await sut.cleanImagesInLocalLocation(location, inContext: .main)
+
+        // 4. Проверяем, что изображения удалены из location
+        XCTAssertEqual(location.viewLocalImages.count, 0)
+        XCTAssertNil(location.background)
+
+        // 5. Проверяем, что изображения удалены из Core Data
+        let allImages = await sut.fetchImagesByType(.location, inContext: .main)
+        XCTAssertTrue(allImages.isEmpty,"\(allImages.count) finded")
+
+        // 6. Проверяем, что изображения удалены с устройства
+        let removed1 = ImagesManager.imageExists(withId: image1.viewId)
+        let removed2 = ImagesManager.imageExists(withId: image2.viewId)
+        let removedBG = ImagesManager.imageExists(withId: backgroundImage.viewId)
+
+        XCTAssertFalse(removed1, "image1 should be removed from device")
+        XCTAssertFalse(removed2, "image2 should be removed from device")
+        XCTAssertFalse(removedBG, "backgroundImage should be removed from device")
+    }
+
+
     
     // MARK: - Templates
     func test_fetchOrCreateLocalTemplateWithId_CreatesNewTemplate() {
@@ -358,6 +573,7 @@ final class DataManagerTests: XCTestCase {
 
 }
 
+// MARK: - Extensions
 extension TemplateDTO {
     static func mock(id: String = UUID().uuidString) -> TemplateDTO {
         let point = TemplatePointDTO(
@@ -395,4 +611,20 @@ extension EventDTO{
         eventDTO.usersIds = usersIds
         return eventDTO
     }
+}
+
+extension UIImage {
+    static var testImage: UIImage {
+        UIImage(systemName: "photo")!
+    }
+}
+
+public extension NSManagedObject {
+
+    convenience init(context: NSManagedObjectContext) {
+        let name = String(describing: type(of: self))
+        let entity = NSEntityDescription.entity(forEntityName: name, in: context)!
+        self.init(entity: entity, insertInto: context)
+    }
+
 }

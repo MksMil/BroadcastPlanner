@@ -10,7 +10,6 @@
 		290056C62C37DF6400CBA472 /* BPUserDataListCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 290056C52C37DF6400CBA472 /* BPUserDataListCellView.swift */; };
 		290B81702AD7FCE700B858F1 /* MainEventsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 290B816F2AD7FCE700B858F1 /* MainEventsList.swift */; };
 		290B81752AD9149800B858F1 /* MotionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 290B81742AD9149800B858F1 /* MotionManager.swift */; };
-		290D88692CBE610500202CEF /* MockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 290D88682CBE610500202CEF /* MockData.swift */; };
 		290F598A2CE63006002EAA4A /* PersonalScreenViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 290F59892CE63006002EAA4A /* PersonalScreenViewModel.swift */; };
 		290F598C2CE7828A002EAA4A /* BPDataProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 290F598B2CE7828A002EAA4A /* BPDataProtocol.swift */; };
 		290FF3B72B5E90240096D655 /* BPErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 290FF3B62B5E90240096D655 /* BPErrorView.swift */; };
@@ -106,7 +105,6 @@
 		290056C52C37DF6400CBA472 /* BPUserDataListCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPUserDataListCellView.swift; sourceTree = "<group>"; };
 		290B816F2AD7FCE700B858F1 /* MainEventsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainEventsList.swift; sourceTree = "<group>"; };
 		290B81742AD9149800B858F1 /* MotionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionManager.swift; sourceTree = "<group>"; };
-		290D88682CBE610500202CEF /* MockData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockData.swift; sourceTree = "<group>"; };
 		290F59892CE63006002EAA4A /* PersonalScreenViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalScreenViewModel.swift; sourceTree = "<group>"; };
 		290F598B2CE7828A002EAA4A /* BPDataProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPDataProtocol.swift; sourceTree = "<group>"; };
 		290FF3B62B5E90240096D655 /* BPErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPErrorView.swift; sourceTree = "<group>"; };
@@ -153,7 +151,7 @@
 		2994DE662C157C9F00DF9060 /* BPCreateEditEventView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPCreateEditEventView.swift; sourceTree = "<group>"; };
 		2994DE6D2C16F18D00DF9060 /* BPJoystick.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPJoystick.swift; sourceTree = "<group>"; };
 		2994DE6F2C17196300DF9060 /* BPEventPlanPointImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPEventPlanPointImage.swift; sourceTree = "<group>"; };
-		299D436B2D2E880F007EEEFE /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
+		299D436B2D2E880F007EEEFE /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DataManager.swift; path = BroadcastPlanner/Utilities/Managers/DataManager.swift; sourceTree = SOURCE_ROOT; };
 		299D43A42D365A49007EEEFE /* TaskDescriptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskDescriptionView.swift; sourceTree = "<group>"; };
 		299D43C62D38F925007EEEFE /* MainDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainDataManager.swift; sourceTree = "<group>"; };
 		29AE68732BE24F9300DE8FAB /* Chat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chat.swift; sourceTree = "<group>"; };
@@ -184,16 +182,6 @@
 		29FFDAB72ADBC2F1005AD50F /* MainBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainBackground.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		29C8F88A2CC0050300A7D5D2 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				BroadcastPlanner.xcdatamodeld,
-			);
-			target = 29B505BB2CB6B3C9003A1E3F /* BroadcastPlannerUnitTests */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		290127A92CCFD5300054B2D7 /* EventHeader */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = EventHeader; sourceTree = "<group>"; };
 		292E4C5B2D0C1D8A0046CABA /* Cache */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Cache; sourceTree = "<group>"; };
@@ -206,7 +194,7 @@
 		29476C002DACE2A8007DFA88 /* Navigation */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Navigation; sourceTree = "<group>"; };
 		29AECAE92CEB357C00CAD02C /* ListCell */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = ListCell; sourceTree = "<group>"; };
 		29B505BD2CB6B3C9003A1E3F /* BroadcastPlannerUnitTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = BroadcastPlannerUnitTests; sourceTree = "<group>"; };
-		29BE3AF42CAD57E600BDEF82 /* Data */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (29C8F88A2CC0050300A7D5D2 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Data; sourceTree = "<group>"; };
+		29BE3AF42CAD57E600BDEF82 /* Data */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Data; sourceTree = "<group>"; };
 		29D8D3B02CEDE589000E4F72 /* Buttons */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Buttons; sourceTree = "<group>"; };
 		29E70B942CDE03B9002B826E /* ImageHandle */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = ImageHandle; sourceTree = "<group>"; };
 		29F7CF132CA158FA009C303E /* DateViews */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = DateViews; sourceTree = "<group>"; };
@@ -582,7 +570,6 @@
 				29AE68782BE2567D00DE8FAB /* EnvStorageGroup */,
 				291E72C72BBEC789008092D7 /* UserGroup */,
 				29AE68722BE24F7900DE8FAB /* MessengerGroup */,
-				290D88682CBE610500202CEF /* MockData.swift */,
 				29476C122DACF904007DFA88 /* ReplayType.swift */,
 				29476C162DACFAF4007DFA88 /* LightType.swift */,
 				29476C182DACFC52007DFA88 /* WindDefence.swift */,
@@ -891,7 +878,6 @@
 				291E72C32BBE859F008092D7 /* BPMessengerView.swift in Sources */,
 				29476C1B2DACFC5B007DFA88 /* PlaceType.swift in Sources */,
 				2994DE6E2C16F18E00DF9060 /* BPJoystick.swift in Sources */,
-				290D88692CBE610500202CEF /* MockData.swift in Sources */,
 				299D43A52D365A49007EEEFE /* TaskDescriptionView.swift in Sources */,
 				290056C62C37DF6400CBA472 /* BPUserDataListCellView.swift in Sources */,
 				29389C3C2B8EE62F003EF60C /* UIKit+ext.swift in Sources */,

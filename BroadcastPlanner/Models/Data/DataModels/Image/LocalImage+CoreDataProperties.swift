@@ -77,8 +77,8 @@ extension LocalImage : Identifiable {
     }
     
     func makeImageWithSize(size: ImageSizes, type: GlobalProperties.ImageType) -> Image{
-        let imageManager = ImagesManager()
-        if let result = imageManager.loadImage(type: size, id: viewId){
+        
+        if let result = ImagesManager.loadImage(imageSize: size, id: viewId){
             return Image(uiImage: result)
         } else {
             switch viewType {
@@ -105,12 +105,11 @@ extension LocalImage : Identifiable {
     }
     
     func makeUIImage() -> UIImage?{
-        let imageManager = ImagesManager()
-        return imageManager.loadImage(type: .originImages, id: viewId )
+        return ImagesManager.loadImage(imageSize: .originImages,
+                                       id: viewId )
     }
     func uploadImage(uiimage: UIImage){
-        let imageManager = ImagesManager()
-        let _ = imageManager.saveResizedImages(image: uiimage, id: viewId, type: viewType)
+        let _ = ImagesManager.saveResizedImages(image: uiimage, id: viewId, type: viewType)
     }
     
 }
