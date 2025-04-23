@@ -13,7 +13,7 @@ import CoreData
 extension LocalUnit {
 
     @nonobjc public class func fetchRequest() -> NSFetchRequest<LocalUnit> {
-        return NSFetchRequest<LocalUnit>(entityName: "LocalObvanUnit")
+        return NSFetchRequest<LocalUnit>(entityName: "LocalUnit")
     }
 
     @NSManaged public var coordinateX: Float
@@ -57,9 +57,9 @@ extension LocalUnit : Identifiable {
         user?.userId ?? ""
     }
     
-    var viewHardware: [HardwareDTO]{
-        guard let hardware else { return [] }
-       return [HardwareDTO(id: hardware.veiwId, envType: hardware.viewType, chanels: hardware.viewChannels)]
+    var viewHardware: HardwareDTO?{
+        guard let hardware else { return nil }
+       return HardwareDTO(id: hardware.veiwId, envType: hardware.viewType, chanels: hardware.viewChannels)
      }
     
     var viewTask: String {
@@ -73,12 +73,13 @@ extension LocalUnit : Identifiable {
     
     var dto: UnitDTO{
         UnitDTO(id: viewId,
-                  position: viewPosition,
-                  coordinateX: viewX,
-                  coordinateY: viewY,
-                  rotation: viewRotation,
-//                  isEnabled: true,
-                  userId: viewUserId,
-                  hardwares: viewHardware)
+                position: viewPosition,
+                coordinateX: viewX,
+                coordinateY: viewY,
+                rotation: viewRotation,
+                scale: viewScaleFactor,
+                task: viewTask,
+                userId: viewUserId,
+                hardware: viewHardware)
     }
 }

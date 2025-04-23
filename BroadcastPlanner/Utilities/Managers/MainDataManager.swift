@@ -17,8 +17,8 @@ class MainDataManager: ObservableObject {
         self.currentId = userId
         self.currentUser = localDataManager.fetchOrCreateObject(ofType: LocalUser.self,
                                                           predicate: NSPredicate(format: "id == %@", userId),
-                                                          in: localDataManager.moc) {
-            let newUser = LocalUser(context: localDataManager.moc)
+                                                          in: localDataManager.moc) { ctx in
+            let newUser = LocalUser(context: ctx)
             newUser.id = userId
             return newUser
         }
@@ -59,8 +59,8 @@ extension MainDataManager{
                         localImage.parentUser = currentUser
                     } else {
                         let localImage = localDataManager.fetchOrCreateObject(ofType: LocalImage.self, predicate: NSPredicate(format: "id == %@", currentId),
-                                                                        in: localDataManager.moc) {
-                            let newImage = LocalImage(context: localDataManager.moc)
+                                                                        in: localDataManager.moc) { ctx in
+                            let newImage = LocalImage(context: ctx)
                             newImage.id = currentId
                             return newImage
                         }
@@ -106,8 +106,8 @@ extension MainDataManager{
     func createEventWithCurrentUserOwnerInContextType(_ type: ContextType) -> LocalEvent{
         let event = localDataManager.fetchOrCreateObject(ofType: LocalEvent.self,
                                                    predicate: NSPredicate(format: "id == %@", UUID().uuidString),
-                                                   in: localDataManager.moc) {
-            let newEvent = LocalEvent(context: localDataManager.moc)
+                                                   in: localDataManager.moc) { ctx in
+            let newEvent = LocalEvent(context: ctx)
             newEvent.id = UUID().uuidString
             return newEvent
         }
@@ -143,7 +143,7 @@ extension MainDataManager{
     func removeEvent(event: LocalEvent) {
         Task{
             await globalDataManager.removeDataOfType(GlobalProperties.Path.events, withId: event.viewId)
-            localDataManager.removeLocalEvent(event, inContext: .main)
+            await localDataManager.removeLocalEvent(event, inContext: .main)
             saveContext(type: .main, publish: .events, id: [])
         }
     }
@@ -291,14 +291,14 @@ extension MainDataManager{
                          withNumber number: Int)->LocalLocationPoint{
         let newPoint = localDataManager.fetchOrCreateObject(ofType: LocalLocationPoint.self,
                                                       predicate: NSPredicate(format: "id == %@", UUID().uuidString),
-                                                      in: localDataManager.moc) {
-            let newLocationPoint = LocalLocationPoint(context: localDataManager.moc)
+                                                      in: localDataManager.moc) { ctx in
+            let newLocationPoint = LocalLocationPoint(context: ctx)
             newLocationPoint.id = UUID().uuidString
                         return newLocationPoint
                     }
         localDataManager.moc.perform {
             newPoint.number = Int16(number)
-            event.addToLocationPoints(newPoint)
+            event.addToPoints(newPoint)
         }
         return newPoint
     }
@@ -318,15 +318,15 @@ extension MainDataManager{
                 event.removeFromUsers(user)
             }
         }
-        localDataManager.removeLocalObvanUnit(unit, inContext: .main)
+        localDataManager.removeLocalUnit(unit, inContext: .main)
     }
     func createUnitWithUser(_ user: LocalUser,
                                     andSpecialization specialization: UserSpecialization,
                                     andHardware hardware: ReplayType?, inEvent event: LocalEvent) -> LocalUnit{
         
-    let unit = localDataManager.createOrUpdateLocalObvanUnitWithUser(user, andPosition: specialization.rawValue, andHardware: hardware, inContext: .main)
+    let unit = localDataManager.createUnitWithUser(user, andPosition: specialization, andHardware: hardware, inContext: .main)
         localDataManager.moc.perform {
-            event.addToObvanUnits(unit)
+            event.addToUnits(unit)
             event.addToUsers(user)
             user.addToParticipateEvents(event)
             user.addToObVanUnits(unit)
@@ -343,8 +343,8 @@ extension MainDataManager{
     func getNewClub() -> LocalClub{
         localDataManager.fetchOrCreateObject(ofType: LocalClub.self,
                                        predicate: NSPredicate(format: "id == %@", UUID().uuidString),
-                                       in: localDataManager.moc) {
-            let newClub = LocalClub(context: localDataManager.moc)
+                                       in: localDataManager.moc) { ctx in
+            let newClub = LocalClub(context: ctx)
             newClub.id = UUID().uuidString
          return newClub
      }
@@ -404,8 +404,8 @@ extension MainDataManager{
     func getNewLocation() -> LocalLocation{
         localDataManager.fetchOrCreateObject(ofType: LocalLocation.self,
                                        predicate: NSPredicate(format: "id == %@", UUID().uuidString),
-                                       in: localDataManager.moc) {
-            let newLocation = LocalLocation(context: localDataManager.moc)
+                                       in: localDataManager.moc) { ctx in
+            let newLocation = LocalLocation(context: ctx)
             newLocation.id = UUID().uuidString
          return newLocation
      }
@@ -471,15 +471,13 @@ extension MainDataManager{
 // MARK: - Template managment
 extension MainDataManager {
     @MainActor
-    func makeLocalPointFromTemplate(_ template: LocalTemplate) -> [LocalLocationPoint]{
-        return localDataManager.mapTemplateToLocationPoints(template: template, inContext: .main)
+    func makeLocalPointFromTemplate(_ template: LocalTemplate)  -> [LocalLocationPoint]{
+        return  localDataManager.mapTemplateToLocationPoints(template: template, inContext: .main)
     }
     
     @MainActor
     func saveTemplateFromSchema(localPoints: [LocalLocationPoint], withName name: String) async {
-        let template = localDataManager.createTemplateWithLocalLocationPoints(localPoints,
-                                                                              andName: name,
-                                                                              inContext: .main)
+        let template = await localDataManager.createTemplateWithLocalLocationPoints(localPoints,andName: name, inContext: .main)
         saveContext(type: .main, publish: .templates, id: [])
         
         await globalDataManager.saveData(template.dto,
@@ -500,8 +498,8 @@ extension MainDataManager{
                              broadcaster: String,
                              image: UIImage?) -> LocalObvan{
         localDataManager.fetchOrCreateObject(ofType: LocalObvan.self, predicate: NSPredicate(format: "id == %@",UUID().uuidString),
-                                             in: localDataManager.moc) {
-            let newObvan = LocalObvan(context: localDataManager.moc)
+                                             in: localDataManager.moc) { ctx in
+            let newObvan = LocalObvan(context: ctx)
             newObvan.id = UUID().uuidString
             return newObvan
         }

@@ -2,7 +2,7 @@
 //  LocalEvent+CoreDataClass.swift
 //  BroadcastPlanner
 //
-//  Created by Миляев Максим on 19.12.2024.
+//  Created by Миляев Максим on 22.04.2025.
 //
 //
 

@@ -56,6 +56,6 @@ extension LocalObvan : Identifiable {
         ObvanDTO(id: viewId,
                  name: viewName,
                  imageId: image?.viewId ?? "",
-        broadcasterId: viewBroadcasterName)
+        broadcaster: viewBroadcasterName)
     }
 }

@@ -307,8 +307,8 @@ struct PointInfoPanelView: View {
                               userId: "123")
     let localEvent = lm.fetchOrCreateObject(ofType: LocalEvent.self,
                   predicate: NSPredicate(format: "id == %@", "id"),
-                                      in: lm.moc) {
-        let newEvent = LocalEvent(context: lm.moc)
+                                      in: lm.moc) { ctx in
+        let newEvent = LocalEvent(context: ctx)
         newEvent.id = "id"
         return newEvent
     }

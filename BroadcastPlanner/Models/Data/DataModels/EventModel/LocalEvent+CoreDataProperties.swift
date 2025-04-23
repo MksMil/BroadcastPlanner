@@ -2,12 +2,12 @@
 //  LocalEvent+CoreDataProperties.swift
 //  BroadcastPlanner
 //
-//  Created by Миляев Максим on 19.12.2024.
+//  Created by Миляев Максим on 22.04.2025.
 //
 //
 
-import UIKit
 import SwiftUI
+import UIKit
 import CoreData
 
 
@@ -22,47 +22,13 @@ extension LocalEvent {
     @NSManaged public var guestClub: LocalClub?
     @NSManaged public var homeClub: LocalClub?
     @NSManaged public var location: LocalLocation?
-    @NSManaged public var points: NSSet?
-    @NSManaged public var obvan: LocalObvan?
-    @NSManaged public var units: NSSet?
-    @NSManaged public var owners: NSSet?
-    @NSManaged public var users: NSSet?
     @NSManaged public var locationPreview: LocalImage?
+    @NSManaged public var obvan: LocalObvan?
     @NSManaged public var obvanPreview: LocalImage?
-
-}
-
-// MARK: Generated accessors for locationPoints
-extension LocalEvent {
-
-    @objc(addLocationPointsObject:)
-    @NSManaged public func addToLocationPoints(_ value: LocalLocationPoint)
-
-    @objc(removeLocationPointsObject:)
-    @NSManaged public func removeFromLocationPoints(_ value: LocalLocationPoint)
-
-    @objc(addLocationPoints:)
-    @NSManaged public func addToLocationPoints(_ values: NSSet)
-
-    @objc(removeLocationPoints:)
-    @NSManaged public func removeFromLocationPoints(_ values: NSSet)
-
-}
-
-// MARK: Generated accessors for obVanUnits
-extension LocalEvent {
-
-    @objc(addObVanUnitsObject:)
-    @NSManaged public func addToObvanUnits(_ value: LocalUnit)
-
-    @objc(removeObVanUnitsObject:)
-    @NSManaged public func removeFromObvanUnits(_ value: LocalUnit)
-
-    @objc(addObVanUnits:)
-    @NSManaged public func addToObvanUnits(_ values: NSSet)
-
-    @objc(removeObVanUnits:)
-    @NSManaged public func removeFromObvanUnits(_ values: NSSet)
+    @NSManaged public var owners: NSSet?
+    @NSManaged public var points: NSSet?
+    @NSManaged public var units: NSSet?
+    @NSManaged public var users: NSSet?
 
 }
 
@@ -80,6 +46,40 @@ extension LocalEvent {
 
     @objc(removeOwners:)
     @NSManaged public func removeFromOwners(_ values: NSSet)
+
+}
+
+// MARK: Generated accessors for points
+extension LocalEvent {
+
+    @objc(addPointsObject:)
+    @NSManaged public func addToPoints(_ value: LocalLocationPoint)
+
+    @objc(removePointsObject:)
+    @NSManaged public func removeFromPoints(_ value: LocalLocationPoint)
+
+    @objc(addPoints:)
+    @NSManaged public func addToPoints(_ values: NSSet)
+
+    @objc(removePoints:)
+    @NSManaged public func removeFromPoints(_ values: NSSet)
+
+}
+
+// MARK: Generated accessors for units
+extension LocalEvent {
+
+    @objc(addUnitsObject:)
+    @NSManaged public func addToUnits(_ value: LocalUnit)
+
+    @objc(removeUnitsObject:)
+    @NSManaged public func removeFromUnits(_ value: LocalUnit)
+
+    @objc(addUnits:)
+    @NSManaged public func addToUnits(_ values: NSSet)
+
+    @objc(removeUnits:)
+    @NSManaged public func removeFromUnits(_ values: NSSet)
 
 }
 

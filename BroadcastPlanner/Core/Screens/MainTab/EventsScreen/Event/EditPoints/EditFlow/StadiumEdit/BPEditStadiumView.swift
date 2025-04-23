@@ -55,9 +55,11 @@ struct BPEditStadiumView: View {
                 if editable {
                     //template group
                     TemplateGroup(templates: templates) { templateToShow in
-                        withAnimation {
-                            vm.loadTemplate(mdm.makeLocalPointFromTemplate(templateToShow))
-                            vm.selectedTemplate = templateToShow
+                        withAnimation {    
+                                let template =  mdm.makeLocalPointFromTemplate(templateToShow)
+                                
+                                    vm.loadTemplate(template)
+                                    vm.selectedTemplate = templateToShow
                         }
                         
                     } addAction: { name in
@@ -166,8 +168,8 @@ struct BPEditStadiumView: View {
                               userId: "123")
     let localEvent = lm.fetchOrCreateObject(ofType: LocalEvent.self,
                   predicate: NSPredicate(format: "id == %@", "id"),
-                                      in: lm.moc) {
-        let newEvent = LocalEvent(context: lm.moc)
+                                      in: lm.moc) { ctx in
+        let newEvent = LocalEvent(context: ctx)
         newEvent.id = "id"
         return newEvent
     }

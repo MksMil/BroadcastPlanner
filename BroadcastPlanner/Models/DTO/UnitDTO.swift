@@ -8,8 +8,10 @@ struct UnitDTO: Codable, Identifiable,BPDataProtocol{
     var coordinateX: Double
     var coordinateY: Double
     var rotation: Double
+    var scale: Double
+    var task: String
     var isEnabled: Bool = true
     var userId: String
-    var hardwares: [HardwareDTO]
+    var hardware: HardwareDTO?
 }
 
