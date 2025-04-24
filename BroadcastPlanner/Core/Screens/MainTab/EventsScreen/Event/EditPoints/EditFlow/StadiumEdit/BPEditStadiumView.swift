@@ -44,8 +44,10 @@ struct BPEditStadiumView: View {
 //                    vm.saveContext()
                     //save context
                     mdm.updateEvent(event, withPoints: vm.localPoints)
-                    mdm.assignSnapshot(vm.makeSceneScreenshot(), toEvent: event)
-                    eventRouter.routeStepBack()
+                    Task{
+                       await mdm.assignSnapshot(vm.makeSceneScreenshot(), toEvent: event)
+                        eventRouter.routeStepBack()
+                    }
                 } content: {
                     BPEventFilterCaseTabView(selectedTab: $vm.stadiumFilter)
                 }

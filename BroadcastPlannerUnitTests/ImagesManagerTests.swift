@@ -32,6 +32,8 @@ final class ImagesManagerTests: XCTestCase {
 
         ImageSizes.allCases.forEach { size in
             let loadedImage = ImagesManager.loadImage(imageSize: size, id: id)
+            let exist = ImagesManager.imageExists(withId: id)
+            XCTAssertTrue(exist)
             XCTAssertNotNil(loadedImage, "Image not loaded for size: \(size)")
         }
 

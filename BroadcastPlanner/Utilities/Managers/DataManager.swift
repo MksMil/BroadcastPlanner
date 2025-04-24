@@ -106,7 +106,7 @@ extension DataManager {
             image.parentUser = localUser
         }
     }
-    func removeUser(_ user: UserDTO,
+    func removeUserWithDTO(_ user: UserDTO,
                     inContext contextType: ContextType
     ) {
         let context = contextFromType(contextType)
@@ -158,13 +158,13 @@ extension DataManager {
             newEvent.id = event.id
             return newEvent
         }
-        await updateLocalEvent(localEvent, with: event, inContext: contextType)
+        await updateLocalEvent(localEvent, withDTO: event, inContext: contextType)
         return localEvent
     }
 
     func updateLocalEvent(
         _ localEvent: LocalEvent,
-        with eventDto: EventDTO,
+        withDTO eventDto: EventDTO,
         inContext contextType: ContextType
     ) async {
         let context = contextFromType(contextType)
@@ -321,7 +321,7 @@ extension DataManager {
         }
     }
 //    @MainActor
-    func removeEvent(_ event: EventDTO, inContext contextType: ContextType) async {
+    func removeEventWithDTO(_ event: EventDTO, inContext contextType: ContextType) async {
         let context = contextFromType(contextType)
         let request = LocalEvent.fetchRequest()
         request.predicate = NSPredicate(format: "id == %@", event.id)
@@ -331,7 +331,6 @@ extension DataManager {
         } else {
             print("error removing event with id = \(event.id)")
         }
-        
     }
     @MainActor
     func removeLocalEvent(_ localEvent: LocalEvent,
@@ -375,10 +374,8 @@ extension DataManager {
         }
     }
 }
-
 // MARK: - Image CRUD
 extension DataManager {
-
     func fetchImagesByType(
         _ type: GlobalProperties.ImageType,
         inContext contextType: ContextType
@@ -423,30 +420,33 @@ extension DataManager {
     }
 
     func createOrUpdateLocalImageWithImageData(
-        imageData: ImageDTO,
+        imageDTO: ImageDTO,
         withImage image: UIImage,
         inContext contextType: ContextType
-    ) -> LocalImage {
+    ) async -> LocalImage {
         let context = contextFromType(contextType)
         let localImage = fetchOrCreateObject(
             ofType: LocalImage.self,
-            predicate: NSPredicate(format: "id == %@", imageData.id),
+            predicate: NSPredicate(format: "id == %@", imageDTO.id),
             in: context
         ) { ctx in
             let newImage = LocalImage(context: ctx)
-            newImage.id = imageData.id
+            newImage.id = imageDTO.id
             return newImage
         }
         let type =
-            GlobalProperties.ImageType.init(rawValue: imageData.type) ?? .none
-        assignType(
-            type: imageData.type,
-            toLocalImage: localImage,
-            inContext: contextType
-        )
-        let _ = ImagesManager.saveResizedImages(
+            GlobalProperties.ImageType.init(rawValue: imageDTO.type) ?? .none
+        await context.perform {
+            localImage.type = type.rawValue
+        }
+//        assignType(
+//            type: imageDTO.type,
+//            toLocalImage: localImage,
+//            inContext: contextType
+//        )
+        let _ = await ImagesManager.saveResizedImagesAsync(
             image: image,
-            id: imageData.id,
+            id: imageDTO.id,
             type: type
         )
         return localImage
@@ -467,8 +467,7 @@ extension DataManager {
         let context = contextFromType(contextType)
         let request = LocalImage.fetchRequest()
         request.predicate = NSPredicate(format: "id == %@", id)
-        context.perform { [weak self] in
-            guard let self else { return }
+        context.perform {
             if let imageToRemove = try? context.fetch(request).first {
                 self.removeLocalImage(imageToRemove, inContext: contextType)
             }
@@ -492,7 +491,7 @@ extension DataManager {
 // MARK: - Location CRUD
 extension DataManager {
 
-    func createOrUpdateLocalLocationWithLocation(
+    func createOrUpdateLocalLocationWithLocationDTO(
         _ location: LocationDTO,
         inContext contextType: ContextType
     ) async -> LocalLocation {
@@ -508,28 +507,27 @@ extension DataManager {
         }
         await updateLocalLocation(
             localLocation,
-            withLocation: location,
+            withDTO: location,
             inContext: contextType
         )
         return localLocation
     }
 
-    func cleanImagesInLocalLocation(_ localLocation: LocalLocation,inContext contextType: ContextType) async {
+    func cleanImagesInLocalLocation(_ localLocation: LocalLocation,andBackground isBg: Bool,inContext contextType: ContextType) async {
         let context = contextFromType(contextType)
+        let imagesToRemove = localLocation.viewLocalImages
         await withTaskGroup { group in
-            for image in localLocation.viewLocalImages{
+            for image in imagesToRemove{
                 group.addTask { [weak self] in
                     guard let self else { return }
-                    self.removeLocalImage(image, inContext: contextType)
                     await context.perform {
                         localLocation.removeFromImages(image)
+                        self.removeLocalImage(image, inContext: contextType)
                     }
                 }
             }
-            if let backgroundImage = localLocation.background{
-                group.addTask { [weak self] in
-                    guard let self else { return }
-                    self.removeLocalImage(backgroundImage, inContext: contextType)
+            if isBg{
+                group.addTask {  
                     await context.perform {
                         localLocation.background = nil
                     }
@@ -540,12 +538,12 @@ extension DataManager {
     
     func updateLocalLocation(
         _ localLocation: LocalLocation,
-        withLocation location: LocationDTO,
+        withDTO location: LocationDTO,
         inContext contextType: ContextType
     ) async {
         let context = contextFromType(contextType)
         //clean images
-        await cleanImagesInLocalLocation(localLocation, inContext: contextType)
+        await cleanImagesInLocalLocation(localLocation,andBackground: true, inContext: contextType)
         context.performAndWait { [weak self] in
             guard let self else { return }
             localLocation.title = location.title
@@ -587,65 +585,45 @@ extension DataManager {
         locationBackground: LocalImage?
     ) async {
         //clean images
-        await self.cleanImagesInLocalLocation(location, inContext: .main)
-        await withTaskGroup(of: Void.self) { group in
-            
-            for localImage in localImages {
-                group.addTask { [weak self] in
-                    guard let self else { return }
-                    //backgroundImages add to set
-                    let newImage = createOrUpdateLocalImageWithImageData(
-                        imageData: ImageDTO(
-                            id: UUID().uuidString,
-                            type: GlobalProperties.ImageType.location.rawValue
-                        ),
-                        withImage: localImage,
-                        inContext: .main
-                    )
-                    await moc.perform {
-                        print("linking LocalImage and location")
-                        location.addToImages(newImage)
-                        newImage.parentLocationImage = location
-                    }
-                }
-            }
-            group.addTask { [weak self] in
-                guard let self else { return }
-                //add backgroundToEvent
-                if let locationBackground = locationBackground {
-                    print("creating back in cd")
-                    await moc.perform {
-                        print("saving and linking location")
-                        location.background = locationBackground
-                        locationBackground.parentLocationBackground = location
-                    }
-                }
-
-                await moc.perform {
-                    print("saving title and address")
-                    location.title = title
-                    location.address = address
-                }
-            }
-            await group.waitForAll()
-            await saveContext(
-                type: .main,
-                publish: .locations,
-                id: []
-            )
+        await cleanImagesInLocalLocation(location,andBackground: true ,inContext: .main)
+        var newLocalImages: [LocalImage] = []
+        for image in localImages {
+             let newImage = await createOrUpdateLocalImageWithImageData(
+                    imageDTO: ImageDTO(
+                        id: UUID().uuidString,
+                        type: GlobalProperties.ImageType.location.rawValue
+                    ),
+                    withImage: image,
+                    inContext: .main
+                )
+            newLocalImages.append(newImage)
         }
+        await moc.perform {
+            location.title = title
+            location.address = address
+            for newImage in newLocalImages{
+                location.addToImages(newImage)
+                newImage.parentLocationImage = location
+            }
+            if let locationBackground = locationBackground {
+                location.background = locationBackground
+                locationBackground.parentLocationBackground = location
+            }
+        }
+        await saveContext(
+            type: .main,
+            publish: .locations,
+            id: []
+        )
     }
 
     func removeLocalLocation(
         _ location: LocalLocation,
         inContext contextType: ContextType
-    ) {
+    ) async  {
         let context = contextFromType(contextType)
-        context.perform { [weak self] in
-            guard let self else { return }
-            for localImage in location.viewLocalImages {
-                self.removeLocalImage(localImage, inContext: contextType)
-            }
+        await cleanImagesInLocalLocation(location, andBackground: false, inContext: contextType)
+        await context.perform {
             context.delete(location)
         }
     }
@@ -654,21 +632,21 @@ extension DataManager {
 // MARK: - obvan CRUD
 extension DataManager {
 
-    func createOrUpdateLocalObvanWithObvan(
-        _ obvan: ObvanDTO,
+    func createOrUpdateLocalObvanWithDTO(
+        _ obvanDTO: ObvanDTO,
         inContext contextType: ContextType
-    ) -> LocalObvan {
+    ) async -> LocalObvan {
         let context = contextFromType(contextType)
         let localObvan = fetchOrCreateObject(
             ofType: LocalObvan.self,
-            predicate: NSPredicate(format: "id == %@", obvan.id),
+            predicate: NSPredicate(format: "id == %@", obvanDTO.id),
             in: context
         ) { ctx in
             let newObvan = LocalObvan(context: ctx)
-            newObvan.id = obvan.id
+            newObvan.id = obvanDTO.id
             return newObvan
         }
-        updateLocalObvan(localObvan, withObvan: obvan, inContext: contextType)
+        await updateLocalObvan(localObvan, withObvan: obvanDTO, inContext: contextType)
         return localObvan
 
     }
@@ -677,11 +655,13 @@ extension DataManager {
         _ localObvan: LocalObvan,
         withObvan obvan: ObvanDTO,
         inContext contextType: ContextType
-    ) {
+    ) async {
         let context = contextFromType(contextType)
-        context.performAndWait { [weak self] in
+        await context.perform { [weak self] in
             guard let self else { return }
+            localObvan.id = obvan.id
             localObvan.name = obvan.name
+            localObvan.broadcaster = obvan.broadcaster
             let image = self.fetchOrCreateObject(
                 ofType: LocalImage.self,
                 predicate: NSPredicate(format: "id == %@", obvan.imageId),
@@ -691,15 +671,16 @@ extension DataManager {
                 newImage.id = obvan.imageId
                 return newImage
             }
+            assignType(type: GlobalProperties.ImageType.obvan.rawValue, toLocalImage: image, inContext: contextType)
             localObvan.image = image
             image.parentObvan = localObvan
         }
     }
 
     //from local user
-    func removeObvan(_ obvan: LocalObvan, inContext contextType: ContextType) {
+    func removeObvan(_ obvan: LocalObvan, inContext contextType: ContextType) async {
         let context = contextFromType(contextType)
-        context.perform { [weak self] in
+        await context.perform { [weak self] in
             guard let self else { return }
             if let localImage = obvan.image {
                 self.removeLocalImage(localImage, inContext: contextType)
@@ -712,15 +693,12 @@ extension DataManager {
     func removeObvanWithId(
         _ id: String,
         inContext contextType: ContextType
-    ) {
+    ) async {
         let context = contextFromType(contextType)
         let request = LocalObvan.fetchRequest()
         request.predicate = NSPredicate(format: "id == %@", id)
-        context.perform { [weak self] in
-            guard let self else { return }
-            if let obvanToRemove = try? context.fetch(request).first {
-                removeObvan(obvanToRemove, inContext: contextType)
-            }
+        if let obvanToRemove = try? context.fetch(request).first {
+            await removeObvan(obvanToRemove, inContext: contextType)
         }
     }
 }
@@ -929,9 +907,7 @@ extension DataManager {
 
         return localCamera
     }
-
-
-    func linkLocalCamera(
+func linkLocalCamera(
         _ camera: LocalCamera,
         withPoint point: LocalLocationPoint,
         inContext contextType: ContextType
@@ -947,8 +923,7 @@ extension DataManager {
         let context = contextFromType(contextType)
         let request = LocalCamera.fetchRequest()
         request.predicate = NSPredicate(format: "id == %@", camera.id)
-        context.perform { [weak self] in
-            guard let self else { return }
+        context.perform {
             if let cameraToRemove = try? context.fetch(request).first {
                 self.removeLocalCamera(cameraToRemove, inContext: contextType)
             }
@@ -1008,7 +983,7 @@ extension DataManager {
         let context = contextFromType(contextType)
         let request = LocalSound.fetchRequest()
         request.predicate = NSPredicate(format: "id == %@", sound.id)
-        context.perform { [weak self] in
+        context.performAndWait { [weak self] in
             guard let self else { return }
             if let soundToRemove = try? context.fetch(request).first {
                 self.removeLocalSound(soundToRemove, inContext: contextType)
@@ -1069,7 +1044,7 @@ extension DataManager {
         let context = contextFromType(contextType)
         let request = LocalLight.fetchRequest()
         request.predicate = NSPredicate(format: "id == %@", light.id)
-        context.perform { [weak self] in
+        context.performAndWait { [weak self] in
             guard let self else { return }
             if let lightToRemove = try? context.fetch(request).first {
                 self.removeLocalLight(lightToRemove, inContext: contextType)
@@ -1139,8 +1114,7 @@ extension DataManager {
         let context = contextFromType(contextType)
         let request = LocalHardware.fetchRequest()
         request.predicate = NSPredicate(format: "id == %@", hardware.id)
-        context.perform { [weak self] in
-            guard let self else { return }
+        context.performAndWait {
             if let hardwareToRemove = try? context.fetch(request).first {
                 self.removeLocalHardware(
                     hardwareToRemove,
@@ -1155,11 +1129,11 @@ extension DataManager {
         inContext contextType: ContextType
     ) {
         let context = contextFromType(contextType)
-        context.perform { context.delete(localhardware) }
+        context.performAndWait { context.delete(localhardware) }
     }
 }
 
-// MARK: - Location Points OBVan Units CRUD
+// MARK: - Location Points CRUD
 extension DataManager {
     //location point
     func createOrUpdateLocalPointWithPointDTO(
@@ -1176,99 +1150,10 @@ extension DataManager {
             newLocationPoint.id = point.id
             return newLocationPoint
         }
-//        updateLocalPoint(
-//            localPoint,
-//            withPointDTO: point,
-//            inContext: contextType
-//        )
-        
-        
-        context.performAndWait {
-           localPoint.coordinateX = Float(point.coordinateX)
-           localPoint.coordinateY = Float(point.coordinateY)
-           localPoint.rotation = Int16(point.rotation)
-           localPoint.scaleFactor = Float(point.scale)
-           localPoint.number = Int16(point.number)
-
-           let image = self.fetchOrCreateObject(
-               ofType: LocalImage.self,
-               predicate: NSPredicate(format: "id == %@", point.imageId),
-               in: context
-           ) { ctx in
-               let newImage = LocalImage(context: ctx)
-               newImage.id = point.imageId
-               return newImage
-           }
-           localPoint.image = image
-           image.addToLocationPoint(localPoint)
-
-           localPoint.pointDescription = point.description
-           localPoint.task = point.task
-
-           for user in localPoint.viewUsers{
-               localPoint.removeFromUser(user)
-           }
-           
-           for id in point.userId {
-               let user = fetchOrCreateObject(
-                   ofType: LocalUser.self,
-                   predicate: NSPredicate(format: "id == %@", id),
-                   in: context
-               ) { ctx in
-                   let newUser = LocalUser(context: ctx)
-                   newUser.id = id
-                   return newUser
-               }
-
-               localPoint.addToUser(user)
-               user.addToLocationPoints(localPoint)
-           }
-            
-            if !localPoint.viewLocalCameras.isEmpty{
-                for cam in localPoint.viewLocalCameras.map({$0}){
-                    localPoint.removeFromCameras(cam)
-                    removeLocalCamera(cam, inContext: contextType)
-                }
-            }
-            if !localPoint.viewLocalSounds.isEmpty{
-                for sound in localPoint.viewLocalSounds.map({$0}){
-                    localPoint.removeFromSounds(sound)
-                    removeLocalSound(sound, inContext: contextType)
-                }
-            }
-            if !localPoint.viewLocalLights.isEmpty{
-                for light in localPoint.viewLocalLights.map({$0}){
-                    localPoint.removeFromLights(light)
-                    removeLocalLight(light, inContext: contextType)
-                }
-            }
-           
-           
-            for cam in point.cameras {
-                let camera = createOrUpdateCamera(cam, inContext: contextType)
-                localPoint.addToCameras(camera)
-                camera.point = localPoint
-                
-            }
-           for sound in point.sounds {
-               let localSound = createOrUpdateSound(
-                   sound,
-                   inContext: contextType
-               )
-               localPoint.addToSounds(localSound)
-               localSound.point = localPoint
-           }
-           for light in point.lights {
-               let localLight = createOrUpdateLocalLightWithLight(
-                   light,
-                   inContext: contextType
-               )
-               localPoint.addToLights(localLight)
-               localLight.point = localPoint
-           }
-       }
+        updateLocalPoint(localPoint,
+                         withPointDTO: point,
+                         inContext: contextType)
         return localPoint
-
     }
 
     func updateLocalPoint(
@@ -1318,6 +1203,17 @@ extension DataManager {
                 user.addToLocationPoints(localPoint)
             }
 
+             for cam in localPoint.viewLocalCameras{
+                 localPoint.removeFromCameras(cam)
+                 removeLocalCamera(cam, inContext: contextType)
+             }
+             
+             for cam in point.cameras {
+                 let camera = createOrUpdateCamera(cam, inContext: contextType)
+                 localPoint.addToCameras(camera)
+                 camera.point = localPoint
+                 
+             }
             for sound in localPoint.viewLocalSounds{
                 localPoint.removeFromSounds(sound)
                 removeLocalSound(sound, inContext: contextType)
@@ -1330,17 +1226,6 @@ extension DataManager {
                 )
                 localPoint.addToSounds(localSound)
                 localSound.point = localPoint
-            }
-            for cam in localPoint.viewLocalCameras{
-                localPoint.removeFromCameras(cam)
-                removeLocalCamera(cam, inContext: contextType)
-            }
-            
-            for cam in point.cameras {
-                let camera = createOrUpdateCamera(cam, inContext: contextType)
-                localPoint.addToCameras(camera)
-                camera.point = localPoint
-
             }
             
             for light in localPoint.viewLocalLights{
@@ -1383,8 +1268,7 @@ extension DataManager {
         inContext contextType: ContextType
     ) {
         let context = contextFromType(contextType)
-        context.performAndWait { [weak self] in
-            guard let self else { return }
+        context.performAndWait {
             localPoint.coordinateX = point.coordinateX
             localPoint.coordinateY = point.coordinateY
             localPoint.rotation = point.rotation
@@ -1418,8 +1302,7 @@ extension DataManager {
                 camera.point = localPoint
 
             }
-            
-            
+          
             for light in localPoint.viewLocalLights{
                 localPoint.removeFromLights(light)
                 removeLocalLight(light, inContext: contextType)
@@ -1442,8 +1325,7 @@ extension DataManager {
         let context = contextFromType(contextType)
         let request = LocalLocationPoint.fetchRequest()
         request.predicate = NSPredicate(format: "id == %@", point.id)
-        context.performAndWait { [weak self] in
-            guard let self else { return }
+        context.performAndWait {
             if let pointToRemove = try? context.fetch(request).first {
                 self.removeLocalLocationPoint(
                     pointToRemove,
@@ -1458,8 +1340,7 @@ extension DataManager {
         inContext contextType: ContextType
     ) {
         let context = contextFromType(contextType)
-        context.performAndWait { [weak self] in
-            guard let self else { return }
+        context.performAndWait {
             for camera in localPoint.viewLocalCameras {
                 self.removeLocalCamera(camera, inContext: contextType)
             }
@@ -1833,27 +1714,25 @@ extension DataManager {
             newTemplate.id = name
             return newTemplate
         }
-        await withTaskGroup { group in
-            group.addTask {
-               await context.perform {
-                    template.name = name
-                }
+        await context.perform {
+            template.name = name
+        }
+        if !template.viewPoints.isEmpty{
+            for point in template.viewPoints{
+                template.removeFromTemplatePoints(point)
+                removeLocalTemplatePoint(point, inContext: contextType)
             }
-            
-            for point in points {
-                group.addTask {
-                    let localTemplatePoint =
-                    await self.createTemplatePointFromLocalLocationPoint(
-                        point,
-                        inContext: contextType
-                    )
-                    await context.perform {
-                        template.addToTemplatePoints(localTemplatePoint)
-                        localTemplatePoint.parentTemplate = template
-                    }
-                }
+        }
+        for point in points {
+            let localTemplatePoint =
+            await self.createTemplatePointFromLocalLocationPoint(
+                point,
+                inContext: contextType
+            )
+            await context.perform {
+                template.addToTemplatePoints(localTemplatePoint)
+                localTemplatePoint.parentTemplate = template
             }
-            await group.waitForAll()
         }
         return template
     }

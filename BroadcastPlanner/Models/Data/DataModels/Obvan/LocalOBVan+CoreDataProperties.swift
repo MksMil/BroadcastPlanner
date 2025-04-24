@@ -4,7 +4,7 @@ import CoreData
 extension LocalObvan {
 
     @nonobjc public class func fetchRequest() -> NSFetchRequest<LocalObvan> {
-        return NSFetchRequest<LocalObvan>(entityName: "LocalOBVan")
+        return NSFetchRequest<LocalObvan>(entityName: "LocalObvan")
     }
 
     @NSManaged public var id: String?

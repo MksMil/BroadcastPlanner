@@ -149,9 +149,9 @@ extension MainDataManager{
     }
 
     func assignSnapshot(_ image:UIImage?,
-                        toEvent event: LocalEvent){
+                        toEvent event: LocalEvent) async {
         if let image {
-            let localImage = localDataManager.createOrUpdateLocalImageWithImageData(imageData: .init(id: UUID().uuidString, type: GlobalProperties.ImageType.locationPreview.rawValue), withImage: image, inContext: .main)
+            let localImage = await localDataManager.createOrUpdateLocalImageWithImageData(imageDTO: .init(id: UUID().uuidString, type: GlobalProperties.ImageType.locationPreview.rawValue), withImage: image, inContext: .main)
             localDataManager.moc.performAndWait {
                 event.locationPreview = localImage
                 localImage.parentLocationPreviewEvent = event
@@ -464,7 +464,7 @@ extension MainDataManager{
         //remove location from firebase
         await globalDataManager.removeDataOfType(.locations, withId: location.viewId)
         //remove images and location from CoreData
-        localDataManager.removeLocalLocation(location, inContext: .main)
+        await localDataManager.removeLocalLocation(location, inContext: .main)
         saveContext(type: .main, publish: .locations, id: [])
     }
 }

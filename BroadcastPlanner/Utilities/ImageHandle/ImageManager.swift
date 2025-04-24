@@ -20,12 +20,13 @@ enum ImagesManager {
     static func imageExists(withId id: String) -> Bool {
         let fileManager = FileManager.default
         let documentDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
-
+        
         return ImageSizes.allCases.contains { size in
             let folder = documentDirectory.appendingPathComponent(size.rawValue)
-            let pngPath = folder.appendingPathComponent(id).appendingPathComponent(".png").path
-            let jpegPath = folder.appendingPathComponent(id).appendingPathComponent(".jpeg").path
-            return fileManager.fileExists(atPath: pngPath) || fileManager.fileExists(atPath: jpegPath)
+            let pngFilepath   = folder.appendingPathComponent("\(id).png").path()
+            let jpegFilepath  = folder.appendingPathComponent("\(id).jpeg").path()
+
+            return fileManager.fileExists(atPath: pngFilepath) || fileManager.fileExists(atPath: jpegFilepath)
         }
     }
 
