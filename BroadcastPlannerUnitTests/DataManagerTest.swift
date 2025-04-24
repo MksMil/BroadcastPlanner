@@ -570,7 +570,7 @@ final class DataManagerTests: XCTestCase {
         let id = "obvanId"
         let dto = ObvanDTO.mock(id: id)
         
-        let obvan = await sut.createOrUpdateLocalObvanWithDTO(dto, inContext: .main)
+        _ = await sut.createOrUpdateLocalObvanWithDTO(dto, inContext: .main)
         //except that obvan created
         let request = LocalObvan.fetchRequest()
         if let result = try? context.fetch(request){
@@ -667,7 +667,414 @@ final class DataManagerTests: XCTestCase {
             XCTFail("Obvan Entity must be created")
         }
     }
+    // MARK: - Clubs
+    func test_fetchAllLocalClubs_fetchesAllClubs()async{
+        let dtos = [ClubDTO.mock(id: "1"),
+                    ClubDTO.mock(id: "2"),
+                    ClubDTO.mock(id: "3"),
+                    ClubDTO.mock(id: "4")]
+        for dto in dtos{
+           _ = await sut.createOrUpdateLocalClubWithDTO(dto, inContext: .main)
+        }
+        var result = sut.fetchAllLocalClubs(inContext: .main)
+        XCTAssertEqual(result.count, dtos.count)
+        sut.removeClubWithDTO(dtos[0], inContext: .main)
+        await sut.saveContext(type: .main, publish: .clubs, id: [])
+        result = sut.fetchAllLocalClubs(inContext: .main)
+        XCTAssertEqual(result.count, dtos.count - 1)
+    }
     
+    func test_createOrUpdateLocalClubWithDTO_createsAndUpdatesNewClub()async{
+        let id = "clubId"
+        let dto = ClubDTO.mock(id: id)
+        
+        _ = await sut.createOrUpdateLocalClubWithDTO(dto, inContext: .main)
+        
+        let request = LocalClub.fetchRequest()
+        let result = try? context.fetch(request)
+        
+        XCTAssertEqual(result?.count, 1)
+        XCTAssertEqual(result?.first?.id, id)
+        XCTAssertEqual(result?.first?.title, dto.title)
+        XCTAssertEqual(result?.first?.contacts, dto.contacts)
+        XCTAssertEqual(result?.first?.urlString, dto.urlString)
+        XCTAssertEqual(result?.first?.imageLogo?.id, dto.imageLogoID)
+        XCTAssertEqual(result?.first?.homeLocation?.id, dto.homeLocationID)
+        
+    }
+    func test_createOrUpdateLocalClubWithDTO_fetchAndUpdateExistingClub()async{
+        let id = "clubId"
+        let dto = ClubDTO.mock(id: id)
+        let club = LocalClub(context: context)
+        club.id = id
+        
+        let request = LocalClub.fetchRequest()
+        var result = try? context.fetch(request)
+        
+        XCTAssertEqual(result?.count, 1)
+        XCTAssertEqual(result?.first?.id, id)
+        XCTAssertNil(result?.first?.title)
+        XCTAssertNil(result?.first?.contacts)
+        XCTAssertNil(result?.first?.urlString)
+        XCTAssertNil(result?.first?.imageLogo?.id)
+        XCTAssertNil(result?.first?.homeLocation?.id)
+        
+        _ = await sut.createOrUpdateLocalClubWithDTO(dto, inContext: .main)
+        
+        
+        result = try? context.fetch(request)
+        
+        XCTAssertEqual(result?.count, 1)
+        XCTAssertEqual(result?.first?.id, id)
+        XCTAssertEqual(result?.first?.title, dto.title)
+        XCTAssertEqual(result?.first?.contacts, dto.contacts)
+        XCTAssertEqual(result?.first?.urlString, dto.urlString)
+        XCTAssertEqual(result?.first?.imageLogo?.id, dto.imageLogoID)
+        XCTAssertEqual(result?.first?.homeLocation?.id, dto.homeLocationID)
+    }
+ 
+    func test_updateLocalClubWithIdAndData_updatesClub()async{
+        let id = "clubId"
+        let club = LocalClub(context: context)
+        club.id = id
+        let request = LocalClub.fetchRequest()
+        var result = try? context.fetch(request)
+        XCTAssertEqual(result?.count, 1)
+        XCTAssertEqual(result?.first?.id, id)
+        XCTAssertNil(result?.first?.title)
+        XCTAssertNil(result?.first?.contacts)
+        XCTAssertNil(result?.first?.urlString)
+        XCTAssertNil(result?.first?.imageLogo?.id)
+        XCTAssertNil(result?.first?.homeLocation?.id)
+        
+        let title = "title"
+        let image = UIImage.testImage
+        let contacts = "contacts"
+        let urlString = "urlString"
+        let locationId = "loctionId"
+        let location = await sut.createOrUpdateLocalLocationWithLocationDTO(LocationDTO.mock(id: locationId), inContext: .main)
+
+        await sut.updateClubWith(id: id, title: title, uiimage: image, contacts: contacts, urlString: urlString, location: location, inContext: .main)
+        result = try? context.fetch(request)
+        
+        XCTAssertEqual(result?.count, 1)
+        XCTAssertEqual(result?.first?.id, id)
+        XCTAssertEqual(result?.first?.title, title)
+        XCTAssertEqual(result?.first?.contacts, contacts)
+        XCTAssertEqual(result?.first?.urlString, urlString)
+        XCTAssertEqual(result?.first?.homeLocation, location)
+        XCTAssertNotNil(result?.first?.imageLogo)
+        
+        guard let imageId = result?.first?.imageLogo?.id else { return }
+        let imageRequest = LocalImage.fetchRequest()
+        imageRequest.predicate = NSPredicate(format: "id == %@",imageId)
+        if let localImage = try? context.fetch(imageRequest).first{
+            XCTAssertEqual(localImage.type, GlobalProperties.ImageType.club.rawValue)
+            XCTAssertEqual(localImage.parentClubLogo, result?.first)
+            let exist = ImagesManager.imageExists(withId: localImage.viewId)
+            XCTAssertTrue(exist)
+        }
+    }
+    func test_updateLocalClubWithData_updatesClub()async{
+        let id = "clubId"
+        let club = LocalClub(context: context)
+        club.id = id
+        let request = LocalClub.fetchRequest()
+        var result = try? context.fetch(request)
+        XCTAssertEqual(result?.count, 1)
+        XCTAssertEqual(result?.first?.id, id)
+        XCTAssertNil(result?.first?.title)
+        XCTAssertNil(result?.first?.contacts)
+        XCTAssertNil(result?.first?.urlString)
+        XCTAssertNil(result?.first?.imageLogo?.id)
+        XCTAssertNil(result?.first?.homeLocation?.id)
+        
+        let title = "title"
+        let image = UIImage.testImage
+        let contacts = "contacts"
+        let urlString = "urlString"
+        let locationId = "loctionId"
+        let location = await sut.createOrUpdateLocalLocationWithLocationDTO(LocationDTO.mock(id: locationId), inContext: .main)
+
+        await sut.updateClubWithClub(club:club, title: title, uiimage: image, contacts: contacts, urlString: urlString, location: location, inContext: .main)
+        result = try? context.fetch(request)
+        
+        XCTAssertEqual(result?.count, 1)
+        XCTAssertEqual(result?.first?.id, id)
+        XCTAssertEqual(result?.first?.title, title)
+        XCTAssertEqual(result?.first?.contacts, contacts)
+        XCTAssertEqual(result?.first?.urlString, urlString)
+        XCTAssertEqual(result?.first?.homeLocation, location)
+        XCTAssertNotNil(result?.first?.imageLogo)
+        
+        guard let imageId = result?.first?.imageLogo?.id else { return }
+        let imageRequest = LocalImage.fetchRequest()
+        imageRequest.predicate = NSPredicate(format: "id == %@",imageId)
+        if let localImage = try? context.fetch(imageRequest).first{
+            XCTAssertEqual(localImage.type, GlobalProperties.ImageType.club.rawValue)
+            XCTAssertEqual(localImage.parentClubLogo, result?.first)
+            let exist = ImagesManager.imageExists(withId: localImage.viewId)
+            XCTAssertTrue(exist)
+        }
+    }
+    func test_removeClubWithDTO_removesClub()async{
+        let id = "clubId"
+        let dto = ClubDTO.mock(id: id)
+        let club = LocalClub(context: context)
+        club.id = id
+        let title = "title"
+        let image = UIImage.testImage
+        let contacts = "contacts"
+        let urlString = "urlString"
+        let locationId = "loctionId"
+        let location = await sut.createOrUpdateLocalLocationWithLocationDTO(LocationDTO.mock(id: locationId), inContext: .main)
+
+        await sut.updateClubWithClub(club:club, title: title, uiimage: image, contacts: contacts, urlString: urlString, location: location, inContext: .main)
+        let imageId = club.imageLogo?.id
+        
+        sut.removeClubWithDTO(dto, inContext: .main)
+        await sut.saveContext(type: .main, publish: .clubs, id: [])
+        //club , localImage
+        let request = LocalClub.fetchRequest()
+        if let result = try? context.fetch(request){
+            XCTAssertTrue(result.isEmpty)
+        } else {
+            XCTFail("wrong request in club remove test")
+        }
+        if let imageId{
+            let imageRequest = LocalImage.fetchRequest()
+            imageRequest.predicate = NSPredicate(format: "id == %@",imageId)
+            if let localImage = try? context.fetch(imageRequest){
+                XCTAssertTrue(localImage.isEmpty)
+                let exist = ImagesManager.imageExists(withId: imageId)
+                XCTAssertFalse(exist)
+            }
+        } else {
+            XCTFail("something wrong with imageLogo in removeClubTest")
+        }
+        
+        
+    }
+    func test_removeLocalClub_removesClub()async{
+        let id = "clubId"
+        let club = LocalClub(context: context)
+        club.id = id
+        let title = "title"
+        let image = UIImage.testImage
+        let contacts = "contacts"
+        let urlString = "urlString"
+        let locationId = "loctionId"
+        let location = await sut.createOrUpdateLocalLocationWithLocationDTO(LocationDTO.mock(id: locationId), inContext: .main)
+
+        await sut.updateClubWithClub(club:club, title: title, uiimage: image, contacts: contacts, urlString: urlString, location: location, inContext: .main)
+        let imageId = club.imageLogo?.id
+        sut.removeLocalClub(localClub: club, inContext: .main)
+        await sut.saveContext(type: .main, publish: .clubs, id: [])
+        let request = LocalClub.fetchRequest()
+        if let result = try? context.fetch(request){
+            XCTAssertTrue(result.isEmpty)
+        } else {
+            XCTFail("wrong request in club remove test")
+        }
+        if let imageId{
+            let imageRequest = LocalImage.fetchRequest()
+            imageRequest.predicate = NSPredicate(format: "id == %@",imageId)
+            if let localImage = try? context.fetch(imageRequest){
+                XCTAssertTrue(localImage.isEmpty)
+                let exist = ImagesManager.imageExists(withId: imageId)
+                XCTAssertFalse(exist)
+            }
+        } else {
+            XCTFail("something wrong with imageLogo in removeClubTest")
+        }
+    }
+    
+    // MARK: - Environment
+    // MARK: Camera
+    func test_createOrUpdateCamera_createAndUpdates(){
+        let id = "camId"
+        let dto = CameraDTO.mock(id: id)
+        _ = sut.createOrUpdateCamera(dto, inContext: .main)
+        let fetchRequest = LocalCamera.fetchRequest()
+        let result = try? context.fetch(fetchRequest)
+        XCTAssertEqual(result?.count, 1)
+        XCTAssertEqual(result?.first?.id, id)
+        XCTAssertEqual(result?.first?.optic, dto.optic.rawValue)
+    }
+    func test_linkLocalCameraWithPoint_links(){
+        let id = "camId"
+        let dto = CameraDTO.mock(id: id)
+        let camera = sut.createOrUpdateCamera(dto, inContext: .main)
+        let point = LocalLocationPoint(context: context)
+        
+        sut.linkLocalCamera(camera, withPoint: point, inContext: .main)
+        XCTAssertEqual(camera.point, point)
+        XCTAssertTrue(point.viewLocalCameras.contains(camera))
+    }
+    func test_removeCameraWithDTO_removesCamera()async{
+        let id = "camId"
+        let dto = CameraDTO.mock(id: id)
+        _ = sut.createOrUpdateCamera(dto, inContext: .main)
+        let fetchRequest = LocalCamera.fetchRequest()
+        var result = try? context.fetch(fetchRequest)
+        XCTAssertEqual(result?.count, 1)
+        XCTAssertEqual(result?.first?.id, id)
+        XCTAssertEqual(result?.first?.optic, dto.optic.rawValue)
+        
+        sut.removeCameraWithDTO(dto, inContext: .main)
+        await sut.saveContext(type: .main, publish: .cameras, id: [])
+        result = try? context.fetch(fetchRequest)
+        XCTAssertEqual(result?.count, 0)
+    }
+    
+    func test_removeLocalCamera_removesCamera()async{
+        let camera = LocalCamera(context: context)
+        let fetchRequest = LocalCamera.fetchRequest()
+        var result = try? context.fetch(fetchRequest)
+        XCTAssertEqual(result?.count, 1)
+        
+        sut.removeLocalCamera(camera, inContext: .main)
+        await sut.saveContext(type: .main, publish: .cameras, id: [])
+        result = try? context.fetch(fetchRequest)
+        XCTAssertEqual(result?.count, 0)
+    }
+    // MARK: Sound
+    
+    func test_createOrUpdateSound_createsSound(){
+        let id = "soundId"
+        let dto = SoundDTO.mock(id: id)
+        
+        _ = sut.createOrUpdateSound(dto, inContext: .main)
+        let request = LocalSound.fetchRequest()
+        let result = try? context.fetch(request)
+        XCTAssertEqual(result?.count, 1)
+        XCTAssertEqual(result?.first?.id, id)
+        XCTAssertEqual(result?.first?.placeType, dto.placeType.rawValue)
+        XCTAssertEqual(result?.first?.windDefence, dto.windDefence.rawValue)
+    }
+    
+    func test_linkLocalSound_links(){
+        let sound = LocalSound(context: context)
+        let point = LocalLocationPoint(context: context)
+        sut.linkLocalSound(sound, withPoint: point, inContext: .main)
+        XCTAssertEqual(sound.point, point)
+        XCTAssertTrue(point.viewLocalSounds.contains(sound))
+    }
+    
+    func test_removeSoundWithDTO_removesSound()async{
+        let id = "soundId"
+        let dto = SoundDTO.mock(id: id)
+        _ = sut.createOrUpdateSound(dto, inContext: .main)
+        let request = LocalSound.fetchRequest()
+        var result = try? context.fetch(request)
+        XCTAssertEqual(result?.count, 1)
+        XCTAssertEqual(result?.first?.id, id)
+        sut.removeSoundWithDTO(dto, inContext: .main)
+        await sut.saveContext(type: .main, publish: .sounds, id: [])
+        result = try? context.fetch(request)
+        XCTAssertEqual(result?.count, 0)
+        
+    }
+    func test_removeLocalSound_removesSound()async{
+        let sound = LocalSound(context: context)
+        let request = LocalSound.fetchRequest()
+        var result = try? context.fetch(request)
+        XCTAssertEqual(result?.count, 1)
+        sut.removeLocalSound(sound, inContext: .main)
+        await sut.saveContext(type: .main, publish: .sounds, id: [])
+        result = try? context.fetch(request)
+        XCTAssertEqual(result?.count, 0)
+    }
+    
+    // MARK: Light
+    func test_createOrUpdateLight_createsLight(){
+        let id = "lightId"
+        let dto = LightDTO.mock(id: id)
+        _ = sut.createOrUpdateLight(dto, inContext: .main)
+        let request = LocalLight.fetchRequest()
+        let result = try? context.fetch(request)
+        XCTAssertEqual(result?.count, 1)
+        XCTAssertEqual(result?.first?.id, id)
+        XCTAssertEqual(result?.first?.lightType, dto.lightType.rawValue)
+        
+    }
+    
+    func test_linkLocalLight_lonks(){
+        let light = LocalLight(context: context)
+        let point = LocalLocationPoint(context: context)
+        sut.linkLocalLight(light, WithPoint: point, InContext: .main)
+        XCTAssertEqual(light.point, point)
+        XCTAssertTrue(point.viewLocalLights.contains(light))
+    }
+    
+    func test_removeLightWithDTO_removesLight() async {
+        let id = "lightId"
+        let dto = LightDTO.mock(id: id)
+        _ = sut.createOrUpdateLight(dto, inContext: .main)
+        let request = LocalLight.fetchRequest()
+        var result = try? context.fetch(request)
+        XCTAssertEqual(result?.count, 1)
+        
+        sut.removeLightWithDTO(dto, inContext: .main)
+        await sut.saveContext(type: .main, publish: .lights, id: [])
+        result = try? context.fetch(request)
+        XCTAssertEqual(result?.count, 0)
+    }
+    func test_removeLocalLight_removesLight()async{
+        let light = LocalLight(context: context)
+        let request = LocalLight.fetchRequest()
+        var result = try? context.fetch(request)
+        XCTAssertEqual(result?.count, 1)
+        
+        sut.removeLocalLight(light, inContext: .main)
+        await sut.saveContext(type: .main, publish: .lights, id: [])
+        result = try? context.fetch(request)
+        XCTAssertEqual(result?.count, 0)
+    }
+    // MARK: Hardware
+    func test_createOrUpdateHardwareWithDTO_createsHardware(){
+        let id = "hardwareId"
+        let dto = HardwareDTO.mock(id: id)
+        _ = sut.createOrUpdateHardwareWithDTO(dto, inContext: .main)
+        let request = LocalHardware.fetchRequest()
+        let result = try? context.fetch(request)
+        XCTAssertEqual(result?.count, 1)
+        XCTAssertEqual(result?.first?.id, id)
+        XCTAssertEqual(result?.first?.type, dto.envType.rawValue)
+        XCTAssertEqual(result?.first?.channels, dto.chanels.joined(separator: ","))
+    }
+    
+    func test_linkLocalHardware_links(){
+        let hardware = LocalHardware(context: context)
+        let unit = LocalUnit(context: context)
+        sut.linkLocalHardware(hardware, withUnit: unit, inContext: .main)
+        XCTAssertEqual(hardware.obVanUnit, unit)
+        XCTAssertEqual(unit.hardware, hardware)
+    }
+    func test_removeHardwareWithDTO_removesHardware() async {
+        let id = "hardwareId"
+        let dto = HardwareDTO.mock(id: id)
+        _ = sut.createOrUpdateHardwareWithDTO(dto, inContext: .main)
+        let request = LocalHardware.fetchRequest()
+        var result = try? context.fetch(request)
+        XCTAssertEqual(result?.count, 1)
+        
+        sut.removeHardwareWithDTO(dto, inContext: .main)
+        await sut.saveContext(type: .main, publish: .hardwares, id: [])
+        result = try? context.fetch(request)
+        XCTAssertEqual(result?.count, 0)
+    }
+    func test_removeLocalHardware_removesHardware() async {
+        let hardware = LocalHardware(context: context)
+        let request = LocalHardware.fetchRequest()
+        var result = try? context.fetch(request)
+        XCTAssertEqual(result?.count, 1)
+        
+        sut.removeLocalHardware(hardware, inContext: .main)
+        await sut.saveContext(type: .main, publish: .hardwares, id: [])
+        result = try? context.fetch(request)
+        XCTAssertEqual(result?.count, 0)
+    }
     
     // MARK: - LocationPoints
     func test_createOrUpdateLocalPointWithPointDTO_createsAndUpdatesPoint()async{

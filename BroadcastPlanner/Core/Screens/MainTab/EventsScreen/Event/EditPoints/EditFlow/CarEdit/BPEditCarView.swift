@@ -316,8 +316,6 @@ struct BPEditCarView: View {
             .padding(.horizontal)
         }
     }
-
-   
 }
 
 #Preview {

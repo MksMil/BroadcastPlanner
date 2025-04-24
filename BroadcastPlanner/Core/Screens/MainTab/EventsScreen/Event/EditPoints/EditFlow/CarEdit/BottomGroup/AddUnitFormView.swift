@@ -10,12 +10,14 @@ struct AddUnitFormView: View {
     let availableUsers: [LocalUser]
     let cancelAction: ()->()
     let addAction: (UserSpecialization, LocalUser,ReplayType?)->()
+    
     @State private var selectedSpecialization: UserSpecialization?
     @State private var selectedHardware: ReplayType?
 //    @State private var selectedUser: LocalUser?
     
     @State private var isShowInfo: Bool = false
     @State private var userForInfo: LocalUser?
+    
     var isAcceptAvailable: Bool {
         guard vm.selectedUser != nil else { return false}
         guard selectedSpecialization != nil else { return false}

@@ -65,7 +65,7 @@ struct PanelLightCollectionView: View {
                 ForEach(LightType.allCases){ light in
                     Text(light.rawValue)
                         .onTapGesture {
-                            let newLight = mdm.localDataManager.createOrUpdateLocalLightWithLight(LightDTO(id: UUID().uuidString, lightType: light), inContext: .main)
+                            let newLight = mdm.localDataManager.createOrUpdateLight(LightDTO(id: UUID().uuidString, lightType: light), inContext: .main)
                             addAction(newLight)
                             isSelect = false
                         }

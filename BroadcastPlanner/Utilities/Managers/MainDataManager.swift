@@ -541,7 +541,6 @@ extension MainDataManager {
     @MainActor
     func removeImage(selectedImage: LocalImage?){
         if let localImageToRemove = selectedImage{
-            
             localDataManager.removeLocalImage(localImageToRemove,
                                               inContext: .main)
             saveContext(type: .main, publish: .none, id: [])
