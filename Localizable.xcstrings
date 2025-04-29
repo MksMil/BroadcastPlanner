@@ -86,6 +86,9 @@
     "Choose Location" : {
 
     },
+    "Club" : {
+
+    },
     "Club and Location Edit" : {
 
     },
@@ -96,6 +99,15 @@
 
     },
     "contact info" : {
+
+    },
+    "Create Club" : {
+
+    },
+    "Create Event" : {
+
+    },
+    "Create User" : {
 
     },
     "Creation date: %@" : {
@@ -224,6 +236,9 @@
     "Remove Club" : {
 
     },
+    "Remove Event" : {
+
+    },
     "Remove light hardware" : {
 
     },
@@ -237,6 +252,9 @@
 
     },
     "Remove user" : {
+
+    },
+    "RemoveClub" : {
 
     },
     "Replay Hardware" : {
@@ -281,10 +299,25 @@
     "template title" : {
 
     },
+    "Test" : {
+
+    },
     "Update %@" : {
 
     },
+    "Update Club" : {
+
+    },
+    "Update Event" : {
+
+    },
+    "Update User" : {
+
+    },
     "url" : {
+
+    },
+    "User" : {
 
     },
     "Welcome!\nselection: %lld" : {

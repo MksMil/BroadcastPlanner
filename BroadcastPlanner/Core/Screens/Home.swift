@@ -6,7 +6,7 @@ struct Home: View {
     @EnvironmentObject var session: SessionManager
     @StateObject var mdm: MainDataManager
 
-    @State private var selection: Int = 1
+    @State private var selection: Int = 4
     
     init(localDataManager: DataManager,
          globalDataManager: NetworkManager,
@@ -21,6 +21,7 @@ struct Home: View {
             
             TabView(selection: $selection) {
                 //event list
+                
                 MainEventsList()
                     .tabItem { Label("Hello", systemImage: "calendar") }
                     .tag(0)
@@ -41,6 +42,11 @@ struct Home: View {
                 SettingsView()
                     .tabItem { Label("Settings", systemImage: "gear") }
                     .tag(3)
+                    .padding(.bottom,1)
+                //Test screen
+                NetworkTestView()
+                    .tabItem{ Label("Test",systemImage: "globe") }
+                    .tag(4)
                     .padding(.bottom,1)
             }
         }

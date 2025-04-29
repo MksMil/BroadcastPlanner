@@ -129,12 +129,14 @@ struct BPCreateEditEventView: View {
                 //save event and dismiss screen
                 ToolbarItem(placement: .confirmationAction) {
                     Button {
-                        mdm.updateEvent(event,
-                                        homeClub: vm.homeClub,
-                                        guestClub: vm.guestClub,
-                                        eventDate: vm.eventDate,
-                                        location: vm.location)
-                        eventRouter.routeStepBack()
+                        Task{
+                            await mdm.updateEvent(event,
+                                                  homeClub: vm.homeClub,
+                                                  guestClub: vm.guestClub,
+                                                  eventDate: vm.eventDate,
+                                                  location: vm.location)
+                            eventRouter.routeStepBack()
+                        }
                     } label: {
                         Image(systemName: "checkmark.circle")
                     }
@@ -163,8 +165,10 @@ struct BPCreateEditEventView: View {
         .navigationBarBackButtonHidden()
         .confirmationDialog("", isPresented: $isRemoveConfirm) {
             Button("Delete Event", role: .destructive){
-                mdm.removeEvent(event: event)
-                eventRouter.routeStepBack()
+                Task{
+                    await mdm.removeEvent(event: event)
+                    eventRouter.routeStepBack()
+                }
             }
         }
     }

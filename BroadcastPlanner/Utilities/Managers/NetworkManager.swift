@@ -1,4 +1,5 @@
 import Firebase
+import FirebaseDatabase
 import FirebaseCore
 import FirebaseFirestoreSwift
 import FirebaseStorage
@@ -7,6 +8,63 @@ import UIKit
 //firebase newtwork manager
 
 // try to use delegate patern to update local storage with snapshotlisteners events
+protocol UpdateDelegeteProtocol{
+    func updateData()
+}
+/* updatedAt field
+let lastSynced = UserDefaults.standard.object(forKey: "lastSyncedAt") as? Date ?? .distantPast
+
+db.collection("your_collection")
+  .whereField("updatedAt", isGreaterThan: Timestamp(date: lastSynced))
+  .getDocuments { snapshot, error in
+    // обработка новых записей
+  }
+*/
+
+
+/* CHANGES
+ func syncChangesFromFirebase() async {
+     let db = Firestore.firestore()
+     let lastSyncedAt = UserDefaults.standard.object(forKey: "lastSyncedAt") as? Date ?? .distantPast
+
+     let changesQuery = db.collection("changes")
+         .whereField("timestamp", isGreaterThan: Timestamp(date: lastSyncedAt))
+
+     do {
+         let snapshot = try await changesQuery.getDocuments()
+         for doc in snapshot.documents {
+             let data = doc.data()
+             guard
+                 let type = data["type"] as? String,
+                 let collection = data["collection"] as? String,
+                 let targetId = data["targetId"] as? String
+             else { continue }
+
+             switch type {
+             case "create", "update":
+                 let object = try await db.collection(collection).document(targetId).getDocument()
+                 if object.exists {
+                     // Обновить или создать локально
+                     print("Update local \(collection) with id \(targetId)")
+                 }
+             case "delete":
+                 // Удалить локально объект с id = targetId
+                 print("Delete local \(collection) with id \(targetId)")
+             default:
+                 break
+             }
+         }
+
+         // Обновить дату последней синхронизации
+         UserDefaults.standard.set(Date(), forKey: "lastSyncedAt")
+
+     } catch {
+         print("Error syncing changes: \(error)")
+     }
+ }
+
+ */
+
 
 final class NetworkManager: ObservableObject {
     
@@ -152,7 +210,7 @@ extension NetworkManager {
                                   type: GlobalProperties.ImageType) async {
         var data: Data
         //png for alpha
-        if //type == .club || type == .eventTemplate,
+        if type == .club || type == .eventTemplate,
            let imageData = uiimage.pngData(){
             data = imageData
         } else if let imageData = uiimage.jpegData(compressionQuality: 1) {
@@ -258,12 +316,51 @@ extension NetworkManager {
     }
 
 }
-
-
+// MARK: - Changes
+extension NetworkManager{
+    func makeChanges(type: GlobalProperties.Path, id: String, userCount: Int) async {
+       
+        
+    }
+    
+    func loadExistingChanges(){
+        //update changes.with id
+        
+        //temporary mock
+        let changes = ChangesDTO(id: "123", changesType: .update, timestamp: Timestamp(date: .now), type: GlobalProperties.Path.events.rawValue, changesId: "eventId", updateCounter: 0)
+        let userCount = 0
+        let ref = db.collection(changes.type).document(changes.id) //add path to current changes context
+        db.runTransaction { ctx, error in
+            if var data = try? ctx.getDocument(ref).data(as: ChangesDTO.self){
+                if data.updateCounter < userCount{
+                    data.updateCounter += 1
+                   return try? ctx.setData(from: data, forDocument: ref)
+                } else {
+                    return ctx.deleteDocument(ref)
+                }
+            }
+//            if let data = changes as? ChangesDTO{
+//                let update = ["counter": ServerValue.increment(1)]
+//                self.db.collection("").document()
+//            }
+            return ctx
+        } completion: { result, err in
+            print(String(describing: result))
+        }
+    }
+    
+    func removeChanges(id: String){
+        
+    }
+    
+    func updateTimestamp(){
+        
+    }
+}
+ 
 // MARK: - Save/load/remove generics test
 
 extension NetworkManager {
-    
     func saveData(_ dto: Codable,
                   withId id: String,
                   withType type: GlobalProperties.Path) async {
@@ -271,18 +368,26 @@ extension NetworkManager {
             let dataRef = db.collection("\(type.rawValue)")
             let data = try Firestore.Encoder().encode(dto)
             try await dataRef.document(id).setData(data)
+            if type != GlobalProperties.Path.changes{
+                // TODO: inject when app loads and observe later users count
+                await makeChanges(type: type, id: id, userCount: 30)//
+            }
         }catch{
 #if DEBUG
             print(
                 "DEBUG: NetworkManager: generic \(type.rawValue) data save error: \(error.localizedDescription)")
 #endif
         }
+        
+        //add to changes (id,path,timestamp)
+        // struct ChangesDTO{ } ??
     }
     //inspect and improve
     func loadDataOfType(_ type: GlobalProperties.Path, id: String) async ->[String: Any]? {
         let dataRef = db.collection("\(type.rawValue)").document(id)
         do{
             let data = try await dataRef.getDocument().data()
+            //TODO: inspect changes + completion(data)?
             return data
         } catch {
 #if DEBUG
@@ -297,6 +402,7 @@ extension NetworkManager {
         let dataRef = db.collection("\(type)").document(id)
         do {
             try await dataRef.delete()
+            
         } catch {
 #if DEBUG
             print(

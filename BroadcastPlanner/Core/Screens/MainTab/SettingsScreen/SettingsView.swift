@@ -244,7 +244,7 @@ struct SettingsView: View {
                     case .addEditClub(let club):
                         AddEditClubView(club: club) { title, uiimage, contacts, urlString, location in
                             Task{
-                                await mdm.updateClubWithClub(club: club, title: title, uiimage: uiimage, contacts: contacts, urlString: urlString, location: location, inContext: .main)
+                                await mdm.updateClub(club, withTitle: title, uiimage: uiimage, contacts: contacts, urlString: urlString, location: location, inContext: .main)
                                 settingsRouter.routeStepBack()
                             }
                         } cancelAction: {

@@ -23,6 +23,8 @@
 		291E72C92BBEC7B0008092D7 /* UserSpecialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 291E72C82BBEC7B0008092D7 /* UserSpecialization.swift */; };
 		291E72CB2BBEDF23008092D7 /* BPAccountInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 291E72CA2BBEDF23008092D7 /* BPAccountInfoView.swift */; };
 		291E72CF2BBEEBDD008092D7 /* BPSpecializationCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 291E72CE2BBEEBDD008092D7 /* BPSpecializationCellView.swift */; };
+		291EB4EE2DBFB22500FCDA75 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 291EB4ED2DBFB22500FCDA75 /* FirebaseDatabase */; };
+		291EB4F02DBFB22500FCDA75 /* FirebaseDatabaseSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 291EB4EF2DBFB22500FCDA75 /* FirebaseDatabaseSwift */; };
 		292D664E2BD7998A009A2187 /* AnyContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 292D66442BD79989009A2187 /* AnyContentView.swift */; };
 		292D664F2BD7998A009A2187 /* SmartLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 292D66452BD79989009A2187 /* SmartLayout.swift */; };
 		293752AA2BF8CD950044924D /* BPEventFilterCaseTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 293752A92BF8CD950044924D /* BPEventFilterCaseTabView.swift */; };
@@ -184,6 +186,7 @@
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		290127A92CCFD5300054B2D7 /* EventHeader */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = EventHeader; sourceTree = "<group>"; };
+		291EB4F12DC0AE1900FCDA75 /* NetworkTestScreen */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = NetworkTestScreen; sourceTree = "<group>"; };
 		292E4C5B2D0C1D8A0046CABA /* Cache */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Cache; sourceTree = "<group>"; };
 		292E4C622D0C3E9D0046CABA /* Logo */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Logo; sourceTree = "<group>"; };
 		293C7DEA2D53610300B62960 /* CarEdit */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = CarEdit; sourceTree = "<group>"; };
@@ -212,12 +215,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				291EB4F02DBFB22500FCDA75 /* FirebaseDatabaseSwift in Frameworks */,
 				29EBCDF02B762C5A00696C25 /* GoogleSignInSwift in Frameworks */,
 				294D97A72B3B2AEC00057F70 /* FirebaseAuth in Frameworks */,
 				29EBCDEE2B762C5A00696C25 /* GoogleSignIn in Frameworks */,
 				2916E6182C4F97C60025DCC6 /* NavigationTransitions in Frameworks */,
 				29553BFF2B9073C100C7FE6A /* FirebaseFirestoreSwift in Frameworks */,
 				29E10F5A2C1AF8B300A35A4B /* FirebaseStorage in Frameworks */,
+				291EB4EE2DBFB22500FCDA75 /* FirebaseDatabase in Frameworks */,
 				29553BFD2B9073C100C7FE6A /* FirebaseFirestoreCombine-Community in Frameworks */,
 				29553BFB2B9073C100C7FE6A /* FirebaseFirestore in Frameworks */,
 			);
@@ -423,6 +428,7 @@
 		2955C9712B4EE717003F9ADC /* MainTab */ = {
 			isa = PBXGroup;
 			children = (
+				291EB4F12DC0AE1900FCDA75 /* NetworkTestScreen */,
 				290B816E2AD7FCBC00B858F1 /* EventsScreen */,
 				291E72C42BBE8961008092D7 /* PersonalScreen */,
 				291E72C12BBE8575008092D7 /* MessengerScreen */,
@@ -709,6 +715,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				290127A92CCFD5300054B2D7 /* EventHeader */,
+				291EB4F12DC0AE1900FCDA75 /* NetworkTestScreen */,
 				292E4C5B2D0C1D8A0046CABA /* Cache */,
 				292E4C622D0C3E9D0046CABA /* Logo */,
 				293C7DEA2D53610300B62960 /* CarEdit */,
@@ -733,6 +740,8 @@
 				29553BFE2B9073C100C7FE6A /* FirebaseFirestoreSwift */,
 				29E10F592C1AF8B300A35A4B /* FirebaseStorage */,
 				2916E6172C4F97C60025DCC6 /* NavigationTransitions */,
+				291EB4ED2DBFB22500FCDA75 /* FirebaseDatabase */,
+				291EB4EF2DBFB22500FCDA75 /* FirebaseDatabaseSwift */,
 			);
 			productName = BroadcastPlanner;
 			productReference = 29C041BC2AC556CE008B3E1F /* BroadcastPlanner.app */;
@@ -1199,6 +1208,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 2916E6162C4F97C60025DCC6 /* XCRemoteSwiftPackageReference "swiftui-navigation-transitions" */;
 			productName = NavigationTransitions;
+		};
+		291EB4ED2DBFB22500FCDA75 /* FirebaseDatabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 294D97A52B3B2AEC00057F70 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseDatabase;
+		};
+		291EB4EF2DBFB22500FCDA75 /* FirebaseDatabaseSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 294D97A52B3B2AEC00057F70 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseDatabaseSwift;
 		};
 		294D97A62B3B2AEC00057F70 /* FirebaseAuth */ = {
 			isa = XCSwiftPackageProductDependency;

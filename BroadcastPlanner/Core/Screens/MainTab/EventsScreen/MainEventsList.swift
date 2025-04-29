@@ -64,8 +64,10 @@ struct MainEventsList: View {
                         .onDelete(perform: { indexSet in
                             guard let index = indexSet.first else { return }
                             let eventToDelete = events[index]
-                            mdm.removeEvent(event: eventToDelete)
-                            mdm.saveContext(type: .main, publish: .events, id: [])
+                            Task{
+                               await mdm.removeEvent(event: eventToDelete)
+                               await mdm.saveContext(type: .main, publish: .events, id: [])
+                            }
                         })
                     }
                     .padding(.horizontal,8)

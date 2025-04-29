@@ -66,7 +66,7 @@ struct ClubSheetView: View {
                     }
                     .onTapGesture {
                         if editMode {
-                            addEditAction(vm.selectedClub ?? mdm.getNewClub())
+                            addEditAction(vm.selectedClub ?? mdm.createClub())
                         }
                     }
                 }

@@ -125,13 +125,15 @@ struct BPAccountInfoView: View {
                             }
                         }
                         if !isEdit {
-                            mdm.updateUserData(firstName: vm.firstName,
-                                               lastName: vm.lastName,
-                                               email: vm.email,
-                                               phoneNumber: vm.phoneNumber,
-                                               address: vm.address,
-                                               userSpecialization: vm.userSpecialization,
-                                               inputImage: vm.inputImage)
+                            Task{
+                                await mdm.updateUserData(firstName: vm.firstName,
+                                                         lastName: vm.lastName,
+                                                         email: vm.email,
+                                                         phoneNumber: vm.phoneNumber,
+                                                         address: vm.address,
+                                                         userSpecialization: vm.userSpecialization,
+                                                         inputImage: vm.inputImage)
+                            }
                         }
                     } label: {
                         Text(isEdit ? "Save" : "Edit")
