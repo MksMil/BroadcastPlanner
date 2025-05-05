@@ -47,7 +47,7 @@ class PitchEditSpriteScene: SKScene{
     var lastPanLocation: CGPoint?
     
     //data source
-    var points: [LocalLocationPoint] = []
+    var points: [LocationPoint] = []
     
     //control
     var selectedPointNode: SKNode?
@@ -93,7 +93,7 @@ class PitchEditSpriteScene: SKScene{
     }
     
     func configurePointNode(node: SKShapeNode,
-                            point: LocalLocationPoint)
+                            point: LocationPoint)
     {
         node.name = point.viewId
         node.zPosition = 1
@@ -111,7 +111,7 @@ class PitchEditSpriteScene: SKScene{
         }
     }
     
-    func assignTexturesInNode(_ node: SKShapeNode, withPoint point: LocalLocationPoint){
+    func assignTexturesInNode(_ node: SKShapeNode, withPoint point: LocationPoint){
         var rotation = CGFloat.zero
         if node == selectedPointNode {
             rotation = selectedPointNodeRotation
@@ -154,7 +154,7 @@ class PitchEditSpriteScene: SKScene{
         }
     }
     
-    func updateSpritesWithPoint(point: LocalLocationPoint){
+    func updateSpritesWithPoint(point: LocationPoint){
         //only with selectedNode we can change textures
         if let selectedPointNode = selectedPointNode as? SKShapeNode {
             selectedPointNode.removeAllChildren()
@@ -276,7 +276,7 @@ extension PitchEditSpriteScene{
 // MARK: - BPPlanDelegateProtocol
 extension PitchEditSpriteScene{
     
-    func addPoint(point: LocalLocationPoint, select: Bool){
+    func addPoint(point: LocationPoint, select: Bool){
         let pointNode = SKShapeNode(rectOf: CGSize(width: 4 * step, height:  4 * step),
                                     cornerRadius: step / 4)
         pointNode.strokeColor = .clear
@@ -311,7 +311,7 @@ extension PitchEditSpriteScene{
         }
     }
     
-    func select(point: LocalLocationPoint){
+    func select(point: LocationPoint){
         if let selectedPointNode = selectedPointNode as? SKShapeNode{
             removeSelectionAnimationFromNode(node: selectedPointNode)
         }
@@ -695,10 +695,10 @@ extension SKNode{
     let mdm = MainDataManager(localDataManager: lm,
                               globalDataManager: NetworkManager(),
                               userId: "123")
-    let localEvent = lm.fetchOrCreateObject(ofType: LocalEvent.self,
+    let localEvent = lm.fetchOrCreateObject(ofType: Event.self,
                   predicate: NSPredicate(format: "id == %@", "id"),
-                                      in: lm.moc) { ctx in
-        let newEvent = LocalEvent(context: ctx)
+                                      in: lm.mainContext) { ctx in
+        let newEvent = Event(context: ctx)
         newEvent.id = "id"
         return newEvent
     }

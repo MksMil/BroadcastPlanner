@@ -28,7 +28,7 @@ struct AddUnitFormView: View {
     private var filteredUsers: [LocalUser] {
         guard let selectedSpecialization else { return availableUsers }
         return availableUsers.filter { user in
-            user.userSpecialization.contains{$0 == selectedSpecialization}
+            user.viewSpecialization.contains{$0 == selectedSpecialization}
         }
     }
     var body: some View {

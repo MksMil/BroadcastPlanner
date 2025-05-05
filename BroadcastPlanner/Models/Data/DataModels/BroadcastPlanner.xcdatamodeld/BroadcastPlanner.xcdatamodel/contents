@@ -1,67 +1,89 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23788" systemVersion="24E263" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
-    <entity name="LocalCamera" representedClassName=".LocalCamera" syncable="YES">
+    <entity name="Camera" representedClassName=".Camera" syncable="YES">
         <attribute name="id" optional="YES" attributeType="String"/>
         <attribute name="optic" optional="YES" attributeType="String"/>
-        <relationship name="point" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalLocationPoint" inverseName="cameras" inverseEntity="LocalLocationPoint"/>
+        <relationship name="point" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocationPoint" inverseName="cameras" inverseEntity="LocationPoint"/>
     </entity>
-    <entity name="LocalClub" representedClassName=".LocalClub" syncable="YES">
+    <entity name="Club" representedClassName=".Club" syncable="YES">
         <attribute name="contacts" optional="YES" attributeType="String"/>
         <attribute name="id" optional="YES" attributeType="String"/>
+        <attribute name="lastUpdated" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="title" optional="YES" attributeType="String"/>
         <attribute name="urlString" optional="YES" attributeType="String"/>
-        <relationship name="guestEvent" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LocalEvent" inverseName="guestClub" inverseEntity="LocalEvent"/>
-        <relationship name="homeEvent" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LocalEvent" inverseName="homeClub" inverseEntity="LocalEvent"/>
-        <relationship name="homeLocation" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalLocation" inverseName="homeClub" inverseEntity="LocalLocation"/>
+        <relationship name="guestEvent" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Event" inverseName="guestClub" inverseEntity="Event"/>
+        <relationship name="homeEvent" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Event" inverseName="homeClub" inverseEntity="Event"/>
+        <relationship name="homeLocation" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Location" inverseName="homeClub" inverseEntity="Location"/>
         <relationship name="imageLogo" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalImage" inverseName="parentClubLogo" inverseEntity="LocalImage"/>
     </entity>
-    <entity name="LocalEvent" representedClassName=".LocalEvent" syncable="YES">
+    <entity name="Event" representedClassName=".Event" syncable="YES">
         <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="id" optional="YES" attributeType="String"/>
-        <relationship name="guestClub" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalClub" inverseName="guestEvent" inverseEntity="LocalClub"/>
-        <relationship name="homeClub" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalClub" inverseName="homeEvent" inverseEntity="LocalClub"/>
-        <relationship name="location" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalLocation" inverseName="events" inverseEntity="LocalLocation"/>
+        <attribute name="lastUpdated" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="guestClub" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Club" inverseName="guestEvent" inverseEntity="Club"/>
+        <relationship name="homeClub" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Club" inverseName="homeEvent" inverseEntity="Club"/>
+        <relationship name="location" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Location" inverseName="events" inverseEntity="Location"/>
         <relationship name="locationPreview" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalImage" inverseName="parentLocationPreviewEvent" inverseEntity="LocalImage"/>
-        <relationship name="obvan" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalObvan" inverseName="events" inverseEntity="LocalObvan"/>
+        <relationship name="obvan" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Obvan" inverseName="events" inverseEntity="Obvan"/>
         <relationship name="obvanPreview" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalImage" inverseName="parentObvanPreviewEvent" inverseEntity="LocalImage"/>
         <relationship name="owners" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LocalUser" inverseName="ownedEvents" inverseEntity="LocalUser"/>
-        <relationship name="points" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LocalLocationPoint" inverseName="event" inverseEntity="LocalLocationPoint"/>
-        <relationship name="units" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LocalUnit" inverseName="event" inverseEntity="LocalUnit"/>
+        <relationship name="points" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LocationPoint" inverseName="event" inverseEntity="LocationPoint"/>
+        <relationship name="units" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Unit" inverseName="event" inverseEntity="Unit"/>
         <relationship name="users" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LocalUser" inverseName="participateEvents" inverseEntity="LocalUser"/>
     </entity>
-    <entity name="LocalHardware" representedClassName=".LocalHardware" syncable="YES">
+    <entity name="Hardware" representedClassName=".Hardware" syncable="YES">
         <attribute name="channels" optional="YES" attributeType="String"/>
         <attribute name="id" optional="YES" attributeType="String"/>
         <attribute name="type" optional="YES" attributeType="String"/>
-        <relationship name="obVanUnit" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalUnit" inverseName="hardware" inverseEntity="LocalUnit"/>
+        <relationship name="obvanUnit" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Unit" inverseName="hardware" inverseEntity="Unit"/>
+    </entity>
+    <entity name="Light" representedClassName=".Light" syncable="YES">
+        <attribute name="id" optional="YES" attributeType="String"/>
+        <attribute name="lightType" optional="YES" attributeType="String"/>
+        <relationship name="point" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocationPoint" inverseName="lights" inverseEntity="LocationPoint"/>
     </entity>
     <entity name="LocalImage" representedClassName=".LocalImage" syncable="YES">
         <attribute name="id" optional="YES" attributeType="String"/>
+        <attribute name="lastUpdated" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="type" optional="YES" attributeType="String"/>
-        <relationship name="locationPoint" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LocalLocationPoint" inverseName="image" inverseEntity="LocalLocationPoint"/>
-        <relationship name="parentClubLogo" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalClub" inverseName="imageLogo" inverseEntity="LocalClub"/>
-        <relationship name="parentLocationBackground" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalLocation" inverseName="background" inverseEntity="LocalLocation"/>
-        <relationship name="parentLocationImage" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalLocation" inverseName="images" inverseEntity="LocalLocation"/>
-        <relationship name="parentLocationPreviewEvent" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalEvent" inverseName="locationPreview" inverseEntity="LocalEvent"/>
-        <relationship name="parentObvan" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalObvan" inverseName="image" inverseEntity="LocalObvan"/>
-        <relationship name="parentObvanPreviewEvent" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalEvent" inverseName="obvanPreview" inverseEntity="LocalEvent"/>
+        <relationship name="parentClubLogo" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Club" inverseName="imageLogo" inverseEntity="Club"/>
+        <relationship name="parentLocationBackground" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Location" inverseName="background" inverseEntity="Location"/>
+        <relationship name="parentLocationImage" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Location" inverseName="images" inverseEntity="Location"/>
+        <relationship name="parentLocationPreviewEvent" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Event" inverseName="locationPreview" inverseEntity="Event"/>
+        <relationship name="parentObvan" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Obvan" inverseName="image" inverseEntity="Obvan"/>
+        <relationship name="parentObvanPreviewEvent" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Event" inverseName="obvanPreview" inverseEntity="Event"/>
+        <relationship name="parentPoint" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LocationPoint" inverseName="image" inverseEntity="LocationPoint"/>
         <relationship name="parentUser" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalUser" inverseName="image" inverseEntity="LocalUser"/>
     </entity>
-    <entity name="LocalLight" representedClassName=".LocalLight" syncable="YES">
+    <entity name="LocalUser" representedClassName=".LocalUser" syncable="YES">
+        <attribute name="creationDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="email" optional="YES" attributeType="String"/>
+        <attribute name="firstName" optional="YES" attributeType="String"/>
+        <attribute name="homeAddress" optional="YES" attributeType="String"/>
         <attribute name="id" optional="YES" attributeType="String"/>
-        <attribute name="lightType" optional="YES" attributeType="String"/>
-        <relationship name="point" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalLocationPoint" inverseName="lights" inverseEntity="LocalLocationPoint"/>
+        <attribute name="isOnline" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="lastName" optional="YES" attributeType="String"/>
+        <attribute name="lastUpdated" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="leaveDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="phoneNumber" optional="YES" attributeType="String"/>
+        <attribute name="specializations" optional="YES" attributeType="String"/>
+        <relationship name="image" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalImage" inverseName="parentUser" inverseEntity="LocalImage"/>
+        <relationship name="ownedEvents" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Event" inverseName="owners" inverseEntity="Event"/>
+        <relationship name="participateEvents" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Event" inverseName="users" inverseEntity="Event"/>
+        <relationship name="points" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LocationPoint" inverseName="user" inverseEntity="LocationPoint"/>
+        <relationship name="units" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Unit" inverseName="user" inverseEntity="Unit"/>
     </entity>
-    <entity name="LocalLocation" representedClassName=".LocalLocation" syncable="YES">
+    <entity name="Location" representedClassName=".Location" syncable="YES">
         <attribute name="address" optional="YES" attributeType="String"/>
         <attribute name="id" optional="YES" attributeType="String"/>
+        <attribute name="lastUpdated" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="title" optional="YES" attributeType="String"/>
         <relationship name="background" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalImage" inverseName="parentLocationBackground" inverseEntity="LocalImage"/>
-        <relationship name="events" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LocalEvent" inverseName="location" inverseEntity="LocalEvent"/>
-        <relationship name="homeClub" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LocalClub" inverseName="homeLocation" inverseEntity="LocalClub"/>
+        <relationship name="events" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Event" inverseName="location" inverseEntity="Event"/>
+        <relationship name="homeClub" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Club" inverseName="homeLocation" inverseEntity="Club"/>
         <relationship name="images" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LocalImage" inverseName="parentLocationImage" inverseEntity="LocalImage"/>
     </entity>
-    <entity name="LocalLocationPoint" representedClassName=".LocalLocationPoint" syncable="YES">
+    <entity name="LocationPoint" representedClassName=".LocationPoint" syncable="YES">
         <attribute name="coordinateX" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="coordinateY" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="id" optional="YES" attributeType="String"/>
@@ -71,32 +93,34 @@
         <attribute name="rotation" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="scaleFactor" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="task" optional="YES" attributeType="String"/>
-        <relationship name="cameras" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LocalCamera" inverseName="point" inverseEntity="LocalCamera"/>
-        <relationship name="event" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalEvent" inverseName="points" inverseEntity="LocalEvent"/>
-        <relationship name="image" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalImage" inverseName="locationPoint" inverseEntity="LocalImage"/>
-        <relationship name="lights" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LocalLight" inverseName="point" inverseEntity="LocalLight"/>
-        <relationship name="sounds" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LocalSound" inverseName="point" inverseEntity="LocalSound"/>
-        <relationship name="user" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LocalUser" inverseName="locationPoints" inverseEntity="LocalUser"/>
+        <relationship name="cameras" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Camera" inverseName="point" inverseEntity="Camera"/>
+        <relationship name="event" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Event" inverseName="points" inverseEntity="Event"/>
+        <relationship name="image" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalImage" inverseName="parentPoint" inverseEntity="LocalImage"/>
+        <relationship name="lights" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Light" inverseName="point" inverseEntity="Light"/>
+        <relationship name="sounds" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Sound" inverseName="point" inverseEntity="Sound"/>
+        <relationship name="user" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LocalUser" inverseName="points" inverseEntity="LocalUser"/>
     </entity>
-    <entity name="LocalObvan" representedClassName=".LocalObvan" syncable="YES">
+    <entity name="Obvan" representedClassName=".Obvan" syncable="YES">
         <attribute name="broadcaster" optional="YES" attributeType="String"/>
         <attribute name="id" optional="YES" attributeType="String"/>
+        <attribute name="lastUpdated" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="name" optional="YES" attributeType="String"/>
-        <relationship name="events" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LocalEvent" inverseName="obvan" inverseEntity="LocalEvent"/>
+        <relationship name="events" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Event" inverseName="obvan" inverseEntity="Event"/>
         <relationship name="image" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalImage" inverseName="parentObvan" inverseEntity="LocalImage"/>
     </entity>
-    <entity name="LocalSound" representedClassName=".LocalSound" syncable="YES">
+    <entity name="Sound" representedClassName=".Sound" syncable="YES">
         <attribute name="id" optional="YES" attributeType="String"/>
         <attribute name="placeType" optional="YES" attributeType="String"/>
         <attribute name="windDefence" optional="YES" attributeType="String"/>
-        <relationship name="point" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalLocationPoint" inverseName="sounds" inverseEntity="LocalLocationPoint"/>
+        <relationship name="point" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocationPoint" inverseName="sounds" inverseEntity="LocationPoint"/>
     </entity>
-    <entity name="LocalTemplate" representedClassName=".LocalTemplate" syncable="YES">
+    <entity name="Template" representedClassName=".Template" syncable="YES">
         <attribute name="id" optional="YES" attributeType="String"/>
+        <attribute name="lastUpdated" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="name" optional="YES" attributeType="String"/>
-        <relationship name="templatePoints" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LocalTemplatePoint" inverseName="parentTemplate" inverseEntity="LocalTemplatePoint"/>
+        <relationship name="templatePoints" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TemplatePoint" inverseName="parentTemplate" inverseEntity="TemplatePoint"/>
     </entity>
-    <entity name="LocalTemplatePoint" representedClassName=".LocalTemplatePoint" syncable="YES">
+    <entity name="TemplatePoint" representedClassName=".TemplatePoint" syncable="YES">
         <attribute name="cameras" optional="YES" attributeType="String"/>
         <attribute name="coordinateX" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="coordinateY" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
@@ -108,9 +132,9 @@
         <attribute name="scaleFactor" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="sounds" optional="YES" attributeType="String"/>
         <attribute name="task" optional="YES" attributeType="String"/>
-        <relationship name="parentTemplate" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalTemplate" inverseName="templatePoints" inverseEntity="LocalTemplate"/>
+        <relationship name="parentTemplate" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Template" inverseName="templatePoints" inverseEntity="Template"/>
     </entity>
-    <entity name="LocalUnit" representedClassName=".LocalUnit" syncable="YES">
+    <entity name="Unit" representedClassName=".Unit" syncable="YES">
         <attribute name="coordinateX" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="coordinateY" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="id" optional="YES" attributeType="String"/>
@@ -118,25 +142,8 @@
         <attribute name="rotation" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="scaleFactor" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="task" optional="YES" attributeType="String"/>
-        <relationship name="event" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalEvent" inverseName="units" inverseEntity="LocalEvent"/>
-        <relationship name="hardware" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalHardware" inverseName="obVanUnit" inverseEntity="LocalHardware"/>
-        <relationship name="user" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalUser" inverseName="obVanUnits" inverseEntity="LocalUser"/>
-    </entity>
-    <entity name="LocalUser" representedClassName=".LocalUser" syncable="YES">
-        <attribute name="creationDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="email" optional="YES" attributeType="String"/>
-        <attribute name="firstName" optional="YES" attributeType="String"/>
-        <attribute name="homeAddress" optional="YES" attributeType="String"/>
-        <attribute name="id" optional="YES" attributeType="String"/>
-        <attribute name="isOnline" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
-        <attribute name="lastName" optional="YES" attributeType="String"/>
-        <attribute name="leaveDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="phoneNumber" optional="YES" attributeType="String"/>
-        <attribute name="specializations" optional="YES" attributeType="String"/>
-        <relationship name="image" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalImage" inverseName="parentUser" inverseEntity="LocalImage"/>
-        <relationship name="locationPoints" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LocalLocationPoint" inverseName="user" inverseEntity="LocalLocationPoint"/>
-        <relationship name="obVanUnits" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LocalUnit" inverseName="user" inverseEntity="LocalUnit"/>
-        <relationship name="ownedEvents" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LocalEvent" inverseName="owners" inverseEntity="LocalEvent"/>
-        <relationship name="participateEvents" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LocalEvent" inverseName="users" inverseEntity="LocalEvent"/>
+        <relationship name="event" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Event" inverseName="units" inverseEntity="Event"/>
+        <relationship name="hardware" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Hardware" inverseName="obvanUnit" inverseEntity="Hardware"/>
+        <relationship name="user" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalUser" inverseName="units" inverseEntity="LocalUser"/>
     </entity>
 </model>

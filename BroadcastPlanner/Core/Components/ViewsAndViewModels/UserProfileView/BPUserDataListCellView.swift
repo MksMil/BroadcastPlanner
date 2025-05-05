@@ -7,7 +7,7 @@ struct BPUserDataListCellView: View {
     
     var body: some View {
         HStack{
-            user.userImage
+            user.viewImage
                 .resizable()
                 .scaledToFill()
             
@@ -17,12 +17,12 @@ struct BPUserDataListCellView: View {
                 .clipShape(Circle())
            
             VStack(alignment: .leading, spacing: 0){
-                Text("\(user.userFirstName) \(user.userLastName)")//user.fullCompactName)
+                Text("\(user.viewFirstName) \(user.viewLastName)")//user.fullCompactName)
                     .font(.system(size: 10))
                     .bold()
                 
 //                    .padding(.leading,5)
-                Text("\(user.userSpecialization)")
+                Text("\(user.viewSpecialization)")
                     .font(.system(size: 8))
 //                    .italic()
                     .foregroundStyle(.gray)

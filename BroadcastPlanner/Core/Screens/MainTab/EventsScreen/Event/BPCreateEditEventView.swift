@@ -4,12 +4,12 @@ import SwiftUI
 
 
 final class BPCreateEditEventViewModel: ObservableObject{
-    var homeClub: LocalClub?
-    var guestClub: LocalClub?
+    var homeClub: Club?
+    var guestClub: Club?
     var eventDate: Date
-    var location: LocalLocation?
+    var location: Location?
     
-    init(event: LocalEvent){
+    init(event: Event){
         if let club = event.homeClub{
             homeClub = club
         }
@@ -31,13 +31,13 @@ struct BPCreateEditEventView: View {
     @EnvironmentObject var eventRouter: EventTabRouter
     @EnvironmentObject var mdm: MainDataManager
     
-    let event: LocalEvent
+    let event: Event
 
     @State private var isRemoveConfirm: Bool = false
     
 //    @FetchRequest<LocalUser>(sortDescriptors: []) private var users
  
-    init(event: LocalEvent) {
+    init(event: Event) {
         self._vm = StateObject(wrappedValue: BPCreateEditEventViewModel(event: event))
         self.event = event
     }
@@ -177,10 +177,10 @@ struct BPCreateEditEventView: View {
 #Preview {
         let lm = DataManager(forPreview: true)
         let mdm = MainDataManager(localDataManager: lm, globalDataManager: NetworkManager(),userId: "123")
-        let localEvent = lm.fetchOrCreateObject(ofType: LocalEvent.self,
+        let localEvent = lm.fetchOrCreateObject(ofType: Event.self,
                       predicate: NSPredicate(format: "id == %@", "id"),
-                                          in: lm.moc) { ctx in
-            let newEvent = LocalEvent(context: ctx)
+                                          in: lm.mainContext) { ctx in
+            let newEvent = Event(context: ctx)
             newEvent.id = "id"
             return newEvent
         }
@@ -189,6 +189,6 @@ struct BPCreateEditEventView: View {
         .environmentObject(SessionManager())
         .environmentObject(GlobalSettings())
         .environmentObject(EventTabRouter())
-        .environment(\.managedObjectContext, mdm.localDataManager.moc)
+        .environment(\.managedObjectContext, mdm.localDataManager.mainContext)
         .environmentObject(mdm)
 }

@@ -1,32 +1,36 @@
 import SwiftUI
 import CoreData
 
+public class Club: NSManagedObject {
 
-extension LocalClub {
+}
 
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<LocalClub> {
-        return NSFetchRequest<LocalClub>(entityName: "LocalClub")
+extension Club {
+
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<Club> {
+        return NSFetchRequest<Club>(entityName: "Club")
     }
 
     @NSManaged public var contacts: String?
     @NSManaged public var id: String?
+    @NSManaged public var lastUpdated: Date?
     @NSManaged public var title: String?
     @NSManaged public var urlString: String?
     @NSManaged public var guestEvent: NSSet?
     @NSManaged public var homeEvent: NSSet?
-    @NSManaged public var homeLocation: LocalLocation?
+    @NSManaged public var homeLocation: Location?
     @NSManaged public var imageLogo: LocalImage?
 
 }
 
 // MARK: Generated accessors for guestEvent
-extension LocalClub {
+extension Club {
 
     @objc(addGuestEventObject:)
-    @NSManaged public func addToGuestEvent(_ value: LocalEvent)
+    @NSManaged public func addToGuestEvent(_ value: Event)
 
     @objc(removeGuestEventObject:)
-    @NSManaged public func removeFromGuestEvent(_ value: LocalEvent)
+    @NSManaged public func removeFromGuestEvent(_ value: Event)
 
     @objc(addGuestEvent:)
     @NSManaged public func addToGuestEvent(_ values: NSSet)
@@ -37,13 +41,13 @@ extension LocalClub {
 }
 
 // MARK: Generated accessors for homeEvent
-extension LocalClub {
+extension Club {
 
     @objc(addHomeEventObject:)
-    @NSManaged public func addToHomeEvent(_ value: LocalEvent)
+    @NSManaged public func addToHomeEvent(_ value: Event)
 
     @objc(removeHomeEventObject:)
-    @NSManaged public func removeFromHomeEvent(_ value: LocalEvent)
+    @NSManaged public func removeFromHomeEvent(_ value: Event)
 
     @objc(addHomeEvent:)
     @NSManaged public func addToHomeEvent(_ values: NSSet)
@@ -53,7 +57,7 @@ extension LocalClub {
 
 }
 
-extension LocalClub : Identifiable {
+extension Club : Identifiable {
     var viewId: String {
         id ?? ""
     }
@@ -69,12 +73,12 @@ extension LocalClub : Identifiable {
         urlString ?? ""
     }
     
-    var viewGuestEvents: [LocalEvent] {
-        guestEvent?.allObjects as? [LocalEvent] ?? []
+    var viewGuestEvents: [Event] {
+        guestEvent?.allObjects as? [Event] ?? []
     }
     
-    var viewHomeEvents: [LocalEvent] {
-        homeEvent?.allObjects as? [LocalEvent] ?? []
+    var viewHomeEvents: [Event] {
+        homeEvent?.allObjects as? [Event] ?? []
     }
     
     var viewImageSmallLogo: Image {
@@ -85,13 +89,19 @@ extension LocalClub : Identifiable {
         imageLogo?.mediumImage ?? Image(systemName: "person.3")
     }
     
+    var viewLastUpdated: Date {
+        lastUpdated ?? .now
+    }
+    
     var dto: ClubDTO{
         ClubDTO(id: viewId,
                 title: viewTitle,
                 contacts: viewContacts,
                 urlString: viewUrl,
                 imageLogoID: imageLogo?.viewId,
-                homeLocationID: homeLocation?.viewId)
+                homeLocationID: homeLocation?.viewId, lastUpdated: viewLastUpdated)
 
     }
 }
+
+

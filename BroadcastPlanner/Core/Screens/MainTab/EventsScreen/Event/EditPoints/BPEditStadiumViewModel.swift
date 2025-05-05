@@ -12,7 +12,7 @@ protocol BPSKViewDelegate: AnyObject {
 
 final class BPEditStadiumViewModel: ObservableObject {
         
-    @Published var selectedEventPoint: LocalLocationPoint?
+    @Published var selectedEventPoint: LocationPoint?
     @Published var isEdit: Bool = false
     @Published var stadiumFilter: BPEventPlanPointStadiumFilter = .all{
         willSet{
@@ -25,15 +25,15 @@ final class BPEditStadiumViewModel: ObservableObject {
     }
     var savePointAction: (()->())?
     
-    let event: LocalEvent
+    let event: Event
     
     // MARK: - vm Properties for available render updates
     var users: [LocalUser] = [] //saved
     var num: Int = 0 //saved
     var description: String = "Choose position" //saved
-    var cameras: [LocalCamera] = [] 
-    var sounds: [LocalSound] = []
-    var lights: [LocalLight] = []
+    var cameras: [Camera] = [] 
+    var sounds: [Sound] = []
+    var lights: [Light] = []
     var task: String = ""
     
     var coordinateX: Double = 0
@@ -41,9 +41,9 @@ final class BPEditStadiumViewModel: ObservableObject {
     var rotation: Int = 0
     var scaleFactor: Double = 0
     
-    var localPoints: [LocalLocationPoint]
+    var localPoints: [LocationPoint]
     
-    @Published var filteredLocationPoints: [LocalLocationPoint] = []
+    @Published var filteredLocationPoints: [LocationPoint] = []
     
     var renderPitchScene: PitchEditSpriteScene
 //  
@@ -52,11 +52,11 @@ final class BPEditStadiumViewModel: ObservableObject {
 //    var lightNumbers: [Int] = []
     //templates control
     
-    var selectedTemplate: LocalTemplate?
+    var selectedTemplate: Template?
 
     @Published var isTemplateRemovable: Bool = true
     
-    init(event: LocalEvent){
+    init(event: Event){
         self.event = event
         self.localPoints = event.viewLocationPoints
         self.filteredLocationPoints = localPoints
@@ -74,7 +74,7 @@ final class BPEditStadiumViewModel: ObservableObject {
         renderPitchScene.updateScene()
     }
     
-    func configureWith(event: LocalEvent){
+    func configureWith(event: Event){
         renderPitchScene.points = event.viewLocationPoints
         renderPitchScene.updateScene()
     }
@@ -88,7 +88,7 @@ final class BPEditStadiumViewModel: ObservableObject {
     }
     
     //load from template
-    func loadTemplate(_ points:[LocalLocationPoint]){
+    func loadTemplate(_ points:[LocationPoint]){
         localPoints = points
         filterPointsWithCase(stadiumFilter)
         loadScene()
@@ -146,7 +146,7 @@ extension BPEditStadiumViewModel {
         }
     }
     
-    func stateForPoint(_ point: LocalLocationPoint) -> PointPanelCell.PointPanelCellState {
+    func stateForPoint(_ point: LocationPoint) -> PointPanelCell.PointPanelCellState {
         if let selectedEventPoint{
             if selectedEventPoint == point {
                 return .selected
@@ -202,7 +202,7 @@ extension BPEditStadiumViewModel{
 
 // MARK: - Points Managment
 extension BPEditStadiumViewModel{
-    func addPoint(point: LocalLocationPoint){
+    func addPoint(point: LocationPoint){
         localPoints.append(point)
         filterPointsWithCase(stadiumFilter)
         renderPitchScene.points = filteredLocationPoints
@@ -230,13 +230,13 @@ extension BPEditStadiumViewModel{
         isEdit = false
     }
     
-    func selectPoint(point: LocalLocationPoint){
+    func selectPoint(point: LocationPoint){
         selectedEventPoint = point
         renderPitchScene.select(point: point)
 //        isEdit = true
     }
     
-    func updatePoint(_ point: LocalLocationPoint){
+    func updatePoint(_ point: LocationPoint){
         filterPointsWithCase(stadiumFilter)
         renderPitchScene.updateSpritesWithPoint(point: point)
     }
@@ -362,37 +362,37 @@ extension BPEditStadiumViewModel {
         //render if needed
     }
     
-    func addCam(cam: LocalCamera){
+    func addCam(cam: Camera){
         guard let selectedEventPoint else { return }
         cameras.append(cam)
         self.renderPitchScene.updateSpritesWithPoint(point: selectedEventPoint)
     }
     
-    func removeCameraFromPoint(camera: LocalCamera){
+    func removeCameraFromPoint(camera: Camera){
         guard let selectedEventPoint else { return }
         cameras.removeAll(where: {$0.viewId == camera.viewId})
         self.renderPitchScene.updateSpritesWithPoint(point: selectedEventPoint)
     }
 
-    func addSound(sound: LocalSound){
+    func addSound(sound: Sound){
         guard let selectedEventPoint else { return }
         sounds.append(sound)
         self.renderPitchScene.updateSpritesWithPoint(point: selectedEventPoint)
     }
     
-    func removeSoundFromPoint(sound: LocalSound){
+    func removeSoundFromPoint(sound: Sound){
         guard let selectedEventPoint else { return }
         sounds.removeAll(where: {$0.viewId == sound.viewId})
         self.renderPitchScene.updateSpritesWithPoint(point: selectedEventPoint)
     }
     
-    func addLight(light: LocalLight){
+    func addLight(light: Light){
         guard let selectedEventPoint else { return }
         lights.append(light)
         self.renderPitchScene.updateSpritesWithPoint(point: selectedEventPoint)
     }
     
-    func removeLightFromPoint(light: LocalLight){
+    func removeLightFromPoint(light: Light){
         guard let selectedEventPoint else { return }
         lights.removeAll(where: {$0.viewId == light.viewId })
         self.renderPitchScene.updateSpritesWithPoint(point: selectedEventPoint)

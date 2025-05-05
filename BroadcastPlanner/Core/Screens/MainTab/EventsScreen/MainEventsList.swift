@@ -7,11 +7,11 @@ struct MainEventsList: View {
     @EnvironmentObject var mdm: MainDataManager
     
     @StateObject private var eventRouter = EventTabRouter()
-    @FetchRequest<LocalEvent>(sortDescriptors: []) var events
+    @FetchRequest<Event>(sortDescriptors: []) var events
     
-    @State private var selectedEvent: LocalEvent?
+    @State private var selectedEvent: Event?
     
-    private var eventToRoute: LocalEvent {
+    private var eventToRoute: Event {
         if let selectedEvent {
             return  selectedEvent
         } else {
@@ -119,5 +119,5 @@ struct MainEventsList: View {
       return MainEventsList()
         .environmentObject(GlobalSettings())
         .environmentObject(mdm)
-        .environment(\.managedObjectContext, mdm.localDataManager.moc)
+        .environment(\.managedObjectContext, mdm.localDataManager.mainContext)
 }

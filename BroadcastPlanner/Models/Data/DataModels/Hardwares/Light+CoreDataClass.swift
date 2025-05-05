@@ -1,20 +1,23 @@
 import Foundation
 import CoreData
 
+public class Light: NSManagedObject {
 
-extension LocalLight {
+}
 
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<LocalLight> {
-        return NSFetchRequest<LocalLight>(entityName: "LocalLight")
+extension Light {
+
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<Light> {
+        return NSFetchRequest<Light>(entityName: "Light")
     }
 
     @NSManaged public var lightType: String?
     @NSManaged public var id: String?
-    @NSManaged public var point: LocalLocationPoint?
+    @NSManaged public var point: LocationPoint?
 
 }
 
-extension LocalLight : Identifiable {
+extension Light : Identifiable {
 
     var viewId: String {
         id ?? ""
@@ -29,3 +32,4 @@ extension LocalLight : Identifiable {
                  lightType: viewLightType)
     }
 }
+

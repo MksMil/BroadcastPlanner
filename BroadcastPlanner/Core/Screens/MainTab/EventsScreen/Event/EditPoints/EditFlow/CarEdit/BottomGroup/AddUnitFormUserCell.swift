@@ -11,7 +11,7 @@ struct AddUnitFormUserCell: View {
     
     var body: some View {
         HStack{
-            user.userImage
+            user.viewImage
 //            image
                 .resizable()
                 .scaledToFill()
@@ -20,7 +20,7 @@ struct AddUnitFormUserCell: View {
                     Circle().stroke(Color.white, lineWidth: 2)
                 })
                 .frame(width: 40, height: 40)
-            Text("\(user.userCompactName)")
+            Text("\(user.viewCompactName)")
             
             Spacer()
             Image(systemName: "info.circle")

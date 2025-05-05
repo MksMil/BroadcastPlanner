@@ -20,7 +20,7 @@ class MainDataManager: ObservableObject {
         self.currentUser = localDataManager.fetchOrCreateObject(
             ofType: LocalUser.self,
             predicate: NSPredicate(format: "id == %@", userId),
-            in: localDataManager.moc
+            in: localDataManager.mainContext
         ) { ctx in
             let newUser = LocalUser(context: ctx)
             newUser.id = userId
@@ -51,7 +51,7 @@ extension MainDataManager {
         userSpecialization: [String],
         inputImage: UIImage?
     ) async {
-        await localDataManager.moc.perform { [weak self] in
+        await localDataManager.mainContext.perform { [weak self] in
             guard let self else { return }
             currentUser.firstName = firstName
             currentUser.lastName = lastName
@@ -70,7 +70,7 @@ extension MainDataManager {
                     let localImage = localDataManager.fetchOrCreateObject(
                         ofType: LocalImage.self,
                         predicate: NSPredicate(format: "id == %@", currentId),
-                        in: localDataManager.moc
+                        in: localDataManager.mainContext
                     ) { ctx in
                         let newImage = LocalImage(context: ctx)
                         newImage.id = self.currentId
@@ -113,7 +113,7 @@ extension MainDataManager {
     }
 
     @MainActor
-    func fetchUsersAvailableForEvent(_ event: LocalEvent) -> [LocalUser] {
+    func fetchUsersAvailableForEvent(_ event: Event) -> [LocalUser] {
         localDataManager.fetchUsersAvailableToEvent(event)
     }
 }
@@ -121,13 +121,13 @@ extension MainDataManager {
 extension MainDataManager {
     @MainActor
     func createEventWithCurrentUserOwnerInContextType(_ type: ContextType)
-        -> LocalEvent {
+        -> Event {
         let event = localDataManager.fetchOrCreateObject(
-            ofType: LocalEvent.self,
+            ofType: Event.self,
             predicate: NSPredicate(format: "id == %@", UUID().uuidString),
-            in: localDataManager.moc
+            in: localDataManager.mainContext
         ) { ctx in
-            let newEvent = LocalEvent(context: ctx)
+            let newEvent = Event(context: ctx)
             newEvent.id = UUID().uuidString
             return newEvent
         }
@@ -141,13 +141,13 @@ extension MainDataManager {
     }
     @MainActor
     func updateEvent(
-        _ event: LocalEvent,
-        homeClub: LocalClub?,
-        guestClub: LocalClub?,
+        _ event: Event,
+        homeClub: Club?,
+        guestClub: Club?,
         eventDate: Date,
-        location: LocalLocation?) async {
+        location: Location?) async {
         //coreData save
-        await localDataManager.moc.perform { [weak self] in
+        await localDataManager.mainContext.perform { [weak self] in
             guard let self else { return }
             event.homeClub = homeClub
             event.guestClub = guestClub
@@ -165,9 +165,9 @@ extension MainDataManager {
         )
     }
     @MainActor
-    func removeEvent(event: LocalEvent) async {
+    func removeEvent(event: Event) async {
         let id = event.viewId
-        await localDataManager.removeLocalEvent(event, inContext: .main)
+        localDataManager.removeLocalEvent(event, inContext: .main)
         await saveContext(type: .main, publish: .events, id: [])
         await globalDataManager.removeDataOfType(
             GlobalProperties.Path.events,
@@ -176,19 +176,20 @@ extension MainDataManager {
     }
     @MainActor
     func assignSnapshot(_ image: UIImage?,
-        toEvent event: LocalEvent) async {
+        toEvent event: Event) async {
         if let image {
             let localImage =
-                await localDataManager.createOrUpdateLocalImageWithImageData(
+                 localDataManager.createOrUpdateLocalImageWithImageData(
                     imageDTO: .init(
                         id: UUID().uuidString,
                         type: GlobalProperties.ImageType.locationPreview
-                            .rawValue
+                            .rawValue,
+                        lastUpdated: .now
                     ),
                     withImage: image,
                     inContext: .main
                 )
-            localDataManager.moc.performAndWait {
+            localDataManager.mainContext.performAndWait {
                 event.locationPreview = localImage
                 localImage.parentLocationPreviewEvent = event
             }
@@ -199,17 +200,17 @@ extension MainDataManager {
 extension MainDataManager {
     @MainActor
     func updateEvent(
-        _ event: LocalEvent,
-        withPoints points: [LocalLocationPoint]
+        _ event: Event,
+        withPoints points: [LocationPoint]
     ) {
-        localDataManager.moc.performAndWait {
+        localDataManager.mainContext.performAndWait {
             event.points = Set(points) as NSSet
         }
     }
 
     @MainActor
     func updatePoint(
-        _ point: LocalLocationPoint,
+        _ point: LocationPoint,
         x: Double,
         y: Double,
         rotation: Int,
@@ -226,86 +227,86 @@ extension MainDataManager {
     }
     @MainActor
     func updatePoint(
-        _ point: LocalLocationPoint?,
+        _ point: LocationPoint?,
         withNumber num: Int
     ) async {
         guard let point else { return }
-        localDataManager.moc.performAndWait {
+        localDataManager.mainContext.performAndWait {
             point.number = Int16(num)
         }
     }
     @MainActor
     func updatePoint(
-        _ point: LocalLocationPoint?,
+        _ point: LocationPoint?,
         withDescription desk: String
     ) async {
         guard let point else { return }
-        localDataManager.moc.performAndWait {
+        localDataManager.mainContext.performAndWait {
             point.pointDescription = desk
         }
     }
 
     @MainActor
     func updatePoint(
-        _ point: LocalLocationPoint?,
-        withCamera camera: LocalCamera
+        _ point: LocationPoint?,
+        withCamera camera: Camera
     ) async {
         guard let point else { return }
 
-        localDataManager.moc.performAndWait {
+        localDataManager.mainContext.performAndWait {
             point.addToCameras(camera)
             print("camera adding complete")
         }
     }
     @MainActor
     func removeCamera(
-        _ camera: LocalCamera,
-        fromPoint point: LocalLocationPoint?
+        _ camera: Camera,
+        fromPoint point: LocationPoint?
     ) async {
         guard let point else { return }
-        localDataManager.moc.performAndWait {
+        localDataManager.mainContext.performAndWait {
             point.removeFromCameras(camera)
         }
         localDataManager.removeLocalCamera(camera, inContext: .main)
     }
     @MainActor
     func updatePoint(
-        _ point: LocalLocationPoint?,
-        withSound sound: LocalSound
+        _ point: LocationPoint?,
+        withSound sound: Sound
     ) async {
         guard let point else { return }
-        localDataManager.moc.performAndWait {
+        localDataManager.mainContext.performAndWait {
             point.addToSounds(sound)
         }
     }
     @MainActor
     func removeSound(
-        _ sound: LocalSound,
-        fromPoint point: LocalLocationPoint?
+        _ sound: Sound,
+        fromPoint point: LocationPoint?
     ) async {
         guard let point else { return }
-        localDataManager.moc.performAndWait {
+        localDataManager.mainContext.performAndWait {
             point.removeFromSounds(sound)
         }
         localDataManager.removeLocalSound(sound, inContext: .main)
     }
     @MainActor
     func updatePoint(
-        _ point: LocalLocationPoint?,
-        withLight light: LocalLight
+        _ point: LocationPoint?,
+        withLight light: Light
     ) async {
         guard let point else { return }
-        localDataManager.moc.performAndWait {
+        localDataManager.mainContext.performAndWait {
             point.addToLights(light)
         }
     }
     @MainActor
     func removeLight(
-        _ light: LocalLight,
-        fromPoint point: LocalLocationPoint?
+        _ light: Light,
+        fromPoint point: LocationPoint?
     ) async {
         guard let point else { return }
-        localDataManager.moc.performAndWait {
+        localDataManager.mainContext.performAndWait {
             point.removeFromLights(light)
         }
         localDataManager.removeLocalLight(light, inContext: .main)
@@ -313,12 +314,12 @@ extension MainDataManager {
     @MainActor
     func addUser(
         _ user: LocalUser,
-        toPoint point: LocalLocationPoint?
+        toPoint point: LocationPoint?
     ) async {
         if let point {
-            localDataManager.moc.performAndWait {
+            localDataManager.mainContext.performAndWait {
                 point.addToUser(user)
-                user.addToLocationPoints(point)
+                user.addToPoints(point)
                 if let event = point.event {
                     user.addToParticipateEvents(event)
                     event.addToUsers(user)
@@ -331,12 +332,12 @@ extension MainDataManager {
     @MainActor
     func removeUser(
         _ user: LocalUser,
-        fromPoint point: LocalLocationPoint?
+        fromPoint point: LocationPoint?
     ) async {
         if let point {
-            localDataManager.moc.performAndWait {
+            localDataManager.mainContext.performAndWait {
                 point.removeFromUser(user)
-                user.removeFromLocationPoints(point)
+                user.removeFromPoints(point)
                 if let event = point.event {
                     event.removeFromUsers(user)
                     user.removeFromParticipateEvents(event)
@@ -349,19 +350,19 @@ extension MainDataManager {
 
     @MainActor
     func newPointInEvent(
-        _ event: LocalEvent,
+        _ event: Event,
         withNumber number: Int
-    ) -> LocalLocationPoint {
+    ) -> LocationPoint {
         let newPoint = localDataManager.fetchOrCreateObject(
-            ofType: LocalLocationPoint.self,
+            ofType: LocationPoint.self,
             predicate: NSPredicate(format: "id == %@", UUID().uuidString),
-            in: localDataManager.moc
+            in: localDataManager.mainContext
         ) { ctx in
-            let newLocationPoint = LocalLocationPoint(context: ctx)
+            let newLocationPoint = LocationPoint(context: ctx)
             newLocationPoint.id = UUID().uuidString
             return newLocationPoint
         }
-        localDataManager.moc.perform {
+        localDataManager.mainContext.perform {
             newPoint.number = Int16(number)
             event.addToPoints(newPoint)
         }
@@ -369,8 +370,8 @@ extension MainDataManager {
     }
     @MainActor
     func deletePoint(
-        _ point: LocalLocationPoint,
-        inEvent event: LocalEvent
+        _ point: LocationPoint,
+        inEvent event: Event
     ) {
         localDataManager.removeLocalLocationPoint(point, inContext: .main)
     }
@@ -378,8 +379,8 @@ extension MainDataManager {
 // MARK: - Unit managment
 extension MainDataManager {
     @MainActor
-    func removeUnit(_ unit: LocalUnit) {
-        localDataManager.moc.perform {
+    func removeUnit(_ unit: Unit) {
+        localDataManager.mainContext.perform {
             if let event = unit.event, let user = unit.user {
                 user.removeFromParticipateEvents(event)
                 event.removeFromUsers(user)
@@ -391,19 +392,19 @@ extension MainDataManager {
         _ user: LocalUser,
         andSpecialization specialization: UserSpecialization,
         andHardware hardware: ReplayType?,
-        inEvent event: LocalEvent
-    ) -> LocalUnit {
+        inEvent event: Event
+    ) -> Unit {
         let unit = localDataManager.createUnitWithUser(
             user,
             andPosition: specialization,
             andHardware: hardware,
             inContext: .main
         )
-        localDataManager.moc.perform {
+        localDataManager.mainContext.perform {
             event.addToUnits(unit)
             event.addToUsers(user)
             user.addToParticipateEvents(event)
-            user.addToObVanUnits(unit)
+            user.addToUnits(unit)
             unit.user = user
             unit.event = event
         }
@@ -414,30 +415,30 @@ extension MainDataManager {
 // MARK: - Club managment
 extension MainDataManager {
     @MainActor
-    func createClub() -> LocalClub {
+    func createClub() -> Club {
         let id = UUID().uuidString
         return localDataManager.fetchOrCreateObject(
-            ofType: LocalClub.self,
+            ofType: Club.self,
             predicate: NSPredicate(format: "id == %@", id),
-            in: localDataManager.moc
+            in: localDataManager.mainContext
         ) { ctx in
-            let newClub = LocalClub(context: ctx)
+            let newClub = Club(context: ctx)
             newClub.id = id
             return newClub
         }
     }
 
     @MainActor
-    func updateClub(_ club: LocalClub,
+    func updateClub(_ club: Club,
                     withTitle: String,
                     uiimage: UIImage?,
                     contacts: String,
                     urlString: String,
-                    location: LocalLocation?,
+                    location: Location?,
                     inContext contextType: ContextType) async {
         //save image logo in local storage,
 
-        await localDataManager.updateClubWithClub(
+         localDataManager.updateClubWithClub(
             club: club,
             title: withTitle,
             uiimage: uiimage,
@@ -463,7 +464,7 @@ extension MainDataManager {
         )
     }
     @MainActor
-    func removeCub(_ club: LocalClub) async {
+    func removeCub(_ club: Club) async {
         //remove image from firestore, and image properties and club from firebase
         let id = club.viewId
         if let imageId = club.imageLogo?.id {
@@ -481,34 +482,35 @@ extension MainDataManager {
 // MARK: - LocationManagment
 extension MainDataManager {
     @MainActor
-    func getNewLocation() -> LocalLocation {
+    func getNewLocation() -> Location {
         localDataManager.fetchOrCreateObject(
-            ofType: LocalLocation.self,
+            ofType: Location.self,
             predicate: NSPredicate(format: "id == %@", UUID().uuidString),
-            in: localDataManager.moc
+            in: localDataManager.mainContext
         ) { ctx in
-            let newLocation = LocalLocation(context: ctx)
+            let newLocation = Location(context: ctx)
             newLocation.id = UUID().uuidString
             return newLocation
         }
     }
     @MainActor
     func updateLocalLocation(
-        _ location: LocalLocation,
+        _ location: Location,
         withTitle title: String,
         address: String,
         images: [UIImage],
         background: LocalImage?
     ) async {
         //update coredata entity
-        await localDataManager.updateLocalLocation(
+            localDataManager.updateLocalLocation(
             location,
             withTitle: title,
             address: address,
             localImages: images,
-            locationBackground: background
+            locationBackground: background,
+            inContext: .main
         )
-        await localDataManager.saveContext(
+        await localDataManager.saveContextAsync(
             type: .main,
             publish: .locations,
             id: []
@@ -542,7 +544,7 @@ extension MainDataManager {
         )
     }
     @MainActor
-    func removeLocation(_ location: LocalLocation) async {
+    func removeLocation(_ location: Location) async {
         //remove background images for location from firestore, and image properties from firebase
         await withTaskGroup { group in
             let imageIds = location.viewLocalImages.map { $0.viewId }
@@ -563,15 +565,15 @@ extension MainDataManager {
             withId: location.viewId
         )
         //remove images and location from CoreData
-        await localDataManager.removeLocalLocation(location, inContext: .main)
+         localDataManager.removeLocalLocation(location, inContext: .main)
         await saveContext(type: .main, publish: .locations, id: [])
     }
 }
 // MARK: - Template managment
 extension MainDataManager {
     @MainActor
-    func makeLocalPointFromTemplate(_ template: LocalTemplate)
-        -> [LocalLocationPoint]
+    func makeLocalPointFromTemplate(_ template: Template)
+        -> [LocationPoint]
     {
         return localDataManager.mapTemplateToLocationPoints(
             template: template,
@@ -581,11 +583,11 @@ extension MainDataManager {
 
     @MainActor
     func saveTemplateFromSchema(
-        localPoints: [LocalLocationPoint],
+        localPoints: [LocationPoint],
         withName name: String
     ) async {
         let template =
-            await localDataManager.createTemplateWithLocalLocationPoints(
+             localDataManager.createTemplateWithLocalLocationPoints(
                 localPoints,
                 andName: name,
                 inContext: .main
@@ -599,7 +601,7 @@ extension MainDataManager {
         )
     }
 
-    func removeLocalTemplate(_ template: LocalTemplate) async {
+    func removeLocalTemplate(_ template: Template) async {
         await globalDataManager.removeDataOfType(
             GlobalProperties.Path.templates,
             withId: template.viewId
@@ -614,20 +616,20 @@ extension MainDataManager {
         _ name: String,
         broadcaster: String,
         image: UIImage?
-    ) -> LocalObvan {
+    ) -> Obvan {
         localDataManager.fetchOrCreateObject(
-            ofType: LocalObvan.self,
+            ofType: Obvan.self,
             predicate: NSPredicate(format: "id == %@", UUID().uuidString),
-            in: localDataManager.moc
+            in: localDataManager.mainContext
         ) { ctx in
-            let newObvan = LocalObvan(context: ctx)
+            let newObvan = Obvan(context: ctx)
             newObvan.id = UUID().uuidString
             return newObvan
         }
 
     }
 
-    func updateObvan(_ localObvan: LocalObvan) async {
+    func updateObvan(_ localObvan: Obvan) async {
         //update local
 
         //update global
@@ -638,7 +640,7 @@ extension MainDataManager {
         )
     }
 
-    func removeObvan(_ obvan: LocalObvan) async {
+    func removeObvan(_ obvan: Obvan) async {
         //remove from global
         await globalDataManager.removeDataOfType(
             GlobalProperties.Path.obvans,
@@ -698,7 +700,7 @@ extension MainDataManager {
 extension MainDataManager {
     @MainActor
     func rollBackMoc() {
-        localDataManager.moc.rollback()
+        localDataManager.mainContext.rollback()
     }
 
     func saveContext(
@@ -707,7 +709,7 @@ extension MainDataManager {
         id: [String]
     ) async {
 
-        await localDataManager.saveContext(type: type, publish: publish, id: id)
+        await localDataManager.saveContextAsync(type: type, publish: publish, id: id)
 
     }
 }

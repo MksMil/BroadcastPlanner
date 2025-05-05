@@ -1,29 +1,25 @@
-//
-//  LocalEvent+CoreDataProperties.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 22.04.2025.
-//
-//
-
 import SwiftUI
 import UIKit
 import CoreData
 
+public class Event: NSManagedObject {
 
-extension LocalEvent {
+}
 
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<LocalEvent> {
-        return NSFetchRequest<LocalEvent>(entityName: "LocalEvent")
+extension Event {
+
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<Event> {
+        return NSFetchRequest<Event>(entityName: "Event")
     }
 
     @NSManaged public var date: Date?
     @NSManaged public var id: String?
-    @NSManaged public var guestClub: LocalClub?
-    @NSManaged public var homeClub: LocalClub?
-    @NSManaged public var location: LocalLocation?
+    @NSManaged public var lastUpdated: Date?
+    @NSManaged public var guestClub: Club?
+    @NSManaged public var homeClub: Club?
+    @NSManaged public var location: Location?
     @NSManaged public var locationPreview: LocalImage?
-    @NSManaged public var obvan: LocalObvan?
+    @NSManaged public var obvan: Obvan?
     @NSManaged public var obvanPreview: LocalImage?
     @NSManaged public var owners: NSSet?
     @NSManaged public var points: NSSet?
@@ -33,7 +29,7 @@ extension LocalEvent {
 }
 
 // MARK: Generated accessors for owners
-extension LocalEvent {
+extension Event {
 
     @objc(addOwnersObject:)
     @NSManaged public func addToOwners(_ value: LocalUser)
@@ -50,13 +46,13 @@ extension LocalEvent {
 }
 
 // MARK: Generated accessors for points
-extension LocalEvent {
+extension Event {
 
     @objc(addPointsObject:)
-    @NSManaged public func addToPoints(_ value: LocalLocationPoint)
+    @NSManaged public func addToPoints(_ value: LocationPoint)
 
     @objc(removePointsObject:)
-    @NSManaged public func removeFromPoints(_ value: LocalLocationPoint)
+    @NSManaged public func removeFromPoints(_ value: LocationPoint)
 
     @objc(addPoints:)
     @NSManaged public func addToPoints(_ values: NSSet)
@@ -67,13 +63,13 @@ extension LocalEvent {
 }
 
 // MARK: Generated accessors for units
-extension LocalEvent {
+extension Event {
 
     @objc(addUnitsObject:)
-    @NSManaged public func addToUnits(_ value: LocalUnit)
+    @NSManaged public func addToUnits(_ value: Unit)
 
     @objc(removeUnitsObject:)
-    @NSManaged public func removeFromUnits(_ value: LocalUnit)
+    @NSManaged public func removeFromUnits(_ value: Unit)
 
     @objc(addUnits:)
     @NSManaged public func addToUnits(_ values: NSSet)
@@ -84,7 +80,7 @@ extension LocalEvent {
 }
 
 // MARK: Generated accessors for users
-extension LocalEvent {
+extension Event {
 
     @objc(addUsersObject:)
     @NSManaged public func addToUsers(_ value: LocalUser)
@@ -100,7 +96,7 @@ extension LocalEvent {
 
 }
 
-extension LocalEvent : Identifiable {
+extension Event : Identifiable {
     var viewId: String {
         id ?? ""
     }
@@ -125,12 +121,12 @@ extension LocalEvent : Identifiable {
         owners?.allObjects.compactMap{$0 as? LocalUser} ?? []
     }
     
-    var viewLocationPoints: [LocalLocationPoint]{
-        points?.allObjects.compactMap{$0 as? LocalLocationPoint} ?? []
+    var viewLocationPoints: [LocationPoint]{
+        points?.allObjects.compactMap{$0 as? LocationPoint} ?? []
     }
     
-    var viewObvanUnits: [LocalUnit]{
-        units?.allObjects.compactMap{$0 as? LocalUnit} ?? []
+    var viewObvanUnits: [Unit]{
+        units?.allObjects.compactMap{$0 as? Unit} ?? []
     }
     
     var viewTitle: String {
@@ -170,20 +166,24 @@ extension LocalEvent : Identifiable {
     var viewObvanPreview: Image {
         obvanPreview?.originImage ?? Image(systemName: "truck.box")
     }
+    var viewLastUpdated: Date{
+        lastUpdated ?? .now
+    }
     
-     var dto: EventDTO  {
+    var dto: EventDTO  {
         var event = EventDTO(id: viewId,
-                            date: viewRemainingDate,
-                            obVanId: obvan?.id,
+                             date: viewRemainingDate,
+                             lastUpdated: viewLastUpdated,
+                             obVanId: obvan?.id,
                              locationPoints: viewLocationPoints.compactMap{$0.dto},
                              obvanUnits: viewObvanUnits.compactMap{ $0.dto},
-                            locationID: location?.id,
-                            homeClubId: homeClub?.id,
-                            guestClubId: guestClub?.id,
-                            locationPreviewId: locationPreview?.id,
-                            obvanPreviewId: obvanPreview?.id)
-        event.ownersIds = viewOwners.map({$0.userId})
-        event.usersIds = viewUsers.map({$0.userId})
+                             locationID: location?.id,
+                             homeClubId: homeClub?.id,
+                             guestClubId: guestClub?.id,
+                             locationPreviewId: locationPreview?.id,
+                             obvanPreviewId: obvanPreview?.id)
+        event.ownersIds = viewOwners.map({$0.viewId})
+        event.usersIds = viewUsers.map({$0.viewId})
         
         return event
     }

@@ -22,7 +22,7 @@ struct BPUserProfileView: View {
         VStack{
             //photo here
             HStack {
-                user.userImage
+                user.viewImage
                         .resizable()
                         .scaledToFill()
                         .frame(width: 100,height: 100)
@@ -36,12 +36,12 @@ struct BPUserProfileView: View {
                         .padding(.trailing,15)
                         //configure minimum scale factor
                     VStack(alignment: .leading){
-                        Text(user.userFirstName)
+                        Text(user.viewFirstName)
                             .padding(.vertical,4)
                             .padding(.horizontal,5)
                         Divider()
                         //configure minimum scale factor
-                        Text(user.userLastName)
+                        Text(user.viewLastName)
                             .padding(.vertical,4)
                             .padding(.horizontal,5)
                         Divider()
@@ -60,8 +60,8 @@ struct BPUserProfileView: View {
                             .frame(width: 30,height: 30)
                             .scaledToFill()
                         //configure minimum scale factor
-                        Link(user.userPhoneNumber,
-                             destination: URL(string:"tel:\(user.userPhoneNumber)")!)
+                        Link(user.viewPhoneNumber,
+                             destination: URL(string:"tel:\(user.viewPhoneNumber)")!)
                             .padding(.vertical,4)
                             .padding(.horizontal,5)
                         Spacer()
@@ -73,8 +73,8 @@ struct BPUserProfileView: View {
                             .frame(width: 30,height: 30)
                             .scaledToFill()
                         //configure minimum scale factor
-                        Link(user.userEmail,
-                             destination: URL(string: "mailto:\(user.userEmail)")!)
+                        Link(user.viewEmail,
+                             destination: URL(string: "mailto:\(user.viewEmail)")!)
                             .padding(.vertical,4)
                             .padding(.horizontal,5)
                         Spacer()
@@ -86,7 +86,7 @@ struct BPUserProfileView: View {
                             .frame(width: 30,height: 30)
                             .scaledToFill()
                         //configure minimum scale factor
-                        Text(user.userAddress)
+                        Text(user.viewAddress)
                             .padding(.vertical,4)
                             .padding(.horizontal,5)
                         Spacer()
@@ -114,7 +114,7 @@ struct BPUserProfileView: View {
         VStack {
             AnyContentView(
                 sourceContent: UserSpecialization.allCases.map { $0.rawValue },
-                selectedContent: .constant(user.userSpecialization.map {$0.rawValue}),
+                selectedContent: .constant(user.viewSpecialization.map {$0.rawValue}),
                 isEdit: .constant(false)
             ) {
                 RoundedRectangle(cornerRadius: 10.0).fill(.white.opacity(0.4))

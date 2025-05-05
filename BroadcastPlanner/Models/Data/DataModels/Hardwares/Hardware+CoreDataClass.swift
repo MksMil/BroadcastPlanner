@@ -1,29 +1,24 @@
-//
-//  LocalHardware+CoreDataProperties.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 14.10.2024.
-//
-//
-
 import Foundation
 import CoreData
 
+public class Hardware: NSManagedObject {
 
-extension LocalHardware {
+}
 
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<LocalHardware> {
-        return NSFetchRequest<LocalHardware>(entityName: "LocalHardware")
+extension Hardware {
+
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<Hardware> {
+        return NSFetchRequest<Hardware>(entityName: "Hardware")
     }
 
     @NSManaged public var channels: String?
     @NSManaged public var type: String?
     @NSManaged public var id: String?
-    @NSManaged public var obVanUnit: LocalUnit?
+    @NSManaged public var obvanUnit: Unit?
 
 }
 
-extension LocalHardware : Identifiable {
+extension Hardware : Identifiable {
 
     var veiwId: String {
         id ?? ""

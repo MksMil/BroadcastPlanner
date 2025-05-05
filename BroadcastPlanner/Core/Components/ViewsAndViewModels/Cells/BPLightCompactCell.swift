@@ -2,7 +2,7 @@ import SwiftUI
 
 struct BPLightCompactCell: View {
     
-    let light: LocalLight
+    let light: Light
     let action: ()->Void
     
     var body: some View {

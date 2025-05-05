@@ -3,7 +3,7 @@ import Combine
 
 final class MainEventListCellViewModel: ObservableObject{
     
-    let event: LocalEvent
+    let event: Event
     
     @Published var date: Date
     @Published var eventDate: String = ""
@@ -19,7 +19,7 @@ final class MainEventListCellViewModel: ObservableObject{
         BPDateFormater.formatTime(date: date)
     }
     
-    init(event: LocalEvent) {
+    init(event: Event) {
         self.event = event
         
         self.date = event.viewRemainingDate

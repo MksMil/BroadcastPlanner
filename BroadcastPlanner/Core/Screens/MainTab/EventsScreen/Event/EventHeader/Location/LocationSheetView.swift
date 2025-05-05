@@ -2,7 +2,7 @@ import SwiftUI
 import Combine
 
 final class LocationSheetViewModel: ObservableObject{
-    @Published var selectedLocation: LocalLocation?
+    @Published var selectedLocation: Location?
 }
 
 struct LocationSheetView: View {
@@ -10,22 +10,22 @@ struct LocationSheetView: View {
     
     @StateObject var vm: LocationSheetViewModel
     
-    @FetchRequest<LocalLocation>(sortDescriptors: [SortDescriptor(\.address)]) var locations
+    @FetchRequest<Location>(sortDescriptors: [SortDescriptor(\.address)]) var locations
     @Namespace var ns
     
     let isEditMode: Bool
     
-    let club: LocalClub?
+    let club: Club?
     
     let cancelAction: ()-> Void
-    let saveAction: (LocalLocation?)-> Void
-    let addEditAction: (LocalLocation)->Void
+    let saveAction: (Location?)-> Void
+    let addEditAction: (Location)->Void
     
     init(isEditMode: Bool = true,
-         club: LocalClub?,
+         club: Club?,
          cancelAction: @escaping () -> Void,
-         saveAction: @escaping (LocalLocation?) -> Void,
-         addEditAction:@escaping (LocalLocation) -> Void){
+         saveAction: @escaping (Location?) -> Void,
+         addEditAction:@escaping (Location) -> Void){
         self.isEditMode = isEditMode
         self.club = club
         self._vm = StateObject(wrappedValue: LocationSheetViewModel())
@@ -45,7 +45,7 @@ struct LocationSheetView: View {
                     if let club,
                        let location = vm.selectedLocation{
                         Task{
-                            mdm.localDataManager.moc.perform {
+                            mdm.localDataManager.mainContext.perform {
                                 club.homeLocation = location
                             }
                         }

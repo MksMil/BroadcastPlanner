@@ -1,19 +1,14 @@
-//
-//  LocalObvanUnit+CoreDataProperties.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 05.02.2025.
-//
-//
-
 import Foundation
 import CoreData
 
+public class Unit: NSManagedObject {
 
-extension LocalUnit {
+}
 
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<LocalUnit> {
-        return NSFetchRequest<LocalUnit>(entityName: "LocalUnit")
+extension Unit {
+
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<Unit> {
+        return NSFetchRequest<Unit>(entityName: "Unit")
     }
 
     @NSManaged public var coordinateX: Float
@@ -23,13 +18,13 @@ extension LocalUnit {
     @NSManaged public var rotation: Int16
     @NSManaged public var scaleFactor: Float
     @NSManaged public var task: String?
-    @NSManaged public var event: LocalEvent?
-    @NSManaged public var hardware: LocalHardware?
+    @NSManaged public var event: Event?
+    @NSManaged public var hardware: Hardware?
     @NSManaged public var user: LocalUser?
 
 }
 
-extension LocalUnit : Identifiable {
+extension Unit : Identifiable {
     var viewId: String{
         id ?? ""
     }
@@ -54,7 +49,7 @@ extension LocalUnit : Identifiable {
     }
     
     var viewUserId: String {
-        user?.userId ?? ""
+        user?.viewId ?? ""
     }
     
     var viewHardware: HardwareDTO?{

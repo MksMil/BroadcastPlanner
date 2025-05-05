@@ -163,6 +163,6 @@ struct BPAccountInfoView: View {
                               globalDataManager: NetworkManager(),
                               userId: "123")
     return BPAccountInfoView(user: mdm.currentUser)
-        .environment(\.managedObjectContext, mdm.localDataManager.moc)
+        .environment(\.managedObjectContext, mdm.localDataManager.mainContext)
         .environmentObject(mdm)
 }

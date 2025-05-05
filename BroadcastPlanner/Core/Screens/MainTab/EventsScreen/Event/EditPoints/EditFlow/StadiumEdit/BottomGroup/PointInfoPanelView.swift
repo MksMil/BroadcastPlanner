@@ -16,9 +16,9 @@ final class PointInfoPanelViewModel: ObservableObject {
     @Published var users: [LocalUser] = []
     @Published var num: Int = 0
     @Published var description: String = "Choose position"
-    @Published var cameras: [LocalCamera] = []
-    @Published var sounds: [LocalSound] = []
-    @Published var lights: [LocalLight] = []
+    @Published var cameras: [Camera] = []
+    @Published var sounds: [Sound] = []
+    @Published var lights: [Light] = []
     
     
    
@@ -26,12 +26,12 @@ final class PointInfoPanelViewModel: ObservableObject {
     @Published var selectedFilter: StadiumPointFilterCase = .users
     
     // MARK: - vm init
-    init(point: LocalLocationPoint?){
+    init(point: LocationPoint?){
 //        self.selectedPoint = point
         update(point: point)
     }
     
-    func update(point: LocalLocationPoint?){
+    func update(point: LocationPoint?){
         if let point {
             self.users = point.viewUsers
             self.num = point.viewNumber
@@ -58,28 +58,28 @@ final class PointInfoPanelViewModel: ObservableObject {
         self.num = num
     }
     
-    func addCam(cam: LocalCamera){
+    func addCam(cam: Camera){
         cameras.append(cam)
     }
     
-    func removeCamera(cam: LocalCamera){
+    func removeCamera(cam: Camera){
         cameras.removeAll(where: {$0 == cam})
     }
     
-    func addSound(sound: LocalSound){
+    func addSound(sound: Sound){
        
         sounds.append(sound)
     }
     
-    func removeSound(sound: LocalSound){
+    func removeSound(sound: Sound){
         sounds.removeAll(where: {$0 == sound})
     }
     
-    func addLight(light: LocalLight){
+    func addLight(light: Light){
         lights.append(light)
     }
     
-    func removeLight(light: LocalLight){
+    func removeLight(light: Light){
         lights.removeAll(where: {$0 == light})
     }
     
@@ -102,7 +102,7 @@ struct PointInfoPanelView: View {
     
     @State var numPopover: Bool = false
     // MARK: - Init
-    init(point: LocalLocationPoint?) {
+    init(point: LocationPoint?) {
         self._vm = StateObject(wrappedValue: PointInfoPanelViewModel(point: point))
         //        self.point = point
     }
@@ -305,10 +305,10 @@ struct PointInfoPanelView: View {
     let mdm = MainDataManager(localDataManager: lm,
                               globalDataManager: NetworkManager(),
                               userId: "123")
-    let localEvent = lm.fetchOrCreateObject(ofType: LocalEvent.self,
+    let localEvent = lm.fetchOrCreateObject(ofType: Event.self,
                   predicate: NSPredicate(format: "id == %@", "id"),
-                                      in: lm.moc) { ctx in
-        let newEvent = LocalEvent(context: ctx)
+                                      in: lm.mainContext) { ctx in
+        let newEvent = Event(context: ctx)
         newEvent.id = "id"
         return newEvent
     }

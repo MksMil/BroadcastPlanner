@@ -7,7 +7,7 @@ struct BPEnvCompactCell: View {
     
     var body: some View {
         HStack{
-            user.userImage
+            user.viewImage
                 .resizable()
                 .scaledToFit()
                 .padding(3)
@@ -18,7 +18,7 @@ struct BPEnvCompactCell: View {
             Divider()
                 .padding(.vertical,3)
             
-            Text(user.userCompactName)
+            Text(user.viewCompactName)
                 .font(.system(size: 14))
                 .lineLimit(2)
                 .minimumScaleFactor(0.2)

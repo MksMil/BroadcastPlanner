@@ -1,19 +1,14 @@
-//
-//  LocalTemplatePoint+CoreDataProperties.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 24.01.2025.
-//
-//
-
 import Foundation
 import CoreData
 
+public class TemplatePoint: NSManagedObject {
 
-extension LocalTemplatePoint {
+}
+
+extension TemplatePoint {
     
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<LocalTemplatePoint> {
-        return NSFetchRequest<LocalTemplatePoint>(entityName: "LocalTemplatePoint")
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<TemplatePoint> {
+        return NSFetchRequest<TemplatePoint>(entityName: "TemplatePoint")
     }
 
     @NSManaged public var coordinateX: Float
@@ -27,11 +22,11 @@ extension LocalTemplatePoint {
     @NSManaged public var cameras: String?
     @NSManaged public var sounds: String?
     @NSManaged public var lights: String?
-    @NSManaged public var parentTemplate: LocalTemplate?
+    @NSManaged public var parentTemplate: Template?
 
 }
 
-extension LocalTemplatePoint : Identifiable {
+extension TemplatePoint : Identifiable {
     var viewId: String {
         id ?? ""
     }

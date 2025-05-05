@@ -5,7 +5,7 @@ import UIKit
 struct AddEditLocation: View {
 
     let lenght: Double = 75
-    let location: LocalLocation
+    let location: Location
 
     let acceptAction: (String,String,[UIImage],LocalImage?) -> Void
     let cancelAction: () -> Void
@@ -19,7 +19,7 @@ struct AddEditLocation: View {
     @State private var isBackSheetShowed: Bool = false
 
     init(
-        location: LocalLocation,
+        location: Location,
         acceptAction: @escaping (String,String,[UIImage],LocalImage?) -> Void,
         cancelAction: @escaping () -> Void,
         removeAction: @escaping () -> Void

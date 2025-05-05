@@ -9,7 +9,7 @@ struct BPUserImageNameCompactCell: View {
     var body: some View {
         HStack(spacing: 0){
             Section{
-                user.userImage
+                user.viewImage
                     .resizable()
                     .scaledToFit()
                     .clipShape(Circle())
@@ -18,7 +18,7 @@ struct BPUserImageNameCompactCell: View {
                 Divider()
                     .padding(.vertical,3)
                 
-                Text(user.userCompactName)
+                Text(user.viewCompactName)
                     .font(.system(size: 14))
                     .lineLimit(1)
                     .minimumScaleFactor(0.2)

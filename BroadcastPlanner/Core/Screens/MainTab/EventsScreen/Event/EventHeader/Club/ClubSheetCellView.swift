@@ -3,13 +3,13 @@ import Combine
 
 final class ClubSheetCellViewModel: ObservableObject{
     
-    let club: LocalClub
+    let club: Club
     
     @Published var title: String
     @Published var image: Image
     
     
-    init(club: LocalClub) {
+    init(club: Club) {
         self.club = club
         self.title = club.viewTitle
         self.image = club.viewImageMediumLogo
@@ -24,9 +24,9 @@ final class ClubSheetCellViewModel: ObservableObject{
 struct ClubSheetCellView: View {
     @EnvironmentObject var mdm: MainDataManager
     @StateObject private var vm: ClubSheetCellViewModel
-    let club: LocalClub
+    let club: Club
     
-    init(club: LocalClub) {
+    init(club: Club) {
         self.club = club
         self._vm = StateObject(wrappedValue: ClubSheetCellViewModel(club: club))
     }

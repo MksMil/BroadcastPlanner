@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct StaffPanelView: View {
-    let event: LocalEvent
+    let event: Event
 
     @FetchRequest<LocalUser>(sortDescriptors: []) var users
     var availableUsers: [LocalUser] {
@@ -9,14 +9,14 @@ struct StaffPanelView: View {
     }
         
     let addUnitAction: (LocalUser, UserSpecialization, ReplayType?)->()
-    let removeUnitAction: (LocalUnit)->()
+    let removeUnitAction: (Unit)->()
     let editUnitAction: ()->()
     
     @State private var isAddUnit: Bool = false
     
-    init(event: LocalEvent,
+    init(event: Event,
          addUnitAction: @escaping (LocalUser, UserSpecialization, ReplayType?) -> Void,
-         removeUnitAction: @escaping (LocalUnit) -> Void,
+         removeUnitAction: @escaping (Unit) -> Void,
          editUnitAction: @escaping () -> Void) {
         self.event = event
         self.addUnitAction = addUnitAction
@@ -69,11 +69,11 @@ struct StaffPanelView: View {
 
 struct StaffPanelCellView: View {
     
-    let unit: LocalUnit
+    let unit: Unit
     
     var body: some View {
         HStack{
-            unit.user?.userImage
+            unit.user?.viewImage
                 .resizable()
                 .scaledToFill()
                 .clipShape(Circle())
@@ -83,7 +83,7 @@ struct StaffPanelCellView: View {
                 .frame(width:30, height: 30)
             VStack(alignment: .leading){
                 if let user = unit.user{
-                    Text(user.userCompactName)
+                    Text(user.viewCompactName)
                         .font(.system(size: 14))
                         .minimumScaleFactor(0.6)
                 } else {
@@ -111,10 +111,10 @@ struct StaffPanelCellView: View {
 #Preview(body: {
     let lm = DataManager(forPreview: true)
 
-    let localEvent = lm.fetchOrCreateObject(ofType: LocalEvent.self,
+    let localEvent = lm.fetchOrCreateObject(ofType: Event.self,
                   predicate: NSPredicate(format: "id == %@", "id"),
-                                      in: lm.moc) { ctx in
-        let newEvent = LocalEvent(context: ctx)
+                                      in: lm.mainContext) { ctx in
+        let newEvent = Event(context: ctx)
         newEvent.id = "id"
         return newEvent
     }

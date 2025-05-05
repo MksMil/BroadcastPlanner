@@ -3,15 +3,15 @@ import SwiftUI
 struct PanelSoundCollectionView: View {
     @EnvironmentObject var mdm: MainDataManager
     
-    let sounds: [LocalSound]
-    let addAction: (LocalSound)->()
-    let removeAction: (LocalSound)->()
+    let sounds: [Sound]
+    let addAction: (Sound)->()
+    let removeAction: (Sound)->()
     
     @State private var isSelect: Bool = false
     @State private var isConfirm: Bool = false
-    @State private var soundToRemove: LocalSound?
+    @State private var soundToRemove: Sound?
     
-    init(sounds: [LocalSound], addAction: @escaping (LocalSound)->()  ,removeAction: @escaping (LocalSound)->()) {
+    init(sounds: [Sound], addAction: @escaping (Sound)->()  ,removeAction: @escaping (Sound)->()) {
         self.sounds = sounds
         self.addAction = addAction
         self.removeAction = removeAction

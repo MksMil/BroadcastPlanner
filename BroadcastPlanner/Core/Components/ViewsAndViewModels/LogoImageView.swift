@@ -3,7 +3,7 @@ import SwiftUI
 final class LogoImageViewModel: ObservableObject{
     @Published var image : Image
     @Published var isSheetPresented: Bool = false
-    init(club: LocalClub?) {
+    init(club: Club?) {
         if let club = club{
             self.image = club.viewImageMediumLogo
         } else {
@@ -11,7 +11,7 @@ final class LogoImageViewModel: ObservableObject{
         }
     }
     
-    func updatewithClub(club: LocalClub){
+    func updatewithClub(club: Club){
         image = club.viewImageMediumLogo
     }
 }
@@ -21,11 +21,11 @@ struct LogoImageView: View {
     @StateObject private var vm: LogoImageViewModel
     var logoSize: Double
     let cancelAction: ()->Void
-    let accessAction: (LocalClub)->Void
+    let accessAction: (Club)->Void
     
-    init(club: LocalClub?,logoSize: Double = 100,
+    init(club: Club?,logoSize: Double = 100,
          cancelAction: @escaping () -> Void,
-         accessAction: @escaping (LocalClub) -> Void) {
+         accessAction: @escaping (Club) -> Void) {
         self.logoSize = logoSize
         self.cancelAction = cancelAction
         self.accessAction = accessAction

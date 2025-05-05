@@ -2,8 +2,8 @@ import SwiftUI
 
 final class NetworkTestViewModel: ObservableObject{
 
-    var selectedEvent: LocalEvent?
-    var selectedClub: LocalClub?
+    var selectedEvent: Event?
+    var selectedClub: Club?
     
     var id: String {
 //        UUID().uuidString

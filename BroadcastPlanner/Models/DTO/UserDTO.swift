@@ -1,10 +1,11 @@
-import SwiftUI
+import Foundation
 import FirebaseFirestore
-import CoreData
+
 
 struct UserDTO: Identifiable, Codable,BPDataProtocol {
     
     var id: String
+    var lastUpdated: Date = .now
     
     var firstName : String = "empty first name"
     var lastName: String = "empty last name"
@@ -15,14 +16,10 @@ struct UserDTO: Identifiable, Codable,BPDataProtocol {
     var homeAddress: String = "homeAddress"
     var specialization = [String]()
     
-    var creationDate: Timestamp = Timestamp(date: Date())
-    var creationDateConverted: Date {
-        creationDate.dateValue()
-    }
-    var leaveDate: Timestamp = Timestamp(date: Date())
-    var leaveDateConverted: Date {
-        leaveDate.dateValue()
-    }
+    var creationDate: Date = .now
+    
+    var leaveDate: Date = .now
+    
     var ownedEventIds = [String]()
     var participatedEventIds = [String]()
     

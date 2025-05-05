@@ -8,7 +8,7 @@ import UIKit
 //firebase newtwork manager
 
 // try to use delegate patern to update local storage with snapshotlisteners events
-protocol UpdateDelegeteProtocol{
+protocol UpdateDelegateProtocol: AnyObject{
     func updateData()
 }
 /* updatedAt field
@@ -21,56 +21,11 @@ db.collection("your_collection")
   }
 */
 
-
-/* CHANGES
- func syncChangesFromFirebase() async {
-     let db = Firestore.firestore()
-     let lastSyncedAt = UserDefaults.standard.object(forKey: "lastSyncedAt") as? Date ?? .distantPast
-
-     let changesQuery = db.collection("changes")
-         .whereField("timestamp", isGreaterThan: Timestamp(date: lastSyncedAt))
-
-     do {
-         let snapshot = try await changesQuery.getDocuments()
-         for doc in snapshot.documents {
-             let data = doc.data()
-             guard
-                 let type = data["type"] as? String,
-                 let collection = data["collection"] as? String,
-                 let targetId = data["targetId"] as? String
-             else { continue }
-
-             switch type {
-             case "create", "update":
-                 let object = try await db.collection(collection).document(targetId).getDocument()
-                 if object.exists {
-                     // Обновить или создать локально
-                     print("Update local \(collection) with id \(targetId)")
-                 }
-             case "delete":
-                 // Удалить локально объект с id = targetId
-                 print("Delete local \(collection) with id \(targetId)")
-             default:
-                 break
-             }
-         }
-
-         // Обновить дату последней синхронизации
-         UserDefaults.standard.set(Date(), forKey: "lastSyncedAt")
-
-     } catch {
-         print("Error syncing changes: \(error)")
-     }
- }
-
- */
-
-
 final class NetworkManager: ObservableObject {
     
     let db: Firestore = Firestore.firestore()
     let storageRef = Storage.storage().reference()
-    
+    weak var syncDelegate: UpdateDelegateProtocol?
     init() {}
     
     func startToObserveChanges() {
@@ -80,6 +35,101 @@ final class NetworkManager: ObservableObject {
         //                observeClubUpdates()
         //                observeBroadcastersUpdates()
         //        observeImages()
+    }
+    
+    //bg task?
+    func start()async{
+        
+        //1.load and sinc existing data
+        //2.addListeners
+        await withTaskGroup(of: Void.self) { group in
+            group.addTask { [weak self] in
+                guard let self else { return }
+                do{
+                    let snapshot = try await self.db.collection(GlobalProperties.Path.users.rawValue).getDocuments(source: .default)
+                    try snapshot.documents.forEach { doc in
+                        let data = try doc.data(as: UserDTO.self)
+                        
+                    }
+                } catch {
+                    print("Network Manager: start(): users fetching error: \(error)")
+                }
+            }
+            group.addTask { [weak self] in
+                guard let self else { return }
+                do{
+                    let snapshot = try await self.db.collection(GlobalProperties.Path.events.rawValue).getDocuments(source: .default)
+                    try snapshot.documents.forEach { doc in
+                        let data = try doc.data(as: EventDTO.self)
+                        
+                    }
+                } catch {
+                    print("Network Manager: start(): events fetching error: \(error)")
+                }
+            }
+            group.addTask { [weak self] in
+                guard let self else { return }
+                do{
+                    let snapshot = try await self.db.collection(GlobalProperties.Path.locations.rawValue).getDocuments(source: .default)
+                    try snapshot.documents.forEach { doc in
+                        let data = try doc.data(as: LocationDTO.self)
+                        
+                    }
+                } catch {
+                    print("Network Manager: start(): locations fetching error: \(error)")
+                }
+            }
+            group.addTask { [weak self] in
+                guard let self else { return }
+                do{
+                    let snapshot = try await self.db.collection(GlobalProperties.Path.clubs.rawValue).getDocuments(source: .default)
+                    try snapshot.documents.forEach { doc in
+                        let data = try doc.data(as: ClubDTO.self)
+                        
+                    }
+                } catch {
+                    print("Network Manager: start(): clubs fetching error: \(error)")
+                }
+            }
+            group.addTask { [weak self] in
+                guard let self else { return }
+                do{
+                    let snapshot = try await self.db.collection(GlobalProperties.Path.obvans.rawValue).getDocuments(source: .default)
+                    try snapshot.documents.forEach { doc in
+                        let data = try doc.data(as: ObvanDTO.self)
+                        
+                    }
+                } catch {
+                    print("Network Manager: start(): obvans fetching error: \(error)")
+                }
+            }
+            group.addTask { [weak self] in
+                guard let self else { return }
+                do{
+                    let snapshot = try await self.db.collection(GlobalProperties.Path.templates.rawValue).getDocuments(source: .default)
+                    try snapshot.documents.forEach { doc in
+                        let data = try doc.data(as: TemplateDTO.self)
+                        
+                    }
+                } catch {
+                    print("Network Manager: start(): templates fetching error: \(error)")
+                }
+            }
+            group.addTask { [weak self] in
+                guard let self else { return }
+                do{
+                    let snapshot = try await self.db.collection(GlobalProperties.Path.images.rawValue).getDocuments(source: .default)
+                    try snapshot.documents.forEach { doc in
+                        let data = try doc.data(as: ImageDTO.self)
+                        
+                    }
+                } catch {
+                    print("Network Manager: start(): images fetching error: \(error)")
+                }
+            }
+           await group.waitForAll()
+        }
+        startToObserveChanges()
     }
     
     // MARK: - Generic for listeners
@@ -138,6 +188,7 @@ extension NetworkManager{
             print("NetworkManager: received user update signal from firebase:")
 //            let _ = DataManager.shared.createOrUpdateLocalUserWithUser($0, inContext: .bg)
             updateAction($0)
+            
         } completionOnRemoved: {
             //if user removed
 //            print("NetworkManager: received user remove signal from firebase")
@@ -316,47 +367,7 @@ extension NetworkManager {
     }
 
 }
-// MARK: - Changes
-extension NetworkManager{
-    func makeChanges(type: GlobalProperties.Path, id: String, userCount: Int) async {
-       
-        
-    }
-    
-    func loadExistingChanges(){
-        //update changes.with id
-        
-        //temporary mock
-        let changes = ChangesDTO(id: "123", changesType: .update, timestamp: Timestamp(date: .now), type: GlobalProperties.Path.events.rawValue, changesId: "eventId", updateCounter: 0)
-        let userCount = 0
-        let ref = db.collection(changes.type).document(changes.id) //add path to current changes context
-        db.runTransaction { ctx, error in
-            if var data = try? ctx.getDocument(ref).data(as: ChangesDTO.self){
-                if data.updateCounter < userCount{
-                    data.updateCounter += 1
-                   return try? ctx.setData(from: data, forDocument: ref)
-                } else {
-                    return ctx.deleteDocument(ref)
-                }
-            }
-//            if let data = changes as? ChangesDTO{
-//                let update = ["counter": ServerValue.increment(1)]
-//                self.db.collection("").document()
-//            }
-            return ctx
-        } completion: { result, err in
-            print(String(describing: result))
-        }
-    }
-    
-    func removeChanges(id: String){
-        
-    }
-    
-    func updateTimestamp(){
-        
-    }
-}
+
  
 // MARK: - Save/load/remove generics test
 
@@ -370,7 +381,6 @@ extension NetworkManager {
             try await dataRef.document(id).setData(data)
             if type != GlobalProperties.Path.changes{
                 // TODO: inject when app loads and observe later users count
-                await makeChanges(type: type, id: id, userCount: 30)//
             }
         }catch{
 #if DEBUG

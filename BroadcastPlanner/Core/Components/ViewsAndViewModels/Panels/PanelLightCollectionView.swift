@@ -3,17 +3,17 @@ import SwiftUI
 struct PanelLightCollectionView: View {
     @EnvironmentObject var mdm: MainDataManager
     
-    let lights: [LocalLight]
-    let addAction: (LocalLight)->()
-    let removeAction: (LocalLight)->()
+    let lights: [Light]
+    let addAction: (Light)->()
+    let removeAction: (Light)->()
     
     @State private var isSelect: Bool = false
     @State private var isConfirm: Bool = false
-    @State private var lightToRemove: LocalLight?
+    @State private var lightToRemove: Light?
     
-    init(lights: [LocalLight],
-         addAction: @escaping (LocalLight)->(),
-         removeAction: @escaping (LocalLight)->()) {
+    init(lights: [Light],
+         addAction: @escaping (Light)->(),
+         removeAction: @escaping (Light)->()) {
         self.lights = lights
         self.addAction = addAction
         self.removeAction = removeAction

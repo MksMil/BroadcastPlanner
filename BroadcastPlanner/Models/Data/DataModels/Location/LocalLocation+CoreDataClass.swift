@@ -2,14 +2,19 @@ import SwiftUI
 import UIKit
 import CoreData
 
-extension LocalLocation {
+public class Location: NSManagedObject {
 
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<LocalLocation> {
-        return NSFetchRequest<LocalLocation>(entityName: "LocalLocation")
+}
+
+extension Location {
+
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<Location> {
+        return NSFetchRequest<Location>(entityName: "Location")
     }
 
     @NSManaged public var address: String?
     @NSManaged public var id: String?
+    @NSManaged public var lastUpdated: Date?
     @NSManaged public var title: String?
     @NSManaged public var background: LocalImage?
     @NSManaged public var events: NSSet?
@@ -19,13 +24,13 @@ extension LocalLocation {
 }
 
 // MARK: Generated accessors for events
-extension LocalLocation {
+extension Location {
 
     @objc(addEventsObject:)
-    @NSManaged public func addToEvents(_ value: LocalEvent)
+    @NSManaged public func addToEvents(_ value: Event)
 
     @objc(removeEventsObject:)
-    @NSManaged public func removeFromEvents(_ value: LocalEvent)
+    @NSManaged public func removeFromEvents(_ value: Event)
 
     @objc(addEvents:)
     @NSManaged public func addToEvents(_ values: NSSet)
@@ -36,13 +41,13 @@ extension LocalLocation {
 }
 
 // MARK: Generated accessors for homeClub
-extension LocalLocation {
+extension Location {
 
     @objc(addHomeClubObject:)
-    @NSManaged public func addToHomeClub(_ value: LocalClub)
+    @NSManaged public func addToHomeClub(_ value: Club)
 
     @objc(removeHomeClubObject:)
-    @NSManaged public func removeFromHomeClub(_ value: LocalClub)
+    @NSManaged public func removeFromHomeClub(_ value: Club)
 
     @objc(addHomeClub:)
     @NSManaged public func addToHomeClub(_ values: NSSet)
@@ -53,7 +58,7 @@ extension LocalLocation {
 }
 
 // MARK: Generated accessors for images
-extension LocalLocation {
+extension Location {
 
     @objc(addImagesObject:)
     @NSManaged public func addToImages(_ value: LocalImage)
@@ -69,7 +74,7 @@ extension LocalLocation {
 
 }
 
-extension LocalLocation : Identifiable {
+extension Location : Identifiable {
     var viewId: String {
         id ?? ""
     }
@@ -89,8 +94,8 @@ extension LocalLocation : Identifiable {
         background?.mediumImage ?? Image(systemName: "compass.drawing")
     }
     
-    var viewEvents: [LocalEvent] {
-        events?.allObjects as? [LocalEvent] ?? []
+    var viewEvents: [Event] {
+        events?.allObjects as? [Event] ?? []
     }
     
     var viewImages: [Image] {
@@ -100,10 +105,14 @@ extension LocalLocation : Identifiable {
     var viewLocalImages: [LocalImage]{
         images?.allObjects as? [LocalImage] ?? []
     }
+    var viewLastUpdated: Date {
+        lastUpdated ?? .now
+    }
     
     var dto: LocationDTO{
         LocationDTO(
             id: viewId,
+            lastUpdated: viewLastUpdated,
             title: viewTitle,
             address: viewAddress,
             imagesIds: viewLocalImages.map{$0.viewId},

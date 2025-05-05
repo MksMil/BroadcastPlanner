@@ -2,12 +2,12 @@
 
 struct TaskDescriptionView: View {
 
-    let point: LocalLocationPoint?
+    let point: LocationPoint?
     let text: String
     @State var isEditMode: Bool = false
     let acceptAction: (String) -> Void
     
-    init(point: LocalLocationPoint?,
+    init(point: LocationPoint?,
          isEditMode: Bool,
          acceptAction: @escaping (String)->Void ) {
         self.point = point

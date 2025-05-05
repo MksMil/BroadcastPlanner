@@ -2,7 +2,7 @@ import SwiftUI
 import Combine
 
 final class LocationSelectionViewModel: ObservableObject{
-    var location: LocalLocation?
+    var location: Location?
     
     @Published var isLocationSheetPresented: Bool = false
     @Published var title: String
@@ -18,7 +18,7 @@ final class LocationSelectionViewModel: ObservableObject{
     var timerCancellable: Cancellable?
     private var cancellables: Set<AnyCancellable> = []
     
-    init(location: LocalLocation?){
+    init(location: Location?){
         self.title = location?.viewTitle ?? ""
         self.address = location?.viewAddress ?? ""
         self.location = location
@@ -65,7 +65,7 @@ final class LocationSelectionViewModel: ObservableObject{
     }
     
     @MainActor
-    func update(newLocation: LocalLocation ){
+    func update(newLocation: Location ){
         self.location = newLocation
         title = newLocation.viewTitle
         address = newLocation.viewAddress

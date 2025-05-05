@@ -36,26 +36,26 @@ final class PersonalScreenViewModel: ObservableObject {
     
     init(localUser: LocalUser) {
         self.localUser = localUser
-        self.firstName = localUser.userFirstName
-        self.lastName = localUser.userLastName
-        self.email = localUser.userEmail
-        self.phoneNumber = localUser.userPhoneNumber
-        self.address = localUser.userAddress
-        self.userSpecialization = localUser.userSpecialization.map {
+        self.firstName = localUser.viewFirstName
+        self.lastName = localUser.viewLastName
+        self.email = localUser.viewEmail
+        self.phoneNumber = localUser.viewPhoneNumber
+        self.address = localUser.viewAddress
+        self.userSpecialization = localUser.viewSpecialization.map {
             $0.rawValue
         }
-        self.showedImage = localUser.userImage
+        self.showedImage = localUser.viewImage
     }
     @MainActor
     func updateData() {
-        self.firstName = localUser.userFirstName
-        self.lastName = localUser.userLastName
-        self.email = localUser.userEmail
-        self.phoneNumber = localUser.userPhoneNumber
-        self.address = localUser.userAddress
-        self.userSpecialization = localUser.userSpecialization.map {
+        self.firstName = localUser.viewFirstName
+        self.lastName = localUser.viewLastName
+        self.email = localUser.viewEmail
+        self.phoneNumber = localUser.viewPhoneNumber
+        self.address = localUser.viewAddress
+        self.userSpecialization = localUser.viewSpecialization.map {
             $0.rawValue
         }
-        self.showedImage = localUser.userImage
+        self.showedImage = localUser.viewImage
     }
 }

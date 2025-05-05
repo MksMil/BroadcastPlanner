@@ -7,8 +7,8 @@ struct TemplateGroup: View {
     var removeState: Bool {
         title == defaultTitle
     }
-    let templates: FetchedResults<LocalTemplate>
-    let chooseAction: (LocalTemplate) ->()
+    let templates: FetchedResults<Template>
+    let chooseAction: (Template) ->()
     let addAction: (String)->()
     let removeAction: ()->()
     let setEmptyTemplateAction: ()->()
@@ -122,14 +122,14 @@ struct TemplateGroup: View {
     let mdm = MainDataManager(localDataManager: lm,
                               globalDataManager: NetworkManager(),
                               userId: "123")
-    let localEvent = lm.fetchOrCreateObject(ofType: LocalEvent.self,
+    let localEvent = lm.fetchOrCreateObject(ofType: Event.self,
                   predicate: NSPredicate(format: "id == %@", "id"),
-                                      in: lm.moc) { ctx in
-        let newEvent = LocalEvent(context: ctx)
+                                      in: lm.mainContext) { ctx in
+        let newEvent = Event(context: ctx)
         newEvent.id = "id"
         return newEvent
     }
     return BPEditStadiumView(event:localEvent , editable: true)
         .environmentObject(mdm)
-        .environment(\.managedObjectContext, mdm.localDataManager.moc)
+        .environment(\.managedObjectContext, mdm.localDataManager.mainContext)
 }

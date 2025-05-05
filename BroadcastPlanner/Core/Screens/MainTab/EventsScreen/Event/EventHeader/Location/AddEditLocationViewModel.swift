@@ -5,7 +5,7 @@ import Combine
 
 final class AddEditLocationViewModel: ObservableObject{
     
-    @Published var localLocation: LocalLocation
+    @Published var localLocation: Location
     
     @Published var title: String = ""
     @Published var address: String = ""
@@ -53,7 +53,7 @@ final class AddEditLocationViewModel: ObservableObject{
     }
     
     
-    init(location: LocalLocation){
+    init(location: Location){
         self.localLocation = location
         print("\(location.viewTitle)")
         self.title = location.viewTitle

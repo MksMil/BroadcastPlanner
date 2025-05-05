@@ -1,19 +1,14 @@
-//
-//  LocalLocationPoint+CoreDataProperties.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 23.12.2024.
-//
-//
-
 import SwiftUI
 import CoreData
 
+public class LocationPoint: NSManagedObject {
 
-extension LocalLocationPoint {
+}
 
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<LocalLocationPoint> {
-        return NSFetchRequest<LocalLocationPoint>(entityName: "LocalLocationPoint")
+extension LocationPoint {
+
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<LocationPoint> {
+        return NSFetchRequest<LocationPoint>(entityName: "LocationPoint")
     }
 
     @NSManaged public var coordinateX: Float
@@ -26,7 +21,7 @@ extension LocalLocationPoint {
     @NSManaged public var task: String?
     @NSManaged public var scaleFactor: Float
     @NSManaged public var cameras: NSSet?
-    @NSManaged public var event: LocalEvent?
+    @NSManaged public var event: Event?
     @NSManaged public var image: LocalImage?
     @NSManaged public var lights: NSSet?
     @NSManaged public var sounds: NSSet?
@@ -35,13 +30,13 @@ extension LocalLocationPoint {
 }
 
 // MARK: Generated accessors for cameras
-extension LocalLocationPoint {
+extension LocationPoint {
 
     @objc(addCamerasObject:)
-    @NSManaged public func addToCameras(_ value: LocalCamera)
+    @NSManaged public func addToCameras(_ value: Camera)
 
     @objc(removeCamerasObject:)
-    @NSManaged public func removeFromCameras(_ value: LocalCamera)
+    @NSManaged public func removeFromCameras(_ value: Camera)
 
     @objc(addCameras:)
     @NSManaged public func addToCameras(_ values: NSSet)
@@ -52,13 +47,13 @@ extension LocalLocationPoint {
 }
 
 // MARK: Generated accessors for lights
-extension LocalLocationPoint {
+extension LocationPoint {
 
     @objc(addLightsObject:)
-    @NSManaged public func addToLights(_ value: LocalLight)
+    @NSManaged public func addToLights(_ value: Light)
 
     @objc(removeLightsObject:)
-    @NSManaged public func removeFromLights(_ value: LocalLight)
+    @NSManaged public func removeFromLights(_ value: Light)
 
     @objc(addLights:)
     @NSManaged public func addToLights(_ values: NSSet)
@@ -69,13 +64,13 @@ extension LocalLocationPoint {
 }
 
 // MARK: Generated accessors for sounds
-extension LocalLocationPoint {
+extension LocationPoint {
 
     @objc(addSoundsObject:)
-    @NSManaged public func addToSounds(_ value: LocalSound)
+    @NSManaged public func addToSounds(_ value: Sound)
 
     @objc(removeSoundsObject:)
-    @NSManaged public func removeFromSounds(_ value: LocalSound)
+    @NSManaged public func removeFromSounds(_ value: Sound)
 
     @objc(addSounds:)
     @NSManaged public func addToSounds(_ values: NSSet)
@@ -86,7 +81,7 @@ extension LocalLocationPoint {
 }
 
 // MARK: Generated accessors for user
-extension LocalLocationPoint {
+extension LocationPoint {
 
     @objc(addUserObject:)
     @NSManaged public func addToUser(_ value: LocalUser)
@@ -102,7 +97,7 @@ extension LocalLocationPoint {
 
 }
 
-extension LocalLocationPoint : Identifiable {
+extension LocationPoint : Identifiable {
 
     var viewX: Double {
         Double(coordinateX)
@@ -127,27 +122,27 @@ extension LocalLocationPoint : Identifiable {
     }
     
     var viewCameras: [CameraDTO] {
-        (cameras?.allObjects as? [LocalCamera] ?? []).map{CameraDTO(id: $0.viewId, optic: $0.viewOptic)}
+        (cameras?.allObjects as? [Camera] ?? []).map{CameraDTO(id: $0.viewId, optic: $0.viewOptic)}
     }
     
-    var viewLocalCameras: [LocalCamera]{
-        cameras?.allObjects as? [LocalCamera] ?? []
+    var viewLocalCameras: [Camera]{
+        cameras?.allObjects as? [Camera] ?? []
     }
     
     var viewSounds: [SoundDTO] {
-        (sounds?.allObjects as? [LocalSound] ?? []).map{SoundDTO(id: $0.viewId, windDefence: $0.viewWindDefence, placeType: $0.viewPlaceType)}
+        (sounds?.allObjects as? [Sound] ?? []).map{SoundDTO(id: $0.viewId, windDefence: $0.viewWindDefence, placeType: $0.viewPlaceType)}
     }
     
-    var viewLocalSounds: [LocalSound] {
-        sounds?.allObjects as? [LocalSound] ?? []
+    var viewLocalSounds: [Sound] {
+        sounds?.allObjects as? [Sound] ?? []
     }
     
     var viewLights: [LightDTO] {
-        (lights?.allObjects as? [LocalLight] ?? []).map{LightDTO(id: $0.viewId, lightType: $0.viewLightType)}
+        (lights?.allObjects as? [Light] ?? []).map{LightDTO(id: $0.viewId, lightType: $0.viewLightType)}
     }
     
-    var viewLocalLights: [LocalLight] {
-        lights?.allObjects as? [LocalLight] ?? []
+    var viewLocalLights: [Light] {
+        lights?.allObjects as? [Light] ?? []
     }
 
     
@@ -173,7 +168,7 @@ extension LocalLocationPoint : Identifiable {
     
     var dto: PointDTO{
         PointDTO(id: viewId,
-                 userId: viewUsers.map{$0.userId},
+                 userId: viewUsers.map{$0.viewId},
                  coordinateX: viewX,
                  coordinateY: viewY,
                  rotation: viewRotation.radians,
@@ -187,4 +182,3 @@ extension LocalLocationPoint : Identifiable {
                  lights: viewLights)
     }
 }
-

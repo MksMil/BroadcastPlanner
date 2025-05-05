@@ -16,7 +16,7 @@ struct PointPanelCell: View {
     let isLight: Bool
     let isUser: Bool
 
-    @Binding var selectedPoint: LocalLocationPoint?
+    @Binding var selectedPoint: LocationPoint?
     
     var body: some View {
         

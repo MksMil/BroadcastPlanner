@@ -2,7 +2,7 @@ import SwiftUI
 
 struct BPCameraCompactCell: View {
     
-    let camera: LocalCamera
+    let camera: Camera
     let action: ()->Void
     
     var body: some View {

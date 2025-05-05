@@ -1,35 +1,31 @@
-//
-//  LocalTemplate+CoreDataProperties.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 24.01.2025.
-//
-//
-
 import Foundation
 import CoreData
 
+public class Template: NSManagedObject {
 
-extension LocalTemplate {
+}
 
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<LocalTemplate> {
-        return NSFetchRequest<LocalTemplate>(entityName: "LocalTemplate")
+extension Template {
+
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<Template> {
+        return NSFetchRequest<Template>(entityName: "Template")
     }
 
     @NSManaged public var id: String?
+    @NSManaged public var lastUpdated: Date?
     @NSManaged public var name: String?
     @NSManaged public var templatePoints: NSSet?
 
 }
 
 // MARK: Generated accessors for templatePoints
-extension LocalTemplate {
+extension Template {
 
     @objc(addTemplatePointsObject:)
-    @NSManaged public func addToTemplatePoints(_ value: LocalTemplatePoint)
+    @NSManaged public func addToTemplatePoints(_ value: TemplatePoint)
 
     @objc(removeTemplatePointsObject:)
-    @NSManaged public func removeFromTemplatePoints(_ value: LocalTemplatePoint)
+    @NSManaged public func removeFromTemplatePoints(_ value: TemplatePoint)
 
     @objc(addTemplatePoints:)
     @NSManaged public func addToTemplatePoints(_ values: NSSet)
@@ -39,7 +35,7 @@ extension LocalTemplate {
 
 }
 
-extension LocalTemplate : Identifiable {
+extension Template : Identifiable {
 
     var viewId: String {
         id ?? ""
@@ -49,12 +45,17 @@ extension LocalTemplate : Identifiable {
         name ?? ""
     }
     
-    var viewPoints: [LocalTemplatePoint]{
-        templatePoints?.allObjects as? [LocalTemplatePoint] ?? []
+    var viewPoints: [TemplatePoint]{
+        templatePoints?.allObjects as? [TemplatePoint] ?? []
+    }
+    
+    var viewLastUpdated: Date {
+        lastUpdated ?? .now
     }
     
     var dto: TemplateDTO{
         TemplateDTO(id: viewId,
+                    lastUpdated: viewLastUpdated,
                     name: viewName,
                     templatePoints: viewPoints.map{$0.dto})
     }

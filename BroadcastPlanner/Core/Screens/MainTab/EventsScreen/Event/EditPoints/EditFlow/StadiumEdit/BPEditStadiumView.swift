@@ -9,7 +9,7 @@ struct BPEditStadiumView: View {
     @EnvironmentObject var eventRouter: EventTabRouter
     @EnvironmentObject var mdm: MainDataManager
     
-    let event: LocalEvent
+    let event: Event
 
     @State var title: String = "Choose template"
     @State private var isConfirmDiscardChanges: Bool = false
@@ -17,9 +17,9 @@ struct BPEditStadiumView: View {
     //if user cant edit(he is not owner)
     var editable: Bool
 
-    @FetchRequest<LocalTemplate>(sortDescriptors: []) var templates
+    @FetchRequest<Template>(sortDescriptors: []) var templates
     
-    init(event: LocalEvent, editable: Bool) {
+    init(event: Event, editable: Bool) {
         self.event = event
         self.editable = editable
         self._vm = .init(wrappedValue: BPEditStadiumViewModel(event: event))
@@ -168,14 +168,14 @@ struct BPEditStadiumView: View {
     let mdm = MainDataManager(localDataManager: lm,
                               globalDataManager: NetworkManager(),
                               userId: "123")
-    let localEvent = lm.fetchOrCreateObject(ofType: LocalEvent.self,
+    let localEvent = lm.fetchOrCreateObject(ofType: Event.self,
                   predicate: NSPredicate(format: "id == %@", "id"),
-                                      in: lm.moc) { ctx in
-        let newEvent = LocalEvent(context: ctx)
+                                      in: lm.mainContext) { ctx in
+        let newEvent = Event(context: ctx)
         newEvent.id = "id"
         return newEvent
     }
    return BPEditStadiumView(event: localEvent , editable: true)
         .environmentObject(mdm)
-        .environment(\.managedObjectContext, mdm.localDataManager.moc)
+        .environment(\.managedObjectContext, mdm.localDataManager.mainContext)
 }

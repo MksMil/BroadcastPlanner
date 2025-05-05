@@ -3,15 +3,15 @@ import SwiftUI
 struct PanelCameraCollectionView: View {
     @EnvironmentObject var mdm: MainDataManager
     
-    let cameras: [LocalCamera]
-    let addAction: (LocalCamera)->()
-    let removeAction: (LocalCamera)->()
+    let cameras: [Camera]
+    let addAction: (Camera)->()
+    let removeAction: (Camera)->()
     
     @State private var isSelect: Bool = false
     @State private var isConfirm: Bool = false
-    @State private var cameraToRemove: LocalCamera?
+    @State private var cameraToRemove: Camera?
     
-    init(cameras: [LocalCamera],addAction: @escaping (LocalCamera)->()  ,removeAction: @escaping (LocalCamera)->()) {
+    init(cameras: [Camera],addAction: @escaping (Camera)->()  ,removeAction: @escaping (Camera)->()) {
         self.cameras = cameras
         self.addAction = addAction
         self.removeAction = removeAction

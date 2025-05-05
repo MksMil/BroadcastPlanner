@@ -2,7 +2,7 @@ import SwiftUI
 
 struct BPSoundCompactCell: View {
     
-    let sound: LocalSound
+    let sound: Sound
     let action: ()->Void
     
     var body: some View {

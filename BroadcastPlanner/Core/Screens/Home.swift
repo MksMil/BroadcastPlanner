@@ -51,7 +51,7 @@ struct Home: View {
             }
         }
         .navigationBarBackButtonHidden()
-        .environment(\.managedObjectContext, mdm.localDataManager.moc)
+        .environment(\.managedObjectContext, mdm.localDataManager.mainContext)
         .environmentObject(mdm)
     }
 }

@@ -1,29 +1,25 @@
-//
-//  LocalSound+CoreDataProperties.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 14.10.2024.
-//
-//
-
 import Foundation
 import CoreData
 
 
-extension LocalSound {
+public class Sound: NSManagedObject {
 
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<LocalSound> {
-        return NSFetchRequest<LocalSound>(entityName: "LocalSound")
+}
+
+extension Sound {
+
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<Sound> {
+        return NSFetchRequest<Sound>(entityName: "Sound")
     }
 
     @NSManaged public var placeType: String?
     @NSManaged public var windDefence: String?
     @NSManaged public var id: String?
-    @NSManaged public var point: LocalLocationPoint?
+    @NSManaged public var point: LocationPoint?
 
 }
 
-extension LocalSound : Identifiable {
+extension Sound : Identifiable {
     var viewId: String {
         id ?? ""
     }

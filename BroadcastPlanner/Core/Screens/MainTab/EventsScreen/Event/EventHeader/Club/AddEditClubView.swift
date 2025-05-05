@@ -21,15 +21,15 @@ final class AddEditClubViewModel: ObservableObject{
     }
     @Published var showedImage: Image
     var uiimage: UIImage?
-    let club: LocalClub
+    let club: Club
     
     @Published var title: String
     @Published var urlString: String
     @Published var contacts: String
     
-    @Published var location: LocalLocation?
+    @Published var location: Location?
     
-    init(club: LocalClub){
+    init(club: Club){
         self.club = club
         self.title = club.viewTitle
         self.contacts = club.viewContacts
@@ -51,16 +51,16 @@ struct AddEditClubView: View {
     @StateObject var vm: AddEditClubViewModel
     @State private var isRemoveClubDialog: Bool = false
     
-    let club: LocalClub
+    let club: Club
     
-    let acceptAction: (String, UIImage?,String,String, LocalLocation?)->Void
+    let acceptAction: (String, UIImage?,String,String, Location?)->Void
     let cancelAction: ()->Void
     let removeAction: ()->Void
     
     let defineLocation: ()->Void
     
-    init(club: LocalClub,
-         acceptAction: @escaping (String, UIImage?, String, String, LocalLocation?) -> Void,
+    init(club: Club,
+         acceptAction: @escaping (String, UIImage?, String, String, Location?) -> Void,
          cancelAction: @escaping () -> Void,
          removeAction: @escaping () -> Void,
          defineLocation: @escaping () -> Void) {

@@ -3,11 +3,11 @@ import Combine
 
 struct MainEventListCell: View {
     @EnvironmentObject var mdm : MainDataManager
-    let event: LocalEvent
+    let event: Event
     
     @StateObject var vm: MainEventListCellViewModel
 
-    init(event: LocalEvent){
+    init(event: Event){
         self.event = event
         self._vm = StateObject(wrappedValue: MainEventListCellViewModel(event: event))
     }

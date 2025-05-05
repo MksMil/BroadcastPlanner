@@ -5,7 +5,7 @@ import UIKit
 @MainActor
 final class ClubSheetViewModel: ObservableObject {
    
-    @Published var selectedClub: LocalClub?
+    @Published var selectedClub: Club?
 
     var buttonTitle: String {
         guard let selectedClub else { return "Choose Club" }

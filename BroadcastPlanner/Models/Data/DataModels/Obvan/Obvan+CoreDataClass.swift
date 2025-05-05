@@ -1,13 +1,18 @@
 import SwiftUI
 import CoreData
 
-extension LocalObvan {
+public class Obvan: NSManagedObject {
 
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<LocalObvan> {
-        return NSFetchRequest<LocalObvan>(entityName: "LocalObvan")
+}
+
+extension Obvan {
+
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<Obvan> {
+        return NSFetchRequest<Obvan>(entityName: "Obvan")
     }
 
     @NSManaged public var id: String?
+    @NSManaged public var lastUpdated: Date?
     @NSManaged public var name: String?
     @NSManaged public var broadcaster: String?
     @NSManaged public var events: NSSet?
@@ -16,13 +21,13 @@ extension LocalObvan {
 }
 
 // MARK: Generated accessors for events
-extension LocalObvan {
+extension Obvan {
 
     @objc(addEventsObject:)
-    @NSManaged public func addToEvents(_ value: LocalEvent)
+    @NSManaged public func addToEvents(_ value: Event)
 
     @objc(removeEventsObject:)
-    @NSManaged public func removeFromEvents(_ value: LocalEvent)
+    @NSManaged public func removeFromEvents(_ value: Event)
 
     @objc(addEvents:)
     @NSManaged public func addToEvents(_ values: NSSet)
@@ -32,7 +37,7 @@ extension LocalObvan {
 
 }
 
-extension LocalObvan : Identifiable {
+extension Obvan : Identifiable {
     var viewId: String {
         id ?? ""
     }
@@ -44,18 +49,22 @@ extension LocalObvan : Identifiable {
         broadcaster ?? "no broadcaster"
     }
     
-    var viewEvents: [LocalEvent] {
-        events?.allObjects as? [LocalEvent] ?? []
+    var viewEvents: [Event] {
+        events?.allObjects as? [Event] ?? []
     }
     
     var viewImage: Image {
         image?.mediumImage ?? Image("empty_obvan")
     }
+    var viewLastUpdated: Date {
+        lastUpdated ?? .now
+    }
     
     var dto: ObvanDTO {
         ObvanDTO(id: viewId,
+                 lastUpdated: viewLastUpdated,
                  name: viewName,
                  imageId: image?.viewId ?? "",
-        broadcaster: viewBroadcasterName)
+                 broadcaster: viewBroadcasterName)
     }
 }

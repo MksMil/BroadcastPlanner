@@ -270,7 +270,7 @@ struct SettingsView: View {
                         } removeAction: {
                             Task{
                                 //remove
-                                await mdm.localDataManager.saveContext(type: .main, publish: .locations, id: [])
+                                await mdm.localDataManager.saveContextAsync(type: .main, publish: .locations, id: [])
                                 settingsRouter.routeStepBack()
                             }
                         }
@@ -289,7 +289,7 @@ struct SettingsView: View {
     SettingsView()
         .environmentObject(SessionManager())
         .environmentObject(ApplicationState())
-        .environment(\.managedObjectContext, mdm.localDataManager.moc)
+        .environment(\.managedObjectContext, mdm.localDataManager.mainContext)
         .environmentObject(mdm)
 }
 

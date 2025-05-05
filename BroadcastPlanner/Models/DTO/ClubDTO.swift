@@ -1,4 +1,4 @@
-import UIKit
+import Foundation
 
 struct ClubDTO: Codable, Identifiable,BPDataProtocol{
     var id: String
@@ -7,5 +7,5 @@ struct ClubDTO: Codable, Identifiable,BPDataProtocol{
     var urlString: String = ""
     var imageLogoID: String?
     var homeLocationID: String?
-    
+    var lastUpdated: Date
 }

@@ -9,17 +9,17 @@ struct ClubSheetView: View {
     let editMode: Bool
 
     let cancelAction: () -> Void
-    let acceptAction: (LocalClub) -> Void
-    let addEditAction: (LocalClub) -> Void
+    let acceptAction: (Club) -> Void
+    let addEditAction: (Club) -> Void
 
-    @FetchRequest<LocalClub>(sortDescriptors: [], animation: .easeInOut)
+    @FetchRequest<Club>(sortDescriptors: [], animation: .easeInOut)
     var clubs
 
     init(
         editMode: Bool = false,
         cancelAction: @escaping () -> Void = {},
-        acceptAction: @escaping (LocalClub) -> Void = { _ in },
-        addEditAction: @escaping (LocalClub) -> Void
+        acceptAction: @escaping (Club) -> Void = { _ in },
+        addEditAction: @escaping (Club) -> Void
     ) {
         self.editMode = editMode
         self.cancelAction = cancelAction
