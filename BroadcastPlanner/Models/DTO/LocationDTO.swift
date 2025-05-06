@@ -9,7 +9,7 @@ struct LocationDTO: Identifiable,Codable,BPDataProtocol{
     var locationBackgroundId: String?
     
     init(id: String = UUID().uuidString,
-         lastUpdated: Date,
+         lastUpdated: Date = .now,
         title: String = "empty",
         address: String = "empty address",
         imagesIds: [String] = [],

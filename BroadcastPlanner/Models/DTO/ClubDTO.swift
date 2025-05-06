@@ -7,5 +7,5 @@ struct ClubDTO: Codable, Identifiable,BPDataProtocol{
     var urlString: String = ""
     var imageLogoID: String?
     var homeLocationID: String?
-    var lastUpdated: Date
+    var lastUpdated: Date = .now
 }

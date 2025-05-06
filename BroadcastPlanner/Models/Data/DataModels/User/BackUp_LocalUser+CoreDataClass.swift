@@ -157,6 +157,10 @@ extension LocalUser : Identifiable {
         points?.allObjects as? [LocationPoint] ?? []
     }
     
+    var viewLastUpdated: Date {
+        lastUpdated ?? .now
+    }
+    
     var dto: UserDTO {
         var user = UserDTO(id: viewId)
         user.firstName = viewFirstName

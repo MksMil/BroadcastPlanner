@@ -48,6 +48,9 @@ extension LocalImage : Identifiable {
     var viewId: String {
         id ?? ""
     }
+    var viewLastUpdated: Date {
+        lastUpdated ?? .now
+    }
     
     var viewType: GlobalProperties.ImageType{
         if let newtype  = self.type {

@@ -523,6 +523,17 @@ extension DataManager {
             context.delete(location)
         }
     }
+    
+    func removeLocationWithDTO(_ dto: LocationDTO, inContext contextType: ContextType){
+        let context = contextFromType(contextType)
+        context.performAndWait {
+            let request = Location.fetchRequest()
+            request.predicate = NSPredicate(format: "id == %@", dto.id)
+            if let locationToRemove = try? context.fetch(request).first{
+                removeLocalLocation(locationToRemove, inContext: contextType)
+            }
+        }
+    }
 }
 
 // MARK: - obvan CRUD
@@ -1285,6 +1296,16 @@ extension DataManager {
             context.delete(template)
         }
     }
+    func removeTemplateWithDTO(_ dto: TemplateDTO, inContext contextType: ContextType){
+        let context = contextFromType(contextType)
+        context.performAndWait {
+            let request = Template.fetchRequest()
+            request.predicate = NSPredicate(format: "id == %@", dto.id)
+            if let templateToRemove = try? context.fetch(request).first{
+                removeLocalTemplate(templateToRemove, inContext: contextType)
+            }
+        }
+    }
 
     //templatePoint
     func createOrUpdateTemplatePointWithTemplatePointDTO(_ point: TemplatePointDTO,
@@ -1329,6 +1350,7 @@ extension DataManager {
         let context = contextFromType(contextType)
         context.performAndWait { context.delete(point) }
     }
+    
 }
 
 // MARK: - map TemplatePoint to LocalLocationPoint

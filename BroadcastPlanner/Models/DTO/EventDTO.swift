@@ -26,7 +26,7 @@ struct EventDTO: Identifiable, Codable, BPDataProtocol {
     var obvanPreviewId: String?
    
     // MARK: - Initialization
-    init( id: String = UUID().uuidString, date: Date = Date(),lastUpdated: Date ,obVanId: String?, locationPoints: [PointDTO] = [], obvanUnits: [UnitDTO] = [], locationID: String?, homeClubId: String?, guestClubId: String?,locationPreviewId: String?,obvanPreviewId: String? ) {
+    init( id: String = UUID().uuidString, date: Date = Date(),lastUpdated: Date = .now ,obVanId: String?, locationPoints: [PointDTO] = [], obvanUnits: [UnitDTO] = [], locationID: String?, homeClubId: String?, guestClubId: String?,locationPreviewId: String?,obvanPreviewId: String? ) {
         self.id = id
         self.date = date
         self.lastUpdated = lastUpdated
