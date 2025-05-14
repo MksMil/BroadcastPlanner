@@ -187,4 +187,25 @@ extension Event : Identifiable {
         
         return event
     }
+    
+    var expired: Bool {
+        if let date, date < Date.now{
+            return true
+        } else {
+            return false
+        }
+        
+    }
+    
+    func status(user: LocalUser) -> EventStatus{
+        
+        if viewOwners.contains(user){
+            return .currentUserOwned
+        }
+        if viewUsers.contains(user){
+            return .currentUserParticipated
+        }
+        return .none
+    }
 }
+

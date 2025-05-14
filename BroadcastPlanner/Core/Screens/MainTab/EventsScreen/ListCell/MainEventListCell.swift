@@ -1,12 +1,18 @@
 import SwiftUI
 import Combine
 
+
+
 struct MainEventListCell: View {
     @EnvironmentObject var mdm : MainDataManager
     let event: Event
     
     @StateObject var vm: MainEventListCellViewModel
+    @State private var rowHeight: Double = 70
 
+    var status: EventStatus {
+        event.status(user: mdm.currentUser)
+    }
     init(event: Event){
         self.event = event
         self._vm = StateObject(wrappedValue: MainEventListCellViewModel(event: event))
@@ -15,7 +21,7 @@ struct MainEventListCell: View {
     var body: some View {
         ZStack{
             GeometryReader { geo in
-                Rectangle().fill(.regularMaterial)
+                Rectangle().fill(Color.white.opacity(status == .currentUserParticipated ? 0.5: 0.3))
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                     .overlay {
                         HStack{
@@ -62,13 +68,14 @@ struct MainEventListCell: View {
                         }
                         .overlay {
                             RoundedRectangle(cornerRadius: 8)
-                                .strokeBorder(.white.opacity(0.4), lineWidth: 2)
+                                .strokeBorder(status == .currentUserOwned ? .red.opacity(0.4):.white.opacity(0.4), lineWidth: 2)
                         }
                     }
             }
             .foregroundStyle(Color.black)
         }
-        .frame(height: 70)
+        .frame(height: rowHeight)
+        .opacity(event.expired ? 0.3 : 1)
         .onReceive(mdm.localDataManager.updatePublisher) { value in
             if value.0 == .events{
                 value.1.forEach { id in
@@ -83,6 +90,14 @@ struct MainEventListCell: View {
     
 }
 
+#Preview {
+    Home(localDataManager: DataManager(forPreview: true),
+         globalDataManager: NetworkManager(),
+         userId: "123")
+        .environmentObject(GlobalSettings())
+        .environmentObject(SessionManager())
+        .environmentObject(ApplicationState())
+}
 
 //#Preview {
 //    MainEventsList()

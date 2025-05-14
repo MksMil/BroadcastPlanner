@@ -1,4 +1,5 @@
 import CoreData
+import Combine
 import UIKit
 
 class MainDataManager: ObservableObject {
@@ -6,6 +7,8 @@ class MainDataManager: ObservableObject {
     let localDataManager: DataManager
     let globalDataManager: NetworkManager
 
+    var updatePublisher: PassthroughSubject = PassthroughSubject<(GlobalProperties.PublishChanges, [String]), Never>()
+    var cancellables: Set<AnyCancellable> = []
     let currentId: String
     let currentUser: LocalUser
 
@@ -30,10 +33,14 @@ class MainDataManager: ObservableObject {
         Task{
             await self.globalDataManager.start()
         }
+        self.localDataManager.updatePublisher.sink { value in
+            self.updatePublisher.send(value)
+        }
+        .store(in: &cancellables)
     }
 }
 //bg work
-extension MainDataManager: UpdateDelegateProtocol {
+extension MainDataManager: @preconcurrency UpdateDelegateProtocol {
     func updateObvans(dtos: [ObvanDTO]) {
         print("obvans updated: \(dtos)")
         //fetch all entity data
@@ -323,11 +330,9 @@ extension MainDataManager: UpdateDelegateProtocol {
             }
         }
     }
-    
+    @MainActor
     func handleListenerEvent<T: BPDataProtocol>(updated: Bool, value: T){
         localDataManager.backgroundContext.performAndWait {
-            
-            
             var type: GlobalProperties.PublishChanges = .none
             var publishId: String = ""
             switch value {
@@ -348,6 +353,7 @@ extension MainDataManager: UpdateDelegateProtocol {
                         if updated {
                             _ = localDataManager.createOrUpdateLocalEventWithEventDTO(dto, inContext: .bg)
                         } else {
+                            print("procees with event listener")
                             localDataManager.removeEventWithDTO(dto, inContext: .bg)
                         }
                         type = .events
@@ -471,7 +477,7 @@ extension MainDataManager {
                 }
             }
         }
-        await saveContext(
+        await saveContextAsync(
             type: .main,
             publish: .none,
             id: []
@@ -508,6 +514,17 @@ extension MainDataManager {
 }
 // MARK: - Event managment
 extension MainDataManager {
+    
+    func availabletoEdit(event: Event)->Bool {
+        if currentUser.accessLevel == 0 {
+            return false
+        } else if currentUser.accessLevel == 1, event.viewOwners.contains(currentUser){
+            return false
+        } else {
+            return true
+        }
+    }
+    
     @MainActor
     func createEventWithCurrentUserOwnerInContextType(_ type: ContextType)
         -> Event {
@@ -544,7 +561,7 @@ extension MainDataManager {
             event.location = location
             event.addToOwners(self.currentUser)
         }
-        await saveContext(type: .main, publish: .events, id: [event.viewId])
+        await saveContextAsync(type: .main, publish: .events, id: [event.viewId])
 
         //network save
         await globalDataManager.saveData(
@@ -557,7 +574,7 @@ extension MainDataManager {
     func removeEvent(event: Event) async {
         let id = event.viewId
         localDataManager.removeLocalEvent(event, inContext: .main)
-        await saveContext(type: .main, publish: .events, id: [])
+        await saveContextAsync(type: .main, publish: .events, id: [])
         await globalDataManager.removeDataOfType(
             GlobalProperties.Path.events,
             withId: id
@@ -836,7 +853,7 @@ extension MainDataManager {
             location: location,
             inContext: .main
         )
-        await saveContext(type: .main, publish: .clubs, id: [club.viewId])
+        await saveContextAsync(type: .main, publish: .clubs, id: [club.viewId])
 
         //upload image to firestore and image properties and clubDTO to firebase
         if let imageId = club.imageLogo?.viewId, let uiimage {
@@ -865,7 +882,7 @@ extension MainDataManager {
         )
         //remove club from coredata and image logo from local storage
         localDataManager.removeLocalClub(localClub: club, inContext: .main)
-        await saveContext(type: .main, publish: .clubs, id: [])
+        await saveContextAsync(type: .main, publish: .clubs, id: [])
     }
 }
 // MARK: - LocationManagment
@@ -955,7 +972,7 @@ extension MainDataManager {
         )
         //remove images and location from CoreData
          localDataManager.removeLocalLocation(location, inContext: .main)
-        await saveContext(type: .main, publish: .locations, id: [])
+        await saveContextAsync(type: .main, publish: .locations, id: [])
     }
 }
 // MARK: - Template managment
@@ -981,7 +998,7 @@ extension MainDataManager {
                 andName: name,
                 inContext: .main
             )
-        await saveContext(type: .main, publish: .templates, id: [])
+        await saveContextAsync(type: .main, publish: .templates, id: [])
 
         await globalDataManager.saveData(
             template.dto,
@@ -996,7 +1013,7 @@ extension MainDataManager {
             withId: template.viewId
         )
         localDataManager.removeLocalTemplate(template, inContext: .main)
-        await saveContext(type: .main, publish: .templates, id: [])
+        await saveContextAsync(type: .main, publish: .templates, id: [])
     }
 }
 // MARK: - Obvan managment
@@ -1054,7 +1071,7 @@ extension MainDataManager {
                 inContext: .main
             )
         Task {
-            await saveContext(
+            await saveContextAsync(
                 type: .main,
                 publish: .none,
                 id: []
@@ -1069,7 +1086,7 @@ extension MainDataManager {
                 inContext: .main
             )
             Task {
-                await saveContext(type: .main, publish: .none, id: [])
+                await saveContextAsync(type: .main, publish: .none, id: [])
             }
         }
     }
@@ -1092,13 +1109,19 @@ extension MainDataManager {
         localDataManager.mainContext.rollback()
     }
 
-    func saveContext(
+    func saveContextAsync(
         type: ContextType,
         publish: GlobalProperties.PublishChanges,
         id: [String]
     ) async {
-
         await localDataManager.saveContextAsync(type: type, publish: publish, id: id)
-
+    }
+    
+    func saveContextSync(
+        type: ContextType,
+        publish: GlobalProperties.PublishChanges,
+        id: [String]
+    )  {
+        localDataManager.saveContextSync(type: type, publish: publish, id: id)
     }
 }

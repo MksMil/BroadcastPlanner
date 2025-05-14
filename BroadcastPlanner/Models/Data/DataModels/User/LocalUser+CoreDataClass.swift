@@ -17,6 +17,7 @@ extension LocalUser {
     @NSManaged public var firstName: String?
     @NSManaged public var homeAddress: String?
     @NSManaged public var id: String?
+    @NSManaged public var accessLevel: Int16
     @NSManaged public var isOnline: Bool
     @NSManaged public var lastName: String?
     @NSManaged public var leaveDate: Date?
@@ -163,6 +164,7 @@ extension LocalUser : Identifiable {
     
     var dto: UserDTO {
         var user = UserDTO(id: viewId)
+        user.accessLevel = Int(accessLevel)
         user.firstName = viewFirstName
         user.lastName = viewLastName
         user.email = viewEmail

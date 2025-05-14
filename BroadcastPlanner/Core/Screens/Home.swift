@@ -6,7 +6,7 @@ struct Home: View {
     @EnvironmentObject var session: SessionManager
     @StateObject var mdm: MainDataManager
 
-    @State private var selection: Int = 4
+    @State private var selection: Int = 0
     
     init(localDataManager: DataManager,
          globalDataManager: NetworkManager,
@@ -26,8 +26,7 @@ struct Home: View {
                     .tabItem { Label("Hello", systemImage: "calendar") }
                     .tag(0)
                     .padding(.bottom,1)
-                    
-
+               
                 // MyInfo Screen
                 BPAccountInfoView(user: mdm.currentUser)
                     .tabItem { Label("Info", systemImage: "figure.mind.and.body") }
@@ -44,10 +43,10 @@ struct Home: View {
                     .tag(3)
                     .padding(.bottom,1)
                 //Test screen
-                NetworkTestView()
-                    .tabItem{ Label("Test",systemImage: "globe") }
-                    .tag(4)
-                    .padding(.bottom,1)
+//                NetworkTestView()
+//                    .tabItem{ Label("Test",systemImage: "globe") }
+//                    .tag(4)
+//                    .padding(.bottom,1)
             }
         }
         .navigationBarBackButtonHidden()
@@ -57,7 +56,7 @@ struct Home: View {
 }
 
 #Preview {
-    Home(localDataManager: DataManager(),
+    Home(localDataManager: DataManager(forPreview: true),
          globalDataManager: NetworkManager(),
          userId: "123")
         .environmentObject(GlobalSettings())

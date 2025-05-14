@@ -76,7 +76,8 @@ extension LocalImage : Identifiable {
         makeImageWithSize(size: .smallImages, type: viewType)
     }
     
-    func makeImageWithSize(size: ImageSizes, type: GlobalProperties.ImageType) -> Image{
+    func makeImageWithSize(size: ImageSizes,
+                           type: GlobalProperties.ImageType) -> Image{
         
         if let result = ImagesManager.loadImage(imageSize: size, id: viewId){
             return Image(uiImage: result)

@@ -438,18 +438,17 @@ extension NetworkManager {
     func saveData(_ dto: Codable,
                   withId id: String,
                   withType type: GlobalProperties.Path) async {
+        guard !id.isEmpty else { return }
         do{
             let dataRef = db.collection("\(type.rawValue)")
             let data = try Firestore.Encoder().encode(dto)
             try await dataRef.document(id).setData(data)
-           
         }catch{
 #if DEBUG
             print(
                 "DEBUG: NetworkManager: generic \(type.rawValue) data save error: \(error.localizedDescription)")
 #endif
         }
-
     }
     //inspect and improve
     func loadDataOfType(_ type: GlobalProperties.Path, id: String) async ->[String: Any]? {
@@ -467,6 +466,7 @@ extension NetworkManager {
     }
     
     func removeDataOfType(_ type: GlobalProperties.Path, withId id: String) async {
+        guard !id.isEmpty else { return }
         let dataRef = db.collection("\(type)").document(id)
         do {
             try await dataRef.delete()

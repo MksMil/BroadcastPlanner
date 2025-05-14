@@ -87,6 +87,7 @@ extension DataManager {
         context.performAndWait { [weak self] in
             guard let self else { return }
             localUser.id = userDto.id
+            localUser.accessLevel = Int16(userDto.accessLevel)
             localUser.lastUpdated = userDto.lastUpdated
             localUser.firstName = userDto.firstName
             localUser.lastName = userDto.lastName
@@ -284,7 +285,7 @@ extension DataManager {
             }
         }
     }
-    //    @MainActor
+        @MainActor
     func removeEventWithDTO(_ event: EventDTO,
                             inContext contextType: ContextType) {
         let context = contextFromType(contextType)
@@ -292,6 +293,7 @@ extension DataManager {
             let request = Event.fetchRequest()
             request.predicate = NSPredicate(format: "id == %@", event.id)
             if let eventToRemove = try? context.fetch(request).first {
+                print("event with id: \(event.id) removed")
                 self.removeLocalEvent(eventToRemove,
                                       inContext: contextType)
             } else {

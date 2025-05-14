@@ -196,7 +196,7 @@ struct PointInfoPanelView: View {
             
             
             //user section
-            BPEventFilterCaseTabView(selectedTab: $vm.selectedFilter)
+            BPEventFilterCaseTabView(selectedTab: $vm.selectedFilter){}
                 .frame(height: 45)
             VStack {
                 switch vm.selectedFilter {

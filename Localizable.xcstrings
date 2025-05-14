@@ -83,6 +83,15 @@
     "Change Password" : {
 
     },
+    "change to 1" : {
+
+    },
+    "change to 2" : {
+
+    },
+    "change to 3" : {
+
+    },
     "Choose Location" : {
 
     },
@@ -173,6 +182,9 @@
     "Info" : {
 
     },
+    "just watch the event" : {
+
+    },
     "Link with Apple" : {
 
     },
@@ -204,6 +216,9 @@
 
     },
     "My Info" : {
+
+    },
+    "New Event" : {
 
     },
     "Not Registered?   Sign Up!" : {
@@ -303,9 +318,6 @@
 
     },
     "template title" : {
-
-    },
-    "Test" : {
 
     },
     "Update %@" : {

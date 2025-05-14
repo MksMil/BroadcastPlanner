@@ -22,11 +22,13 @@ struct LogoImageView: View {
     var logoSize: Double
     let cancelAction: ()->Void
     let accessAction: (Club)->Void
+    let editable: Bool
     
-    init(club: Club?,logoSize: Double = 100,
+    init(club: Club?,logoSize: Double = 100,editable: Bool = true,
          cancelAction: @escaping () -> Void,
          accessAction: @escaping (Club) -> Void) {
         self.logoSize = logoSize
+        self.editable = editable
         self.cancelAction = cancelAction
         self.accessAction = accessAction
         self._vm = StateObject(wrappedValue: LogoImageViewModel(club: club))
@@ -48,6 +50,7 @@ struct LogoImageView: View {
             .onTapGesture {
                 vm.isSheetPresented.toggle()
             }
+            .disabled(!editable)
         //club/location select/add/edit/remove sheet
         .sheet(
             isPresented: $vm.isSheetPresented,

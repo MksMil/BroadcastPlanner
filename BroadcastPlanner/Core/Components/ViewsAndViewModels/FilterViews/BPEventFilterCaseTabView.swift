@@ -2,12 +2,12 @@ import SwiftUI
 
 // MARK: - Generic filter tab bar, received enum with String RawValues
 
-struct BPEventFilterCaseTabView<T: RawRepresentable & CaseIterable>: View  where T.RawValue: StringProtocol {
+struct BPEventFilterCaseTabView<T: Customfilter>: View  where T.RawValue: StringProtocol {
     
     let tabs: [T] = Array<T>(T.allCases)
-    
     @Binding var selectedTab: T
-    
+
+    let completion: ()->()
     @Namespace var ns
     
     var body: some View {
@@ -22,6 +22,7 @@ struct BPEventFilterCaseTabView<T: RawRepresentable & CaseIterable>: View  where
                     .onTapGesture {
                         withAnimation{
                             self.selectedTab = tabs[tabIndex]
+                            completion()
                         }
                     }
 //                    .border(.blue, width: 2)

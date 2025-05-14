@@ -1,5 +1,5 @@
 import Foundation
-protocol Customfilter: CaseIterable, Identifiable, Codable {}
+protocol Customfilter: CaseIterable, Identifiable, Codable, RawRepresentable {}
 
 // MARK: - Filter points
 enum BPEventPlanPointStadiumFilter: String, Customfilter //CaseIterable,Identifiable, Codable
@@ -24,9 +24,17 @@ enum BPEventPlanPointCarFilter: String, Customfilter//CaseIterable,Identifiable,
     var id: Self { self }
 }
 
-enum FilterEventCases: String, Customfilter {
+enum FilterEventOwnerCases: String, Customfilter {
     case notFiltered = "calendar"
     case userOwned = "pencil.and.list.clipboard"
+    case userPartisipation = "calendar.badge.checkmark"
+    
+    var id: Self { self }
+    // TODO: case with caledar date : filter with date ( case calendar(let date) )
+}
+
+enum FilterEventUserCases: String, Customfilter {
+    case notFiltered = "calendar"
     case userPartisipation = "calendar.badge.checkmark"
     
     var id: Self { self }

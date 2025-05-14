@@ -5,6 +5,10 @@ import FirebaseFirestore
 struct UserDTO: Identifiable, Codable,BPDataProtocol {
     
     var id: String
+    // 0-root
+    // 1-producer
+    // 2-participant
+    var accessLevel: Int = 1
     var lastUpdated: Date = .now
     
     var firstName : String = "empty first name"

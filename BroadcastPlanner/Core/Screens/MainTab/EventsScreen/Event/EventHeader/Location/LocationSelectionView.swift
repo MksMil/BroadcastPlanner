@@ -6,15 +6,19 @@ struct LocationSelectionView: View {
     
     let location: Location?
     let offset: Double
+    let editable: Bool
     let cancelAction: ()->Void
     let acceptAction: (Location)->Void
     
+    
     init(location: Location?,
          offset: Double,
+         editable: Bool = true,
          cancelAction: @escaping () -> Void,
          acceptAction: @escaping (Location) -> Void) {
         self.location = location
         self.offset = offset
+        self.editable = editable
         self._vm = StateObject(wrappedValue: LocationSelectionViewModel(location: location))
         self.cancelAction = cancelAction
         self.acceptAction = acceptAction
@@ -52,6 +56,7 @@ struct LocationSelectionView: View {
                 vm.isLocationSheetPresented.toggle()
             }
             .padding(.top,offset + 10)
+            .disabled(!editable)
         }
         .sheet(isPresented: $vm.isLocationSheetPresented) {
             LocationSheetView(isEditMode: false, club: nil) {

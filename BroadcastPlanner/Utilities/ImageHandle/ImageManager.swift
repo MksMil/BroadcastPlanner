@@ -181,7 +181,7 @@ enum ImagesManager {
                 return nil
             }
         } else {
-            print("File doesn't exist when loading\(pngFilepath.lastPathComponent) or \(jpegFilepath.lastPathComponent)")
+            print("File doesn't exist when loading: \(pngFilepath.lastPathComponent) or \(jpegFilepath.lastPathComponent)")
             return nil
         }
     }

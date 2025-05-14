@@ -49,7 +49,7 @@ struct BPEditStadiumView: View {
                         eventRouter.routeStepBack()
                     }
                 } content: {
-                    BPEventFilterCaseTabView(selectedTab: $vm.stadiumFilter)
+                    BPEventFilterCaseTabView(selectedTab: $vm.stadiumFilter){}
                 }
                 .padding(.horizontal)
 
