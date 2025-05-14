@@ -41,11 +41,6 @@ struct BPCreateEditEventView: View {
         self._vm = StateObject(wrappedValue: BPCreateEditEventViewModel(event: event))
         self.event = event
     }
-    
-    var editable: Bool {
-//        event.viewOwners.contains(where: { $0.userId == mdm.currentId})
-        true
-    }
 
     var body: some View {
 
@@ -54,6 +49,47 @@ struct BPCreateEditEventView: View {
 //            Color.randomColor()
 
             VStack(alignment: .center, spacing: 5) {
+                ConfirmationButtonGroupView(height: 50, isAcceptDisabled: false)
+                {
+                    Task {
+                        eventRouter.routeStepBack()
+                        mdm.rollBackMoc()
+                    }
+                } acceptAction: {
+                    Task{
+                        await mdm.updateEvent(event,
+                                              homeClub: vm.homeClub,
+                                              guestClub: vm.guestClub,
+                                              eventDate: vm.eventDate,
+                                              location: vm.location)
+                        eventRouter.routeStepBack()
+                    }
+
+                } content: {
+                    Button {
+                        isRemoveConfirm = true
+                    } label: {
+                        Image(systemName: "trash")
+                            .resizable()
+                            .scaledToFit()
+                            .bold()
+                            .padding(50 / 4)
+                            .frame(width: 150,height: 50)
+                            .background {
+                                RoundedRectangle(cornerRadius: 5)
+                                    .fill(.ultraThickMaterial
+                                        .opacity(0.3))
+                                    .overlay {
+                                        RoundedRectangle(cornerRadius: 5)
+                                            .stroke(
+                                                .ultraThickMaterial
+                                                .opacity(0.5),
+                                                    lineWidth: 2)
+                                    }
+                            }
+                    }
+                }
+                .padding(.horizontal)
                 //header: time, date, teams, location
                 VStack{
                     ZStack{
@@ -62,9 +98,7 @@ struct BPCreateEditEventView: View {
                         } acceptAction: { newLocation in
                             vm.location = newLocation
                         }
-                        
-                        
-                        VStack(spacing: 5){
+                       VStack(spacing: 5){
                             //team logos section
                             HStack(alignment: .top) {
                                 //home team logo/selection action
@@ -74,7 +108,6 @@ struct BPCreateEditEventView: View {
                                               accessAction: { club in
                                     vm.homeClub = club
                                 })
-                                
                                 //event date section
                                 TimeAndDateSelectionView(date: vm.eventDate,
                                                          logoSize: logoSize) {newDate in
@@ -102,66 +135,61 @@ struct BPCreateEditEventView: View {
                         .resizable()
                         .scaledToFit()
                         .onTapGesture {
-                            eventRouter.routeToStadPointsEdit(editable: editable)
+                            eventRouter.routeToStadPointsEdit()
                         }
                     event.viewObvanPreview
                         .resizable()
                         .scaledToFit()
                         .scaleEffect(0.5)
-//                        .rotationEffect(Angle(degrees: -90))
+                        .rotationEffect(Angle(degrees: -90))
                         .onTapGesture {
-                            eventRouter.routeToCarPointsEdit(editable: editable)
+                            eventRouter.routeToCarPointsEdit(editable: true)
                         }
                 }
                 .padding(.horizontal)
-//                .border(.red, width: 2)
-                
                 Spacer()
             }
         }
-        .navigationTitle("Event")
         .navigationBarTitleDisplayMode(.inline)
-        .navigationBarBackButtonHidden(editable)
-        .toolbarBackground(.visible, for: .navigationBar)
-        .toolbarBackground(.white.opacity(0.4), for: .navigationBar)
-        .toolbar {
-            if editable {
-                //save event and dismiss screen
-                ToolbarItem(placement: .confirmationAction) {
-                    Button {
-                        Task{
-                            await mdm.updateEvent(event,
-                                                  homeClub: vm.homeClub,
-                                                  guestClub: vm.guestClub,
-                                                  eventDate: vm.eventDate,
-                                                  location: vm.location)
-                            eventRouter.routeStepBack()
-                        }
-                    } label: {
-                        Image(systemName: "checkmark.circle")
-                    }
-                }
-                ToolbarItem(placement: .cancellationAction) {
-                    // TODO: 'Delete' Confirmation (Alert?)
-                    Button {
-                        isRemoveConfirm = true
-                    } label: {
-                        Image(systemName: "trash")
-                    }
-                }
-            } else {
-                //back to eventList if !editMode
-                ToolbarItem(placement: .cancellationAction) {
-                    Button {
-                        Task {
-                            eventRouter.routeStepBack()
-                        }
-                    } label: {
-                        Image(systemName: "chevron.left")
-                    }
-                }
-            }
-        }
+        .navigationBarBackButtonHidden(true)
+//        .toolbarBackground(.visible, for: .navigationBar)
+//        .toolbarBackground(.white, for: .navigationBar)
+//        .toolbar {
+//                //save event and dismiss screen
+//            ToolbarItem(placement: .principal) {
+//                HStack(){
+//                    Button {
+//                        Task {
+//                            eventRouter.routeStepBack()
+//                            mdm.rollBackMoc()
+//                        }
+//                    } label: {
+//                        HStack{
+//                            Image(systemName: "chevron.left")
+//                        }
+//                    }
+//                    Spacer()
+//                    Button {
+//                        isRemoveConfirm = true
+//                    } label: {
+//                        Image(systemName: "trash")
+//                    }
+//                    Spacer()
+//                    Button {
+//                        Task{
+//                            await mdm.updateEvent(event,
+//                                                  homeClub: vm.homeClub,
+//                                                  guestClub: vm.guestClub,
+//                                                  eventDate: vm.eventDate,
+//                                                  location: vm.location)
+//                            eventRouter.routeStepBack()
+//                        }
+//                    } label: {
+//                        Image(systemName: "checkmark.square")
+//                    }
+//                }
+//            }
+//        }
         .navigationBarBackButtonHidden()
         .confirmationDialog("", isPresented: $isRemoveConfirm) {
             Button("Delete Event", role: .destructive){
@@ -173,22 +201,32 @@ struct BPCreateEditEventView: View {
         }
     }
 }
+//
+//#Preview {
+//        let lm = DataManager(forPreview: true)
+//        let mdm = MainDataManager(localDataManager: lm, globalDataManager: NetworkManager(),userId: "123")
+//        let localEvent = lm.fetchOrCreateObject(ofType: Event.self,
+//                      predicate: NSPredicate(format: "id == %@", "id"),
+//                                          in: lm.mainContext) { ctx in
+//            let newEvent = Event(context: ctx)
+//            newEvent.id = "id"
+//            return newEvent
+//        }
+//    
+//        return BPCreateEditEventView(event: localEvent)
+//        .environmentObject(SessionManager())
+//        .environmentObject(GlobalSettings())
+//        .environmentObject(EventTabRouter())
+//        .environment(\.managedObjectContext, mdm.localDataManager.mainContext)
+//        .environmentObject(mdm)
+//}
 
 #Preview {
-        let lm = DataManager(forPreview: true)
-        let mdm = MainDataManager(localDataManager: lm, globalDataManager: NetworkManager(),userId: "123")
-        let localEvent = lm.fetchOrCreateObject(ofType: Event.self,
-                      predicate: NSPredicate(format: "id == %@", "id"),
-                                          in: lm.mainContext) { ctx in
-            let newEvent = Event(context: ctx)
-            newEvent.id = "id"
-            return newEvent
-        }
-    
-        return BPCreateEditEventView(event: localEvent)
-        .environmentObject(SessionManager())
-        .environmentObject(GlobalSettings())
-        .environmentObject(EventTabRouter())
-        .environment(\.managedObjectContext, mdm.localDataManager.mainContext)
-        .environmentObject(mdm)
+    Home(localDataManager: DataManager(forPreview: false),
+         globalDataManager: NetworkManager(),
+         userId: "123"
+    )
+    .environmentObject(GlobalSettings())
+    .environmentObject(SessionManager())
+    .environmentObject(ApplicationState())
 }

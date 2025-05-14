@@ -40,6 +40,7 @@ struct MainEventsList: View {
                     Rectangle().fill(.white.opacity(0.4))
                         .frame(maxWidth: .infinity)
                         .frame(height: 55)
+                        
                         .overlay {
                             HStack{
                                 Spacer()
@@ -63,7 +64,9 @@ struct MainEventsList: View {
 
                             }
                             .padding(.horizontal, 20)
+                            .padding(.vertical,5)
                         }
+                        
                     ScrollView{
                         LazyVStack{
                             ForEach(events) { event in
@@ -103,6 +106,8 @@ struct MainEventsList: View {
             }
             .navigationTitle(Text(title))
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarBackground(.white.opacity(0.4), for: .navigationBar)
             .navigationDestination(for: EventTabPath.self) { path in
                 switch path {
                 case .createEdit:
@@ -111,8 +116,8 @@ struct MainEventsList: View {
                         } else {
                             ExploreEventView(event: eventToRoute)
                         }
-                case .stadPointsEdit(let editable):
-                    BPEditStadiumView(event: eventToRoute, editable: editable)
+                case .stadPointsEdit:
+                    BPEditStadiumView(event: eventToRoute)
                 case .carPointsEdit(let editable):
                     BPEditCarView(event: eventToRoute, editable: editable)
                 }

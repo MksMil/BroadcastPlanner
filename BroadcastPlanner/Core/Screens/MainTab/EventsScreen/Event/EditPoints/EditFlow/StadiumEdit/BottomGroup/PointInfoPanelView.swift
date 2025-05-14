@@ -312,7 +312,7 @@ struct PointInfoPanelView: View {
         newEvent.id = "id"
         return newEvent
     }
-   return BPEditStadiumView(event: localEvent, editable: true)
+   return BPEditStadiumView(event: localEvent)
         .environmentObject(mdm)
 }
 

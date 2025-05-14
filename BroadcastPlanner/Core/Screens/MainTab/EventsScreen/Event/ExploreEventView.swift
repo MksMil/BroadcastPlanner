@@ -1,5 +1,7 @@
 import SwiftUI
 
+// TODO: link to chat somewhere if currentUser == (owner || paticipated user)
+
 struct ExploreEventView: View {
     
     let logoSize: Double = 90
@@ -27,12 +29,10 @@ struct ExploreEventView: View {
                         } acceptAction: { newLocation in
                             vm.location = newLocation
                         }
-                        
-                        
                         VStack(spacing: 5){
                             //team logos section
                             HStack(alignment: .top) {
-                                //home team logo/selection action
+                                //home team logo
                                 LogoImageView(club: event.homeClub,
                                               logoSize: logoSize,
                                               editable: false,
@@ -44,7 +44,7 @@ struct ExploreEventView: View {
                                 //event date section
                                 VStack(spacing: 20) {
                                     Text(
-                                        (event.date ?? Date.now).formatted(
+                                        vm.eventDate.formatted(
                                             date: .abbreviated, time: .omitted)
                                     )
                                     .fixedSize()
@@ -63,7 +63,7 @@ struct ExploreEventView: View {
                                    
 
                                     Text(
-                                        (event.date ?? Date.now).formatted(
+                                        vm.eventDate.formatted(
                                             date: .omitted,
                                             time: .shortened)
                                     )
@@ -80,7 +80,7 @@ struct ExploreEventView: View {
                                     }
                                   
                                 }
-                                //guest team logo/selection action
+                                //guest team logo
                                 LogoImageView(club: event.guestClub,
                                               logoSize: logoSize,
                                               editable: false,
@@ -97,7 +97,7 @@ struct ExploreEventView: View {
                 }
                 .frame(height: 300)
                 
-                //preview + fsc editStad / editCar  views
+                //previews
                 HStack(spacing: 15) {
                     event.viewLocationPreview
                         .resizable()
@@ -121,10 +121,25 @@ struct ExploreEventView: View {
         }
         .navigationTitle("Event")
         .navigationBarTitleDisplayMode(.inline)
-            
-            
+        .toolbarBackground(.visible, for: .navigationBar)
+        .toolbarBackground(.white.opacity(0.4), for: .navigationBar)
+        .toolbar {
+                //back to eventList
+                ToolbarItem(placement: .cancellationAction) {
+                    Button {
+                        Task {
+                            eventRouter.routeStepBack()
+                        }
+                    } label: {
+                        HStack{
+                            Image(systemName: "chevron.left")
+                            Text("Back")
+                        }
+                    }
+                }
         }
-    
+        .navigationBarBackButtonHidden()
+        }
 }
 
 #Preview {

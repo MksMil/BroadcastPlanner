@@ -14,14 +14,10 @@ struct BPEditStadiumView: View {
     @State var title: String = "Choose template"
     @State private var isConfirmDiscardChanges: Bool = false
 
-    //if user cant edit(he is not owner)
-    var editable: Bool
-
     @FetchRequest<Template>(sortDescriptors: []) var templates
     
-    init(event: Event, editable: Bool) {
+    init(event: Event) {
         self.event = event
-        self.editable = editable
         self._vm = .init(wrappedValue: BPEditStadiumViewModel(event: event))
     }
 
@@ -40,21 +36,47 @@ struct BPEditStadiumView: View {
                     vm.selectedEventPoint = nil
                     vm.renderPitchScene.deselect()
                     vm.isEdit = false
-                    //make snapshot and assign to event locationPreview
-//                    vm.saveContext()
-                    //save context
                     mdm.updateEvent(event, withPoints: vm.localPoints)
                     Task{
                        await mdm.assignSnapshot(vm.makeSceneScreenshot(), toEvent: event)
                         eventRouter.routeStepBack()
                     }
                 } content: {
-                    BPEventFilterCaseTabView(selectedTab: $vm.stadiumFilter){}
+//                    BPEventFilterCaseTabView(selectedTab: $vm.stadiumFilter){}
+//                    Spacer()
+                   
+//                        Image(systemName: "trash")
+//                            .resizable()
+//                            .scaledToFit()
+                    
+                    Text("\(event.viewTitle)")
+                        .font(.title)
+                            .bold()
+                            .minimumScaleFactor(0.1)
+                            .padding(50 / 4)
+                            .frame(height: 50)
+                            .frame(maxWidth: .infinity)
+                            .background {
+                                RoundedRectangle(cornerRadius: 5)
+                                    .fill(.ultraThickMaterial
+                                        .opacity(0.3))
+                                    .overlay {
+                                        RoundedRectangle(cornerRadius: 5)
+                                            .stroke(
+                                                .ultraThickMaterial
+                                                .opacity(0.5),
+                                                    lineWidth: 2)
+                                    }
+                            }
+                            .onTapGesture {
+                                print("edit event location")
+                            }
+                    
                 }
                 .padding(.horizontal)
 
                 //templates choise
-                if editable {
+                
                     //template group
                     TemplateGroup(templates: templates) { templateToShow in
                         withAnimation {    
@@ -84,7 +106,7 @@ struct BPEditStadiumView: View {
                     }
                     .padding(.horizontal, 15)
                     .padding(.vertical, 15)
-                }
+                
                 //SKView
 
                 SpriteView(
@@ -98,7 +120,7 @@ struct BPEditStadiumView: View {
                 
                 //control panel
                 HStack(spacing: 30) {
-                    if editable {
+                    
                         SaveEditControlPanelView(
                             addAction: {
                                 //mdm: 'addPoint to event' & delegete it to scene
@@ -124,9 +146,7 @@ struct BPEditStadiumView: View {
                                 },
                             isEditAction: { vm.changeState() },
                             isEdit: vm.isEdit)
-                    } else {
-                        Spacer()
-                    }
+                    
                     BPEditEventControlPanel(
                         scaleUpAction: { vm.scaleUp() },
                         scaleDownAction: { vm.scaleDown() },
@@ -175,7 +195,7 @@ struct BPEditStadiumView: View {
         newEvent.id = "id"
         return newEvent
     }
-   return BPEditStadiumView(event: localEvent , editable: true)
+   return BPEditStadiumView(event: localEvent)
         .environmentObject(mdm)
         .environment(\.managedObjectContext, mdm.localDataManager.mainContext)
 }

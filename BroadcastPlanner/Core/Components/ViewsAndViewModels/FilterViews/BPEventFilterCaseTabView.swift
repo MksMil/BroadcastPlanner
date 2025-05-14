@@ -18,7 +18,7 @@ struct BPEventFilterCaseTabView<T: Customfilter>: View  where T.RawValue: String
                     .resizable()
                     .aspectRatio(1, contentMode: .fit)
 //                    .font(.title)
-                    .padding(12)
+                    .padding(8)
                     .onTapGesture {
                         withAnimation{
                             self.selectedTab = tabs[tabIndex]
@@ -62,7 +62,7 @@ struct BPEventFilterCaseTabView<T: Customfilter>: View  where T.RawValue: String
         return newEvent
     }
     
-   return BPEditStadiumView(event: localEvent, editable: true)
+   return BPEditStadiumView(event: localEvent)
         .environmentObject(mdm)
 }
 

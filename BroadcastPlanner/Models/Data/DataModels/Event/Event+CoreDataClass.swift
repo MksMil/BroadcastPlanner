@@ -130,12 +130,12 @@ extension Event : Identifiable {
     }
     
     var viewTitle: String {
-        guard let title = location?.title else { return ""}
+        guard let title = location?.title else { return "Event location"}
         return title
     }
     
     var viewAddress: String {
-        guard let address = location?.address else { return ""}
+        guard let address = location?.address else { return "Event address"}
         return address
     }
     

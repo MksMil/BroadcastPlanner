@@ -76,6 +76,29 @@ struct ConfirmationButtonGroupView<T: View>: View {
         }
     }
 }
+// remove button settings to style to group
+//Button {
+//    isRemoveConfirm = true
+//} label: {
+//    Image(systemName: "trash")
+//        .resizable()
+//        .scaledToFit()
+//        .bold()
+//        .padding(50 / 4)
+//        .frame(width: 150,height: 50)
+//        .background {
+//            RoundedRectangle(cornerRadius: 5)
+//                .fill(.ultraThickMaterial
+//                    .opacity(0.3))
+//                .overlay {
+//                    RoundedRectangle(cornerRadius: 5)
+//                        .stroke(
+//                            .ultraThickMaterial
+//                            .opacity(0.5),
+//                                lineWidth: 2)
+//                }
+//        }
+//}
 
 #Preview {
     ZStack{
