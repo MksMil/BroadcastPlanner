@@ -152,44 +152,7 @@ struct BPCreateEditEventView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
-//        .toolbarBackground(.visible, for: .navigationBar)
-//        .toolbarBackground(.white, for: .navigationBar)
-//        .toolbar {
-//                //save event and dismiss screen
-//            ToolbarItem(placement: .principal) {
-//                HStack(){
-//                    Button {
-//                        Task {
-//                            eventRouter.routeStepBack()
-//                            mdm.rollBackMoc()
-//                        }
-//                    } label: {
-//                        HStack{
-//                            Image(systemName: "chevron.left")
-//                        }
-//                    }
-//                    Spacer()
-//                    Button {
-//                        isRemoveConfirm = true
-//                    } label: {
-//                        Image(systemName: "trash")
-//                    }
-//                    Spacer()
-//                    Button {
-//                        Task{
-//                            await mdm.updateEvent(event,
-//                                                  homeClub: vm.homeClub,
-//                                                  guestClub: vm.guestClub,
-//                                                  eventDate: vm.eventDate,
-//                                                  location: vm.location)
-//                            eventRouter.routeStepBack()
-//                        }
-//                    } label: {
-//                        Image(systemName: "checkmark.square")
-//                    }
-//                }
-//            }
-//        }
+
         .navigationBarBackButtonHidden()
         .confirmationDialog("", isPresented: $isRemoveConfirm) {
             Button("Delete Event", role: .destructive){

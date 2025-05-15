@@ -25,9 +25,8 @@ struct BPEditStadiumView: View {
         ZStack {
             MainBackground()
             
-            ScrollView {
-                //filter section
-
+            VStack(spacing: 0) {
+//                //filter section
                 ConfirmationButtonGroupView(height: 50, isAcceptDisabled: false)
                 {
                     isConfirmDiscardChanges = true                
@@ -42,13 +41,6 @@ struct BPEditStadiumView: View {
                         eventRouter.routeStepBack()
                     }
                 } content: {
-//                    BPEventFilterCaseTabView(selectedTab: $vm.stadiumFilter){}
-//                    Spacer()
-                   
-//                        Image(systemName: "trash")
-//                            .resizable()
-//                            .scaledToFit()
-                    
                     Text("\(event.viewTitle)")
                         .font(.title)
                             .bold()
@@ -69,43 +61,38 @@ struct BPEditStadiumView: View {
                                     }
                             }
                             .onTapGesture {
+                                // TODO: Edit location flow
                                 print("edit event location")
                             }
                     
                 }
-                .padding(.horizontal)
-
-                //templates choise
-                
-                    //template group
-                    TemplateGroup(templates: templates) { templateToShow in
-                        withAnimation {    
-                                let template =  mdm.makeLocalPointFromTemplate(templateToShow)
-                                
-                                    vm.loadTemplate(template)
-                                    vm.selectedTemplate = templateToShow
-                        }
-                        
-                    } addAction: { name in
-                        Task{
-                           await mdm.saveTemplateFromSchema(localPoints: vm.localPoints, withName: name)
-                        }
-                    } removeAction: {
-                        withAnimation{
-                            if let templateToRemove = vm.selectedTemplate{
-                                Task{
-                                  await mdm.removeLocalTemplate(templateToRemove)
-                                    vm.setEmptyTemplate()
-                                }
+                //template group
+                TemplateGroup(templates: templates) { templateToShow in
+                    withAnimation {
+                        let template =  mdm.makeLocalPointFromTemplate(templateToShow)
+                        vm.loadTemplate(template)
+                        vm.selectedTemplate = templateToShow
+                    }
+                    
+                } addAction: { name in
+                    Task{
+                        await mdm.saveTemplateFromSchema(localPoints: vm.localPoints, withName: name)
+                    }
+                } removeAction: {
+                    withAnimation{
+                        if let templateToRemove = vm.selectedTemplate{
+                            Task{
+                                await mdm.removeLocalTemplate(templateToRemove)
+                                vm.setEmptyTemplate()
                             }
                         }
-                    } setEmptyTemplateAction: {
-                        withAnimation{
-                            vm.setEmptyTemplate()
-                        }
                     }
-                    .padding(.horizontal, 15)
-                    .padding(.vertical, 15)
+                } setEmptyTemplateAction: {
+                    withAnimation{
+                        vm.setEmptyTemplate()
+                    }
+                }
+                .padding(.vertical, 15)
                 
                 //SKView
 
@@ -116,52 +103,117 @@ struct BPEditStadiumView: View {
                 .aspectRatio(1.5, contentMode: .fit)
                 .frame(maxWidth: .infinity)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
-                .padding(.horizontal)
                 
-                //control panel
-                HStack(spacing: 30) {
-                    
-                        SaveEditControlPanelView(
-                            addAction: {
-                                //mdm: 'addPoint to event' & delegete it to scene
-                                let newPoint = mdm.newPointInEvent(event,withNumber: vm.numberForNewPoint())
-                                vm.addPoint(point: newPoint)
-                            },
-                            deleteAction: {
-                                if let pointToDelete = vm.selectedEventPoint{
-                                    vm.deletePoint()
-                                    mdm.deletePoint(pointToDelete,
-                                                    inEvent: event)
-                                }
-                            },
-                            saveAction: {
-                                if let point = vm.selectedEventPoint{
-                                    mdm.updatePoint(point,
-                                                    x: vm.coordinateX,
-                                                    y: vm.coordinateY,
-                                                    rotation: vm.rotation,
-                                                    scaleFactor: vm.scaleFactor)
-                                    vm.save()
-                                }
+//
+                
+                GeometryReader{ geo in
+                    let cellWidth = ((geo.size.width * 3 / 5 - 30) / 5).rounded()
+                    //control panel
+                    VStack{
+                        HStack {
+                            Spacer()
+                            BPEventFilterCaseTabView(selectedTab: $vm.stadiumFilter){}
+                            Spacer()
+//                            Divider()
+                            //                    Spacer()
+                            SaveEditControlPanelView(
+                                addAction: {
+                                    //mdm: 'addPoint to event' & delegete it to scene
+                                    let newPoint = mdm.newPointInEvent(event,withNumber: vm.numberForNewPoint())
+                                    vm.addPoint(point: newPoint)
                                 },
-                            isEditAction: { vm.changeState() },
-                            isEdit: vm.isEdit)
-                    
-                    BPEditEventControlPanel(
-                        scaleUpAction: { vm.scaleUp() },
-                        scaleDownAction: { vm.scaleDown() },
-                        resetScaleAction: { vm.resetScale() })
+                                deleteAction: {
+                                    if let pointToDelete = vm.selectedEventPoint{
+                                        vm.deletePoint()
+                                        mdm.deletePoint(pointToDelete,
+                                                        inEvent: event)
+                                    }
+                                },
+                                saveAction: {
+                                    if let point = vm.selectedEventPoint{
+                                        mdm.updatePoint(point,
+                                                        x: vm.coordinateX,
+                                                        y: vm.coordinateY,
+                                                        rotation: vm.rotation,
+                                                        scaleFactor: vm.scaleFactor)
+                                        vm.save()
+                                    }
+                                })
+//                            .padding(.leading)
+                            .frame(width: geo.size.width * 2 / 5)
+                        }
+                        .frame(height: 40)
+                        .padding(.vertical,8)
+                        
+                        HStack(spacing: 0){
+                            ScrollView{
+                                VStack(alignment: .leading){
+                                    HStack(spacing: 0){
+                                        SmartLayout(hSpacing: 5, vSpacing: 5){
+                                            ForEach(vm.filteredLocationPoints.sorted(by: {$0.viewNumber < $1.viewNumber})){ point in
+                                                PointPanelCell(size: cellWidth,
+                                                               state: vm.stateForPoint(point),
+                                                               number: point.viewNumber,
+                                                               isCamera: !point.viewLocalCameras.isEmpty,
+                                                               isSound: !point.viewLocalSounds.isEmpty,
+                                                               isLight: !point.viewLocalLights.isEmpty,
+                                                               isUser: !point.viewUsers.isEmpty,
+                                                               selectedPoint: $vm.selectedEventPoint)
+                                                .onTapGesture {
+                                                    withAnimation{
+                                                        if vm.selectedEventPoint == point{
+                                                            vm.deselectPointForRender()
+                                                        } else {
+                                                            vm.selectPoint(point: point)
+                                                        }
+                                                    }
+                                                }
+                                                .animation(.easeInOut, value: vm.selectedEventPoint)
+                                            }
+                                        }
+                                        Spacer()
+                                    }
+                                }
+                            }
+                            .frame(width: geo.size.width * 3 / 5)
+//                            .border(Color.red)
+                            VStack{
+                                EventPointInfoPanelView()
+                                
+                                
+                                Spacer()
+
+                                BPEditEventControlPanel(
+                                    scaleUpAction: { vm.scaleUp() },
+                                    scaleDownAction: { vm.scaleDown() },
+                                    resetScaleAction: { vm.resetScale() })
+                                
+                                BPJoystick(
+                                    upAction: vm.moveUp,
+                                    downAction: vm.moveDown,
+                                    leftAction: vm.moveLeft,
+                                    rightAction: vm.moveRight,
+                                    rotationLeft: vm.rotateCounterClockwise,
+                                    rotationRight: vm.rotateClockwise,
+                                    swap: vm.swap,
+                                    scaleUp: vm.scaleUpPoint,
+                                    scaleDown: vm.scaleDownPoint
+                                )
+                                .aspectRatio(1, contentMode: .fit)
+                                .padding(15)
+                                .overlay {
+                                    RoundedRectangle(cornerRadius: 5).stroke(.white.opacity(0.4), lineWidth: 2)
+                                }
+                                
+                            }
+//                            .padding()
+                            .frame(width: geo.size.width * 2 / 5)
+                        }
+                    }
                 }
-                .padding(.horizontal)
-                
-                BPEditEventJoystickInfoPanel()
-                    .environmentObject(vm)
-                    .padding(.horizontal)
-                    .frame(maxHeight: 290)
             }
-            .scrollDisabled(true)
-            
-            
+            .padding(.horizontal)
+            .environmentObject(vm)
         }
         .task{
             vm.savePointAction = {

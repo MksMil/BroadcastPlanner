@@ -65,7 +65,7 @@
 		2994DE6E2C16F18E00DF9060 /* BPJoystick.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2994DE6D2C16F18D00DF9060 /* BPJoystick.swift */; };
 		2994DE702C17196300DF9060 /* BPEventPlanPointImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2994DE6F2C17196300DF9060 /* BPEventPlanPointImage.swift */; };
 		299D43882D2E880F007EEEFE /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 299D436B2D2E880F007EEEFE /* DataManager.swift */; };
-		299D43A52D365A49007EEEFE /* TaskDescriptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 299D43A42D365A49007EEEFE /* TaskDescriptionView.swift */; };
+		299D43A52D365A49007EEEFE /* EventPointInfoPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 299D43A42D365A49007EEEFE /* EventPointInfoPanelView.swift */; };
 		299D43C72D38F925007EEEFE /* MainDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 299D43C62D38F925007EEEFE /* MainDataManager.swift */; };
 		29AE68742BE24F9300DE8FAB /* Chat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29AE68732BE24F9300DE8FAB /* Chat.swift */; };
 		29AE68762BE24F9A00DE8FAB /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29AE68752BE24F9A00DE8FAB /* Message.swift */; };
@@ -158,7 +158,7 @@
 		2994DE6D2C16F18D00DF9060 /* BPJoystick.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPJoystick.swift; sourceTree = "<group>"; };
 		2994DE6F2C17196300DF9060 /* BPEventPlanPointImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPEventPlanPointImage.swift; sourceTree = "<group>"; };
 		299D436B2D2E880F007EEEFE /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DataManager.swift; path = BroadcastPlanner/Utilities/Managers/DataManager.swift; sourceTree = SOURCE_ROOT; };
-		299D43A42D365A49007EEEFE /* TaskDescriptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskDescriptionView.swift; sourceTree = "<group>"; };
+		299D43A42D365A49007EEEFE /* EventPointInfoPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventPointInfoPanelView.swift; sourceTree = "<group>"; };
 		299D43C62D38F925007EEEFE /* MainDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainDataManager.swift; sourceTree = "<group>"; };
 		29AE68732BE24F9300DE8FAB /* Chat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chat.swift; sourceTree = "<group>"; };
 		29AE68752BE24F9A00DE8FAB /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
@@ -275,7 +275,7 @@
 		2916E6032C4E79170025DCC6 /* subViews */ = {
 			isa = PBXGroup;
 			children = (
-				299D43A42D365A49007EEEFE /* TaskDescriptionView.swift */,
+				299D43A42D365A49007EEEFE /* EventPointInfoPanelView.swift */,
 				2916E60A2C4E85400025DCC6 /* BPEditEventControlPanel.swift */,
 				297507BD2C9426B400E58091 /* SaveEditControlPanelView.swift */,
 			);
@@ -898,7 +898,7 @@
 				291E72C32BBE859F008092D7 /* BPMessengerView.swift in Sources */,
 				29476C1B2DACFC5B007DFA88 /* PlaceType.swift in Sources */,
 				2994DE6E2C16F18E00DF9060 /* BPJoystick.swift in Sources */,
-				299D43A52D365A49007EEEFE /* TaskDescriptionView.swift in Sources */,
+				299D43A52D365A49007EEEFE /* EventPointInfoPanelView.swift in Sources */,
 				290056C62C37DF6400CBA472 /* BPUserDataListCellView.swift in Sources */,
 				29389C3C2B8EE62F003EF60C /* UIKit+ext.swift in Sources */,
 				2967DF212B64F69B003956FD /* KeyboardAdaptiveModifier.swift in Sources */,

@@ -32,9 +32,6 @@
     "Accept" : {
 
     },
-    "ADD" : {
-
-    },
     "Add background photos" : {
 
     },
@@ -128,9 +125,6 @@
     "Creation date: %@" : {
 
     },
-    "DELETE" : {
-
-    },
     "Delete account" : {
 
     },
@@ -144,9 +138,6 @@
 
     },
     "Edit" : {
-
-    },
-    "EDIT" : {
 
     },
     "Edit location" : {
@@ -282,9 +273,6 @@
 
     },
     "Save" : {
-
-    },
-    "SAVE" : {
 
     },
     "Send" : {

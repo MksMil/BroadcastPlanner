@@ -300,21 +300,21 @@ struct PointInfoPanelView: View {
 //    PointInfoPanel()
 //}
 // MARK: - Preview
-#Preview {
-    let lm = DataManager(forPreview: true)
-    let mdm = MainDataManager(localDataManager: lm,
-                              globalDataManager: NetworkManager(),
-                              userId: "123")
-    let localEvent = lm.fetchOrCreateObject(ofType: Event.self,
-                  predicate: NSPredicate(format: "id == %@", "id"),
-                                      in: lm.mainContext) { ctx in
-        let newEvent = Event(context: ctx)
-        newEvent.id = "id"
-        return newEvent
-    }
-   return BPEditStadiumView(event: localEvent)
-        .environmentObject(mdm)
-}
+//#Preview {
+//    let lm = DataManager(forPreview: true)
+//    let mdm = MainDataManager(localDataManager: lm,
+//                              globalDataManager: NetworkManager(),
+//                              userId: "123")
+//    let localEvent = lm.fetchOrCreateObject(ofType: Event.self,
+//                  predicate: NSPredicate(format: "id == %@", "id"),
+//                                      in: lm.mainContext) { ctx in
+//        let newEvent = Event(context: ctx)
+//        newEvent.id = "id"
+//        return newEvent
+//    }
+//   return BPEditStadiumView(event: localEvent)
+//        .environmentObject(mdm)
+//}
 
 
 

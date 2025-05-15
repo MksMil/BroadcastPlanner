@@ -7,25 +7,20 @@ struct BPEditEventControlPanel: View {
     let resetScaleAction: () -> Void
 
     var body: some View {
-      RoundedRectangle(cornerRadius: 10)
-            .fill(.white.opacity(0.4))
-            .shadow(radius: 1)
-            .frame(width: 130, height: 45)
-            .overlay {
-                HStack(spacing: 16){
+        HStack{
                     
                     Button(action: {
                         scaleDownAction()
                     }, label: {
                         Image(systemName: "minus.magnifyingglass")
                     })
-                    
+                    Spacer()
                     Button(action: {
                         resetScaleAction()
                     }, label: {
                         Image(systemName: "square.arrowtriangle.4.outward")
                     })
-                    
+                    Spacer()
                     Button(action: {
                         scaleUpAction()
                     }, label: {
@@ -33,11 +28,21 @@ struct BPEditEventControlPanel: View {
                     })
                     
                 }
+                .padding(10)
+                .background {
+                    RoundedRectangle(cornerRadius: 5)
+                        .fill(.ultraThickMaterial
+                            .opacity(0.3))
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 5)
+                                .stroke(
+                                    .ultraThickMaterial
+                                    .opacity(0.5),
+                                        lineWidth: 2)
+                        }
+                }
                 .imageScale(.large)
-            }
-            .padding(.horizontal,5)
-            .foregroundStyle(.black)
-            .bold()
+                .bold()
     }
 }
 

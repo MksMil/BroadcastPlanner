@@ -36,6 +36,7 @@ struct TemplateGroup: View {
             .disabled(removeState)
             
             Divider()
+                .frame(height: 45)
             
             Menu {
                 Button("empty"){

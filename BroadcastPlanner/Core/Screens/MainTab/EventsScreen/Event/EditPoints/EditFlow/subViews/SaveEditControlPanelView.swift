@@ -1,68 +1,111 @@
-//
-//  SaveEditControlPanelView.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 13.09.2024.
-//
-
 import SwiftUI
+import Combine
 
 struct SaveEditControlPanelView: View {
-    
+    @EnvironmentObject var vm: BPEditStadiumViewModel
     //Actions
     let addAction: () -> Void
     let deleteAction: () -> Void
     let saveAction: () -> Void
-    let isEditAction: () -> Void
+//    let isEditAction: () -> Void
     
-    let isEdit: Bool
+    @State private var isEdit: Bool = false
+    @State private var isDelete: Bool = false
     
     var body: some View {
         HStack {
-            RoundedRectangle(cornerRadius: 10)
-                .fill(.white.opacity(0.4))
-                .shadow(radius: 1)
-                .frame(width: 80, height: 45)
-                .overlay {
                     Button(action: {
-                        
-                        withAnimation{
-                            if isEdit {
-                                deleteAction()
-                            } else {
-                                addAction()
-                            }
-//                            isEdit.toggle()
-                        }
+                        isDelete = true
                     }, label: {
-                        Text(isEdit ? "DELETE":"ADD")
+                        Image(systemName: "trash")
+                            .resizable()
+                            .scaledToFit()
+                            .bold()
+                            .padding(10)
+                            .frame(width: 40,height: 40)
+                            .background {
+                                RoundedRectangle(cornerRadius: 5)
+                                    .fill(.ultraThickMaterial
+                                        .opacity(0.3))
+                                    .overlay {
+                                        RoundedRectangle(cornerRadius: 5)
+                                            .stroke(
+                                                .ultraThickMaterial
+                                                .opacity(0.5),
+                                                    lineWidth: 2)
+                                    }
+                            }
+                            .opacity(isEdit ? 1: 0.3)
                     })
-                }
+                    .disabled(!isEdit)
             Spacer()
-            RoundedRectangle(cornerRadius: 10)
-                .fill(.white.opacity(0.4))
-                .shadow(radius: 1)
-                .frame(width: 80, height: 45)
-                .overlay {
+//            Divider()
+//            Spacer()
                     Button(action: {
-                        withAnimation {
                             if isEdit {
                                 saveAction()
                             } else {
-                                isEditAction()
+                                addAction()
                             }
-                        }
                     }, label: {
-                        Text(isEdit ?  "SAVE":"EDIT")
+                        Image(systemName: isEdit ? "checkmark":"plus")
+                            .resizable()
+                            .scaledToFit()
+                            .bold()
+                            .padding(10)
+                            .frame(width: 40,height: 40)
+                            .background {
+                                RoundedRectangle(cornerRadius: 5)
+                                    .fill(.ultraThickMaterial
+                                        .opacity(0.3))
+                                    .overlay {
+                                        RoundedRectangle(cornerRadius: 5)
+                                            .stroke(
+                                                .ultraThickMaterial
+                                                .opacity(0.5),
+                                                    lineWidth: 2)
+                                    }
+                            }
                     })
-                }
         }
-        .padding(.horizontal,5)
+        .font(.callout)
         .foregroundStyle(.black)
         .bold()
+        .lineLimit(1)
+        .minimumScaleFactor(0.2)
+        .confirmationDialog("", isPresented: $isDelete) {
+            Button("Delete Point", role: .destructive){
+                withAnimation{
+                    deleteAction()
+                }
+                
+            }
+        }
+        .onReceive(vm.$selectedEventPoint) { selectedEventPoint in
+            withAnimation(.linear(duration: 0.1)){
+                isEdit = selectedEventPoint == nil ? false: true
+            }
+        }
+        
     }
 }
 
+//#Preview {
+//    SaveEditControlPanelView(addAction: {}, deleteAction: {}, saveAction: {}, isEditAction: {}, isEdit: false)
+//}
 #Preview {
-    SaveEditControlPanelView(addAction: {}, deleteAction: {}, saveAction: {}, isEditAction: {}, isEdit: false)
+    let lm = DataManager(forPreview: true)
+    let mdm = MainDataManager(localDataManager: lm,
+                              globalDataManager: NetworkManager(),
+                              userId: "123")
+    let localEvent = lm.fetchOrCreateObject(ofType: Event.self,
+                  predicate: NSPredicate(format: "id == %@", "id"),
+                                      in: lm.mainContext) { ctx in
+        let newEvent = Event(context: ctx)
+        newEvent.id = "id"
+        return newEvent
+    }
+   return BPEditStadiumView(event: localEvent)
+        .environmentObject(mdm)
+        .environment(\.managedObjectContext, mdm.localDataManager.mainContext)
 }

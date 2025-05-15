@@ -543,6 +543,7 @@ extension MainDataManager {
             event.addToOwners(self.currentUser)
             currentUser.addToOwnedEvents(event)
         }
+            saveContextSync(type: .main, publish: GlobalProperties.PublishChanges.events, id: [])
         return event
     }
     @MainActor

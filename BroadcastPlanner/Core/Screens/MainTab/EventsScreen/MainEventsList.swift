@@ -111,10 +111,13 @@ struct MainEventsList: View {
             .navigationDestination(for: EventTabPath.self) { path in
                 switch path {
                 case .createEdit:
-                        if eventToRoute.status(user: mdm.currentUser) == .currentUserOwned{
-                            BPCreateEditEventView(event: eventToRoute)
+                        let tempEvent = eventToRoute
+                        if mdm.currentUser.accessLevel == 0{
+                            BPCreateEditEventView(event: tempEvent)
+                        } else if eventToRoute.status(user: mdm.currentUser) == .currentUserOwned{
+                            BPCreateEditEventView(event: tempEvent)
                         } else {
-                            ExploreEventView(event: eventToRoute)
+                            ExploreEventView(event: tempEvent)
                         }
                 case .stadPointsEdit:
                     BPEditStadiumView(event: eventToRoute)

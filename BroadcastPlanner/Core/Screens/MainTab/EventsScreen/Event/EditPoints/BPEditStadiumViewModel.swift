@@ -233,7 +233,7 @@ extension BPEditStadiumViewModel{
     func selectPoint(point: LocationPoint){
         selectedEventPoint = point
         renderPitchScene.select(point: point)
-//        isEdit = true
+        isEdit = true
     }
     
     func updatePoint(_ point: LocationPoint){
@@ -304,6 +304,7 @@ extension BPEditStadiumViewModel{
 extension BPEditStadiumViewModel: BPSKViewDelegate {
     func selectPointWithId(_ id: String){
         selectedEventPoint = localPoints.first(where: {$0.viewId == id})
+        isEdit = true
     }
     
     func deselectPoint(){
