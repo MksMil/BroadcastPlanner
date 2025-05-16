@@ -35,7 +35,7 @@ class PitchEditSpriteScene: SKScene{
     //crud and selectPoint actions
     
     //for test
-    var step: Double = 10
+    var step: Double = 1
     var angle: Double = .pi / 8
     var animationDuration: Double = 0.3
     
@@ -67,7 +67,13 @@ class PitchEditSpriteScene: SKScene{
     var deltaXinTouch: Double = 0
     var deltaYinTouch: Double = 0
     
-    
+    //for smoth Cameranode move
+    var camXscaleMoveFactor: CGFloat{
+        return frame.width * cameraNode.xScale / 3
+    }
+    var camYscaleMoveFactor: CGFloat{
+        return frame.height * cameraNode.xScale / 4
+    }
     // MARK: - Did move
     override func didMove(to view: SKView) {
         size = view.frame.size
@@ -277,8 +283,10 @@ extension PitchEditSpriteScene{
 extension PitchEditSpriteScene{
     
     func addPoint(point: LocationPoint, select: Bool){
-        let pointNode = SKShapeNode(rectOf: CGSize(width: 4 * step, height:  4 * step),
-                                    cornerRadius: step / 4)
+        let pointNode = SKShapeNode(
+            rectOf: CGSize(width: 20 * step,
+                            height:  20 * step),
+            cornerRadius: 5)
         pointNode.strokeColor = .clear
         pointNode.name = point.viewId
         
@@ -297,6 +305,11 @@ extension PitchEditSpriteScene{
         setupCamera()
         setupBackground()
         setupPoints()
+    }
+    func updateCameraWithNewNode(){
+        if let selectedPointNode {
+            camFollowToSelectedNodePosition(selectedPointNode.position)
+        }
     }
     
     func selectNode(_ node: SKNode?){
@@ -321,6 +334,7 @@ extension PitchEditSpriteScene{
             editedNode = selectedPointNode
             selectedPointNodeRotation = point.viewRotation.radians
             addSelectionAnimationToNode(node: node)
+            camFollowToSelectedNodePosition(node.position)
         } else {
 #if DEBUG
             print("PitchEditSpriteScene: not found node for selection")
@@ -463,6 +477,7 @@ extension PitchEditSpriteScene{
                                                          location: deltaPoint)
             
             self.selectedPointNode?.position = optimalLocation
+            smoothPositionForCam(nodePosition: optimalLocation)
             sceneState = .movedPoint
         } else {
             sceneState = .movingCam
@@ -474,6 +489,14 @@ extension PitchEditSpriteScene{
                 lastPanLocation = location
             }
             
+        }
+    }
+    
+    func smoothPositionForCam(nodePosition: CGPoint){
+        let difX = abs(cameraNode.position.x - nodePosition.x)
+        let difY = abs(cameraNode.position.y - nodePosition.y)
+        if difX > camXscaleMoveFactor || difY > camYscaleMoveFactor{
+            camFollowToSelectedNodePosition(nodePosition)
         }
     }
     
@@ -507,28 +530,50 @@ extension PitchEditSpriteScene{
     func moveUP(){
         guard let selectedPointNode else { return }
         let newPoint = CGPoint(x: selectedPointNode.position.x, y: selectedPointNode.position.y + step)
-        selectedPointNode.run(SKAction.move(to: optimalPositionForNode(selectedPointNode, location: newPoint), duration: animationDuration))
+        selectedPointNode.run(SKAction.move(to: optimalPositionForNode(selectedPointNode, location: newPoint), duration: 0.05))
+        let diff = newPoint.y - cameraNode.position.y
+        if diff > camYscaleMoveFactor {
+            let camNewPoint = CGPoint(x:newPoint.x  ,y: newPoint.y - camYscaleMoveFactor)
+            camFollowToSelectedNodePosition(camNewPoint)
+        }
         updateData()
     }
     
     func moveDown(){
         guard let selectedPointNode else { return }
         let newPoint = CGPoint(x: selectedPointNode.position.x, y: selectedPointNode.position.y - step)
-        selectedPointNode.run(SKAction.move(to: optimalPositionForNode(selectedPointNode, location: newPoint), duration: animationDuration))
+        selectedPointNode.run(SKAction.move(to: optimalPositionForNode(selectedPointNode, location: newPoint), duration: 0.05))
+        let diff = cameraNode.position.y - newPoint.y
+        if diff > camYscaleMoveFactor {
+            let camNewPoint = CGPoint(x:newPoint.x  ,y: newPoint.y + camYscaleMoveFactor)
+            camFollowToSelectedNodePosition(camNewPoint)
+        }
+
         updateData()
     }
     
     func moveLeft(){
         guard let selectedPointNode else { return }
         let newPoint = CGPoint(x: selectedPointNode.position.x - step, y: selectedPointNode.position.y)
-        selectedPointNode.run(SKAction.move(to: optimalPositionForNode(selectedPointNode, location: newPoint), duration: animationDuration))
+        selectedPointNode.run(SKAction.move(to: optimalPositionForNode(selectedPointNode, location: newPoint), duration: 0.05))
+        let diff = cameraNode.position.x - newPoint.x
+        if diff > camXscaleMoveFactor {
+            let camNewPoint = CGPoint(x:newPoint.x + camXscaleMoveFactor,y: newPoint.y)
+            camFollowToSelectedNodePosition(camNewPoint)
+        }
         updateData()
     }
     
     func moveRight(){
         guard let selectedPointNode else { return }
         let newPoint = CGPoint(x: selectedPointNode.position.x + step, y: selectedPointNode.position.y)
-        selectedPointNode.run(SKAction.move(to: optimalPositionForNode(selectedPointNode, location: newPoint), duration: animationDuration))
+        selectedPointNode.run(SKAction.move(to: optimalPositionForNode(selectedPointNode, location: newPoint), duration: 0.05))
+        let diff = newPoint.x - cameraNode.position.x
+        if diff > camXscaleMoveFactor {
+            let camNewPoint = CGPoint(x:newPoint.x - camXscaleMoveFactor,y: newPoint.y)
+            camFollowToSelectedNodePosition(camNewPoint)
+        }
+
         updateData()
     }
     
@@ -680,6 +725,19 @@ extension PitchEditSpriteScene{
             action = SKAction.scale(to: scaleFactor, duration: animationDuration)
         }
         cameraNode.run(action)
+    }
+}
+// MARK: - Camera following to selected Node
+extension PitchEditSpriteScene{
+    func camFollowToSelectedNodePosition(_ newPosition: CGPoint){
+        if let selectedPointNode,
+           selectedPointNode.isNotNodeWithName(NodeType.background.rawValue)/*, cameraNode.action(forKey: "camMove") == nil */{
+            //different variant for scaling center?
+            let position =  optimalCamPosition(newLocation: newPosition)
+            let action = SKAction.move(to: position, duration: animationDuration)
+            cameraNode.run(action)//,withKey: "camMove")
+            
+        }
     }
 }
 

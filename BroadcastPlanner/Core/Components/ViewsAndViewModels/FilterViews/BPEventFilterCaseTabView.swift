@@ -13,26 +13,24 @@ struct BPEventFilterCaseTabView<T: Customfilter>: View  where T.RawValue: String
     var body: some View {
         HStack(spacing: 0){
             ForEach(tabs.indices, id: \.self) { tabIndex in
-
-                Image(systemName: "\(tabs[tabIndex].rawValue)")
-                    .resizable()
-                    .aspectRatio(1, contentMode: .fit)
-//                    .font(.title)
-                    .padding(8)
-                    .onTapGesture {
-                        withAnimation{
-                            self.selectedTab = tabs[tabIndex]
-                            completion()
+                    Image(systemName: "\(tabs[tabIndex].rawValue)")
+                        .resizable()
+                        .aspectRatio(1, contentMode: .fit)
+                        .padding(8)
+                        .onTapGesture {
+                            withAnimation{
+                                self.selectedTab = tabs[tabIndex]
+                                completion()
+                            }
                         }
-                    }
-//                    .border(.blue, width: 2)
-//                })
-                //data about geometry added to tabIndex Id in ns namespace
-                    .matchedGeometryEffect(id: tabs[tabIndex].rawValue , in: ns)
-            }
+                        
+                    //data about geometry added to tabIndex Id in ns namespace
+                        .matchedGeometryEffect(id: tabs[tabIndex].rawValue , in: ns)
+                    
+                }
+    
         }
-        
-//        .padding(.horizontal)
+////underline
 //        .overlay {
 //            Rectangle()
 //                .fill(Color.accentColor)

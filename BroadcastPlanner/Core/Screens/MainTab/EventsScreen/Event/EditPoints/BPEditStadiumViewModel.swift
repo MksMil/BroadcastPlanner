@@ -139,10 +139,18 @@ extension BPEditStadiumViewModel {
                 filteredLocationPoints = localPoints
             case .cam:
                 filteredLocationPoints = localPoints.filter({!$0.viewLocalCameras.isEmpty})
+            case .person:
+                filteredLocationPoints = localPoints.filter({$0.viewLocalCameras.isEmpty &&
+                    !$0.viewUsers.isEmpty})
             case .mic:
-                filteredLocationPoints = localPoints.filter({$0.viewLocalCameras.isEmpty && !$0.viewLocalSounds.isEmpty})
+                filteredLocationPoints = localPoints.filter({$0.viewLocalCameras.isEmpty &&
+                    $0.viewUsers.isEmpty &&
+                    !$0.viewLocalSounds.isEmpty})
             case .light:
-                filteredLocationPoints = localPoints.filter({$0.viewLocalCameras.isEmpty && $0.viewLocalSounds.isEmpty && !$0.viewLocalLights.isEmpty})
+                filteredLocationPoints = localPoints.filter({$0.viewLocalCameras.isEmpty &&
+                    $0.viewUsers.isEmpty &&
+                    $0.viewLocalSounds.isEmpty &&
+                    !$0.viewLocalLights.isEmpty})
         }
     }
     
@@ -206,9 +214,10 @@ extension BPEditStadiumViewModel{
         localPoints.append(point)
         filterPointsWithCase(stadiumFilter)
         renderPitchScene.points = filteredLocationPoints
-        renderPitchScene.updateScene()
-        renderPitchScene.addPoint(point: point,select: true)
+        renderPitchScene.addPoint(point: point,
+                                  select: true)
         selectedEventPoint = point
+        renderPitchScene.updateCameraWithNewNode()
         isEdit = true
     }
     

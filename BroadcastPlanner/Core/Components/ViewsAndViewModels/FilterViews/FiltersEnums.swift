@@ -5,6 +5,7 @@ protocol Customfilter: CaseIterable, Identifiable, Codable, RawRepresentable {}
 enum BPEventPlanPointStadiumFilter: String, Customfilter //CaseIterable,Identifiable, Codable
 {
     case all = "square.grid.3x3.fill"
+    case person = "person"
     case cam = "video.fill"
     case mic = "mic.circle"
     case light = "warninglight"

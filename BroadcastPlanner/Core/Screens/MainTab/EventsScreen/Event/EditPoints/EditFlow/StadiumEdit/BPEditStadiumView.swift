@@ -109,7 +109,7 @@ struct BPEditStadiumView: View {
                 GeometryReader{ geo in
                     let cellWidth = ((geo.size.width * 3 / 5 - 30) / 5).rounded()
                     //control panel
-                    VStack{
+                    VStack(spacing: 0){
                         HStack {
                             Spacer()
                             BPEventFilterCaseTabView(selectedTab: $vm.stadiumFilter){}
@@ -138,7 +138,13 @@ struct BPEditStadiumView: View {
                                                         scaleFactor: vm.scaleFactor)
                                         vm.save()
                                     }
-                                })
+                                },
+                                editAction: {
+                                    if let point = vm.selectedEventPoint{
+                                        print("edit point")
+                                    }
+                                }
+                            )
 //                            .padding(.leading)
                             .frame(width: geo.size.width * 2 / 5)
                         }
@@ -178,10 +184,10 @@ struct BPEditStadiumView: View {
                             .frame(width: geo.size.width * 3 / 5)
 //                            .border(Color.red)
                             VStack{
-                                EventPointInfoPanelView()
-                                
-                                
-                                Spacer()
+//                                EventPointInfoPanelView()
+//                                
+//                                
+//                                Spacer()
 
                                 BPEditEventControlPanel(
                                     scaleUpAction: { vm.scaleUp() },
@@ -204,9 +210,8 @@ struct BPEditStadiumView: View {
                                 .overlay {
                                     RoundedRectangle(cornerRadius: 5).stroke(.white.opacity(0.4), lineWidth: 2)
                                 }
-                                
+                                Spacer()
                             }
-//                            .padding()
                             .frame(width: geo.size.width * 2 / 5)
                         }
                     }
@@ -247,7 +252,14 @@ struct BPEditStadiumView: View {
         newEvent.id = "id"
         return newEvent
     }
-   return BPEditStadiumView(event: localEvent)
-        .environmentObject(mdm)
-        .environment(\.managedObjectContext, mdm.localDataManager.mainContext)
+   return
+    TabView{
+        
+        BPEditStadiumView(event: localEvent)
+            .environmentObject(mdm)
+            .environment(\.managedObjectContext, mdm.localDataManager.mainContext)
+            .tabItem { Label("Hello", systemImage: "calendar") }
+            .tag(0)
+            .padding(.bottom,1)
+    }
 }

@@ -16,8 +16,58 @@ struct EventPointInfoPanelView: View {
 //    }
     
     var body: some View {
-        if vm.selectedEventPoint != nil {
-            Text(vm.selectedEventPoint?.viewId ?? "hello")
+        if let point = vm.selectedEventPoint{
+//            Text(vm.selectedEventPoint?.viewId ?? "hello")
+            //point number
+            //point position?
+            VStack(alignment: .leading, spacing: 0){
+                HStack{
+                    Image(systemName: "\(point.viewNumber).circle")
+                    Text("\(point.viewDescription)")
+                }
+                // user
+                HStack{
+                    if point.viewUsers.isEmpty{
+                     Image(systemName: "person")
+                    } else {
+                        point.viewUsers.first?.viewImage
+                    }
+                    Text("\(point.viewUsers.first?.viewCompactName ?? "---")")
+                }
+//                //cam
+//                HStack{
+//                    Image(systemName: "video")
+//                    Text("\(point.viewLocalCameras.first?.viewOptic.rawValue ?? "---")")
+//                }
+//                //sound
+//                HStack{
+//                    Image(systemName: "mic")
+//                    Text("\(point.viewLocalSounds.first?.viewPlaceType.rawValue ?? "---")")
+//                }
+//                //light
+//                HStack{
+//                    Image(systemName: "warninglight")
+//                    Text("\(point.viewLocalLights.first?.viewLightType.rawValue ?? "---")")
+//                }
+                HStack{
+                    Spacer()
+                    Text("Tap to edit")
+                        .font(.system(size: 8))
+                        .opacity(0.3)
+                    Spacer()
+                }
+            }
+            .lineLimit(1)
+            .minimumScaleFactor(0.1)
+            .padding(5)
+            .frame(maxWidth: .infinity)
+            .background(content: {
+                Rectangle().fill(Color.white.opacity(0.1))
+            })
+            .onTapGesture {
+                print("edit button tapped")
+            }
+//            .border(.blue, width: 1)
         } else {
             Text("event summary")
         }

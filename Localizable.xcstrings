@@ -131,6 +131,9 @@
     "Delete Event" : {
 
     },
+    "Delete Point" : {
+
+    },
     "Discard all changes and step back?" : {
 
     },
@@ -159,6 +162,9 @@
 
     },
     "Event" : {
+
+    },
+    "event summary" : {
 
     },
     "Forget password" : {
@@ -293,16 +299,19 @@
     "Sign Up" : {
 
     },
+    "something wrong" : {
+
+    },
     "Tab Label 1" : {
 
     },
     "Tab Label 2" : {
 
     },
-    "Tap to make choise of specialization" : {
+    "Tap to edit" : {
 
     },
-    "Task" : {
+    "Tap to make choise of specialization" : {
 
     },
     "template title" : {

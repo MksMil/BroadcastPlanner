@@ -13,18 +13,6 @@ struct MainEventsList: View {
     ]) var events
     @State private var selectedEvent: Event?
 
-    private var eventToRoute: Event {
-        if let selectedEvent {
-            return selectedEvent
-        } else {
-            let newEvent = mdm.createEventWithCurrentUserOwnerInContextType(
-                .main
-            )
-            selectedEvent = newEvent
-            return newEvent
-        }
-    }
-
     @State private var filter: FilterEventOwnerCases = FilterEventOwnerCases.notFiltered
     @State private var expired: Bool = true
     
@@ -61,7 +49,6 @@ struct MainEventsList: View {
                                         .padding(12)
                                         .opacity(expired ? 1: 0.2)
                                 }
-
                             }
                             .padding(.horizontal, 20)
                             .padding(.vertical,5)
@@ -86,7 +73,9 @@ struct MainEventsList: View {
 
                     if mdm.currentUser.accessLevel < 2 {
                         Button {
-                            selectedEvent = nil
+                            selectedEvent = mdm.createEventWithCurrentUserOwnerInContextType(
+                                .main
+                            )
                             eventRouter.routeToCreateEdit()
                         } label: {
                             Text("New Event")
@@ -111,18 +100,25 @@ struct MainEventsList: View {
             .navigationDestination(for: EventTabPath.self) { path in
                 switch path {
                 case .createEdit:
-                        let tempEvent = eventToRoute
-                        if mdm.currentUser.accessLevel == 0{
-                            BPCreateEditEventView(event: tempEvent)
-                        } else if eventToRoute.status(user: mdm.currentUser) == .currentUserOwned{
-                            BPCreateEditEventView(event: tempEvent)
+                        if let selectedEvent{
+                            if mdm.currentUser.accessLevel == 0{
+                                BPCreateEditEventView(event: selectedEvent)
+                            } else if selectedEvent.status(user: mdm.currentUser) == .currentUserOwned{
+                                BPCreateEditEventView(event: selectedEvent)
+                            } else {
+                                ExploreEventView(event: selectedEvent)
+                            }
                         } else {
-                            ExploreEventView(event: tempEvent)
+                            Text("something wrong")
                         }
                 case .stadPointsEdit:
-                    BPEditStadiumView(event: eventToRoute)
+                        if let selectedEvent {
+                            BPEditStadiumView(event: selectedEvent)
+                        }
                 case .carPointsEdit(let editable):
-                    BPEditCarView(event: eventToRoute, editable: editable)
+                        if let selectedEvent {
+                            BPEditCarView(event: selectedEvent, editable: editable)
+                        }
                 }
             }
         }
@@ -151,10 +147,9 @@ struct MainEventsList: View {
             )
             newTitle = "My participation"
         }
-        
-        let expiredPredicate = NSPredicate(format: "date > %@", argumentArray: [Date.now])
         var predicateArray = [corePredicate]
         if !expired {
+            let expiredPredicate = NSPredicate(format: "date > %@", argumentArray: [Date.now])
             predicateArray.append(expiredPredicate)
         }
         withAnimation(.easeIn(duration: 0.3)){

@@ -28,7 +28,8 @@ struct BPEditEventControlPanel: View {
                     })
                     
                 }
-                .padding(10)
+        .padding(.horizontal,10)
+        .padding(.vertical,5)
                 .background {
                     RoundedRectangle(cornerRadius: 5)
                         .fill(.ultraThickMaterial
