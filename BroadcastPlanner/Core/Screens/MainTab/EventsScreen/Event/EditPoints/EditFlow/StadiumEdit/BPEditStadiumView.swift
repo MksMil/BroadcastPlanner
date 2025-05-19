@@ -13,6 +13,7 @@ struct BPEditStadiumView: View {
 
     @State var title: String = "Choose template"
     @State private var isConfirmDiscardChanges: Bool = false
+    @State private var isEditPressed: Bool = false
 
     @FetchRequest<Template>(sortDescriptors: []) var templates
     
@@ -140,9 +141,11 @@ struct BPEditStadiumView: View {
                                     }
                                 },
                                 editAction: {
-                                    if let point = vm.selectedEventPoint{
-                                        print("edit point")
-                                    }
+//                                    if let point = vm.selectedEventPoint{
+//                                        print("edit point")
+//                                        //present edit sheet
+//                                    }
+                                    isEditPressed = true
                                 }
                             )
 //                            .padding(.leading)
@@ -218,7 +221,7 @@ struct BPEditStadiumView: View {
                 }
             }
             .padding(.horizontal)
-            .environmentObject(vm)
+            
         }
         .task{
             vm.savePointAction = {
@@ -237,6 +240,12 @@ struct BPEditStadiumView: View {
                 eventRouter.routeStepBack()
             }
         }
+        .sheet(isPresented: $isEditPressed) {
+            if let point = vm.selectedEventPoint{
+                PointInfoPanelView(point: point)
+            }
+        }
+        .environmentObject(vm)
     }
 }
 

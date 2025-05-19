@@ -97,10 +97,13 @@ struct PointInfoPanelView: View {
     
     @EnvironmentObject var pointManager: BPEditStadiumViewModel
     @EnvironmentObject var mdm: MainDataManager
+    //sort users
     @FetchRequest<LocalUser>(sortDescriptors: []) var availableUsers
-    
+    @State private var selectedFilter: StadiumPointFilterCase = .users
+    @State var selectedNumber: Int = 1
     
     @State var numPopover: Bool = false
+    @Namespace var ns
     // MARK: - Init
     init(point: LocationPoint?) {
         self._vm = StateObject(wrappedValue: PointInfoPanelViewModel(point: point))
@@ -196,84 +199,117 @@ struct PointInfoPanelView: View {
             
             
             //user section
-            BPEventFilterCaseTabView(selectedTab: $vm.selectedFilter){}
+            BPEventFilterCaseTabView(selectedTab: $selectedFilter){}
                 .frame(height: 45)
-            VStack {
-                switch vm.selectedFilter {
-                    case .users:
-                        PanelUserCollectionView(users: vm.users,
-                                                availableUsers: mappedUsers()){ user in
-                            vm.addUser(user: user)
-                            Task{
-                                await mdm.addUser(user,toPoint: pointManager.selectedEventPoint)
-                                pointManager.addUser(user: user)
+//            VStack {
+//                switch vm.selectedFilter {
+//                    case .users:
+//                        PanelUserCollectionView(users: vm.users,
+//                                                availableUsers: mappedUsers()){ user in
+//                            vm.addUser(user: user)
+//                            Task{
+//                                await mdm.addUser(user,toPoint: pointManager.selectedEventPoint)
+//                                pointManager.addUser(user: user)
+//                            }
+//                        } removeAction: { user in
+//                            vm.removeUser(user: user)
+//                            Task{
+//                                await mdm.removeUser(user,
+//                                                     fromPoint: pointManager.selectedEventPoint)
+//                                pointManager.removeUserFromPoint(user: user)
+//                            }
+//                        }
+//                    case .cam:
+//                        PanelCameraCollectionView(cameras: vm.cameras) { cam in
+//                            vm.addCam(cam: cam)
+//                            Task{
+//                                await mdm.updatePoint(pointManager.selectedEventPoint, withCamera: cam)
+//                                pointManager.addCam(cam: cam)
+//                            }
+//                            
+//                        } removeAction: { cam in
+//                            vm.removeCamera(cam: cam)
+//                            Task{
+//                                await mdm.removeCamera(cam, fromPoint: pointManager.selectedEventPoint)
+//                                pointManager.removeCameraFromPoint(camera: cam)
+//                            }
+//                        }
+//                    case .mic:
+//                        PanelSoundCollectionView(sounds: vm.sounds) { sound in
+//                            vm.addSound(sound: sound)
+//                            Task{
+//                                await mdm.updatePoint(pointManager.selectedEventPoint, withSound: sound)
+//                                pointManager.addSound(sound: sound)
+//                            }
+//                        } removeAction: { sound in
+//                            vm.removeSound(sound: sound)
+//                            Task{
+//                                await mdm.removeSound(sound, fromPoint: pointManager.selectedEventPoint)
+//                                pointManager.removeSoundFromPoint(sound: sound)
+//                            }
+//                        }
+//                        
+//                    case .light:
+//                        PanelLightCollectionView(lights: vm.lights) { light in
+//                            vm.addLight(light: light)
+//                            Task{
+//                                await mdm.updatePoint(pointManager.selectedEventPoint, withLight: light)
+//                                pointManager.addLight(light: light)
+//                            }
+//                        } removeAction: { light in
+//                            vm.removeLight(light: light)
+//                            Task{
+//                                await mdm.removeLight(light, fromPoint: pointManager.selectedEventPoint)
+//                                pointManager.removeLightFromPoint(light: light)
+//                            }
+//                        }
+//                }
+//            }
+//            .padding(.vertical,10)
+
+            ScrollViewReader{ proxy in
+                ScrollView(.horizontal){
+                    HStack{
+                        ForEach(0..<24) { num in
+                            VStack{
+                                Text(String(format: "%02d", num))
+                                    .font(.title2)
+                                    .bold()
                             }
-                        } removeAction: { user in
-                            vm.removeUser(user: user)
-                            Task{
-                                await mdm.removeUser(user,
-                                                     fromPoint: pointManager.selectedEventPoint)
-                                pointManager.removeUserFromPoint(user: user)
+                            .id(num)
+                            .padding()
+                            .background {
+                                RoundedRectangle(cornerRadius: 5).fill(.white.opacity(0.4))
+                                    .overlay {
+                                        RoundedRectangle(cornerRadius: 5)
+                                            .stroke(.black.opacity(0.4), lineWidth: 1)
+                                            .matchedGeometryEffect(id: num, in: ns)
+                                    }
+                            }
+                            .onTapGesture {
+                                selectedNumber = num
                             }
                         }
-                    case .cam:
-                        PanelCameraCollectionView(cameras: vm.cameras) { cam in
-                            vm.addCam(cam: cam)
-                            Task{
-                                await mdm.updatePoint(pointManager.selectedEventPoint, withCamera: cam)
-                                pointManager.addCam(cam: cam)
-                            }
-                            
-                        } removeAction: { cam in
-                            vm.removeCamera(cam: cam)
-                            Task{
-                                await mdm.removeCamera(cam, fromPoint: pointManager.selectedEventPoint)
-                                pointManager.removeCameraFromPoint(camera: cam)
-                            }
-                        }
-                    case .mic:
-                        PanelSoundCollectionView(sounds: vm.sounds) { sound in
-                            vm.addSound(sound: sound)
-                            Task{
-                                await mdm.updatePoint(pointManager.selectedEventPoint, withSound: sound)
-                                pointManager.addSound(sound: sound)
-                            }
-                        } removeAction: { sound in
-                            vm.removeSound(sound: sound)
-                            Task{
-                                await mdm.removeSound(sound, fromPoint: pointManager.selectedEventPoint)
-                                pointManager.removeSoundFromPoint(sound: sound)
-                            }
-                        }
-                        
-                    case .light:
-                        PanelLightCollectionView(lights: vm.lights) { light in
-                            vm.addLight(light: light)
-                            Task{
-                                await mdm.updatePoint(pointManager.selectedEventPoint, withLight: light)
-                                pointManager.addLight(light: light)
-                            }
-                        } removeAction: { light in
-                            vm.removeLight(light: light)
-                            Task{
-                                await mdm.removeLight(light, fromPoint: pointManager.selectedEventPoint)
-                                pointManager.removeLightFromPoint(light: light)
-                            }
-                        }
+                    }
+                    .overlay{
+                        RoundedRectangle(cornerRadius: 5)
+                            .stroke(.blue, lineWidth: 1)
+                            .matchedGeometryEffect(id: selectedNumber, in: ns, isSource: false)
+                    }
                 }
+                
+                .scrollIndicators(.hidden)
             }
-            .padding(.vertical,10)
+            Spacer()
+            
         }
-        .padding(.horizontal, 10)
+        .padding(10)
         .background(
             RoundedRectangle(cornerRadius: 15)
-                .fill(.white.opacity(0.4)))
+                .fill(.blue.opacity(0.4)))
+        .frame(maxHeight: .infinity)
         //        .border(.blue, width: 3)
-        .onReceive(pointManager.$selectedEventPoint) { point in
-            if let point {
-                vm.update(point: point)
-            }
-        }
+       
     }
 
     func mappedUsers() -> [LocalUser] {
@@ -296,25 +332,23 @@ struct PointInfoPanelView: View {
     }
 }
 
-//#Preview {
-//    PointInfoPanel()
-//}
+
 // MARK: - Preview
-//#Preview {
-//    let lm = DataManager(forPreview: true)
-//    let mdm = MainDataManager(localDataManager: lm,
-//                              globalDataManager: NetworkManager(),
-//                              userId: "123")
-//    let localEvent = lm.fetchOrCreateObject(ofType: Event.self,
-//                  predicate: NSPredicate(format: "id == %@", "id"),
-//                                      in: lm.mainContext) { ctx in
-//        let newEvent = Event(context: ctx)
-//        newEvent.id = "id"
-//        return newEvent
-//    }
-//   return BPEditStadiumView(event: localEvent)
-//        .environmentObject(mdm)
-//}
+#Preview {
+    let lm = DataManager(forPreview: true)
+    let mdm = MainDataManager(localDataManager: lm,
+                              globalDataManager: NetworkManager(),
+                              userId: "123")
+    let localEvent = lm.fetchOrCreateObject(ofType: Event.self,
+                  predicate: NSPredicate(format: "id == %@", "id"),
+                                      in: lm.mainContext) { ctx in
+        let newEvent = Event(context: ctx)
+        newEvent.id = "id"
+        return newEvent
+    }
+   return BPEditStadiumView(event: localEvent)
+        .environmentObject(mdm)
+}
 
 
 

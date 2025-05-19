@@ -200,6 +200,7 @@
 		29476BFF2DACE0AC007DFA88 /* DTO */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = DTO; sourceTree = "<group>"; };
 		29476C002DACE2A8007DFA88 /* Navigation */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Navigation; sourceTree = "<group>"; };
 		295C871A2DCDDE78003B01B0 /* EventList */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = EventList; sourceTree = "<group>"; };
+		295C87232DDB0D5A003B01B0 /* TabViewListWithPagination */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = TabViewListWithPagination; sourceTree = "<group>"; };
 		29AECAE92CEB357C00CAD02C /* ListCell */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = ListCell; sourceTree = "<group>"; };
 		29B505BD2CB6B3C9003A1E3F /* BroadcastPlannerUnitTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = BroadcastPlannerUnitTests; sourceTree = "<group>"; };
 		29BE3AF42CAD57E600BDEF82 /* Data */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Data; sourceTree = "<group>"; };
@@ -597,6 +598,7 @@
 		29C041D92AC561F2008B3E1F /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				295C87232DDB0D5A003B01B0 /* TabViewListWithPagination */,
 				2916E62B2C58B83E0025DCC6 /* AnimatedStart.swift */,
 				292E4C622D0C3E9D0046CABA /* Logo */,
 				2955C96B2B4ECADA003F9ADC /* ViewsAndViewModels */,
@@ -733,6 +735,7 @@
 				29476BFF2DACE0AC007DFA88 /* DTO */,
 				29476C002DACE2A8007DFA88 /* Navigation */,
 				295C871A2DCDDE78003B01B0 /* EventList */,
+				295C87232DDB0D5A003B01B0 /* TabViewListWithPagination */,
 				29AECAE92CEB357C00CAD02C /* ListCell */,
 				29BE3AF42CAD57E600BDEF82 /* Data */,
 				29D8D3B02CEDE589000E4F72 /* Buttons */,

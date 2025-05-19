@@ -7,6 +7,7 @@ struct TimeEditView: View {
     @State private var selectedTime: (Int,Int) = (1,1)
     @Namespace var hourNs
     @Namespace var minNs
+    
     var body: some View {
         VStack{
             ConfirmationButtonGroupView(height: 50, isAcceptDisabled: false) {
@@ -65,7 +66,7 @@ struct TimeEditView: View {
                             .matchedGeometryEffect(id: selectedTime.0, in: hourNs, isSource: false)
                     }
                 }
-                .onAppear{
+                .task{
                     setSelectedTimeFromEventDate()
                     proxy.scrollTo(selectedTime.0,anchor: .center)
                 }
@@ -102,7 +103,6 @@ struct TimeEditView: View {
                     }
                 }
             }
-            
             Spacer()
             
         }
