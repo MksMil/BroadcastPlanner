@@ -101,9 +101,11 @@ struct PointInfoPanelView: View {
     @FetchRequest<LocalUser>(sortDescriptors: []) var availableUsers
     @State private var selectedFilter: StadiumPointFilterCase = .users
     @State var selectedNumber: Int = 1
-    
+    @State var mappedUsers: [LocalUser] = []
     @State var numPopover: Bool = false
-    @Namespace var ns
+    
+    @State var selectedUser: LocalUser?
+    
     // MARK: - Init
     init(point: LocationPoint?) {
         self._vm = StateObject(wrappedValue: PointInfoPanelViewModel(point: point))
@@ -267,39 +269,19 @@ struct PointInfoPanelView: View {
 //            }
 //            .padding(.vertical,10)
 
-            ScrollViewReader{ proxy in
-                ScrollView(.horizontal){
-                    HStack{
-                        ForEach(0..<24) { num in
-                            VStack{
-                                Text(String(format: "%02d", num))
-                                    .font(.title2)
-                                    .bold()
-                            }
-                            .id(num)
-                            .padding()
-                            .background {
-                                RoundedRectangle(cornerRadius: 5).fill(.white.opacity(0.4))
-                                    .overlay {
-                                        RoundedRectangle(cornerRadius: 5)
-                                            .stroke(.black.opacity(0.4), lineWidth: 1)
-                                            .matchedGeometryEffect(id: num, in: ns)
-                                    }
-                            }
-                            .onTapGesture {
-                                selectedNumber = num
-                            }
-                        }
-                    }
-                    .overlay{
-                        RoundedRectangle(cornerRadius: 5)
-                            .stroke(.blue, lineWidth: 1)
-                            .matchedGeometryEffect(id: selectedNumber, in: ns, isSource: false)
+                TabViewList(source: mappedUsers,
+                            pageCount: 3, spacing: 5) { user in
+                    print("user tapped")
+                } content: { user in
+                    VStack{
+                        user.viewImage
+                            .resizable()
+                            .frame(width: 80, height: 80)
+                        Text(user.viewCompactName)
                     }
                 }
-                
-                .scrollIndicators(.hidden)
-            }
+            
+
             Spacer()
             
         }
@@ -308,26 +290,16 @@ struct PointInfoPanelView: View {
             RoundedRectangle(cornerRadius: 15)
                 .fill(.blue.opacity(0.4)))
         .frame(maxHeight: .infinity)
-        //        .border(.blue, width: 3)
-       
+        .onAppear {
+            print("on appear")
+            print(availableUsers.count)
+            mappedUsers = mapUsers()
+        }
     }
 
-    func mappedUsers() -> [LocalUser] {
+    func mapUsers() -> [LocalUser] {
         return availableUsers.compactMap { user in
             return user.isAvailableToEvent(event: pointManager.event) ? user : nil
-//            for point in user.userLocationPoints{
-//                if point.event?.viewId == pointManager.event.viewId {
-//                    return nil
-//                } else {
-//                    if let date = point.event?.date,
-//                       let newDate = pointManager.event.date{
-//                        return date.compareDate(withDate: newDate) ? nil: user
-//                    } else {
-//                        return user
-//                    }
-//                }
-//            }
-//            return user
         }
     }
 }
@@ -348,6 +320,7 @@ struct PointInfoPanelView: View {
     }
    return BPEditStadiumView(event: localEvent)
         .environmentObject(mdm)
+        .environment(\.managedObjectContext, lm.mainContext)
 }
 
 
