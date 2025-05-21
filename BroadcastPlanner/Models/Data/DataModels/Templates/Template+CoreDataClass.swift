@@ -16,6 +16,7 @@ extension Template {
     @NSManaged public var name: String?
     @NSManaged public var templatePoints: NSSet?
 
+
 }
 
 // MARK: Generated accessors for templatePoints

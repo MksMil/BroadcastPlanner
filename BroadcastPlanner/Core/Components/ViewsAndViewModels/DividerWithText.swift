@@ -1,3 +1,4 @@
+import SwiftUI
 
 struct DividerWithText: View {
     let text: String

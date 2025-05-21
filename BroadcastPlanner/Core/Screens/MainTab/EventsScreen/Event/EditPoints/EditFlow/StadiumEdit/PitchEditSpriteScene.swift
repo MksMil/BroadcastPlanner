@@ -35,7 +35,8 @@ class PitchEditSpriteScene: SKScene{
     //crud and selectPoint actions
     
     //for test
-    var step: Double = 1
+    var moveStep: Double = 1
+    var step: Double = 10
     var angle: Double = .pi / 8
     var animationDuration: Double = 0.3
     
@@ -249,6 +250,7 @@ class PitchEditSpriteScene: SKScene{
         camera = cameraNode
         cameraNode.position = CGPoint(x: size.width / 2,
                                       y: size.height / 2)
+        resetScale()
     }
     func updateData(){
         if let selectedPointNode{
@@ -284,8 +286,8 @@ extension PitchEditSpriteScene{
     
     func addPoint(point: LocationPoint, select: Bool){
         let pointNode = SKShapeNode(
-            rectOf: CGSize(width: 20 * step,
-                            height:  20 * step),
+            rectOf: CGSize(width: 4 * step,
+                            height:  4 * step),
             cornerRadius: 5)
         pointNode.strokeColor = .clear
         pointNode.name = point.viewId
@@ -529,7 +531,7 @@ extension PitchEditSpriteScene{
 extension PitchEditSpriteScene{
     func moveUP(){
         guard let selectedPointNode else { return }
-        let newPoint = CGPoint(x: selectedPointNode.position.x, y: selectedPointNode.position.y + step)
+        let newPoint = CGPoint(x: selectedPointNode.position.x, y: selectedPointNode.position.y + moveStep)
         selectedPointNode.run(SKAction.move(to: optimalPositionForNode(selectedPointNode, location: newPoint), duration: 0.05))
         let diff = newPoint.y - cameraNode.position.y
         if diff > camYscaleMoveFactor {
@@ -541,7 +543,7 @@ extension PitchEditSpriteScene{
     
     func moveDown(){
         guard let selectedPointNode else { return }
-        let newPoint = CGPoint(x: selectedPointNode.position.x, y: selectedPointNode.position.y - step)
+        let newPoint = CGPoint(x: selectedPointNode.position.x, y: selectedPointNode.position.y - moveStep)
         selectedPointNode.run(SKAction.move(to: optimalPositionForNode(selectedPointNode, location: newPoint), duration: 0.05))
         let diff = cameraNode.position.y - newPoint.y
         if diff > camYscaleMoveFactor {
@@ -554,7 +556,7 @@ extension PitchEditSpriteScene{
     
     func moveLeft(){
         guard let selectedPointNode else { return }
-        let newPoint = CGPoint(x: selectedPointNode.position.x - step, y: selectedPointNode.position.y)
+        let newPoint = CGPoint(x: selectedPointNode.position.x - moveStep, y: selectedPointNode.position.y)
         selectedPointNode.run(SKAction.move(to: optimalPositionForNode(selectedPointNode, location: newPoint), duration: 0.05))
         let diff = cameraNode.position.x - newPoint.x
         if diff > camXscaleMoveFactor {
@@ -566,7 +568,7 @@ extension PitchEditSpriteScene{
     
     func moveRight(){
         guard let selectedPointNode else { return }
-        let newPoint = CGPoint(x: selectedPointNode.position.x + step, y: selectedPointNode.position.y)
+        let newPoint = CGPoint(x: selectedPointNode.position.x + moveStep, y: selectedPointNode.position.y)
         selectedPointNode.run(SKAction.move(to: optimalPositionForNode(selectedPointNode, location: newPoint), duration: 0.05))
         let diff = newPoint.x - cameraNode.position.x
         if diff > camXscaleMoveFactor {

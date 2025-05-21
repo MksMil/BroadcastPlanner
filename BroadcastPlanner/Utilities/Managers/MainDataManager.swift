@@ -632,6 +632,66 @@ extension MainDataManager {
             inContext: .main
         )
     }
+    @MainActor func updatePoint(_ point: LocationPoint?, withNumber number: Int, user: LocalUser?, optic: OpticType, placeType: PlaceType, windDefence: WindDefence, lightType: LightType){
+        guard let point else { return }
+        localDataManager.mainContext.performAndWait {
+            point.number = Int16(number)
+                //remove user
+                if let userToRemove = point.viewUsers.first{
+                    point.removeFromUser(userToRemove)
+                    userToRemove.removeFromPoints(point)
+                    if let event = point.event {
+                        event.removeFromUsers(userToRemove)
+                        userToRemove.removeFromParticipateEvents(event)
+                    } else {
+                        print("event in point error occured")
+                    }
+                }
+            if let user{
+                //add new user
+                point.addToUser(user)
+                user.addToPoints(point)
+                if let event = point.event {
+                    user.addToParticipateEvents(event)
+                    event.addToUsers(user)
+                } else {
+                    print("event in point error occured")
+                }
+            }
+            //
+            for cam in point.viewLocalCameras {
+                point.removeFromCameras(cam)
+                localDataManager.removeLocalCamera(cam, inContext: .main)
+            }
+            if optic != .none{
+                let cameraDTO = CameraDTO(id: UUID().uuidString, optic: optic)
+                let camera = localDataManager.createOrUpdateCamera(cameraDTO, inContext: .main)
+                localDataManager.linkLocalCamera(camera, withPoint: point, inContext: .main)
+            }
+            for sound in point.viewLocalSounds {
+                point.removeFromSounds(sound)
+                localDataManager.removeLocalSound(sound, inContext: .main)
+            }
+            
+            if  placeType != .none{
+                let soundDto = SoundDTO(id: UUID().uuidString,windDefence: windDefence,placeType: placeType)
+                let sound = localDataManager.createOrUpdateSound(soundDto, inContext: .main)
+                localDataManager.linkLocalSound(sound, withPoint: point, inContext: .main)
+            }
+            
+                for light in point.viewLocalLights {
+                    point.removeFromLights(light)
+                    localDataManager.removeLocalLight(light, inContext: .main)
+                }
+            if lightType != .none{
+                let lightDto = LightDTO(id: UUID().uuidString, lightType: lightType)
+                let light = localDataManager.createOrUpdateLight(lightDto, inContext: .main)
+                localDataManager.linkLocalLight(light, WithPoint: point, InContext: .main)
+            }
+//            saveContextSync(type: .main, publish: .point, id: [point.viewId])
+        }
+    }
+    
     @MainActor
     func updatePoint(
         _ point: LocationPoint?,
@@ -979,13 +1039,23 @@ extension MainDataManager {
 // MARK: - Template managment
 extension MainDataManager {
     @MainActor
-    func makeLocalPointFromTemplate(_ template: Template)
+    func makeLocalPointsFromTemplate(_ template: Template)
         -> [LocationPoint]
     {
         return localDataManager.mapTemplateToLocationPoints(
             template: template,
             inContext: .main
         )
+    }
+    @MainActor func cleanLocalPoints(_ points: [LocationPoint], inEvent event: Event){
+        localDataManager.unlinkPoints(points, inContext: .main)
+        points.forEach { pointToRemove in
+            localDataManager.removeLocalLocationPoint(pointToRemove, inContext: .main)
+        }
+    }
+    
+    @MainActor func loadTemplatePoints(_ points:[LocationPoint], toEvent event: Event){
+        localDataManager.linkPoints(points, toEvent: event, inContext: .main)
     }
 
     @MainActor
@@ -1007,7 +1077,7 @@ extension MainDataManager {
             withType: .templates
         )
     }
-
+@MainActor
     func removeLocalTemplate(_ template: Template) async {
         await globalDataManager.removeDataOfType(
             GlobalProperties.Path.templates,
@@ -1062,22 +1132,32 @@ extension MainDataManager {
 // MARK: - Image managment
 extension MainDataManager {
     @MainActor
-    func createNewLocalImageWith(uiimage: UIImage) {
-        let _ =
+    func createNewLocalImagesWith(uiimages: [UIImage],
+                                  andType type: GlobalProperties.ImageType,
+                                  linkToLocation location: Location? = nil) {
+        var localImages: [LocalImage] = []
+        for uiimage in uiimages {
+            let id = UUID().uuidString
+            localImages.append(
             localDataManager
-            .createOrUpdateLocalImageWithId(
-                UUID().uuidString,
-                withImage: uiimage,
-                andType: GlobalProperties.ImageType.eventTemplate,
-                inContext: .main
-            )
-        Task {
-            await saveContextAsync(
-                type: .main,
-                publish: .none,
-                id: []
+                .createOrUpdateLocalImageWithId(
+                    id,
+                    withImage: uiimage,
+                    andType: type,
+                    inContext: .main
+                )
             )
         }
+        //link images to location
+        if let location{
+            localDataManager.linkImages(localImages, toLocalLocation: location, inContext: .main)
+        }
+        saveContextSync(
+                type: .main,
+                publish: .images,
+                id: []
+            )
+        
     }
     @MainActor
     func removeImage(selectedImage: LocalImage?) {

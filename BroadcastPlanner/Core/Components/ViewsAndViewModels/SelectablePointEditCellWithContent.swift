@@ -1,8 +1,10 @@
+import SwiftUI
+
 struct SelectablePointEditCellWithContent<V: View, T: Equatable>: View {
     @EnvironmentObject var vm: PointInfoPanelViewModel
     @StateObject var selectController: PointEditCellViewModel = PointEditCellViewModel()
     let val: T
-    let publishType: GlobalProperties.PublishChanges
+    let publishType: PointInfoPublishType
     let content: ()->V
     
     var body: some View {
@@ -15,7 +17,53 @@ struct SelectablePointEditCellWithContent<V: View, T: Equatable>: View {
             })
             .onReceive(vm.publisher) { value in
                 if value.0 == publishType, let selectedUser = value.1 as? T {
-                    selectController.setSelect(val == selectedUser)
+                    selectController.setSelect(val == selectedUser,tapped: true){
+                        switch publishType {
+                            case .optic:
+                                vm.selectedCameraOptic = .none
+                                vm.publisher.send((PointInfoPublishType.optic, OpticType.none))
+                            case .windDefence:
+                                vm.selectedSoundWindDefence = .none
+                                vm.publisher.send((PointInfoPublishType.windDefence, WindDefence.none))
+                            case .placeType:
+                                vm.selectedSoundPlaceType = .none
+                                vm.publisher.send((PointInfoPublishType.placeType, PlaceType.none))
+                            case .light:
+                                vm.selectedLight = .none
+                                vm.publisher.send((PointInfoPublishType.light, LightType.none))
+                            default: return
+                        }
+                    }
+                }
+            }
+            .onAppear{
+                switch publishType {
+                    case .number:
+                        if vm.number == val as? Int{
+                            print("number check in selectable cell")
+                            selectController.setSelect(true, tapped: false)
+                        }
+                    case .user:
+                        if vm.selectedUser == val as? LocalUser{
+                            selectController.setSelect(true,tapped: false)
+                        }
+                    case .optic:
+                        if vm.selectedCameraOptic == val as? OpticType{
+                            selectController.setSelect(true,tapped: false)
+                        }
+                        
+                    case .windDefence:
+                        if vm.selectedSoundWindDefence == val as? WindDefence{
+                            selectController.setSelect(true,tapped: false)
+                        }
+                    case .placeType:
+                        if vm.selectedSoundPlaceType == val as? PlaceType{
+                            selectController.setSelect(true,tapped: false)
+                        }
+                    case .light:
+                        if vm.selectedLight == val as? LightType{
+                            selectController.setSelect(true,tapped: false)
+                        }
                 }
             }
     }

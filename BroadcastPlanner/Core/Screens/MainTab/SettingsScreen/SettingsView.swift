@@ -282,15 +282,12 @@ struct SettingsView: View {
 }
 
 #Preview {
-    let mdm = MainDataManager(localDataManager: DataManager(),
-                              globalDataManager: NetworkManager(),
-                              userId: "123")
-    
-    SettingsView()
-        .environmentObject(SessionManager())
-        .environmentObject(ApplicationState())
-        .environment(\.managedObjectContext, mdm.localDataManager.mainContext)
-        .environmentObject(mdm)
+    Home(localDataManager: DataManager(forPreview: true),
+         globalDataManager: NetworkManager(),
+         userId: "123")
+    .environmentObject(GlobalSettings())
+    .environmentObject(SessionManager())
+    .environmentObject(ApplicationState())
 }
 
 

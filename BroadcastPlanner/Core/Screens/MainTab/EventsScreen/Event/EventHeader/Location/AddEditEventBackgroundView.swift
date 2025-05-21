@@ -7,15 +7,19 @@ struct AddEditEventBackgroundView: View {
     
     @State private var isRemoveEventTeamplate: Bool = false
     @State var selectedImage: LocalImage?
+    
     @State var eventBackgroundItem: PhotosPickerItem?{
         willSet{
-            guard let item = newValue else { return }
-            Task{
-                if let data = try? await item.loadTransferable(type: Data.self),
-                   let uiimage = UIImage(data: data){
-                    mdm.createNewLocalImageWith(uiimage: uiimage)
-                }
+            
+            guard let item = newValue else {
+                return
             }
+//            Task{
+//                if let data = try? await item.loadTransferable(type: Data.self),
+//                   let uiimage = UIImage(data: data){
+//                    mdm.createNewLocalImageWith(uiimage: uiimage)
+//                }
+//            }
         }
         didSet{
             eventBackgroundItem = nil

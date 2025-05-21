@@ -1,18 +1,30 @@
 import Combine
-import SwiftUI
-
-
-
 
 final class PointInfoPanelViewModel: ObservableObject {
-    // MARK: - vm Properties
 
-    var number: Int = 0
-    
+    var number: Int = 0{
+        didSet{
+            print("now number \(number)")
+        }
+    }
+    var selectedCameraOptic: OpticType = .none
+    var selectedSoundPlaceType: PlaceType = .none
+    var selectedSoundWindDefence: WindDefence = .none
+    var selectedLight: LightType = .none
+    var selectedUser: LocalUser?
+
+    var position: CameraPosition = .pitchSideHalfWay
+
+    var publisher: PassthroughSubject = PassthroughSubject<(PointInfoPublishType, Any), Never>()
+
+    let point: LocationPoint
     var availableNumbers: [Int] {
         var nums: [Int] = []
         if let event = point.event{
             nums = event.viewLocationPoints.map{$0.viewNumber}
+        }
+        nums.removeAll { num in
+            num == number
         }
         var result = Array(1...50)
         result.removeAll { number in
@@ -20,23 +32,7 @@ final class PointInfoPanelViewModel: ObservableObject {
         }
         return result
     }
-    
-    
-    var position: CameraPosition = .pitchSideHalfWay
 
-    var selectedUser: LocalUser?
-    var selectedCameraOptic: OpticType = .none
-    var selectedSoundPlaceType: PlaceType = .none
-    var selectedSoundWindDefence: WindDefence = .none
-    var selectedLight: LightType = .none
-
-    var publisher: PassthroughSubject = PassthroughSubject<
-        (PointInfoPublishType, Any), Never
-    >()
-
-    let point: LocationPoint
-
-    // MARK: - vm init
     init(point: LocationPoint) {
         self.point = point
         if let user = point.viewUsers.first {

@@ -140,16 +140,15 @@ extension BPEditStadiumViewModel {
             case .cam:
                 filteredLocationPoints = localPoints.filter({!$0.viewLocalCameras.isEmpty})
             case .person:
-                filteredLocationPoints = localPoints.filter({$0.viewLocalCameras.isEmpty &&
+                filteredLocationPoints = localPoints.filter({//$0.viewLocalCameras.isEmpty &&
                     !$0.viewUsers.isEmpty})
             case .mic:
-                filteredLocationPoints = localPoints.filter({$0.viewLocalCameras.isEmpty &&
-                    $0.viewUsers.isEmpty &&
+                filteredLocationPoints = localPoints.filter({//$0.viewLocalCameras.isEmpty && $0.viewUsers.isEmpty &&
                     !$0.viewLocalSounds.isEmpty})
             case .light:
-                filteredLocationPoints = localPoints.filter({$0.viewLocalCameras.isEmpty &&
-                    $0.viewUsers.isEmpty &&
-                    $0.viewLocalSounds.isEmpty &&
+                filteredLocationPoints = localPoints.filter({//$0.viewLocalCameras.isEmpty &&
+                    //$0.viewUsers.isEmpty &&
+                    //$0.viewLocalSounds.isEmpty &&
                     !$0.viewLocalLights.isEmpty})
         }
     }

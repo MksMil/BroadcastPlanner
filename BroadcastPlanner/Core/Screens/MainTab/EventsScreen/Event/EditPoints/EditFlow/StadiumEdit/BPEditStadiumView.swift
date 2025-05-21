@@ -11,7 +11,6 @@ struct BPEditStadiumView: View {
     
     let event: Event
 
-    @State var title: String = "Choose template"
     @State private var isConfirmDiscardChanges: Bool = false
     @State private var isEditPressed: Bool = false
 
@@ -36,9 +35,10 @@ struct BPEditStadiumView: View {
                     vm.selectedEventPoint = nil
                     vm.renderPitchScene.deselect()
                     vm.isEdit = false
-                    mdm.updateEvent(event, withPoints: vm.localPoints)
+//                    mdm.updateEvent(event, withPoints: vm.localPoints)
                     Task{
-                       await mdm.assignSnapshot(vm.makeSceneScreenshot(), toEvent: event)
+                        await mdm.assignSnapshot(vm.makeSceneScreenshot(), toEvent: event)
+                        await mdm.saveContextAsync(type: .main, publish: .events, id: [event.viewId])
                         eventRouter.routeStepBack()
                     }
                 } content: {
@@ -62,16 +62,19 @@ struct BPEditStadiumView: View {
                                     }
                             }
                             .onTapGesture {
-                                // TODO: Edit location flow
+                                // TODO: Select / Edit location flow
                                 print("edit event location")
+                                
                             }
                     
                 }
                 //template group
                 TemplateGroup(templates: templates) { templateToShow in
                     withAnimation {
-                        let template =  mdm.makeLocalPointFromTemplate(templateToShow)
-                        vm.loadTemplate(template)
+                        mdm.cleanLocalPoints(event.viewLocationPoints, inEvent: event)
+                        let points =  mdm.makeLocalPointsFromTemplate(templateToShow)
+                        mdm.loadTemplatePoints(points, toEvent: event)
+                        vm.loadTemplate(points)
                         vm.selectedTemplate = templateToShow
                     }
                     
@@ -80,15 +83,17 @@ struct BPEditStadiumView: View {
                         await mdm.saveTemplateFromSchema(localPoints: vm.localPoints, withName: name)
                     }
                 } removeAction: {
+                    mdm.cleanLocalPoints(event.viewLocationPoints, inEvent: event)
                     withAnimation{
                         if let templateToRemove = vm.selectedTemplate{
                             Task{
-                                await mdm.removeLocalTemplate(templateToRemove)
                                 vm.setEmptyTemplate()
+                                await mdm.removeLocalTemplate(templateToRemove)
                             }
                         }
                     }
                 } setEmptyTemplateAction: {
+                    mdm.cleanLocalPoints(event.viewLocationPoints, inEvent: event)
                     withAnimation{
                         vm.setEmptyTemplate()
                     }
@@ -237,12 +242,18 @@ struct BPEditStadiumView: View {
         .navigationBarBackButtonHidden()
         .confirmationDialog("", isPresented: $isConfirmDiscardChanges) {
             Button("Discard all changes and step back?",role: .destructive){
+                mdm.rollBackMoc()
                 eventRouter.routeStepBack()
             }
         }
         .sheet(isPresented: $isEditPressed) {
             if let point = vm.selectedEventPoint{
-                PointInfoPanelView(point: point)
+                PointInfoPanelView(point: point){ pointNum, pointUser, pointOptic,pointPlace,pointWD,pointLight in
+                    print("save point")
+                    mdm.updatePoint(point, withNumber: pointNum, user: pointUser, optic: pointOptic, placeType: pointPlace, windDefence: pointWD, lightType: pointLight)
+                    vm.updatePoint(point)
+                }
+                    .presentationBackground(Color.mainBackground)
             }
         }
         .environmentObject(vm)

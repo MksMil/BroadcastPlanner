@@ -4,6 +4,9 @@
     "" : {
 
     },
+    " Save " : {
+
+    },
     "---" : {
 
     },
@@ -32,16 +35,10 @@
     "Accept" : {
 
     },
-    "Add background photos" : {
-
-    },
     "Add camera" : {
 
     },
     "Add Club" : {
-
-    },
-    "Add event background" : {
 
     },
     "Add light" : {
@@ -189,12 +186,6 @@
 
     },
     "Location" : {
-
-    },
-    "Location Address" : {
-
-    },
-    "Location Title" : {
 
     },
     "LOGO" : {

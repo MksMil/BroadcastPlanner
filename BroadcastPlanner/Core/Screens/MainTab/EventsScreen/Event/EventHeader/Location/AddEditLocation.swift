@@ -18,6 +18,11 @@ struct AddEditLocation: View {
     @State private var isRemoveLocationDialog: Bool = false
     @State private var isBackSheetShowed: Bool = false
 
+    @FetchRequest<LocalImage>(sortDescriptors: [],
+                              predicate: NSPredicate(format: "type == %@", GlobalProperties.ImageType.eventTemplate.rawValue)) var eventTemplates
+    
+    @FetchRequest<LocalImage>(sortDescriptors: [], predicate: NSPredicate(format: "type == %@", GlobalProperties.ImageType.location.rawValue)) var locationImages
+ 
     init(
         location: Location,
         acceptAction: @escaping (String,String,[UIImage],LocalImage?) -> Void,
@@ -39,23 +44,38 @@ struct AddEditLocation: View {
                 ConfirmationButtonGroupView(
                     isAcceptDisabled: false,
                     cancelAction: {
+                        //unlink and remove images
                         cancelAction()
                     },
                     acceptAction: {
                         Task {
-                            //update location with fotos
-                            acceptAction(vm.title,vm.address,vm.newImages,vm.locationBackground)
+                            //update location with data
+//                            acceptAction(vm.title,vm.address,vm.newImages,vm.locationBackground)
                         }
                     },
                     content: {
-                        Image(systemName: "trash.square")
-                            .resizable()
-                            .scaledToFit()
-                            .onTapGesture {
-                                isRemoveLocationDialog.toggle()
-                            }
-                            .fontWeight(.light)
-                            .foregroundStyle(.black, .white)
+                        Button {
+                            isRemoveLocationDialog = true
+                        } label: {
+                            Image(systemName: "trash")
+                                .resizable()
+                                .scaledToFit()
+                                .bold()
+                                .padding(50 / 4)
+                                .frame(width: 150,height: 50)
+                                .background {
+                                    RoundedRectangle(cornerRadius: 5)
+                                        .fill(.ultraThickMaterial
+                                            .opacity(0.3))
+                                        .overlay {
+                                            RoundedRectangle(cornerRadius: 5)
+                                                .stroke(
+                                                    .ultraThickMaterial
+                                                    .opacity(0.5),
+                                                        lineWidth: 2)
+                                        }
+                                }
+                        }
                     }
                 )
                 .padding(.top, 10)
@@ -63,117 +83,165 @@ struct AddEditLocation: View {
                 
                 ScrollView {
                     // TODO: Make component for title and textfield
-                    Text("Location Title")
-                        .font(.title3)
-                        .bold()
+                    DividerWithText(text: "Title")
+                    
                     TextField("enter title", text: $vm.title)
                         .padding(.horizontal)
                         .textFieldStyle(.roundedBorder)
                         .autocorrectionDisabled()
                     
-                    Divider()
+                    DividerWithText(text: "address")
                     
-                    Text("Location Address")
-                        .font(.title3)
-                        .bold()
                     TextField("enter address", text: $vm.address)
                         .padding(.horizontal)
                         .textFieldStyle(.roundedBorder)
                         .autocorrectionDisabled(true)
                    
-                    Divider()
+                    DividerWithText(text: "Location images")
                     
                     //location photos collection
-                    RoundedRectangle(cornerRadius: 5).fill(.white.opacity(0.3))
-                        .frame(height: lenght + 10)
-                        .overlay {
-                            ScrollView(.horizontal) {
-                                HStack {
-                                    //saved in locationEntity photos
-                                    ForEach(vm.localImages) { localImage in
-                                        LocationPreview(
-                                            image: localImage.mediumImage,
-                                            removeAction: {
-                                                vm.localImageToRemove = localImage
-                                                isShowingDialog.toggle()
-                                            }
-                                        )
-                                        .frame(height: lenght)
-                                    }
-                                    //newAdded photos
-                                    ForEach(0..<vm.newImages.count, id: \.self) {
-                                        index in
-                                        LocationPreview(
-                                            image: Image(
-                                                uiImage: vm.newImages[index])
-                                        ) {
-                                            vm.indexSetToRemove = index
-                                            isShowingDialog.toggle()
-                                        }
-                                        .frame(height: lenght)
-                                    }
-                                }
-                            }
-                            .padding(.horizontal)
-                            .scrollIndicators(.hidden)
-                        }
-                    PhotosPicker(selection: $vm.locationPhotos) {
-                        Text("Add background photos")
-                            .padding(5)
-                            .padding(.horizontal, 10)
-                            .background {
-                                Capsule().fill(.white.opacity(0.7))
-                            }
+                    TabViewList(source: locationImages.map{$0}, pageCount: 5, spacing: 5) { localImage in
+                        vm.localImageToRemove = localImage
+                    } content: { localImage in
+                        //make a cell to select
+                            localImage.smallImage
+                            .resizable()
                     }
-                    .padding(.vertical, 10)
-                    
-                    Divider()
-                    
+                    .padding()
+                    .frame(height: 75)
+                    HStack{
+                        Button {
+                            //remove selected localImages
+                        } label: {
+                            Image(systemName: "trash")
+                                .resizable()
+                                .scaledToFit()
+                                .bold()
+                                .padding(50 / 4)
+                                .frame(width: 50,height: 50)
+                                .background {
+                                    RoundedRectangle(cornerRadius: 5)
+                                        .fill(.ultraThickMaterial
+                                            .opacity(0.3))
+                                        .overlay {
+                                            RoundedRectangle(cornerRadius: 5)
+                                                .stroke(
+                                                    .ultraThickMaterial
+                                                        .opacity(0.5),
+                                                    lineWidth: 2)
+                                        }
+                                }
+                        }
+                        //add localImages to location
+                        PhotosPicker(selection: $vm.locationPhotoItems) {
+                            Image(systemName: "plus")
+                                .resizable()
+                                .scaledToFit()
+                                .bold()
+                                .padding(50 / 4)
+                                .frame(width: 50,height: 50)
+                                .background {
+                                    RoundedRectangle(cornerRadius: 5)
+                                        .fill(.ultraThickMaterial
+                                            .opacity(0.3))
+                                        .overlay {
+                                            RoundedRectangle(cornerRadius: 5)
+                                                .stroke(
+                                                    .ultraThickMaterial
+                                                        .opacity(0.5),
+                                                    lineWidth: 2)
+                                        }
+                                }
+                        }
+                    }
                     //event background representation
-                    vm.locationBackgroundPreview
-                        .resizable()
-                        .scaledToFit()
-                        .frame(height: 100)
-                        .clipShape(RoundedRectangle(cornerRadius: 5))
-                        .padding()
-                        .background {
-                            RoundedRectangle(cornerRadius: 5).fill(
-                                .white.opacity(0.2))
+                    DividerWithText(text: "select event plan background")
+                    
+                    TabViewList(source: eventTemplates.map{$0},
+                                selectedItem: vm.selectedEventTemplate,
+                                pageCount: 2,
+                                spacing: 5) { localImage in
+                        vm.localImageToRemove = localImage
+                    } content: { localImage in
+                        //make a cell to select
+                            localImage.mediumImage
+                            .resizable()
+                    }
+                    .padding()
+                    .frame(height: 75)
+                    HStack{
+                        Button {
+                        } label: {
+                            Image(systemName: "trash")
+                                .resizable()
+                                .scaledToFit()
+                                .bold()
+                                .padding(50 / 4)
+                                .frame(width: 50,height: 50)
+                                .background {
+                                    RoundedRectangle(cornerRadius: 5)
+                                        .fill(.ultraThickMaterial
+                                            .opacity(0.3))
+                                        .overlay {
+                                            RoundedRectangle(cornerRadius: 5)
+                                                .stroke(
+                                                    .ultraThickMaterial
+                                                    .opacity(0.5),
+                                                        lineWidth: 2)
+                                        }
+                                }
                         }
-                        .onTapGesture {
-                            isBackSheetShowed.toggle()
-                        }
-                    Text("Add event background")
-                        .padding(5)
-                        .padding(.horizontal, 10)
-                        .background {
-                            Capsule().fill(.white.opacity(0.7))
-                        }
-                        .onTapGesture {
-                            isBackSheetShowed.toggle()
+                        PhotosPicker(selection: $vm.eventBackgroundItem) {
+                                Image(systemName: "plus")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .bold()
+                                    .padding(50 / 4)
+                                    .frame(width: 50,height: 50)
+                                    .background {
+                                        RoundedRectangle(cornerRadius: 5)
+                                            .fill(.ultraThickMaterial
+                                                .opacity(0.3))
+                                            .overlay {
+                                                RoundedRectangle(cornerRadius: 5)
+                                                    .stroke(
+                                                        .ultraThickMaterial
+                                                        .opacity(0.5),
+                                                            lineWidth: 2)
+                                            }
+                                    }
                         }
                         .padding(.vertical, 10)
+                        Button {
+                        } label: {
+                            Image(systemName: "trash")
+                                .resizable()
+                                .scaledToFit()
+                                .bold()
+                                .padding(50 / 4)
+                                .frame(width: 50,height: 50)
+                                .background {
+                                    RoundedRectangle(cornerRadius: 5)
+                                        .fill(.ultraThickMaterial
+                                            .opacity(0.3))
+                                        .overlay {
+                                            RoundedRectangle(cornerRadius: 5)
+                                                .stroke(
+                                                    .ultraThickMaterial
+                                                    .opacity(0.5),
+                                                        lineWidth: 2)
+                                        }
+                                }
+                        }
+                    }
+
                     
                     Spacer(minLength: 50)
                 }
                 .padding()
                 .scrollDismissesKeyboard(.immediately)
                 
-                .fullScreenCover(
-                    isPresented: $isBackSheetShowed,
-                    content: {
-                        AddEditEventBackgroundView {
-                            isBackSheetShowed.toggle()
-                        } acceptAction: { localImage in
-                            guard let localImage else {
-                                isBackSheetShowed.toggle()
-                                return
-                            }
-                            vm.locationBackground = localImage
-                            isBackSheetShowed.toggle()
-                        }
-                    }
-                )
+                
                 //background photo remove confirmation dialog
                 .confirmationDialog(
                     Text("Permanently erase the photo in the trash?"),
@@ -183,12 +251,7 @@ struct AddEditLocation: View {
                         // Handle empty trash action.
                         withAnimation {
                             if let localImageToRemove = vm.localImageToRemove {
-                                vm.localImages.removeAll {
-                                    $0 == localImageToRemove
-                                }
                                 mdm.removeImage(selectedImage: localImageToRemove)
-                            } else if let index = vm.indexSetToRemove {
-                                vm.removeElementAtIndex(index)
                             }
                         }
                     }
@@ -209,8 +272,40 @@ struct AddEditLocation: View {
             }
         }
         .navigationBarBackButtonHidden()
+        .onReceive(vm.$eventBackgroundUIImage) { uiimage in
+            guard let uiimage else { return }
+            vm.eventBackgroundItem = nil
+            mdm.createNewLocalImagesWith(uiimages: [uiimage], andType: .eventTemplate)
+        }
+        .onReceive(vm.$locationUiimages) { images in
+            mdm.createNewLocalImagesWith(uiimages: images, andType: GlobalProperties.ImageType.location,linkToLocation: location)
+            vm.locationUiimages = []
+        }
+        .onAppear{
+//            locationImages.nsPredicate = NSPredicate(format: "parentLocationImage == %@", location)
+        }
     }
 }
 
+#Preview {
+    
+    let mdm = MainDataManager(
+        localDataManager: DataManager(forPreview: true),
+        globalDataManager: NetworkManager(),
+        userId: "123"
+    )
+    let dto = LocationDTO(id: "id", lastUpdated: Date.now, title: "Title", address: "address", imagesIds: [], locationBackgroundId: nil)
+    let location = mdm.localDataManager.createOrUpdateLocalLocationWithLocationDTO(dto, inContext: .main)
+    
+   return AddEditLocation(location: location) { _, _, _, _ in
+        
+    } cancelAction: {
+        
+    } removeAction: {
+        
+    }
+    .environmentObject(mdm)
+    .environment(\.managedObjectContext, mdm.localDataManager.mainContext)
 
+}
 

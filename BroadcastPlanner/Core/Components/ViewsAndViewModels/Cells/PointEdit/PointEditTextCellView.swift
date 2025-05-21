@@ -2,13 +2,13 @@ import SwiftUI
 
 struct PointEditTextCellView: View {
 
-    let optic: OpticType
+    let text: String
     
     var body: some View {
-        Text(optic.rawValue)
+        Text(text)
             .font(.system(size: 40))
             .bold()
-            .lineLimit(2)
+            .lineLimit(3)
             .minimumScaleFactor(0.2)
             .allowsTightening(true)
             .truncationMode(.middle)

@@ -354,6 +354,7 @@ extension DataManager {
             localImage.type = type.rawValue
             localImage.lastUpdated = .now
         }
+        print("saving image with id")
         ImagesManager.saveResizedImages(image: image,
                                                 id: id,
                                                 type: type)
@@ -441,6 +442,18 @@ extension DataManager {
             }
          }
     }
+    
+    func linkImages(_ images: [LocalImage],
+                    toLocalLocation localLocation: Location,
+                    inContext contextType: ContextType){
+        let context = contextFromType(contextType)
+        context.performAndWait {
+            images.forEach { image in
+                localLocation.addToImages(image)
+                image.parentLocationImage = localLocation
+            }
+        }
+    }
 
     func updateLocalLocation(_ localLocation: Location,
                              withDTO location: LocationDTO,
@@ -494,8 +507,9 @@ extension DataManager {
         var newLocalImages: [LocalImage] = []
         context.performAndWait{
         for image in localImages {
+            let id = UUID().uuidString
             let newImage = createOrUpdateLocalImageWithImageData(
-                imageDTO: ImageDTO(id: UUID().uuidString,
+                imageDTO: ImageDTO(id: id,
                                    type: GlobalProperties.ImageType.location.rawValue, lastUpdated: .now),
                 withImage: image,
                 inContext: .main)
@@ -1413,6 +1427,36 @@ extension DataManager {
             }
         }
         return localLocationPoint
+    }
+    
+    func linkPoints(_ points: [LocationPoint], toEvent event: Event, inContext contextType: ContextType){
+        let context = contextFromType(contextType)
+        context.performAndWait {
+            points.forEach { point in
+                event.addToPoints(point)
+                point.event = event
+                point.viewUsers.forEach({ user in
+                    user.addToParticipateEvents(event)
+                    event.addToUsers(user)
+                })
+            }
+        }
+    }
+    
+    func unlinkPoints(_ points:[LocationPoint], inContext contextType: ContextType){
+        let context = contextFromType(contextType)
+        context.performAndWait {
+            points.forEach { point in
+                if let event = point.event{
+                    point.viewUsers.forEach { user in
+                        user.removeFromParticipateEvents(event)
+                        event.removeFromUsers(user)
+                        user.removeFromPoints(point)
+                        point.removeFromUser(user)
+                    }
+                }
+            }
+        }
     }
 
     func mapTemplateToLocationPoints(template: Template,

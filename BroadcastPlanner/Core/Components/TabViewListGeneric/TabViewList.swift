@@ -20,44 +20,70 @@ struct TabViewList<T: Hashable, Content: View>: View {
     @ViewBuilder public var content: (T) -> Content
     
     var body: some View {
-        GeometryReader { geo in
-            let cellWidth = ((geo.size.width - spacing * Double(pageCount)) / Double(pageCount)).rounded()
-            TabView(selection: $selectedPage) {
-                ForEach(pagedSource.indices, id: \.self) { index in
-                    VStack{
-                        HStack(spacing: spacing){
-                            ForEach(pagedSource[index], id: \.self) { el in
-                                content(el)
-                                    .frame(width: cellWidth, alignment: .center)
-                                    .border(Color.orange)
-//                                    .background {
-//                                        if let item = selectedItem, item == el{
-//                                            Rectangle().fill(Color.blue.opacity(0.4))
-//                                        }
-//                                    }
-                                    .onTapGesture{
-                                        completion(el)
-                                        withAnimation{
-                                            selectedItem = el
+            GeometryReader { geo in
+                let cellWidth = ((geo.size.width - spacing * Double(pageCount)) / Double(pageCount)).rounded()
+                VStack(spacing: 0){
+                TabView(selection: $selectedPage) {
+                    ForEach(pagedSource.indices, id: \.self) { index in
+                        VStack{
+                            HStack(spacing: spacing){
+                                ForEach(pagedSource[index], id: \.self) { el in
+                                    content(el)
+                                        .frame(width: cellWidth, alignment: .center)
+                                        .onTapGesture{
+                                            completion(el)
+                                            withAnimation{
+                                                selectedItem = el
+                                            }
                                         }
-                                    }
+                                }
                             }
                         }
+                        .frame(maxWidth: geo.size.width - spacing,alignment: .leading)
                     }
-                    .frame(maxWidth: geo.size.width - spacing,alignment: .leading)
                 }
+                .tabViewStyle(.page(indexDisplayMode: .never))
+                .onAppear {
+                    //scroll to selected item
+                    var num: Int = 0
+                    if let selectedItem,
+                       let index = source.firstIndex(where: { el in
+                           el == selectedItem
+                       }){
+                        num = index / pageCount
+                        selectedPage = num
+                    }
+                }
+            
+            if pagedSource.count > 1{
+                HStack(spacing: 0){
+                    Image(systemName: "arrow.left.to.line")
+                        .resizable()
+                        .frame(width: 30, height: 15)
+                        .opacity(selectedPage == 0 ? 0.3: 1)
+                        .onTapGesture {
+                            withAnimation{
+                                selectedPage -= 1
+                            }
+                        }
+                        .disabled(selectedPage == 0)
+                    Spacer()
+                    Image(systemName: "arrow.right.to.line")
+                        .resizable()
+                        .frame(width: 30, height: 15)
+                        .opacity(selectedPage == pagedSource.count - 1 ? 0.3: 1)
+                        .onTapGesture {
+                            withAnimation{
+                                selectedPage += 1
+                            }
+                        }
+                        .disabled(selectedPage == pagedSource.count - 1)
+                }
+                .bold()
+                .frame(height: 25)
+                .padding(.horizontal,spacing / 2)
+//                .border(.orange, width: 2)
             }
-            .tabViewStyle(.page(indexDisplayMode: .never))
-            .onAppear {
-                var num: Int = 0
-                if let selectedItem,
-                    let index = source.firstIndex(where: { el in
-                    el == selectedItem
-                }){
-                    num = index / pageCount
-                   print(num)
-                   selectedPage = num
-               }
             }
         }
     }
@@ -69,14 +95,18 @@ struct TabViewList<T: Hashable, Content: View>: View {
         TabViewList(source: [1,2,3,4,5,6,7,8,9,10,11,12,13],
                     selectedItem: 8,
                     pageCount: 3,
-                    spacing: 25,completion: { num in
+                    spacing: 5,completion: { num in
             print("\(num) tapped")
         },content: { num in
             Text("\(num)")
                 .frame(height: 100)
+            
         }
         )
-        .frame(height: 150)
+//        .frame(height: 50)
+        .border(.white, width: 2)
     }
-    .frame(height: 200)
+//    .frame(height: 200)
 }
+
+
