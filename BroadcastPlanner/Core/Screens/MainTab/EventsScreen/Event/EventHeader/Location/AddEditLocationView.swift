@@ -2,9 +2,8 @@ import PhotosUI
 import SwiftUI
 import UIKit
 
-struct AddEditLocation: View {
+struct AddEditLocationView: View {
 
-    let lenght: Double = 75
     let location: Location
 
     let acceptAction: (String,String,[UIImage],LocalImage?) -> Void
@@ -21,7 +20,7 @@ struct AddEditLocation: View {
     @FetchRequest<LocalImage>(sortDescriptors: [],
                               predicate: NSPredicate(format: "type == %@", GlobalProperties.ImageType.eventTemplate.rawValue)) var eventTemplates
     
-    @FetchRequest<LocalImage>(sortDescriptors: [], predicate: NSPredicate(format: "type == %@", GlobalProperties.ImageType.location.rawValue)) var locationImages
+    @FetchRequest<LocalImage>(sortDescriptors: []) var locationImages
  
     init(
         location: Location,
@@ -39,7 +38,7 @@ struct AddEditLocation: View {
 
     var body: some View {
         ZStack{
-            Color.mainBackground.ignoresSafeArea()
+            MainBackground()
             VStack {
                 ConfirmationButtonGroupView(
                     isAcceptDisabled: false,
@@ -100,15 +99,19 @@ struct AddEditLocation: View {
                     DividerWithText(text: "Location images")
                     
                     //location photos collection
-                    TabViewList(source: locationImages.map{$0}, pageCount: 5, spacing: 5) { localImage in
+                    TabViewList(source: locationImages.map{$0}, pageCount: 3, spacing: 5) { localImage in
                         vm.localImageToRemove = localImage
                     } content: { localImage in
                         //make a cell to select
-                            localImage.smallImage
+                        localImage.mediumImage
                             .resizable()
+                            .scaledToFill()
+                            .frame(width: 100)
                     }
                     .padding()
-                    .frame(height: 75)
+                    .frame(height: 100)
+                    .border(.red, width: 2)
+
                     HStack{
                         Button {
                             //remove selected localImages
@@ -164,11 +167,14 @@ struct AddEditLocation: View {
                         vm.localImageToRemove = localImage
                     } content: { localImage in
                         //make a cell to select
-                            localImage.mediumImage
+                        localImage.mediumImage
                             .resizable()
+                            .scaledToFit()
+                            .frame(width: 150)
                     }
                     .padding()
-                    .frame(height: 75)
+                    .frame(height: 150)
+                    .border(.red, width: 2)
                     HStack{
                         Button {
                         } label: {
@@ -213,8 +219,9 @@ struct AddEditLocation: View {
                         }
                         .padding(.vertical, 10)
                         Button {
+
                         } label: {
-                            Image(systemName: "trash")
+                            Image(systemName: "checkmark")
                                 .resizable()
                                 .scaledToFit()
                                 .bold()
@@ -234,8 +241,6 @@ struct AddEditLocation: View {
                                 }
                         }
                     }
-
-                    
                     Spacer(minLength: 50)
                 }
                 .padding()
@@ -274,21 +279,21 @@ struct AddEditLocation: View {
         .navigationBarBackButtonHidden()
         .onReceive(vm.$eventBackgroundUIImage) { uiimage in
             guard let uiimage else { return }
-            vm.eventBackgroundItem = nil
             mdm.createNewLocalImagesWith(uiimages: [uiimage], andType: .eventTemplate)
         }
         .onReceive(vm.$locationUiimages) { images in
-            mdm.createNewLocalImagesWith(uiimages: images, andType: GlobalProperties.ImageType.location,linkToLocation: location)
-            vm.locationUiimages = []
+            if !images.isEmpty{
+                mdm.createNewLocalImagesWith(uiimages: images, andType: GlobalProperties.ImageType.location,linkToLocation: location)
+                vm.locationUiimages = []
+            }
         }
         .onAppear{
-//            locationImages.nsPredicate = NSPredicate(format: "parentLocationImage == %@", location)
+            locationImages.nsPredicate = NSPredicate(format: "parentLocationImage == %@", location)
         }
     }
 }
 
 #Preview {
-    
     let mdm = MainDataManager(
         localDataManager: DataManager(forPreview: true),
         globalDataManager: NetworkManager(),
@@ -297,7 +302,7 @@ struct AddEditLocation: View {
     let dto = LocationDTO(id: "id", lastUpdated: Date.now, title: "Title", address: "address", imagesIds: [], locationBackgroundId: nil)
     let location = mdm.localDataManager.createOrUpdateLocalLocationWithLocationDTO(dto, inContext: .main)
     
-   return AddEditLocation(location: location) { _, _, _, _ in
+   return AddEditLocationView(location: location) { _, _, _, _ in
         
     } cancelAction: {
         

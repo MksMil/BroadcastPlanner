@@ -12,7 +12,7 @@ final class AddEditLocationViewModel: ObservableObject{
     @Published var locationUiimages: [UIImage] = []
     
     //remove images from location.images
-    @Published var localImageToRemove: LocalImage?
+    var localImageToRemove: LocalImage?
     
     
     //create eventTemplate
@@ -21,7 +21,7 @@ final class AddEditLocationViewModel: ObservableObject{
 
     //to link to location
     @Published var selectedEventTemplate: LocalImage?
-
+    var tempImages: [UIImage] = []
     var cancellables: Set<AnyCancellable> = []
     
     //bg
@@ -29,17 +29,22 @@ final class AddEditLocationViewModel: ObservableObject{
     func makePublisher(){
         $locationPhotoItems.sink { [weak self] newValue in
             guard let self else { return }
+            
             if !newValue.isEmpty{
                 Task{
                     for photo in newValue{
                         guard let imageData = try? await photo.loadTransferable(type: Data.self),
                               let uiimage = UIImage(data: imageData) else { continue }
-                        await MainActor.run {
-                            self.locationUiimages.append(uiimage)
-                        }
+                        self.tempImages.append(uiimage)
+                    }
+                    
+                    await MainActor.run {
+                        self.locationUiimages = self.tempImages
+                        self.tempImages = []
                     }
                     await MainActor.run {
                         self.locationPhotoItems = []
+                        
                     }
                 }
             }

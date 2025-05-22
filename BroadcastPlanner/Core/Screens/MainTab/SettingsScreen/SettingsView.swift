@@ -259,7 +259,7 @@ struct SettingsView: View {
                             settingsRouter.path.append(SettingsTabPath.locationSheet(club))
                         }
                     case .addEditLocation(let location):
-                        AddEditLocation(location: location) { title, address, images, localImage in
+                        AddEditLocationView(location: location) { title, address, images, localImage in
                             Task{
                                 await mdm.updateLocalLocation(location, withTitle: title, address: address, images: images, background: localImage)
                                 settingsRouter.routeStepBack()

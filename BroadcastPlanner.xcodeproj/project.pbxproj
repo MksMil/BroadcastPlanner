@@ -22,6 +22,7 @@
 		291CDA542DDCB2CB00724F53 /* DividerWithText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 291CDA532DDCB2CB00724F53 /* DividerWithText.swift */; };
 		291CDA562DDCB33C00724F53 /* SelectablePointEditCellWithContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 291CDA552DDCB33C00724F53 /* SelectablePointEditCellWithContent.swift */; };
 		291CDA582DDCD78100724F53 /* PointInfoPublishType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 291CDA572DDCD78100724F53 /* PointInfoPublishType.swift */; };
+		291CDA5C2DDF3CF900724F53 /* SelectableModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 291CDA5B2DDF3CF800724F53 /* SelectableModifier.swift */; };
 		291E72C32BBE859F008092D7 /* BPMessengerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 291E72C22BBE859F008092D7 /* BPMessengerView.swift */; };
 		291E72C92BBEC7B0008092D7 /* UserSpecialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 291E72C82BBEC7B0008092D7 /* UserSpecialization.swift */; };
 		291E72CB2BBEDF23008092D7 /* BPAccountInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 291E72CA2BBEDF23008092D7 /* BPAccountInfoView.swift */; };
@@ -122,6 +123,7 @@
 		291CDA532DDCB2CB00724F53 /* DividerWithText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DividerWithText.swift; sourceTree = "<group>"; };
 		291CDA552DDCB33C00724F53 /* SelectablePointEditCellWithContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectablePointEditCellWithContent.swift; sourceTree = "<group>"; };
 		291CDA572DDCD78100724F53 /* PointInfoPublishType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PointInfoPublishType.swift; sourceTree = "<group>"; };
+		291CDA5B2DDF3CF800724F53 /* SelectableModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectableModifier.swift; sourceTree = "<group>"; };
 		291E72C22BBE859F008092D7 /* BPMessengerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPMessengerView.swift; sourceTree = "<group>"; };
 		291E72C82BBEC7B0008092D7 /* UserSpecialization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSpecialization.swift; sourceTree = "<group>"; };
 		291E72CA2BBEDF23008092D7 /* BPAccountInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPAccountInfoView.swift; sourceTree = "<group>"; };
@@ -264,6 +266,7 @@
 			children = (
 				2967DF1A2B639A90003956FD /* Error+Modifier.swift */,
 				2967DF202B64F69B003956FD /* KeyboardAdaptiveModifier.swift */,
+				291CDA5B2DDF3CF800724F53 /* SelectableModifier.swift */,
 			);
 			path = Modifiers;
 			sourceTree = "<group>";
@@ -890,6 +893,7 @@
 				2916E60E2C4E875B0025DCC6 /* BPPlanDelegateProtocol.swift in Sources */,
 				29CB0F662C9A9BDE003B30C4 /* CarUnitCellView.swift in Sources */,
 				299190292C8A064400D2CDDC /* String+Ext.swift in Sources */,
+				291CDA5C2DDF3CF900724F53 /* SelectableModifier.swift in Sources */,
 				29E10F642C21696B00A35A4B /* GlobalSettings.swift in Sources */,
 				29C8F9472CC24FD000A7D5D2 /* UserInfoTextField.swift in Sources */,
 				29F42B5A2B88BBE70024B764 /* WelcomeFlowScreen.swift in Sources */,

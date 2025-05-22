@@ -354,7 +354,6 @@ extension DataManager {
             localImage.type = type.rawValue
             localImage.lastUpdated = .now
         }
-        print("saving image with id")
         ImagesManager.saveResizedImages(image: image,
                                                 id: id,
                                                 type: type)

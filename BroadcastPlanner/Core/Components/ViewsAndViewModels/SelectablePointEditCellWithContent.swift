@@ -16,8 +16,8 @@ struct SelectablePointEditCellWithContent<V: View, T: Equatable>: View {
                 content()
             })
             .onReceive(vm.publisher) { value in
-                if value.0 == publishType, let selectedUser = value.1 as? T {
-                    selectController.setSelect(val == selectedUser,tapped: true){
+                if value.0 == publishType, let selectedValue = value.1 as? T {
+                    selectController.setSelect(val == selectedValue,tapped: true){
                         switch publishType {
                             case .optic:
                                 vm.selectedCameraOptic = .none
