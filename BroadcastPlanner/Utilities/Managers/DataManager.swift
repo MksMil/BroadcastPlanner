@@ -453,6 +453,16 @@ extension DataManager {
             }
         }
     }
+    
+    func linkEventTemplate(_ image: LocalImage,
+                           toLocalLocation localLocation: Location,
+                           inContext contextType: ContextType){
+        let context = contextFromType(contextType)
+        context.performAndWait {
+            localLocation.background = image
+            image.parentLocationBackground = localLocation
+        }
+    }
 
     func updateLocalLocation(_ localLocation: Location,
                              withDTO location: LocationDTO,

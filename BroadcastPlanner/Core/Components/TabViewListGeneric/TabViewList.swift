@@ -15,15 +15,16 @@ struct TabViewList<T: Hashable, Content: View>: View {
             Array(source[$0..<min($0 + pageCount, source.count)])
         }
     }
-    let completion: (T)->Void
+    let selectAction: (T)->Void
     //content view
     @ViewBuilder public var content: (T) -> Content
     
     var body: some View {
+       
             GeometryReader { geo in
                 let cellWidth = ((geo.size.width - spacing * Double(pageCount)) / Double(pageCount)).rounded()
                 VStack(spacing: 0){
-                TabView(selection: $selectedPage) {
+                    TabView(selection: $selectedPage) {
                     ForEach(pagedSource.indices, id: \.self) { index in
                         VStack{
                             HStack(spacing: spacing){
@@ -31,7 +32,7 @@ struct TabViewList<T: Hashable, Content: View>: View {
                                     content(el)
                                         .frame(width: cellWidth, alignment: .center)
                                         .onTapGesture{
-                                            completion(el)
+                                            selectAction(el)
                                             withAnimation{
                                                 selectedItem = el
                                             }
@@ -55,7 +56,6 @@ struct TabViewList<T: Hashable, Content: View>: View {
                     }
                 }
             
-            if pagedSource.count > 1{
                 HStack(spacing: 0){
                     Image(systemName: "arrow.left.to.line")
                         .resizable()
@@ -71,19 +71,18 @@ struct TabViewList<T: Hashable, Content: View>: View {
                     Image(systemName: "arrow.right.to.line")
                         .resizable()
                         .frame(width: 30, height: 15)
-                        .opacity(selectedPage == pagedSource.count - 1 ? 0.3: 1)
+                        .opacity((pagedSource.isEmpty || (selectedPage == pagedSource.count - 1)) ? 0.3: 1)
                         .onTapGesture {
                             withAnimation{
                                 selectedPage += 1
                             }
                         }
-                        .disabled(selectedPage == pagedSource.count - 1)
+                        .disabled(pagedSource.isEmpty || (selectedPage == pagedSource.count - 1))
                 }
                 .bold()
                 .frame(height: 25)
                 .padding(.horizontal,spacing / 2)
-//                .border(.orange, width: 2)
-            }
+
             }
         }
     }

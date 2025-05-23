@@ -26,6 +26,9 @@
         }
       }
     },
+    "%lld" : {
+
+    },
     "1" : {
 
     },
@@ -215,9 +218,6 @@
     "password: %@" : {
 
     },
-    "Permanently erase background template in the trash?" : {
-
-    },
     "Permanently erase the Club in the trash?" : {
 
     },
@@ -234,9 +234,6 @@
 
     },
     "Remove %@ template!" : {
-
-    },
-    "Remove Background Template" : {
 
     },
     "Remove camera environment" : {
@@ -291,6 +288,9 @@
 
     },
     "something wrong" : {
+
+    },
+    "Status" : {
 
     },
     "Tab Label 1" : {

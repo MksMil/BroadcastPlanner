@@ -1,6 +1,6 @@
 import SwiftUI
 
-final class PointEditCellViewModel: ObservableObject{
+final class SelectableCellController: ObservableObject{
     @Published var selected: Bool = false
     func setSelect(_ select: Bool, tapped: Bool,completion: @escaping ()->Void = {}){
         if select, !selected{
@@ -12,8 +12,5 @@ final class PointEditCellViewModel: ObservableObject{
         if !select, selected{
             selected = false
         }
-//        if select, selected {
-//            selected = false
-//        }
     }
 }

@@ -12,8 +12,8 @@ final class AddEditLocationViewModel: ObservableObject{
     @Published var locationUiimages: [UIImage] = []
     
     //remove images from location.images
-    var localImageToRemove: LocalImage?
-    
+    @Published var backgroundImageToRemove: LocalImage?
+    let publisher = PassthroughSubject<(LocationEditPublishType,LocalImage),Never>()
     
     //create eventTemplate
     @Published var eventBackgroundItem: PhotosPickerItem?
@@ -78,5 +78,14 @@ final class AddEditLocationViewModel: ObservableObject{
             self.selectedEventTemplate = locationBackground
         }
         makePublisher()
+    }
+    
+    func eventTemplateSelected(_ localImage: LocalImage){
+        selectedEventTemplate = selectedEventTemplate == localImage ? nil:localImage
+        publisher.send((LocationEditPublishType.eventTemplate,localImage))
+    }
+    func backgroundSelected(_ localImage: LocalImage){
+        backgroundImageToRemove = backgroundImageToRemove == localImage ? nil: localImage
+        publisher.send((LocationEditPublishType.background,localImage))
     }
 }

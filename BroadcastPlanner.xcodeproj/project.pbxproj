@@ -20,8 +20,7 @@
 		2916E6262C57C3930025DCC6 /* Home.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2916E6252C57C3930025DCC6 /* Home.swift */; };
 		2916E62C2C58B83E0025DCC6 /* AnimatedStart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2916E62B2C58B83E0025DCC6 /* AnimatedStart.swift */; };
 		291CDA542DDCB2CB00724F53 /* DividerWithText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 291CDA532DDCB2CB00724F53 /* DividerWithText.swift */; };
-		291CDA562DDCB33C00724F53 /* SelectablePointEditCellWithContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 291CDA552DDCB33C00724F53 /* SelectablePointEditCellWithContent.swift */; };
-		291CDA582DDCD78100724F53 /* PointInfoPublishType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 291CDA572DDCD78100724F53 /* PointInfoPublishType.swift */; };
+		291CDA582DDCD78100724F53 /* PointEditPublishType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 291CDA572DDCD78100724F53 /* PointEditPublishType.swift */; };
 		291CDA5C2DDF3CF900724F53 /* SelectableModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 291CDA5B2DDF3CF800724F53 /* SelectableModifier.swift */; };
 		291E72C32BBE859F008092D7 /* BPMessengerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 291E72C22BBE859F008092D7 /* BPMessengerView.swift */; };
 		291E72C92BBEC7B0008092D7 /* UserSpecialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 291E72C82BBEC7B0008092D7 /* UserSpecialization.swift */; };
@@ -67,6 +66,7 @@
 		299277982B7629FD00B8F892 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 299277972B7629FD00B8F892 /* GoogleService-Info.plist */; };
 		2994DE672C157C9F00DF9060 /* BPCreateEditEventView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2994DE662C157C9F00DF9060 /* BPCreateEditEventView.swift */; };
 		2994DE6E2C16F18E00DF9060 /* BPJoystick.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2994DE6D2C16F18D00DF9060 /* BPJoystick.swift */; };
+		299B45642DE04B6A000D1F4B /* LocationEditPublishType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 299B45632DE04B6A000D1F4B /* LocationEditPublishType.swift */; };
 		299D43882D2E880F007EEEFE /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 299D436B2D2E880F007EEEFE /* DataManager.swift */; };
 		299D43A52D365A49007EEEFE /* EventPointInfoPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 299D43A42D365A49007EEEFE /* EventPointInfoPanelView.swift */; };
 		299D43C72D38F925007EEEFE /* MainDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 299D43C62D38F925007EEEFE /* MainDataManager.swift */; };
@@ -121,8 +121,7 @@
 		2916E6252C57C3930025DCC6 /* Home.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Home.swift; sourceTree = "<group>"; };
 		2916E62B2C58B83E0025DCC6 /* AnimatedStart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedStart.swift; sourceTree = "<group>"; };
 		291CDA532DDCB2CB00724F53 /* DividerWithText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DividerWithText.swift; sourceTree = "<group>"; };
-		291CDA552DDCB33C00724F53 /* SelectablePointEditCellWithContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectablePointEditCellWithContent.swift; sourceTree = "<group>"; };
-		291CDA572DDCD78100724F53 /* PointInfoPublishType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PointInfoPublishType.swift; sourceTree = "<group>"; };
+		291CDA572DDCD78100724F53 /* PointEditPublishType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PointEditPublishType.swift; sourceTree = "<group>"; };
 		291CDA5B2DDF3CF800724F53 /* SelectableModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectableModifier.swift; sourceTree = "<group>"; };
 		291E72C22BBE859F008092D7 /* BPMessengerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPMessengerView.swift; sourceTree = "<group>"; };
 		291E72C82BBEC7B0008092D7 /* UserSpecialization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSpecialization.swift; sourceTree = "<group>"; };
@@ -163,6 +162,7 @@
 		299277992B762A4100B8F892 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		2994DE662C157C9F00DF9060 /* BPCreateEditEventView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPCreateEditEventView.swift; sourceTree = "<group>"; };
 		2994DE6D2C16F18D00DF9060 /* BPJoystick.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPJoystick.swift; sourceTree = "<group>"; };
+		299B45632DE04B6A000D1F4B /* LocationEditPublishType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationEditPublishType.swift; sourceTree = "<group>"; };
 		299D436B2D2E880F007EEEFE /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DataManager.swift; path = BroadcastPlanner/Utilities/Managers/DataManager.swift; sourceTree = SOURCE_ROOT; };
 		299D43A42D365A49007EEEFE /* EventPointInfoPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventPointInfoPanelView.swift; sourceTree = "<group>"; };
 		299D43C62D38F925007EEEFE /* MainDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainDataManager.swift; sourceTree = "<group>"; };
@@ -207,6 +207,7 @@
 		29476C002DACE2A8007DFA88 /* Navigation */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Navigation; sourceTree = "<group>"; };
 		295C871A2DCDDE78003B01B0 /* EventList */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = EventList; sourceTree = "<group>"; };
 		295C87232DDB0D5A003B01B0 /* TabViewListGeneric */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = TabViewListGeneric; sourceTree = "<group>"; };
+		299B455E2DE04934000D1F4B /* SelectablesWrappers */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = SelectablesWrappers; sourceTree = "<group>"; };
 		29AECAE92CEB357C00CAD02C /* ListCell */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = ListCell; sourceTree = "<group>"; };
 		29B505BD2CB6B3C9003A1E3F /* BroadcastPlannerUnitTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = BroadcastPlannerUnitTests; sourceTree = "<group>"; };
 		29BE3AF42CAD57E600BDEF82 /* Data */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Data; sourceTree = "<group>"; };
@@ -406,7 +407,7 @@
 		2955C96B2B4ECADA003F9ADC /* ViewsAndViewModels */ = {
 			isa = PBXGroup;
 			children = (
-				291CDA552DDCB33C00724F53 /* SelectablePointEditCellWithContent.swift */,
+				299B455E2DE04934000D1F4B /* SelectablesWrappers */,
 				291CDA532DDCB2CB00724F53 /* DividerWithText.swift */,
 				295C871A2DCDDE78003B01B0 /* EventList */,
 				29476C062DACE975007DFA88 /* SpecializationSection.swift */,
@@ -599,7 +600,8 @@
 				29476C1A2DACFC5B007DFA88 /* PlaceType.swift */,
 				29476C0E2DACF89F007DFA88 /* CameraPosition.swift */,
 				29476C102DACF8E7007DFA88 /* OpticType.swift */,
-				291CDA572DDCD78100724F53 /* PointInfoPublishType.swift */,
+				299B45632DE04B6A000D1F4B /* LocationEditPublishType.swift */,
+				291CDA572DDCD78100724F53 /* PointEditPublishType.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -745,6 +747,7 @@
 				29476C002DACE2A8007DFA88 /* Navigation */,
 				295C871A2DCDDE78003B01B0 /* EventList */,
 				295C87232DDB0D5A003B01B0 /* TabViewListGeneric */,
+				299B455E2DE04934000D1F4B /* SelectablesWrappers */,
 				29AECAE92CEB357C00CAD02C /* ListCell */,
 				29BE3AF42CAD57E600BDEF82 /* Data */,
 				29D8D3B02CEDE589000E4F72 /* Buttons */,
@@ -844,12 +847,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				291CDA582DDCD78100724F53 /* PointInfoPublishType.swift in Sources */,
+				291CDA582DDCD78100724F53 /* PointEditPublishType.swift in Sources */,
 				290B81752AD9149800B858F1 /* MotionManager.swift in Sources */,
 				2955C9822B57C1BE003F9ADC /* SessionUser.swift in Sources */,
 				29CCF2F12C80895100BCEF34 /* EmailPasswordStackView.swift in Sources */,
 				293752AA2BF8CD950044924D /* BPEventFilterCaseTabView.swift in Sources */,
 				299D43C72D38F925007EEEFE /* MainDataManager.swift in Sources */,
+				299B45642DE04B6A000D1F4B /* LocationEditPublishType.swift in Sources */,
 				299D43882D2E880F007EEEFE /* DataManager.swift in Sources */,
 				29CCF2EC2C807FE000BCEF34 /* SessionManager.swift in Sources */,
 				29476C0F2DACF89F007DFA88 /* CameraPosition.swift in Sources */,
@@ -885,7 +889,6 @@
 				298932682AE24D7000BD93CA /* BPError.swift in Sources */,
 				290F598C2CE7828A002EAA4A /* BPDataProtocol.swift in Sources */,
 				29476C072DACE975007DFA88 /* SpecializationSection.swift in Sources */,
-				291CDA562DDCB33C00724F53 /* SelectablePointEditCellWithContent.swift in Sources */,
 				2955C96A2B4E416D003F9ADC /* AuthenticationScreen.swift in Sources */,
 				295C871E2DD38997003B01B0 /* EventStatus.swift in Sources */,
 				295C87202DD47B5B003B01B0 /* ExploreEventView.swift in Sources */,

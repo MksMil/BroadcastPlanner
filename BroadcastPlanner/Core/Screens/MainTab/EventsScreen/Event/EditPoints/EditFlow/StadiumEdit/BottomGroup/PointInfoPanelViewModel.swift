@@ -15,7 +15,7 @@ final class PointInfoPanelViewModel: ObservableObject {
 
     var position: CameraPosition = .pitchSideHalfWay
 
-    var publisher: PassthroughSubject = PassthroughSubject<(PointInfoPublishType, Any), Never>()
+    var publisher: PassthroughSubject = PassthroughSubject<(PointEditPublishType, Any), Never>()
 
     let point: LocationPoint
     var availableNumbers: [Int] {

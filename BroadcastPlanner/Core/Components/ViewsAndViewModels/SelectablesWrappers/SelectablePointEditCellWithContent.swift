@@ -1,10 +1,10 @@
 import SwiftUI
-
+// wrapper to reduce selectupdate render
 struct SelectablePointEditCellWithContent<V: View, T: Equatable>: View {
     @EnvironmentObject var vm: PointInfoPanelViewModel
-    @StateObject var selectController: PointEditCellViewModel = PointEditCellViewModel()
+    @StateObject var selectController: SelectableCellController = SelectableCellController()
     let val: T
-    let publishType: PointInfoPublishType
+    let publishType: PointEditPublishType
     let content: ()->V
     
     var body: some View {
@@ -21,16 +21,16 @@ struct SelectablePointEditCellWithContent<V: View, T: Equatable>: View {
                         switch publishType {
                             case .optic:
                                 vm.selectedCameraOptic = .none
-                                vm.publisher.send((PointInfoPublishType.optic, OpticType.none))
+                                vm.publisher.send((PointEditPublishType.optic, OpticType.none))
                             case .windDefence:
                                 vm.selectedSoundWindDefence = .none
-                                vm.publisher.send((PointInfoPublishType.windDefence, WindDefence.none))
+                                vm.publisher.send((PointEditPublishType.windDefence, WindDefence.none))
                             case .placeType:
                                 vm.selectedSoundPlaceType = .none
-                                vm.publisher.send((PointInfoPublishType.placeType, PlaceType.none))
+                                vm.publisher.send((PointEditPublishType.placeType, PlaceType.none))
                             case .light:
                                 vm.selectedLight = .none
-                                vm.publisher.send((PointInfoPublishType.light, LightType.none))
+                                vm.publisher.send((PointEditPublishType.light, LightType.none))
                             default: return
                         }
                     }

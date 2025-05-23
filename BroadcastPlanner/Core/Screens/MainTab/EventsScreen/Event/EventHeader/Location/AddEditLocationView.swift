@@ -3,7 +3,7 @@ import SwiftUI
 import UIKit
 
 struct AddEditLocationView: View {
-
+    let buttonSize: Double = 30
     let location: Location
 
     let acceptAction: (String,String,[UIImage],LocalImage?) -> Void
@@ -13,14 +13,14 @@ struct AddEditLocationView: View {
     @StateObject var vm: AddEditLocationViewModel
     @EnvironmentObject var mdm: MainDataManager
 
-    @State private var isShowingDialog: Bool = false
+    @State private var isRemoveBackgroundDialog: Bool = false
     @State private var isRemoveLocationDialog: Bool = false
-    @State private var isBackSheetShowed: Bool = false
+    @State private var isRemoveEventTemplate: Bool = false
 
-    @FetchRequest<LocalImage>(sortDescriptors: [],
+    @FetchRequest<LocalImage>(sortDescriptors: [SortDescriptor(\.lastUpdated, order: .forward)],
                               predicate: NSPredicate(format: "type == %@", GlobalProperties.ImageType.eventTemplate.rawValue)) var eventTemplates
     
-    @FetchRequest<LocalImage>(sortDescriptors: []) var locationImages
+//    @FetchRequest<LocalImage>(sortDescriptors: [SortDescriptor(\.lastUpdated, order: .forward)]) var locationImages
  
     init(
         location: Location,
@@ -34,12 +34,13 @@ struct AddEditLocationView: View {
         self.cancelAction = cancelAction
         self.acceptAction = acceptAction
         self.removeAction = removeAction
+        
     }
 
     var body: some View {
         ZStack{
             MainBackground()
-            VStack {
+            VStack(spacing: 0) {
                 ConfirmationButtonGroupView(
                     isAcceptDisabled: false,
                     cancelAction: {
@@ -99,29 +100,31 @@ struct AddEditLocationView: View {
                     DividerWithText(text: "Location images")
                     
                     //location photos collection
-                    TabViewList(source: locationImages.map{$0}, pageCount: 3, spacing: 5) { localImage in
-                        vm.localImageToRemove = localImage
+                    TabViewList(source: location.viewLocalImages.sorted{$0.viewLastUpdated < $1.viewLastUpdated}, pageCount: 3, spacing: 5) { localImage in
+                        vm.backgroundSelected(localImage)
                     } content: { localImage in
-                        //make a cell to select
-                        localImage.mediumImage
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 100)
+                        SelectableLocationCellWithContent(val: localImage, publishType: LocationEditPublishType.background) {
+                            //make a cell to select
+                            localImage.mediumImage
+                                .resizable()
+                        }
                     }
-                    .padding()
-                    .frame(height: 100)
-                    .border(.red, width: 2)
+//                    .padding()
+                    .frame(height: 120)
+//                    .border(.red, width: 2)
 
                     HStack{
+                        Spacer()
                         Button {
                             //remove selected localImages
+                            isRemoveBackgroundDialog = true
                         } label: {
                             Image(systemName: "trash")
                                 .resizable()
                                 .scaledToFit()
                                 .bold()
-                                .padding(50 / 4)
-                                .frame(width: 50,height: 50)
+                                .padding(buttonSize / 4)
+                                .frame(width: buttonSize,height: buttonSize)
                                 .background {
                                     RoundedRectangle(cornerRadius: 5)
                                         .fill(.ultraThickMaterial
@@ -134,15 +137,21 @@ struct AddEditLocationView: View {
                                                     lineWidth: 2)
                                         }
                                 }
+                                .opacity(vm.backgroundImageToRemove == nil ? 0.4: 1)
+                            
                         }
+                        .disabled(vm.backgroundImageToRemove == nil)
+                        
+                        
+                        Spacer()
                         //add localImages to location
                         PhotosPicker(selection: $vm.locationPhotoItems) {
                             Image(systemName: "plus")
                                 .resizable()
                                 .scaledToFit()
                                 .bold()
-                                .padding(50 / 4)
-                                .frame(width: 50,height: 50)
+                                .padding(buttonSize / 4)
+                                .frame(width: buttonSize,height: buttonSize)
                                 .background {
                                     RoundedRectangle(cornerRadius: 5)
                                         .fill(.ultraThickMaterial
@@ -156,6 +165,7 @@ struct AddEditLocationView: View {
                                         }
                                 }
                         }
+                        Spacer()
                     }
                     //event background representation
                     DividerWithText(text: "select event plan background")
@@ -163,27 +173,30 @@ struct AddEditLocationView: View {
                     TabViewList(source: eventTemplates.map{$0},
                                 selectedItem: vm.selectedEventTemplate,
                                 pageCount: 2,
-                                spacing: 5) { localImage in
-                        vm.localImageToRemove = localImage
+                                spacing: 15) { localImage in
+                        vm.eventTemplateSelected(localImage)
                     } content: { localImage in
-                        //make a cell to select
-                        localImage.mediumImage
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 150)
+                        SelectableLocationCellWithContent(val: localImage, publishType: LocationEditPublishType.eventTemplate) {
+                            //make a cell to select
+                                localImage.smallImage
+                                    .resizable()
+                        }
                     }
-                    .padding()
+//                    .border(.red, width: 2)
+//                    .padding()
                     .frame(height: 150)
-                    .border(.red, width: 2)
                     HStack{
+                        Spacer()
                         Button {
+                            //remove selectedtemplate with Confirmation
+                            isRemoveEventTemplate = true
                         } label: {
                             Image(systemName: "trash")
                                 .resizable()
                                 .scaledToFit()
                                 .bold()
-                                .padding(50 / 4)
-                                .frame(width: 50,height: 50)
+                                .padding(buttonSize / 4)
+                                .frame(width: buttonSize,height: buttonSize)
                                 .background {
                                     RoundedRectangle(cornerRadius: 5)
                                         .fill(.ultraThickMaterial
@@ -196,14 +209,17 @@ struct AddEditLocationView: View {
                                                         lineWidth: 2)
                                         }
                                 }
+                                .opacity(vm.selectedEventTemplate == nil ? 0.4:1)
                         }
+                        .disabled(vm.selectedEventTemplate == nil)
+                        Spacer()
                         PhotosPicker(selection: $vm.eventBackgroundItem) {
                                 Image(systemName: "plus")
                                     .resizable()
                                     .scaledToFit()
                                     .bold()
-                                    .padding(50 / 4)
-                                    .frame(width: 50,height: 50)
+                                    .padding(buttonSize / 4)
+                                    .frame(width: buttonSize,height: buttonSize)
                                     .background {
                                         RoundedRectangle(cornerRadius: 5)
                                             .fill(.ultraThickMaterial
@@ -217,16 +233,19 @@ struct AddEditLocationView: View {
                                             }
                                     }
                         }
-                        .padding(.vertical, 10)
+                        Spacer()
                         Button {
-
+                            //ling eventTemplate to location
+                            if let template = vm.selectedEventTemplate{
+                                mdm.linkEventTemplate(template, toLocation: location)
+                            }
                         } label: {
                             Image(systemName: "checkmark")
                                 .resizable()
                                 .scaledToFit()
                                 .bold()
-                                .padding(50 / 4)
-                                .frame(width: 50,height: 50)
+                                .padding(buttonSize / 4)
+                                .frame(width: buttonSize,height: buttonSize)
                                 .background {
                                     RoundedRectangle(cornerRadius: 5)
                                         .fill(.ultraThickMaterial
@@ -239,7 +258,13 @@ struct AddEditLocationView: View {
                                                         lineWidth: 2)
                                         }
                                 }
+                                .opacity(vm.selectedEventTemplate == nil ? 0.4:1)
                         }
+                        .disabled(vm.selectedEventTemplate == nil)
+                        Spacer()
+                    }
+                    Button("Status"){
+                        print(location)
                     }
                     Spacer(minLength: 50)
                 }
@@ -250,15 +275,31 @@ struct AddEditLocationView: View {
                 //background photo remove confirmation dialog
                 .confirmationDialog(
                     Text("Permanently erase the photo in the trash?"),
-                    isPresented: $isShowingDialog
+                    isPresented: $isRemoveBackgroundDialog
                 ) {
                     Button("Remove Photo", role: .destructive) {
                         // Handle empty trash action.
                         withAnimation {
-                            if let localImageToRemove = vm.localImageToRemove {
+                            if let localImageToRemove = vm.backgroundImageToRemove {
                                 mdm.removeImage(selectedImage: localImageToRemove)
                             }
                         }
+                        
+                    }
+                }
+                //event template remove confirmation dialog
+                .confirmationDialog(
+                    Text("Permanently erase the photo in the trash?"),
+                    isPresented: $isRemoveEventTemplate
+                ) {
+                    Button("Remove Photo", role: .destructive) {
+                        // Handle empty trash action.
+                        withAnimation {
+                            if let localImageToRemove = vm.selectedEventTemplate {
+                                mdm.removeImage(selectedImage: localImageToRemove)
+                            }
+                        }
+                        
                     }
                 }
                 //location remove confirmation dialog
@@ -283,13 +324,13 @@ struct AddEditLocationView: View {
         }
         .onReceive(vm.$locationUiimages) { images in
             if !images.isEmpty{
-                mdm.createNewLocalImagesWith(uiimages: images, andType: GlobalProperties.ImageType.location,linkToLocation: location)
+                mdm.createNewLocalImagesWith(uiimages: images, andType: GlobalProperties.ImageType.location,
+                                             linkToLocation: location)
                 vm.locationUiimages = []
             }
         }
-        .onAppear{
-            locationImages.nsPredicate = NSPredicate(format: "parentLocationImage == %@", location)
-        }
+        
+        .environmentObject(vm)
     }
 }
 

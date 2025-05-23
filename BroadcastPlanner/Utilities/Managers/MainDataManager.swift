@@ -1171,6 +1171,10 @@ extension MainDataManager {
             }
         }
     }
+    @MainActor func linkEventTemplate(_ localImage: LocalImage, toLocation location: Location){
+        localDataManager.linkEventTemplate(localImage, toLocalLocation: location, inContext: .main)
+        saveContextSync(type: .main, publish: GlobalProperties.PublishChanges.locations, id: [location.viewId])
+    }
 }
 // MARK: - Online status managment
 extension MainDataManager {
