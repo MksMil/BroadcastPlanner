@@ -4,18 +4,18 @@ struct LocationSelectionView: View {
     
     @StateObject private var vm: LocationSelectionViewModel
     
-    let location: Location?
+    let location: Venue?
     let offset: Double
     let editable: Bool
     let cancelAction: ()->Void
-    let acceptAction: (Location)->Void
+    let acceptAction: (Venue)->Void
     
     
-    init(location: Location?,
+    init(location: Venue?,
          offset: Double,
          editable: Bool = true,
          cancelAction: @escaping () -> Void,
-         acceptAction: @escaping (Location) -> Void) {
+         acceptAction: @escaping (Venue) -> Void) {
         self.location = location
         self.offset = offset
         self.editable = editable
@@ -79,10 +79,10 @@ struct LocationSelectionView: View {
     let mdm = MainDataManager(localDataManager: lm,
                               globalDataManager: NetworkManager(),
                               userId: "123")
-    let localEvent = lm.fetchOrCreateObject(ofType: Event.self,
+    let localEvent = lm.fetchOrCreateObject(ofType: Broadcast.self,
                   predicate: NSPredicate(format: "id == %@", "id"),
                                       in: lm.mainContext) { ctx in
-        let newEvent = Event(context: ctx)
+        let newEvent = Broadcast(context: ctx)
         newEvent.id = "id"
         return newEvent
     }

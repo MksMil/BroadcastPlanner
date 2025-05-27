@@ -22,7 +22,7 @@ class CarEditSpriteScene: SKScene{
     
     
     
-    var points: [UnitDTO] = []
+    var points: [CrewDTO] = []
     var pointNodes: [SKSpriteNode] = []
     
     var centerPoint: CGPoint {
@@ -135,7 +135,7 @@ class CarEditSpriteScene: SKScene{
     }
     
 }
-// MARK: - unit managment
+// MARK: - crew managment
 extension CarEditSpriteScene{
     func addUnit(id: String, image: UIImage, select: Bool) {
         //foto / sf.person?
@@ -232,7 +232,7 @@ extension CarEditSpriteScene{
     }
 }
 
-// MARK: - Move selected point node
+// MARK: - Move selected venuePoint node
 extension CarEditSpriteScene{
     func moveUP(){
         guard let selectedPointNode else { return }
@@ -299,7 +299,7 @@ extension CarEditSpriteScene{
     }
     
 }
-// MARK: - Scaling selected point node
+// MARK: - Scaling selected venuePoint node
 extension CarEditSpriteScene{
     func scaleUpSelectedPoint(){
 //        if let selectedPointNode, selectedPointNode.isNotNodeWithName(NodeType.background.rawValue) {

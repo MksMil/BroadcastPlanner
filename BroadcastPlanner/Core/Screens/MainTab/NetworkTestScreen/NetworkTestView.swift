@@ -2,7 +2,7 @@ import SwiftUI
 
 final class NetworkTestViewModel: ObservableObject{
 
-    var selectedEvent: Event?
+    var selectedEvent: Broadcast?
     var selectedClub: Club?
     
     var id: String {
@@ -47,11 +47,11 @@ struct NetworkTestView: View {
                 }
                 //event section : create +, update +, remove +
                 Section {
-                    Button("Create Event"){
+                    Button("Create Broadcast"){
                         vm.selectedEvent = mdm.createEventWithCurrentUserOwnerInContextType(.main)
                     }
                     
-                    Button("Update Event"){
+                    Button("Update Broadcast"){
                         if let event = vm.selectedEvent{
                             Task{ await mdm.updateEvent(event,
                                                       homeClub: nil,
@@ -61,7 +61,7 @@ struct NetworkTestView: View {
                         }
                     }
                     
-                    Button("Remove Event"){
+                    Button("Remove Broadcast"){
                         if let event = vm.selectedEvent{
                             Task{
                                 await mdm.removeEvent(event: event)
@@ -99,11 +99,11 @@ struct NetworkTestView: View {
                 }
                 //location section:
                 Section {
-                    Button("Create Location"){
+                    Button("Create Venue"){
                         
                     }
                 } header: {
-                    Text("Location")
+                    Text("Venue")
                 }
 
 

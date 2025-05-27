@@ -44,7 +44,7 @@ struct SelectablePointEditCellWithContent<V: View, T: Equatable>: View {
                             selectController.setSelect(true, tapped: false)
                         }
                     case .user:
-                        if vm.selectedUser == val as? LocalUser{
+                        if vm.selectedUser == val as? Member{
                             selectController.setSelect(true,tapped: false)
                         }
                     case .optic:

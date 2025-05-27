@@ -1,14 +1,14 @@
 import Foundation
 import CoreData
 
-public class Unit: NSManagedObject {
+public class Crew: NSManagedObject {
 
 }
 
-extension Unit {
+extension Crew {
 
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<Unit> {
-        return NSFetchRequest<Unit>(entityName: "Unit")
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<Crew> {
+        return NSFetchRequest<Crew>(entityName: "Crew")
     }
 
     @NSManaged public var coordinateX: Float
@@ -18,13 +18,13 @@ extension Unit {
     @NSManaged public var rotation: Int16
     @NSManaged public var scaleFactor: Float
     @NSManaged public var task: String?
-    @NSManaged public var event: Event?
+    @NSManaged public var event: Broadcast?
     @NSManaged public var hardware: Hardware?
-    @NSManaged public var user: LocalUser?
+    @NSManaged public var user: Member?
 
 }
 
-extension Unit : Identifiable {
+extension Crew : Identifiable {
     var viewId: String{
         id ?? ""
     }
@@ -66,9 +66,9 @@ extension Unit : Identifiable {
 //       return [Hardware(id: hardware.veiwId, envType: hardware.viewType, chanels: hardware.viewChannels)]
 //     }
     
-    var dto: UnitDTO{
-        UnitDTO(id: viewId,
-                position: viewPosition,
+    var dto: CrewDTO{
+        CrewDTO(id: viewId,
+                position: viewPosition.rawValue,
                 coordinateX: viewX,
                 coordinateY: viewY,
                 rotation: viewRotation,
@@ -77,4 +77,10 @@ extension Unit : Identifiable {
                 userId: viewUserId,
                 hardware: viewHardware)
     }
+}
+
+extension Crew: CoreDataUpdatable{
+    func update(from dto: CrewDTO, in context: NSManagedObjectContext) {
+            self.id = dto.id
+        }
 }

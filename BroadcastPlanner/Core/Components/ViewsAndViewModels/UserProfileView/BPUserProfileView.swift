@@ -3,7 +3,7 @@ import SwiftUI
 
 struct BPUserProfileView: View {
     
-    let user: LocalUser
+    let user: Member
     
     var body: some View {
             

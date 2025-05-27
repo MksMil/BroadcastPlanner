@@ -15,7 +15,7 @@ extension Sound {
     @NSManaged public var placeType: String?
     @NSManaged public var windDefence: String?
     @NSManaged public var id: String?
-    @NSManaged public var point: LocationPoint?
+    @NSManaged public var point: VenuePoint?
 
 }
 
@@ -37,4 +37,10 @@ extension Sound : Identifiable {
                  windDefence: viewWindDefence,
                  placeType: viewPlaceType)
     }
+}
+
+extension Sound: CoreDataUpdatable{
+    func update(from dto: SoundDTO, in context: NSManagedObjectContext) {
+            self.id = dto.id
+        }
 }

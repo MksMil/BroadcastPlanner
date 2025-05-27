@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct EventUsersGridView: View {
-    var users: [LocalUser]
+    var users: [Member]
     
     
     var body: some View {
@@ -16,6 +16,6 @@ struct EventUsersGridView: View {
 }
 
 //#Preview {
-//    EventUsersGridView(users: [])
+//    EventUsersGridView(members: [])
 //        .environmentObject(GlobalStorage())
 //}

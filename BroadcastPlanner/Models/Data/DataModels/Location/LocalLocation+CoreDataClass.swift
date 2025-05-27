@@ -2,14 +2,14 @@ import SwiftUI
 import UIKit
 import CoreData
 
-public class Location: NSManagedObject {
+public class Venue: NSManagedObject {
 
 }
 
-extension Location {
+extension Venue {
 
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<Location> {
-        return NSFetchRequest<Location>(entityName: "Location")
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<Venue> {
+        return NSFetchRequest<Venue>(entityName: "Venue")
     }
 
     @NSManaged public var address: String?
@@ -23,14 +23,14 @@ extension Location {
     
 }
 
-// MARK: Generated accessors for events
-extension Location {
+// MARK: Generated accessors for broadcasts
+extension Venue {
 
     @objc(addEventsObject:)
-    @NSManaged public func addToEvents(_ value: Event)
+    @NSManaged public func addToEvents(_ value: Broadcast)
 
     @objc(removeEventsObject:)
-    @NSManaged public func removeFromEvents(_ value: Event)
+    @NSManaged public func removeFromEvents(_ value: Broadcast)
 
     @objc(addEvents:)
     @NSManaged public func addToEvents(_ values: NSSet)
@@ -41,7 +41,7 @@ extension Location {
 }
 
 // MARK: Generated accessors for homeClub
-extension Location {
+extension Venue {
 
     @objc(addHomeClubObject:)
     @NSManaged public func addToHomeClub(_ value: Club)
@@ -58,7 +58,7 @@ extension Location {
 }
 
 // MARK: Generated accessors for images
-extension Location {
+extension Venue {
 
     @objc(addImagesObject:)
     @NSManaged public func addToImages(_ value: LocalImage)
@@ -74,7 +74,7 @@ extension Location {
 
 }
 
-extension Location : Identifiable {
+extension Venue : Identifiable {
     var viewId: String {
         id ?? ""
     }
@@ -94,8 +94,8 @@ extension Location : Identifiable {
         background?.mediumImage ?? Image(systemName: "compass.drawing")
     }
     
-    var viewEvents: [Event] {
-        events?.allObjects as? [Event] ?? []
+    var viewEvents: [Broadcast] {
+        events?.allObjects as? [Broadcast] ?? []
     }
     
     var viewImages: [Image] {
@@ -109,8 +109,8 @@ extension Location : Identifiable {
         lastUpdated ?? .now
     }
     
-    var dto: LocationDTO{
-        LocationDTO(
+    var dto: VenueDTO{
+        VenueDTO(
             id: viewId,
             lastUpdated: viewLastUpdated,
             title: viewTitle,
@@ -119,4 +119,10 @@ extension Location : Identifiable {
             locationBackgroundId: background?.id
         )
     }
+}
+
+extension Venue: CoreDataUpdatable{
+    func update(from dto: VenueDTO, in context: NSManagedObjectContext) {
+            self.id = dto.id
+        }
 }

@@ -9,7 +9,7 @@ struct BPAccountInfoView: View {
     @State private var isEdit: Bool = false
     @State private var isEditSpecialization: Bool = false
 
-    init(user: LocalUser) {
+    init(user: Member) {
         self._vm = StateObject(wrappedValue: PersonalScreenViewModel(localUser: user))
     }
 
@@ -147,7 +147,7 @@ struct BPAccountInfoView: View {
             .toolbarBackground(.white.opacity(0.4), for: .navigationBar)
         }
         .onReceive(mdm.localDataManager.updatePublisher, perform: { value in
-            if value.0 == .users, value.1.contains(where: { $0 == mdm.currentId
+            if value.0 == .members, value.1.contains(where: { $0 == mdm.currentId
             }){
                 vm.updateData()
             }

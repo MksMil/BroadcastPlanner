@@ -6,12 +6,12 @@ final class BPEditCarViewModel: ObservableObject {
     
     var renderCarScene: CarEditSpriteScene
     
-    @Published var selectedUnit: Unit?
+    @Published var selectedUnit: Crew?
     
-    var localUnits: [Unit] = []
+    var localUnits: [Crew] = []
     var isEdit: Bool = false
     
-    init(event: Event) {
+    init(event: Broadcast) {
         self.renderCarScene = CarEditSpriteScene()
     }
     // MARK: scene screenshot
@@ -40,7 +40,7 @@ final class BPEditCarViewModel: ObservableObject {
 
 // MARK: - Points Managment
 extension BPEditCarViewModel{
-    func addUnit(unit: Unit, image: UIImage?){
+    func addUnit(unit: Crew, image: UIImage?){
         localUnits.append(unit)
 //        renderCarScene.updateScene()
         renderCarScene.addUnit(id: unit.viewId, image: image ?? UIImage(), select: true)
@@ -66,15 +66,15 @@ extension BPEditCarViewModel{
 //        isEdit = false
     }
     
-    func selectPoint(point: LocationPoint){
-//        selectedEventPoint = point
-//        renderCarScene.select(point: point)
+    func selectPoint(point: VenuePoint){
+//        selectedEventPoint = venuePoint
+//        renderCarScene.select(venuePoint: venuePoint)
 //        isEdit = true
     }
     
-    func updatePoint(_ point: LocationPoint){
+    func updatePoint(_ point: VenuePoint){
 //        filterPointsWithCase(stadiumFilter)
-//        renderCarScene.updateSpritesWithPoint(point: point)
+//        renderCarScene.updateSpritesWithPoint(venuePoint: venuePoint)
     }
 }
 
@@ -190,7 +190,7 @@ struct BPEditCarView: View {
     @EnvironmentObject var eventRouter: EventTabRouter
 
     @StateObject var vm: BPEditCarViewModel
-    let event: Event
+    let event: Broadcast
 
     @FetchRequest<Obvan>(sortDescriptors: []) var obvans
 
@@ -200,9 +200,9 @@ struct BPEditCarView: View {
     var editable: Bool
 
     @State var obvanTitle: String = "choose car"
-    @State private var selectedUnit: Unit?
+    @State private var selectedUnit: Crew?
   
-    init(event: Event, editable: Bool) {
+    init(event: Broadcast, editable: Bool) {
         self.event = event
         self.editable = editable
         self._vm = .init(wrappedValue: BPEditCarViewModel(event: event))
@@ -265,7 +265,7 @@ struct BPEditCarView: View {
                     StaffPanelView(event: event,
                                    addUnitAction: { user,specialization,hardware in
                         let unit = mdm.createUnitWithUser(user, andSpecialization: specialization, andHardware: hardware, inEvent: event)
-//                        let id = unit.viewId
+//                        let id = crew.viewId
                         var image = UIImage(systemName: "person")
                         if let uiimage = user.image?.makeUIImage(){
                             image = uiimage
@@ -323,10 +323,10 @@ struct BPEditCarView: View {
     let mdm = MainDataManager(localDataManager: lm,
                               globalDataManager: NetworkManager(),
                               userId: "123")
-    let localEvent = lm.fetchOrCreateObject(ofType: Event.self,
+    let localEvent = lm.fetchOrCreateObject(ofType: Broadcast.self,
                   predicate: NSPredicate(format: "id == %@", "id"),
                                       in: lm.mainContext) { ctx in
-        let newEvent = Event(context: ctx)
+        let newEvent = Broadcast(context: ctx)
         newEvent.id = "id"
         return newEvent
     }

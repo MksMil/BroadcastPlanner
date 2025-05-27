@@ -12,7 +12,7 @@ protocol BPSKViewDelegate: AnyObject {
 
 final class BPEditStadiumViewModel: ObservableObject {
         
-    @Published var selectedEventPoint: LocationPoint?
+    @Published var selectedEventPoint: VenuePoint?
     @Published var isEdit: Bool = false
     @Published var stadiumFilter: BPEventPlanPointStadiumFilter = .all{
         willSet{
@@ -25,10 +25,10 @@ final class BPEditStadiumViewModel: ObservableObject {
     }
     var savePointAction: (()->())?
     
-    let event: Event
+    let event: Broadcast
     
     // MARK: - vm Properties for available render updates
-    var users: [LocalUser] = [] //saved
+    var users: [Member] = [] //saved
     var num: Int = 0 //saved
     var description: String = "Choose position" //saved
     var cameras: [Camera] = [] 
@@ -41,9 +41,9 @@ final class BPEditStadiumViewModel: ObservableObject {
     var rotation: Int = 0
     var scaleFactor: Double = 0
     
-    var localPoints: [LocationPoint]
+    var localPoints: [VenuePoint]
     
-    @Published var filteredLocationPoints: [LocationPoint] = []
+    @Published var filteredLocationPoints: [VenuePoint] = []
     
     var renderPitchScene: PitchEditSpriteScene
 //  
@@ -56,7 +56,7 @@ final class BPEditStadiumViewModel: ObservableObject {
 
     @Published var isTemplateRemovable: Bool = true
     
-    init(event: Event){
+    init(event: Broadcast){
         self.event = event
         self.localPoints = event.viewLocationPoints
         self.filteredLocationPoints = localPoints
@@ -74,7 +74,7 @@ final class BPEditStadiumViewModel: ObservableObject {
         renderPitchScene.updateScene()
     }
     
-    func configureWith(event: Event){
+    func configureWith(event: Broadcast){
         renderPitchScene.points = event.viewLocationPoints
         renderPitchScene.updateScene()
     }
@@ -88,7 +88,7 @@ final class BPEditStadiumViewModel: ObservableObject {
     }
     
     //load from template
-    func loadTemplate(_ points:[LocationPoint]){
+    func loadTemplate(_ points:[VenuePoint]){
         localPoints = points
         filterPointsWithCase(stadiumFilter)
         loadScene()
@@ -129,7 +129,7 @@ final class BPEditStadiumViewModel: ObservableObject {
             return image
     }
 }
-// MARK: - filter points & point state
+// MARK: - filter points & venuePoint state
 extension BPEditStadiumViewModel {
     
     func filterPointsWithCase(_ filter: BPEventPlanPointStadiumFilter){
@@ -153,7 +153,7 @@ extension BPEditStadiumViewModel {
         }
     }
     
-    func stateForPoint(_ point: LocationPoint) -> PointPanelCell.PointPanelCellState {
+    func stateForPoint(_ point: VenuePoint) -> PointPanelCell.PointPanelCellState {
         if let selectedEventPoint{
             if selectedEventPoint == point {
                 return .selected
@@ -179,7 +179,7 @@ extension BPEditStadiumViewModel{
 
 // MARK: - Available Users
 extension BPEditStadiumViewModel{
-    func availableUsers() -> [LocalUser]{
+    func availableUsers() -> [Member]{
         return users.filter { user in
             
             
@@ -209,7 +209,7 @@ extension BPEditStadiumViewModel{
 
 // MARK: - Points Managment
 extension BPEditStadiumViewModel{
-    func addPoint(point: LocationPoint){
+    func addPoint(point: VenuePoint){
         localPoints.append(point)
         filterPointsWithCase(stadiumFilter)
         renderPitchScene.points = filteredLocationPoints
@@ -238,13 +238,13 @@ extension BPEditStadiumViewModel{
         isEdit = false
     }
     
-    func selectPoint(point: LocationPoint){
+    func selectPoint(point: VenuePoint){
         selectedEventPoint = point
         renderPitchScene.select(point: point)
         isEdit = true
     }
     
-    func updatePoint(_ point: LocationPoint){
+    func updatePoint(_ point: VenuePoint){
         filterPointsWithCase(stadiumFilter)
         renderPitchScene.updateSpritesWithPoint(point: point)
     }
@@ -356,13 +356,13 @@ extension BPEditStadiumViewModel: BPSKViewDelegate {
 
 // MARK: - Point data control
 extension BPEditStadiumViewModel {
-    func addUser(user: LocalUser){
+    func addUser(user: Member){
         guard let selectedEventPoint else { return }
         users.append(user)
         self.renderPitchScene.updateSpritesWithPoint(point: selectedEventPoint)
     }
     
-    func removeUserFromPoint(user: LocalUser){
+    func removeUserFromPoint(user: Member){
         users.removeAll(where: {$0 == user})
     }
     

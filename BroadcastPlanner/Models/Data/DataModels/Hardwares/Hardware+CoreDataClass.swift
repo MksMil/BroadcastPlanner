@@ -14,7 +14,7 @@ extension Hardware {
     @NSManaged public var channels: String?
     @NSManaged public var type: String?
     @NSManaged public var id: String?
-    @NSManaged public var obvanUnit: Unit?
+    @NSManaged public var obvanUnit: Crew?
 
 }
 
@@ -36,4 +36,10 @@ extension Hardware : Identifiable {
                     envType: viewType,
                     chanels: viewChannels)
     }
+}
+
+extension Hardware: CoreDataUpdatable{
+    func update(from dto: HardwareDTO, in context: NSManagedObjectContext) {
+            self.id = dto.id
+        }
 }

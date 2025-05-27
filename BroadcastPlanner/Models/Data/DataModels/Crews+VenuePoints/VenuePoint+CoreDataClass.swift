@@ -1,14 +1,14 @@
 import SwiftUI
 import CoreData
 
-public class LocationPoint: NSManagedObject {
+public class VenuePoint: NSManagedObject {
 
 }
 
-extension LocationPoint {
+extension VenuePoint {
 
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<LocationPoint> {
-        return NSFetchRequest<LocationPoint>(entityName: "LocationPoint")
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<VenuePoint> {
+        return NSFetchRequest<VenuePoint>(entityName: "VenuePoint")
     }
 
     @NSManaged public var coordinateX: Float
@@ -21,7 +21,7 @@ extension LocationPoint {
     @NSManaged public var task: String?
     @NSManaged public var scaleFactor: Float
     @NSManaged public var cameras: NSSet?
-    @NSManaged public var event: Event?
+    @NSManaged public var event: Broadcast?
     @NSManaged public var image: LocalImage?
     @NSManaged public var lights: NSSet?
     @NSManaged public var sounds: NSSet?
@@ -30,7 +30,7 @@ extension LocationPoint {
 }
 
 // MARK: Generated accessors for cameras
-extension LocationPoint {
+extension VenuePoint {
 
     @objc(addCamerasObject:)
     @NSManaged public func addToCameras(_ value: Camera)
@@ -47,7 +47,7 @@ extension LocationPoint {
 }
 
 // MARK: Generated accessors for lights
-extension LocationPoint {
+extension VenuePoint {
 
     @objc(addLightsObject:)
     @NSManaged public func addToLights(_ value: Light)
@@ -64,7 +64,7 @@ extension LocationPoint {
 }
 
 // MARK: Generated accessors for sounds
-extension LocationPoint {
+extension VenuePoint {
 
     @objc(addSoundsObject:)
     @NSManaged public func addToSounds(_ value: Sound)
@@ -81,13 +81,13 @@ extension LocationPoint {
 }
 
 // MARK: Generated accessors for user
-extension LocationPoint {
+extension VenuePoint {
 
     @objc(addUserObject:)
-    @NSManaged public func addToUser(_ value: LocalUser)
+    @NSManaged public func addToUser(_ value: Member)
 
     @objc(removeUserObject:)
-    @NSManaged public func removeFromUser(_ value: LocalUser)
+    @NSManaged public func removeFromUser(_ value: Member)
 
     @objc(addUser:)
     @NSManaged public func addToUser(_ values: NSSet)
@@ -97,7 +97,7 @@ extension LocationPoint {
 
 }
 
-extension LocationPoint : Identifiable {
+extension VenuePoint : Identifiable {
 
     var viewX: Double {
         Double(coordinateX)
@@ -158,8 +158,8 @@ extension LocationPoint : Identifiable {
         task ?? "no task"
     }
     
-    var viewUsers: [LocalUser]{
-        (user?.allObjects as? [LocalUser]) ?? []
+    var viewUsers: [Member]{
+        (user?.allObjects as? [Member]) ?? []
     }
     
     var viewImage: Image {
@@ -181,4 +181,10 @@ extension LocationPoint : Identifiable {
                  sounds: viewSounds,
                  lights: viewLights)
     }
+}
+
+extension VenuePoint: CoreDataUpdatable{
+    func update(from dto: PointDTO, in context: NSManagedObjectContext) {
+            self.id = dto.id
+        }
 }

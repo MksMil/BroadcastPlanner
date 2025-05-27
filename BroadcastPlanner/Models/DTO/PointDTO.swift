@@ -1,4 +1,11 @@
-struct PointDTO: Identifiable, Codable,BPDataProtocol {
+import Foundation
+
+struct PointDTO: Identifiable, Codable,BPDataProtocol,CoreDataRepresentable {
+    
+    typealias Entity = VenuePoint
+    var primaryKeyPredicate: NSPredicate {
+        NSPredicate(format: "id == %@", id as CVarArg)
+    }
  
     var id: String
     var userId : [String]

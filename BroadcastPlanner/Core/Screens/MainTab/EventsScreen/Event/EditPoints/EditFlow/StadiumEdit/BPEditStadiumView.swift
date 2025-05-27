@@ -9,14 +9,14 @@ struct BPEditStadiumView: View {
     @EnvironmentObject var eventRouter: EventTabRouter
     @EnvironmentObject var mdm: MainDataManager
     
-    let event: Event
+    let event: Broadcast
 
     @State private var isConfirmDiscardChanges: Bool = false
     @State private var isEditPressed: Bool = false
 
     @FetchRequest<Template>(sortDescriptors: []) var templates
     
-    init(event: Event) {
+    init(event: Broadcast) {
         self.event = event
         self._vm = .init(wrappedValue: BPEditStadiumViewModel(event: event))
     }
@@ -38,7 +38,7 @@ struct BPEditStadiumView: View {
 //                    mdm.updateEvent(event, withPoints: vm.localPoints)
                     Task{
                         await mdm.assignSnapshot(vm.makeSceneScreenshot(), toEvent: event)
-                        await mdm.saveContextAsync(type: .main, publish: .events, id: [event.viewId])
+                        await mdm.saveContextAsync(type: .main, publish: .broadcasts, id: [event.viewId])
                         eventRouter.routeStepBack()
                     }
                 } content: {
@@ -249,7 +249,7 @@ struct BPEditStadiumView: View {
         .sheet(isPresented: $isEditPressed) {
             if let point = vm.selectedEventPoint{
                 PointInfoPanelView(point: point){ pointNum, pointUser, pointOptic,pointPlace,pointWD,pointLight in
-                    print("save point")
+                    print("save venuePoint")
                     mdm.updatePoint(point, withNumber: pointNum, user: pointUser, optic: pointOptic, placeType: pointPlace, windDefence: pointWD, lightType: pointLight)
                     vm.updatePoint(point)
                 }
@@ -265,10 +265,10 @@ struct BPEditStadiumView: View {
     let mdm = MainDataManager(localDataManager: lm,
                               globalDataManager: NetworkManager(),
                               userId: "123")
-    let localEvent = lm.fetchOrCreateObject(ofType: Event.self,
+    let localEvent = lm.fetchOrCreateObject(ofType: Broadcast.self,
                   predicate: NSPredicate(format: "id == %@", "id"),
                                       in: lm.mainContext) { ctx in
-        let newEvent = Event(context: ctx)
+        let newEvent = Broadcast(context: ctx)
         newEvent.id = "id"
         return newEvent
     }

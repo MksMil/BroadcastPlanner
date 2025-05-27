@@ -4,20 +4,24 @@ import FirebaseCore
 import FirebaseFirestoreSwift
 import FirebaseStorage
 import UIKit
+//import CoreData
 
 //firebase newtwork manager
 
-// try to use delegate patern to update local storage with snapshotlisteners events
+// try to use delegate patern to update local storage with snapshotlisteners broadcasts
 protocol UpdateDelegateProtocol: AnyObject{
-    func updateUsers(dtos: [UserDTO])
-    func updateEvents(dtos: [EventDTO])
+    func updateUsers(dtos: [MemberDTO])
+    func updateEvents(dtos: [BroadcastDTO])
     func updateClubs(dtos: [ClubDTO])
-    func updateLocations(dtos: [LocationDTO])
+    func updateLocations(dtos: [VenueDTO])
     func updateTemplates(dtos: [TemplateDTO])
     func updateImages(dtos: [ImageDTO])
     func updateObvans(dtos: [ObvanDTO])
     
     func handleListenerEvent<T: BPDataProtocol>(updated: Bool, value: T)
+    
+    func updateWithDTO(_ dto: any CoreDataRepresentable)
+    func removeWithDTO(_ dto: any CoreDataRepresentable)
     
 }
 /* updatedAt field
@@ -101,43 +105,43 @@ final class NetworkManager: ObservableObject {
             group.addTask { [weak self] in
                 guard let self else { return }
                 do{
-                    let snapshot = try await self.db.collection(GlobalProperties.Path.users.rawValue).getDocuments(source: .default)
-                    var dtos: [UserDTO] = []
+                    let snapshot = try await self.db.collection(GlobalProperties.Path.members.rawValue).getDocuments(source: .default)
+                    var dtos: [MemberDTO] = []
                     try snapshot.documents.forEach { doc in
-                        let data = try doc.data(as: UserDTO.self)
+                        let data = try doc.data(as: MemberDTO.self)
                         dtos.append(data)
                     }
                     syncDelegate?.updateUsers(dtos: dtos)
                 } catch {
-                    print("Network Manager: start(): users fetching error: \(error)")
+                    print("Network Manager: start(): members fetching error: \(error)")
                 }
             }
             group.addTask { [weak self] in
                 guard let self else { return }
                 do{
-                    let snapshot = try await self.db.collection(GlobalProperties.Path.events.rawValue).getDocuments(source: .default)
-                    var dtos: [EventDTO] = []
+                    let snapshot = try await self.db.collection(GlobalProperties.Path.broadcasts.rawValue).getDocuments(source: .default)
+                    var dtos: [BroadcastDTO] = []
                     try snapshot.documents.forEach { doc in
-                        let data = try doc.data(as: EventDTO.self)
+                        let data = try doc.data(as: BroadcastDTO.self)
                         dtos.append(data)
                     }
                     syncDelegate?.updateEvents(dtos: dtos)
                 } catch {
-                    print("Network Manager: start(): events fetching error: \(error)")
+                    print("Network Manager: start(): broadcasts fetching error: \(error)")
                 }
             }
             group.addTask { [weak self] in
                 guard let self else { return }
                 do{
-                    let snapshot = try await self.db.collection(GlobalProperties.Path.locations.rawValue).getDocuments(source: .default)
-                    var dtos: [LocationDTO] = []
+                    let snapshot = try await self.db.collection(GlobalProperties.Path.venues.rawValue).getDocuments(source: .default)
+                    var dtos: [VenueDTO] = []
                     try snapshot.documents.forEach { doc in
-                        let data = try doc.data(as: LocationDTO.self)
+                        let data = try doc.data(as: VenueDTO.self)
                         dtos.append(data)
                     }
                     syncDelegate?.updateLocations(dtos: dtos)
                 } catch {
-                    print("Network Manager: start(): locations fetching error: \(error)")
+                    print("Network Manager: start(): venues fetching error: \(error)")
                 }
             }
             group.addTask { [weak self] in
@@ -242,32 +246,70 @@ final class NetworkManager: ObservableObject {
             }
         )
     }
+    
+    func makeSnapshotListener<T: CoreDataRepresentable>(
+        forType type: GlobalProperties.Path,
+        of dtoType: T.Type,
+        completionOnAddModified: @escaping (T) -> Void,
+        completionOnRemoved: @escaping (T) -> Void
+    ) where T == T.Entity.DTO {
+        let listener = db.collection(type.rawValue)
+            .addSnapshotListener { snapshot, error in
+                guard let snapshot else {
+                    print("Snapshot error: \(error?.localizedDescription ?? "Unknown error")")
+                    return
+                }
+                
+                Task {
+                    await withTaskGroup(of: Void.self) { group in
+                        for diff in snapshot.documentChanges {
+                            do {
+                                let dto = try diff.document.data(as: T.self)
+                                
+                                group.addTask {
+                                    switch diff.type {
+                                        case .added, .modified:
+                                            completionOnAddModified(dto)
+                                        case .removed:
+                                            completionOnRemoved(dto)
+                                    }
+                                }
+                            } catch {
+                                print("Decoding error for \(type.rawValue): \(error.localizedDescription)")
+                            }
+                        }
+                        await group.waitForAll()
+                    }
+                }
+            }
+        listeners.append(listener)
+    }
 }
 
 // MARK: - Observe changes
 extension NetworkManager{
     // MARK: - Observe Users
-    func observeUsersUpdates(updateAction: @escaping (UserDTO)->Void,
-                             removeAction: @escaping (UserDTO)->Void) {
-        self.makeSnapshotListener(forType: .users) {
+    func observeUsersUpdates(updateAction: @escaping (MemberDTO)->Void,
+                             removeAction: @escaping (MemberDTO)->Void) {
+        self.makeSnapshotListener(forType: .members) {
             updateAction($0)
         } completionOnRemoved: {
             removeAction($0)
         }
     }
     // MARK: - Observe Events
-    func observeEventsUpdates(updateAction: @escaping (EventDTO)->Void,
-                              removeAction: @escaping (EventDTO)->Void) {
-        makeSnapshotListener(forType: .events) {
+    func observeEventsUpdates(updateAction: @escaping (BroadcastDTO)->Void,
+                              removeAction: @escaping (BroadcastDTO)->Void) {
+        makeSnapshotListener(forType: .broadcasts) {
             updateAction($0)
         } completionOnRemoved: {
             removeAction($0)
         }
     }
-    // MARK: - Observe locations
-    func observeLocationsUpdates(updateAction: @escaping (LocationDTO)->Void,
-                                 removeAction: @escaping (LocationDTO)->Void) {
-        makeSnapshotListener(forType: .locations) {
+    // MARK: - Observe venues
+    func observeLocationsUpdates(updateAction: @escaping (VenueDTO)->Void,
+                                 removeAction: @escaping (VenueDTO)->Void) {
+        makeSnapshotListener(forType: .venues) {
             updateAction($0)
         } completionOnRemoved: {
             removeAction($0)
@@ -393,7 +435,7 @@ extension NetworkManager {
 // MARK: - Online/Offline
 extension NetworkManager {
     func goOnline(id: String) async {
-        let userRef = db.collection("\(GlobalProperties.Path.users.rawValue)")
+        let userRef = db.collection("\(GlobalProperties.Path.members.rawValue)")
             .document(id)
         do {
             try await userRef.updateData(["isOnline": true])
@@ -407,7 +449,7 @@ extension NetworkManager {
     }
     func goOffline(id: String) async {
         //        guard let id = globalStorage.currentSessionUser?.id else { return }
-        let userRef = db.collection("\(GlobalProperties.Path.users.rawValue)")
+        let userRef = db.collection("\(GlobalProperties.Path.members.rawValue)")
             .document(id)
 
         do {

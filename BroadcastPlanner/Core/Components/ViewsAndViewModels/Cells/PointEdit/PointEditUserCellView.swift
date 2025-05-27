@@ -3,7 +3,7 @@ import Combine
 
 struct PointEditUserCellView: View {
     
-    let user: LocalUser
+    let user: Member
     
     var body: some View {
             VStack(spacing: 5){

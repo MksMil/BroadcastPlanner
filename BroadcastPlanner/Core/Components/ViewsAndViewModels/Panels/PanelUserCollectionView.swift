@@ -2,17 +2,17 @@ import SwiftUI
 
 struct PanelUserCollectionView: View {
     
-    let users: [LocalUser]
-    let availableUsers: [LocalUser]
-    let addAction: (LocalUser)->()
-    let removeAction: (LocalUser)->()
+    let users: [Member]
+    let availableUsers: [Member]
+    let addAction: (Member)->()
+    let removeAction: (Member)->()
     
     
     @State private var isSelect: Bool = false
     @State private var isConfirm: Bool = false
-    @State private var userToRemove: LocalUser?
+    @State private var userToRemove: Member?
     
-    init(users: [LocalUser],availableUsers: [LocalUser],addAction: @escaping (LocalUser)->(), removeAction: @escaping (LocalUser)->()) {
+    init(users: [Member],availableUsers: [Member],addAction: @escaping (Member)->(), removeAction: @escaping (Member)->()) {
         self.users = users
         self.availableUsers = availableUsers
         self.addAction = addAction

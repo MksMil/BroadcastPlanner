@@ -41,7 +41,7 @@ struct BroadcastPlannerApp: App {
                                 appState.userOnlineStatus = .online
                             case .background, .inactive:
                                 //send offline status
-                                //save local cache: images + data( events, users, messages)
+                                //save local cache: images + data( broadcasts, members, messages)
                                 print("scene in background or inactive state: send offline status")
                                 appState.userOnlineStatus = .offline
                             @unknown default:

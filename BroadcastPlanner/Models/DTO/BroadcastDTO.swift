@@ -1,6 +1,10 @@
 import Foundation
 
-struct EventDTO: Identifiable, Codable, BPDataProtocol {
+struct BroadcastDTO: Identifiable, Codable, BPDataProtocol,CoreDataRepresentable {
+    
+    typealias Entity = Broadcast
+    var primaryKeyPredicate: NSPredicate { NSPredicate(format: "id == %@", id as CVarArg)
+    }
     var id: String
     
     //event date
@@ -11,9 +15,9 @@ struct EventDTO: Identifiable, Codable, BPDataProtocol {
     var locationID: String?
     var obVanId: String?
     
-    //unit points
+    //crew points
     var locationPoints: [PointDTO]
-    var obVanUnits: [UnitDTO]
+    var obVanUnits: [CrewDTO]
     
     //owners Id's
     var ownersIds: [String] = []
@@ -26,7 +30,7 @@ struct EventDTO: Identifiable, Codable, BPDataProtocol {
     var obvanPreviewId: String?
    
     // MARK: - Initialization
-    init( id: String = UUID().uuidString, date: Date = Date(),lastUpdated: Date = .now ,obVanId: String?, locationPoints: [PointDTO] = [], obvanUnits: [UnitDTO] = [], locationID: String?, homeClubId: String?, guestClubId: String?,locationPreviewId: String?,obvanPreviewId: String? ) {
+    init( id: String = UUID().uuidString, date: Date = Date(),lastUpdated: Date = .now ,obVanId: String?, locationPoints: [PointDTO] = [], obvanUnits: [CrewDTO] = [], locationID: String?, homeClubId: String?, guestClubId: String?,locationPreviewId: String?,obvanPreviewId: String? ) {
         self.id = id
         self.date = date
         self.lastUpdated = lastUpdated

@@ -71,7 +71,7 @@ final class AddEditLocationViewModel: ObservableObject{
         .store(in: &cancellables)
     }
     
-    init(location: Location){
+    init(location: Venue){
         self.title = location.viewTitle
         self.address = location.viewAddress
         if let locationBackground = location.background{

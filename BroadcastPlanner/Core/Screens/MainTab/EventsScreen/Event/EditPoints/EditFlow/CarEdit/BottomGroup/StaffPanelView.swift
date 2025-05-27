@@ -1,22 +1,22 @@
 import SwiftUI
 
 struct StaffPanelView: View {
-    let event: Event
+    let event: Broadcast
 
-    @FetchRequest<LocalUser>(sortDescriptors: []) var users
-    var availableUsers: [LocalUser] {
+    @FetchRequest<Member>(sortDescriptors: []) var users
+    var availableUsers: [Member] {
         users.filter{$0.isAvailableToEvent(event: event)}
     }
         
-    let addUnitAction: (LocalUser, UserSpecialization, ReplayType?)->()
-    let removeUnitAction: (Unit)->()
+    let addUnitAction: (Member, UserSpecialization, ReplayType?)->()
+    let removeUnitAction: (Crew)->()
     let editUnitAction: ()->()
     
     @State private var isAddUnit: Bool = false
     
-    init(event: Event,
-         addUnitAction: @escaping (LocalUser, UserSpecialization, ReplayType?) -> Void,
-         removeUnitAction: @escaping (Unit) -> Void,
+    init(event: Broadcast,
+         addUnitAction: @escaping (Member, UserSpecialization, ReplayType?) -> Void,
+         removeUnitAction: @escaping (Crew) -> Void,
          editUnitAction: @escaping () -> Void) {
         self.event = event
         self.addUnitAction = addUnitAction
@@ -26,7 +26,7 @@ struct StaffPanelView: View {
     
     var body: some View {
         VStack{
-            Button("Add new unit"){
+            Button("Add new crew"){
                 isAddUnit = true
             }
             .padding(8)
@@ -69,7 +69,7 @@ struct StaffPanelView: View {
 
 struct StaffPanelCellView: View {
     
-    let unit: Unit
+    let unit: Crew
     
     var body: some View {
         HStack{
@@ -111,10 +111,10 @@ struct StaffPanelCellView: View {
 #Preview(body: {
     let lm = DataManager(forPreview: true)
 
-    let localEvent = lm.fetchOrCreateObject(ofType: Event.self,
+    let localEvent = lm.fetchOrCreateObject(ofType: Broadcast.self,
                   predicate: NSPredicate(format: "id == %@", "id"),
                                       in: lm.mainContext) { ctx in
-        let newEvent = Event(context: ctx)
+        let newEvent = Broadcast(context: ctx)
         newEvent.id = "id"
         return newEvent
     }

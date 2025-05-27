@@ -11,13 +11,13 @@ final class PointInfoPanelViewModel: ObservableObject {
     var selectedSoundPlaceType: PlaceType = .none
     var selectedSoundWindDefence: WindDefence = .none
     var selectedLight: LightType = .none
-    var selectedUser: LocalUser?
+    var selectedUser: Member?
 
     var position: CameraPosition = .pitchSideHalfWay
 
     var publisher: PassthroughSubject = PassthroughSubject<(PointEditPublishType, Any), Never>()
 
-    let point: LocationPoint
+    let point: VenuePoint
     var availableNumbers: [Int] {
         var nums: [Int] = []
         if let event = point.event{
@@ -33,7 +33,7 @@ final class PointInfoPanelViewModel: ObservableObject {
         return result
     }
 
-    init(point: LocationPoint) {
+    init(point: VenuePoint) {
         self.point = point
         if let user = point.viewUsers.first {
             selectedUser = user

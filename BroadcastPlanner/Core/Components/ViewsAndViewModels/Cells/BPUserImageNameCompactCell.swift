@@ -2,7 +2,7 @@ import SwiftUI
 
 struct BPUserImageNameCompactCell: View {
     
-    let user: LocalUser
+    let user: Member
     let action: ()->Void
     @State private var isShowInfo: Bool = false
     

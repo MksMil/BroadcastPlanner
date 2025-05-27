@@ -135,7 +135,7 @@ struct SettingsView: View {
                             Button {
                                 settingsRouter.path.append(SettingsTabPath.locationSheet(nil))
                             }label: {
-                                    Text("Add Location")
+                                    Text("Add Venue")
                                         .frame(maxWidth: .infinity)
                                         .frame(height: 50)
                                         .background {Color.white.opacity(30)}
@@ -143,7 +143,7 @@ struct SettingsView: View {
                                         .padding(.horizontal)
                                 }
                         } header: {
-                            Text("Club and Location Edit")
+                            Text("Club and Venue Edit")
                                 .font(.title2)
                                 .fontWeight(.light)
                                 .foregroundStyle(Color.gray)
@@ -270,7 +270,7 @@ struct SettingsView: View {
                         } removeAction: {
                             Task{
                                 //remove
-                                await mdm.localDataManager.saveContextAsync(type: .main, publish: .locations, id: [])
+                                await mdm.localDataManager.saveContextAsync(type: .main, publish: .venues, id: [])
                                 settingsRouter.routeStepBack()
                             }
                         }

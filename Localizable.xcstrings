@@ -44,34 +44,37 @@
     "Add Club" : {
 
     },
+    "Add Crew form here" : {
+
+    },
     "Add light" : {
 
     },
     "Add location" : {
 
     },
-    "Add Location" : {
+    "Add mic" : {
 
     },
-    "Add mic" : {
+    "Add new crew" : {
 
     },
     "Add new template" : {
 
     },
-    "Add new unit" : {
-
-    },
-    "Add Unit form here" : {
-
-    },
     "Add user" : {
+
+    },
+    "Add Venue" : {
 
     },
     "Back" : {
 
     },
     "BP" : {
+
+    },
+    "Broadcast" : {
 
     },
     "Cancel" : {
@@ -92,13 +95,13 @@
     "change to 3" : {
 
     },
-    "Choose Location" : {
+    "Choose Venue" : {
 
     },
     "Club" : {
 
     },
-    "Club and Location Edit" : {
+    "Club and Venue Edit" : {
 
     },
     "club name" : {
@@ -110,16 +113,16 @@
     "contact info" : {
 
     },
+    "Create Broadcast" : {
+
+    },
     "Create Club" : {
 
     },
-    "Create Event" : {
-
-    },
-    "Create Location" : {
-
-    },
     "Create User" : {
+
+    },
+    "Create Venue" : {
 
     },
     "Creation date: %@" : {
@@ -128,7 +131,7 @@
     "Delete account" : {
 
     },
-    "Delete Event" : {
+    "Delete Broadcast" : {
 
     },
     "Delete Point" : {
@@ -188,9 +191,6 @@
     "Link with Google" : {
 
     },
-    "Location" : {
-
-    },
     "LOGO" : {
 
     },
@@ -209,7 +209,7 @@
     "My Info" : {
 
     },
-    "New Event" : {
+    "New Broadcast" : {
 
     },
     "Not Registered?   Sign Up!" : {
@@ -221,10 +221,10 @@
     "Permanently erase the Club in the trash?" : {
 
     },
-    "Permanently erase the Location in the trash?" : {
+    "Permanently erase the photo in the trash?" : {
 
     },
-    "Permanently erase the photo in the trash?" : {
+    "Permanently erase the Venue in the trash?" : {
 
     },
     "Press me" : {
@@ -236,19 +236,16 @@
     "Remove %@ template!" : {
 
     },
+    "Remove Broadcast" : {
+
+    },
     "Remove camera environment" : {
 
     },
     "Remove Club" : {
 
     },
-    "Remove Event" : {
-
-    },
     "Remove light hardware" : {
-
-    },
-    "Remove Location" : {
 
     },
     "Remove Photo" : {
@@ -258,6 +255,9 @@
 
     },
     "Remove user" : {
+
+    },
+    "Remove Venue" : {
 
     },
     "RemoveClub" : {
@@ -311,10 +311,10 @@
     "Update %@" : {
 
     },
-    "Update Club" : {
+    "Update Broadcast" : {
 
     },
-    "Update Event" : {
+    "Update Club" : {
 
     },
     "Update User" : {
@@ -324,6 +324,9 @@
 
     },
     "User" : {
+
+    },
+    "Venue" : {
 
     },
     "Welcome!\nselection: %lld" : {

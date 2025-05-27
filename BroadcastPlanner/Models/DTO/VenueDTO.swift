@@ -1,6 +1,12 @@
 import Foundation
 
-struct LocationDTO: Identifiable,Codable,BPDataProtocol{
+struct VenueDTO: Identifiable,Codable,BPDataProtocol,CoreDataRepresentable {
+    
+    typealias Entity = Venue
+    var primaryKeyPredicate: NSPredicate {
+        NSPredicate(format: "id == %@", id as CVarArg)
+    }
+    
     var id: String
     var lastUpdated: Date
     var title: String

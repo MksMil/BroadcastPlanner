@@ -4,7 +4,7 @@ import UIKit
 
 struct AddEditLocationView: View {
     let buttonSize: Double = 30
-    let location: Location
+    let location: Venue
 
     let acceptAction: (String,String,[UIImage],LocalImage?) -> Void
     let cancelAction: () -> Void
@@ -23,7 +23,7 @@ struct AddEditLocationView: View {
 //    @FetchRequest<LocalImage>(sortDescriptors: [SortDescriptor(\.lastUpdated, order: .forward)]) var locationImages
  
     init(
-        location: Location,
+        location: Venue,
         acceptAction: @escaping (String,String,[UIImage],LocalImage?) -> Void,
         cancelAction: @escaping () -> Void,
         removeAction: @escaping () -> Void
@@ -92,12 +92,14 @@ struct AddEditLocationView: View {
                     
                     DividerWithText(text: "address")
                     
-                    TextField("enter address", text: $vm.address)
+                    TextField("enter address", text: $vm.address,axis: .vertical)
+                        .lineLimit(2, reservesSpace: true)
+                        .minimumScaleFactor(0.5)
                         .padding(.horizontal)
                         .textFieldStyle(.roundedBorder)
                         .autocorrectionDisabled(true)
                    
-                    DividerWithText(text: "Location images")
+                    DividerWithText(text: "Venue images")
                     
                     //location photos collection
                     TabViewList(source: location.viewLocalImages.sorted{$0.viewLastUpdated < $1.viewLastUpdated}, pageCount: 3, spacing: 5) { localImage in
@@ -304,10 +306,10 @@ struct AddEditLocationView: View {
                 }
                 //location remove confirmation dialog
                 .confirmationDialog(
-                    Text("Permanently erase the Location in the trash?"),
+                    Text("Permanently erase the Venue in the trash?"),
                     isPresented: $isRemoveLocationDialog
                 ) {
-                    Button("Remove Location", role: .destructive) {
+                    Button("Remove Venue", role: .destructive) {
                         // Handle empty trash action.
                         Task{
                            await mdm.removeLocation(location)
@@ -340,7 +342,7 @@ struct AddEditLocationView: View {
         globalDataManager: NetworkManager(),
         userId: "123"
     )
-    let dto = LocationDTO(id: "id", lastUpdated: Date.now, title: "Title", address: "address", imagesIds: [], locationBackgroundId: nil)
+    let dto = VenueDTO(id: "id", lastUpdated: Date.now, title: "Title", address: "address", imagesIds: [], locationBackgroundId: nil)
     let location = mdm.localDataManager.createOrUpdateLocalLocationWithLocationDTO(dto, inContext: .main)
     
    return AddEditLocationView(location: location) { _, _, _, _ in

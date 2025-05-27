@@ -27,7 +27,7 @@ final class AddEditClubViewModel: ObservableObject{
     @Published var urlString: String
     @Published var contacts: String
     
-    @Published var location: Location?
+    @Published var location: Venue?
     
     init(club: Club){
         self.club = club
@@ -53,14 +53,14 @@ struct AddEditClubView: View {
     
     let club: Club
     
-    let acceptAction: (String, UIImage?,String,String, Location?)->Void
+    let acceptAction: (String, UIImage?,String,String, Venue?)->Void
     let cancelAction: ()->Void
     let removeAction: ()->Void
     
     let defineLocation: ()->Void
     
     init(club: Club,
-         acceptAction: @escaping (String, UIImage?, String, String, Location?) -> Void,
+         acceptAction: @escaping (String, UIImage?, String, String, Venue?) -> Void,
          cancelAction: @escaping () -> Void,
          removeAction: @escaping () -> Void,
          defineLocation: @escaping () -> Void) {
@@ -130,7 +130,7 @@ struct AddEditClubView: View {
                         .textFieldStyle(.roundedBorder)
                     
                     
-                    //Location
+                    //Venue
                     
                     Button {
                         defineLocation()
@@ -139,7 +139,7 @@ struct AddEditClubView: View {
                             LocationCell(title: location.viewTitle,
                                          address: location.viewAddress)
                         } else {
-                            Text(vm.location?.viewTitle ?? "Add Location" )
+                            Text(vm.location?.viewTitle ?? "Add Venue" )
                                 .font(.headline)
                                 .padding(.horizontal,8)
                                 .padding(.vertical,4)

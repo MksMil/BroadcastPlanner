@@ -2,14 +2,14 @@ import SwiftUI
 import UIKit
 import CoreData
 
-public class Event: NSManagedObject {
+public class Broadcast: NSManagedObject {
 
 }
 
-extension Event {
+extension Broadcast {
 
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<Event> {
-        return NSFetchRequest<Event>(entityName: "Event")
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<Broadcast> {
+        return NSFetchRequest<Broadcast>(entityName: "Broadcast")
     }
 
     @NSManaged public var date: Date?
@@ -17,7 +17,7 @@ extension Event {
     @NSManaged public var lastUpdated: Date?
     @NSManaged public var guestClub: Club?
     @NSManaged public var homeClub: Club?
-    @NSManaged public var location: Location?
+    @NSManaged public var location: Venue?
     @NSManaged public var locationPreview: LocalImage?
     @NSManaged public var obvan: Obvan?
     @NSManaged public var obvanPreview: LocalImage?
@@ -29,13 +29,13 @@ extension Event {
 }
 
 // MARK: Generated accessors for owners
-extension Event {
+extension Broadcast {
 
     @objc(addOwnersObject:)
-    @NSManaged public func addToOwners(_ value: LocalUser)
+    @NSManaged public func addToOwners(_ value: Member)
 
     @objc(removeOwnersObject:)
-    @NSManaged public func removeFromOwners(_ value: LocalUser)
+    @NSManaged public func removeFromOwners(_ value: Member)
 
     @objc(addOwners:)
     @NSManaged public func addToOwners(_ values: NSSet)
@@ -46,13 +46,13 @@ extension Event {
 }
 
 // MARK: Generated accessors for points
-extension Event {
+extension Broadcast {
 
     @objc(addPointsObject:)
-    @NSManaged public func addToPoints(_ value: LocationPoint)
+    @NSManaged public func addToPoints(_ value: VenuePoint)
 
     @objc(removePointsObject:)
-    @NSManaged public func removeFromPoints(_ value: LocationPoint)
+    @NSManaged public func removeFromPoints(_ value: VenuePoint)
 
     @objc(addPoints:)
     @NSManaged public func addToPoints(_ values: NSSet)
@@ -63,13 +63,13 @@ extension Event {
 }
 
 // MARK: Generated accessors for units
-extension Event {
+extension Broadcast {
 
     @objc(addUnitsObject:)
-    @NSManaged public func addToUnits(_ value: Unit)
+    @NSManaged public func addToUnits(_ value: Crew)
 
     @objc(removeUnitsObject:)
-    @NSManaged public func removeFromUnits(_ value: Unit)
+    @NSManaged public func removeFromUnits(_ value: Crew)
 
     @objc(addUnits:)
     @NSManaged public func addToUnits(_ values: NSSet)
@@ -79,14 +79,14 @@ extension Event {
 
 }
 
-// MARK: Generated accessors for users
-extension Event {
+// MARK: Generated accessors for members
+extension Broadcast {
 
     @objc(addUsersObject:)
-    @NSManaged public func addToUsers(_ value: LocalUser)
+    @NSManaged public func addToUsers(_ value: Member)
 
     @objc(removeUsersObject:)
-    @NSManaged public func removeFromUsers(_ value: LocalUser)
+    @NSManaged public func removeFromUsers(_ value: Member)
 
     @objc(addUsers:)
     @NSManaged public func addToUsers(_ values: NSSet)
@@ -96,7 +96,7 @@ extension Event {
 
 }
 
-extension Event : Identifiable {
+extension Broadcast : Identifiable {
     var viewId: String {
         id ?? ""
     }
@@ -114,28 +114,28 @@ extension Event : Identifiable {
         date ?? Date()
     }
 
-    var viewUsers: [LocalUser] {
-        users?.allObjects.compactMap{$0 as? LocalUser} ?? []
+    var viewUsers: [Member] {
+        users?.allObjects.compactMap{$0 as? Member} ?? []
     }
-    var viewOwners: [LocalUser] {
-        owners?.allObjects.compactMap{$0 as? LocalUser} ?? []
-    }
-    
-    var viewLocationPoints: [LocationPoint]{
-        points?.allObjects.compactMap{$0 as? LocationPoint} ?? []
+    var viewOwners: [Member] {
+        owners?.allObjects.compactMap{$0 as? Member} ?? []
     }
     
-    var viewObvanUnits: [Unit]{
-        units?.allObjects.compactMap{$0 as? Unit} ?? []
+    var viewLocationPoints: [VenuePoint]{
+        points?.allObjects.compactMap{$0 as? VenuePoint} ?? []
+    }
+    
+    var viewObvanUnits: [Crew]{
+        units?.allObjects.compactMap{$0 as? Crew} ?? []
     }
     
     var viewTitle: String {
-        guard let title = location?.title else { return "Event location"}
+        guard let title = location?.title else { return "Broadcast location"}
         return title
     }
     
     var viewAddress: String {
-        guard let address = location?.address else { return "Event address"}
+        guard let address = location?.address else { return "Broadcast address"}
         return address
     }
     
@@ -170,8 +170,8 @@ extension Event : Identifiable {
         lastUpdated ?? .now
     }
     
-    var dto: EventDTO  {
-        var event = EventDTO(id: viewId,
+    var dto: BroadcastDTO  {
+        var event = BroadcastDTO(id: viewId,
                              date: viewRemainingDate,
                              lastUpdated: viewLastUpdated,
                              obVanId: obvan?.id,
@@ -197,7 +197,7 @@ extension Event : Identifiable {
         
     }
     
-    func status(user: LocalUser) -> EventStatus{
+    func status(user: Member) -> BroadcastStatus{
         
         if viewOwners.contains(user){
             return .currentUserOwned
@@ -207,5 +207,11 @@ extension Event : Identifiable {
         }
         return .none
     }
+}
+
+extension Broadcast: CoreDataUpdatable{
+    func update(from dto: BroadcastDTO, in context: NSManagedObjectContext) {
+            self.id = dto.id
+        }
 }
 

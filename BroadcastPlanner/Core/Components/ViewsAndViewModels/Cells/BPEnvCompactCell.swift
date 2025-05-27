@@ -2,7 +2,7 @@ import SwiftUI
 
 struct BPEnvCompactCell: View {
     
-    let user: LocalUser
+    let user: Member
     let action: ()->Void
     
     var body: some View {

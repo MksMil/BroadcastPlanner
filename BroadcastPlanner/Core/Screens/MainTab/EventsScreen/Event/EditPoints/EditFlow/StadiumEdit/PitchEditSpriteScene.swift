@@ -26,7 +26,7 @@ class PitchEditSpriteScene: SKScene{
     let poleCamSpriteName = "poleCam1"
     
     
-    //point and cam movement control
+    //venuePoint and cam movement control
     var sceneState: SceneState = .idle
     
     //delegate
@@ -48,7 +48,7 @@ class PitchEditSpriteScene: SKScene{
     var lastPanLocation: CGPoint?
     
     //data source
-    var points: [LocationPoint] = []
+    var points: [VenuePoint] = []
     
     //control
     var selectedPointNode: SKNode?
@@ -64,7 +64,7 @@ class PitchEditSpriteScene: SKScene{
                 y: self.frame.height / 2)
     }
     
-    //for smooth point node move
+    //for smooth venuePoint node move
     var deltaXinTouch: Double = 0
     var deltaYinTouch: Double = 0
     
@@ -100,7 +100,7 @@ class PitchEditSpriteScene: SKScene{
     }
     
     func configurePointNode(node: SKShapeNode,
-                            point: LocationPoint)
+                            point: VenuePoint)
     {
         node.name = point.viewId
         node.zPosition = 1
@@ -118,7 +118,7 @@ class PitchEditSpriteScene: SKScene{
         }
     }
     
-    func assignTexturesInNode(_ node: SKShapeNode, withPoint point: LocationPoint){
+    func assignTexturesInNode(_ node: SKShapeNode, withPoint point: VenuePoint){
         var rotation = CGFloat.zero
         if node == selectedPointNode {
             rotation = selectedPointNodeRotation
@@ -161,7 +161,7 @@ class PitchEditSpriteScene: SKScene{
         }
     }
     
-    func updateSpritesWithPoint(point: LocationPoint){
+    func updateSpritesWithPoint(point: VenuePoint){
         //only with selectedNode we can change textures
         if let selectedPointNode = selectedPointNode as? SKShapeNode {
             selectedPointNode.removeAllChildren()
@@ -284,7 +284,7 @@ extension PitchEditSpriteScene{
 // MARK: - BPPlanDelegateProtocol
 extension PitchEditSpriteScene{
     
-    func addPoint(point: LocationPoint, select: Bool){
+    func addPoint(point: VenuePoint, select: Bool){
         let pointNode = SKShapeNode(
             rectOf: CGSize(width: 4 * step,
                             height:  4 * step),
@@ -326,7 +326,7 @@ extension PitchEditSpriteScene{
         }
     }
     
-    func select(point: LocationPoint){
+    func select(point: VenuePoint){
         if let selectedPointNode = selectedPointNode as? SKShapeNode{
             removeSelectionAnimationFromNode(node: selectedPointNode)
         }
@@ -463,7 +463,7 @@ extension PitchEditSpriteScene{
                 sceneState = .idle
                 lastPanLocation = touch.location(in: view)
             }
-            //selected point animation start
+            //selected venuePoint animation start
         }
     }
     
@@ -527,7 +527,7 @@ extension PitchEditSpriteScene{
 
 }
 
-// MARK: - Move selected point node
+// MARK: - Move selected venuePoint node
 extension PitchEditSpriteScene{
     func moveUP(){
         guard let selectedPointNode else { return }
@@ -617,7 +617,7 @@ extension PitchEditSpriteScene{
     }
     
 }
-// MARK: - Scaling selected point node
+// MARK: - Scaling selected venuePoint node
 extension PitchEditSpriteScene{
     func scaleUpSelectedPoint(){
         if let selectedPointNode, selectedPointNode.isNotNodeWithName(NodeType.background.rawValue) {
@@ -755,10 +755,10 @@ extension SKNode{
     let mdm = MainDataManager(localDataManager: lm,
                               globalDataManager: NetworkManager(),
                               userId: "123")
-    let localEvent = lm.fetchOrCreateObject(ofType: Event.self,
+    let localEvent = lm.fetchOrCreateObject(ofType: Broadcast.self,
                   predicate: NSPredicate(format: "id == %@", "id"),
                                       in: lm.mainContext) { ctx in
-        let newEvent = Event(context: ctx)
+        let newEvent = Broadcast(context: ctx)
         newEvent.id = "id"
         return newEvent
     }

@@ -11,9 +11,9 @@ struct ExploreEventView: View {
     @EnvironmentObject var eventRouter: EventTabRouter
     @EnvironmentObject var mdm: MainDataManager
     
-    let event: Event
+    let event: Broadcast
     
-    init(event: Event) {
+    init(event: Broadcast) {
         self._vm = StateObject(wrappedValue: BPCreateEditEventViewModel(event: event))
         self.event = event
     }
@@ -119,7 +119,7 @@ struct ExploreEventView: View {
                 Spacer()
             }
         }
-        .navigationTitle("Event")
+        .navigationTitle("Broadcast")
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(.visible, for: .navigationBar)
         .toolbarBackground(.white.opacity(0.4), for: .navigationBar)

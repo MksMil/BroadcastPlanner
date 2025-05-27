@@ -2,7 +2,7 @@ import SwiftUI
 import Combine
 
 final class LocationSheetViewModel: ObservableObject{
-    @Published var selectedLocation: Location?
+    @Published var selectedLocation: Venue?
 }
 
 struct LocationSheetView: View {
@@ -10,7 +10,7 @@ struct LocationSheetView: View {
     
     @StateObject var vm: LocationSheetViewModel
     
-    @FetchRequest<Location>(sortDescriptors: [SortDescriptor(\.address)]) var locations
+    @FetchRequest<Venue>(sortDescriptors: [SortDescriptor(\.address)]) var locations
     @Namespace var ns
     
     let isEditMode: Bool
@@ -18,14 +18,14 @@ struct LocationSheetView: View {
     let club: Club?
     
     let cancelAction: ()-> Void
-    let saveAction: (Location?)-> Void
-    let addEditAction: (Location)->Void
+    let saveAction: (Venue?)-> Void
+    let addEditAction: (Venue)->Void
     
     init(isEditMode: Bool = true,
          club: Club?,
          cancelAction: @escaping () -> Void,
-         saveAction: @escaping (Location?) -> Void,
-         addEditAction:@escaping (Location) -> Void){
+         saveAction: @escaping (Venue?) -> Void,
+         addEditAction:@escaping (Venue) -> Void){
         self.isEditMode = isEditMode
         self.club = club
         self._vm = StateObject(wrappedValue: LocationSheetViewModel())
@@ -52,7 +52,7 @@ struct LocationSheetView: View {
                     }
                     saveAction(vm.selectedLocation)
                 },content: {
-                    Text(isEditMode ?  (vm.selectedLocation == nil ? "Add location":"Edit location"):"Choose Location")
+                    Text(isEditMode ?  (vm.selectedLocation == nil ? "Add location":"Edit location"):"Choose Venue")
                         .bold()
                         .frame(maxWidth: .infinity,maxHeight: .infinity)
                         .background {
@@ -114,7 +114,7 @@ struct LocationSheetView: View {
             }
         }
         .onReceive(mdm.localDataManager.updatePublisher, perform: { value in
-            if value.0 == .locations{
+            if value.0 == .venues{
                 if value.1.isEmpty{
                     vm.selectedLocation = nil
                 }

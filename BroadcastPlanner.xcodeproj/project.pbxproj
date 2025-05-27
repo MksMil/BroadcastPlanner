@@ -13,6 +13,7 @@
 		290F598A2CE63006002EAA4A /* PersonalScreenViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 290F59892CE63006002EAA4A /* PersonalScreenViewModel.swift */; };
 		290F598C2CE7828A002EAA4A /* BPDataProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 290F598B2CE7828A002EAA4A /* BPDataProtocol.swift */; };
 		290FF3B72B5E90240096D655 /* BPErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 290FF3B62B5E90240096D655 /* BPErrorView.swift */; };
+		29137EA42DE5C08B00120CAC /* ListenerConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29137EA32DE5C08B00120CAC /* ListenerConfig.swift */; };
 		2915AD1C2BF4A2AA0038239A /* BPUserProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2915AD1B2BF4A2AA0038239A /* BPUserProfileView.swift */; };
 		2916E60B2C4E85400025DCC6 /* BPEditEventControlPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2916E60A2C4E85400025DCC6 /* BPEditEventControlPanel.swift */; };
 		2916E60E2C4E875B0025DCC6 /* BPPlanDelegateProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2916E60D2C4E875B0025DCC6 /* BPPlanDelegateProtocol.swift */; };
@@ -51,7 +52,7 @@
 		2955C97C2B518715003F9ADC /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2955C97B2B518714003F9ADC /* SettingsView.swift */; };
 		2955C9822B57C1BE003F9ADC /* SessionUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2955C9812B57C1BE003F9ADC /* SessionUser.swift */; };
 		295943292C64EA8700C2B27C /* BPDateFormater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 295943282C64EA8700C2B27C /* BPDateFormater.swift */; };
-		295C871E2DD38997003B01B0 /* EventStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 295C871D2DD38997003B01B0 /* EventStatus.swift */; };
+		295C871E2DD38997003B01B0 /* BroadcastStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 295C871D2DD38997003B01B0 /* BroadcastStatus.swift */; };
 		295C87202DD47B5B003B01B0 /* ExploreEventView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 295C871F2DD47B5B003B01B0 /* ExploreEventView.swift */; };
 		2963DDBF2C81B51C0030DAC6 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2963DDBE2C81B51C0030DAC6 /* RootView.swift */; };
 		2963DDC12C8758A10030DAC6 /* EventUsersGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2963DDC02C8758A10030DAC6 /* EventUsersGridView.swift */; };
@@ -115,6 +116,7 @@
 		290F59892CE63006002EAA4A /* PersonalScreenViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalScreenViewModel.swift; sourceTree = "<group>"; };
 		290F598B2CE7828A002EAA4A /* BPDataProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPDataProtocol.swift; sourceTree = "<group>"; };
 		290FF3B62B5E90240096D655 /* BPErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPErrorView.swift; sourceTree = "<group>"; };
+		29137EA32DE5C08B00120CAC /* ListenerConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListenerConfig.swift; sourceTree = "<group>"; };
 		2915AD1B2BF4A2AA0038239A /* BPUserProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPUserProfileView.swift; sourceTree = "<group>"; };
 		2916E60A2C4E85400025DCC6 /* BPEditEventControlPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPEditEventControlPanel.swift; sourceTree = "<group>"; };
 		2916E60D2C4E875B0025DCC6 /* BPPlanDelegateProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPPlanDelegateProtocol.swift; sourceTree = "<group>"; };
@@ -146,7 +148,7 @@
 		2955C97B2B518714003F9ADC /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		2955C9812B57C1BE003F9ADC /* SessionUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionUser.swift; sourceTree = "<group>"; };
 		295943282C64EA8700C2B27C /* BPDateFormater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPDateFormater.swift; sourceTree = "<group>"; };
-		295C871D2DD38997003B01B0 /* EventStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventStatus.swift; sourceTree = "<group>"; };
+		295C871D2DD38997003B01B0 /* BroadcastStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BroadcastStatus.swift; sourceTree = "<group>"; };
 		295C871F2DD47B5B003B01B0 /* ExploreEventView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreEventView.swift; sourceTree = "<group>"; };
 		2963DDBE2C81B51C0030DAC6 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		2963DDC02C8758A10030DAC6 /* EventUsersGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventUsersGridView.swift; sourceTree = "<group>"; };
@@ -302,6 +304,7 @@
 		2916E6192C4F9DE40025DCC6 /* Managers */ = {
 			isa = PBXGroup;
 			children = (
+				29137EA32DE5C08B00120CAC /* ListenerConfig.swift */,
 				299D43C62D38F925007EEEFE /* MainDataManager.swift */,
 				29AE687D2BE8DA3700DE8FAB /* NetworkManager.swift */,
 				299D436B2D2E880F007EEEFE /* DataManager.swift */,
@@ -587,7 +590,7 @@
 		29C041CE2AC557D1008B3E1F /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				295C871D2DD38997003B01B0 /* EventStatus.swift */,
+				295C871D2DD38997003B01B0 /* BroadcastStatus.swift */,
 				29476BFF2DACE0AC007DFA88 /* DTO */,
 				29BE3AF42CAD57E600BDEF82 /* Data */,
 				290F598B2CE7828A002EAA4A /* BPDataProtocol.swift */,
@@ -890,9 +893,10 @@
 				290F598C2CE7828A002EAA4A /* BPDataProtocol.swift in Sources */,
 				29476C072DACE975007DFA88 /* SpecializationSection.swift in Sources */,
 				2955C96A2B4E416D003F9ADC /* AuthenticationScreen.swift in Sources */,
-				295C871E2DD38997003B01B0 /* EventStatus.swift in Sources */,
+				295C871E2DD38997003B01B0 /* BroadcastStatus.swift in Sources */,
 				295C87202DD47B5B003B01B0 /* ExploreEventView.swift in Sources */,
 				29D1697A2B85D4F800A70638 /* HaptickEngine.swift in Sources */,
+				29137EA42DE5C08B00120CAC /* ListenerConfig.swift in Sources */,
 				2916E60E2C4E875B0025DCC6 /* BPPlanDelegateProtocol.swift in Sources */,
 				29CB0F662C9A9BDE003B30C4 /* CarUnitCellView.swift in Sources */,
 				299190292C8A064400D2CDDC /* String+Ext.swift in Sources */,

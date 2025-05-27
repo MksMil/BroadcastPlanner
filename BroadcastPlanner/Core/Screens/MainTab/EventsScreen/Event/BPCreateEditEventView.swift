@@ -7,9 +7,9 @@ final class BPCreateEditEventViewModel: ObservableObject{
     var homeClub: Club?
     var guestClub: Club?
     var eventDate: Date
-    var location: Location?
+    var location: Venue?
     
-    init(event: Event){
+    init(event: Broadcast){
         if let club = event.homeClub{
             homeClub = club
         }
@@ -31,13 +31,13 @@ struct BPCreateEditEventView: View {
     @EnvironmentObject var eventRouter: EventTabRouter
     @EnvironmentObject var mdm: MainDataManager
     
-    let event: Event
+    let event: Broadcast
 
     @State private var isRemoveConfirm: Bool = false
     
-//    @FetchRequest<LocalUser>(sortDescriptors: []) private var users
+//    @FetchRequest<Member>(sortDescriptors: []) private var members
  
-    init(event: Event) {
+    init(event: Broadcast) {
         self._vm = StateObject(wrappedValue: BPCreateEditEventViewModel(event: event))
         self.event = event
     }
@@ -155,7 +155,7 @@ struct BPCreateEditEventView: View {
 
         .navigationBarBackButtonHidden()
         .confirmationDialog("", isPresented: $isRemoveConfirm) {
-            Button("Delete Event", role: .destructive){
+            Button("Delete Broadcast", role: .destructive){
                 Task{
                     await mdm.removeEvent(event: event)
                     eventRouter.routeStepBack()
@@ -168,10 +168,10 @@ struct BPCreateEditEventView: View {
 //#Preview {
 //        let lm = DataManager(forPreview: true)
 //        let mdm = MainDataManager(localDataManager: lm, globalDataManager: NetworkManager(),userId: "123")
-//        let localEvent = lm.fetchOrCreateObject(ofType: Event.self,
+//        let localEvent = lm.fetchOrCreateObject(ofType: Broadcast.self,
 //                      predicate: NSPredicate(format: "id == %@", "id"),
 //                                          in: lm.mainContext) { ctx in
-//            let newEvent = Event(context: ctx)
+//            let newEvent = Broadcast(context: ctx)
 //            newEvent.id = "id"
 //            return newEvent
 //        }

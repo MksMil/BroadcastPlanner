@@ -18,7 +18,7 @@ extension Club {
     @NSManaged public var urlString: String?
     @NSManaged public var guestEvent: NSSet?
     @NSManaged public var homeEvent: NSSet?
-    @NSManaged public var homeLocation: Location?
+    @NSManaged public var homeLocation: Venue?
     @NSManaged public var imageLogo: LocalImage?
 
 }
@@ -27,10 +27,10 @@ extension Club {
 extension Club {
 
     @objc(addGuestEventObject:)
-    @NSManaged public func addToGuestEvent(_ value: Event)
+    @NSManaged public func addToGuestEvent(_ value: Broadcast)
 
     @objc(removeGuestEventObject:)
-    @NSManaged public func removeFromGuestEvent(_ value: Event)
+    @NSManaged public func removeFromGuestEvent(_ value: Broadcast)
 
     @objc(addGuestEvent:)
     @NSManaged public func addToGuestEvent(_ values: NSSet)
@@ -44,10 +44,10 @@ extension Club {
 extension Club {
 
     @objc(addHomeEventObject:)
-    @NSManaged public func addToHomeEvent(_ value: Event)
+    @NSManaged public func addToHomeEvent(_ value: Broadcast)
 
     @objc(removeHomeEventObject:)
-    @NSManaged public func removeFromHomeEvent(_ value: Event)
+    @NSManaged public func removeFromHomeEvent(_ value: Broadcast)
 
     @objc(addHomeEvent:)
     @NSManaged public func addToHomeEvent(_ values: NSSet)
@@ -73,12 +73,12 @@ extension Club : Identifiable {
         urlString ?? ""
     }
     
-    var viewGuestEvents: [Event] {
-        guestEvent?.allObjects as? [Event] ?? []
+    var viewGuestEvents: [Broadcast] {
+        guestEvent?.allObjects as? [Broadcast] ?? []
     }
     
-    var viewHomeEvents: [Event] {
-        homeEvent?.allObjects as? [Event] ?? []
+    var viewHomeEvents: [Broadcast] {
+        homeEvent?.allObjects as? [Broadcast] ?? []
     }
     
     var viewImageSmallLogo: Image {
@@ -100,8 +100,13 @@ extension Club : Identifiable {
                 urlString: viewUrl,
                 imageLogoID: imageLogo?.viewId,
                 homeLocationID: homeLocation?.viewId, lastUpdated: viewLastUpdated)
-
     }
+}
+
+extension Club: CoreDataUpdatable{
+    func update(from dto: ClubDTO, in context: NSManagedObjectContext) {
+            self.id = dto.id
+        }
 }
 
 

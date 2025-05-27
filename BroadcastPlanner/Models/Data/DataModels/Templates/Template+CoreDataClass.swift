@@ -61,3 +61,9 @@ extension Template : Identifiable {
                     templatePoints: viewPoints.map{$0.dto})
     }
 }
+
+extension Template: CoreDataUpdatable{
+    func update(from dto: TemplateDTO, in context: NSManagedObjectContext) {
+            self.id = dto.id
+        }
+}

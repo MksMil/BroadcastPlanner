@@ -117,3 +117,9 @@ extension TemplatePoint : Identifiable {
         )
     }
 }
+
+extension TemplatePoint: CoreDataUpdatable{
+    func update(from dto: TemplatePointDTO, in context: NSManagedObjectContext) {
+            self.id = dto.id
+        }
+}

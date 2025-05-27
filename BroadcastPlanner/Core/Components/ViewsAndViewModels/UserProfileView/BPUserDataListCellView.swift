@@ -2,7 +2,7 @@ import SwiftUI
 
 struct BPUserDataListCellView: View {
     
-    var user : LocalUser
+    var user : Member
     var text: String
     
     var body: some View {
@@ -48,6 +48,6 @@ struct BPUserDataListCellView: View {
 }
 
 //#Preview {
-//    BPUserDataListCellView(user: LocalUser(context: DataManager.preview.moc), text: "text")
+//    BPUserDataListCellView(user: Member(context: DataManager.preview.moc), text: "text")
 //}
 

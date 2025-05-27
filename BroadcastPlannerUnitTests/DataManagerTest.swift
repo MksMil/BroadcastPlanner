@@ -52,18 +52,18 @@ final class DataManagerTests: XCTestCase {
     // MARK: - Generic
     func test_fetchOrCreateObject_returnsExistingObject_whenFound() {
         let id = "id"
-        let existing = LocationPoint(context: context)
+        let existing = VenuePoint(context: context)
         existing.id = id
         try? context.save()
 
         let predicate = NSPredicate(format: "id == %@", id)
         let result = sut.fetchOrCreateObject(
-            ofType: LocationPoint.self,
+            ofType: VenuePoint.self,
             predicate: predicate,
             in: context,
             initializer: { ctx in
                 XCTFail("Initializer should not be called")
-                return LocationPoint(context: ctx)
+                return VenuePoint(context: ctx)
             }
         )
         XCTAssertEqual(result.id, id)
@@ -74,11 +74,11 @@ final class DataManagerTests: XCTestCase {
         let predicate = NSPredicate(format: "id == %@", id)
 
         let result = sut.fetchOrCreateObject(
-            ofType: LocationPoint.self,
+            ofType: VenuePoint.self,
             predicate: predicate,
             in: context,
             initializer: { ctx in
-                let new = LocationPoint(context: ctx)
+                let new = VenuePoint(context: ctx)
                 new.id = initId
                 return new
             }
@@ -87,21 +87,21 @@ final class DataManagerTests: XCTestCase {
         XCTAssertEqual(result.id, initId)
 
         // Is object in context?
-        let fetchRequest: NSFetchRequest<LocationPoint> = LocationPoint.fetchRequest()
+        let fetchRequest: NSFetchRequest<VenuePoint> = VenuePoint.fetchRequest()
         let all = try? context.fetch(fetchRequest)
         XCTAssertTrue(all?.contains(where: { $0.id == initId }) ?? false)
     }
     // MARK: - User
     func test_createOrUpdateLocalUserWithUserDTO_createsUser_andUpdatesUser(){
         let id = UUID().uuidString
-        let userDTO = UserDTO.mock(id: id)
+        let userDTO = MemberDTO.mock(id: id)
         let resultUser = sut.createOrUpdateLocalUserWithUserDTO(userDTO,
                                             inContext: .main)
         XCTAssertEqual(id, resultUser.viewId)
     }
     func test_createOrUpdateLocalUserWithUserDTO_fetchesUser_andUpdatesUser(){
         let id = UUID().uuidString
-        var userDTO = UserDTO.mock(id: id)
+        var userDTO = MemberDTO.mock(id: id)
         userDTO.firstName = "firstName"
         userDTO.lastName = "lastName"
         userDTO.isOnline = true
@@ -110,12 +110,12 @@ final class DataManagerTests: XCTestCase {
         userDTO.homeAddress = "address"
         userDTO.specialization = ["1", "2", "3"]
         
-        let request: NSFetchRequest<LocalUser> =
-            LocalUser.fetchRequest()
+        let request: NSFetchRequest<Member> =
+            Member.fetchRequest()
         request.predicate = NSPredicate(format: "id == %@", id)
         var results = try? container.viewContext.fetch(request)
         XCTAssertEqual(results?.count, 0) // no user founded
-        let localUser = LocalUser(context: context)
+        let localUser = Member(context: context)
         localUser.id = id
         results = try? container.viewContext.fetch(request)
         XCTAssertEqual(results?.count, 1) // user founded
@@ -135,7 +135,7 @@ final class DataManagerTests: XCTestCase {
     }
     func test_updateLocalUser_updatesLocalUser(){
         let id = UUID().uuidString
-        var userDTO = UserDTO.mock(id: id)
+        var userDTO = MemberDTO.mock(id: id)
         userDTO.firstName = "firstName"
         userDTO.lastName = "lastName"
         userDTO.isOnline = true
@@ -143,7 +143,7 @@ final class DataManagerTests: XCTestCase {
         userDTO.email = "email@email"
         userDTO.homeAddress = "address"
         userDTO.specialization = ["1", "2", "3"]
-        let localUser = LocalUser(context: context)
+        let localUser = Member(context: context)
         sut.updateLocalUser(localUser,
                             withUserDTO: userDTO,
                             inContext: .main)
@@ -161,10 +161,10 @@ final class DataManagerTests: XCTestCase {
     }
     func test_removeUserUsingDTO_removesLocalUser(){
         let id = UUID().uuidString
-        let userDTO = UserDTO.mock(id: id)
+        let userDTO = MemberDTO.mock(id: id)
         
         let _ = sut.createOrUpdateLocalUserWithUserDTO(userDTO,inContext: .main)
-        let request: NSFetchRequest<LocalUser> = LocalUser.fetchRequest()
+        let request: NSFetchRequest<Member> = Member.fetchRequest()
         let results = try? container.viewContext.fetch(request)
         XCTAssertEqual(results?.count, 1)
         
@@ -173,8 +173,8 @@ final class DataManagerTests: XCTestCase {
         XCTAssertEqual(newResults?.count, 0)
     }
     func test_removeLocalUser_removesLocalUser(){
-        let localUser = LocalUser(context: context)
-        let request: NSFetchRequest<LocalUser> = LocalUser.fetchRequest()
+        let localUser = Member(context: context)
+        let request: NSFetchRequest<Member> = Member.fetchRequest()
         var results = try? container.viewContext.fetch(request)
         XCTAssertEqual(results?.count, 1)
         sut.removeLocalUser(localUser, inContext: .main)
@@ -182,10 +182,10 @@ final class DataManagerTests: XCTestCase {
         XCTAssertEqual(results?.count, 0)
     }
     @MainActor func test_fetchUsersAvailableToEvent_fetchesUsersAvailableToEvent(){
-        let localEvent = Event(context: context)
-        let user1DTO = UserDTO.mock(id:  UUID().uuidString)
-        let user2DTO = UserDTO.mock(id:  UUID().uuidString)
-        let user3DTO = UserDTO.mock(id:  UUID().uuidString)
+        let localEvent = Broadcast(context: context)
+        let user1DTO = MemberDTO.mock(id:  UUID().uuidString)
+        let user2DTO = MemberDTO.mock(id:  UUID().uuidString)
+        let user3DTO = MemberDTO.mock(id:  UUID().uuidString)
         let localUser1 = sut.createOrUpdateLocalUserWithUserDTO(user1DTO,
                                                               inContext: .main)
         let localUser2 = sut.createOrUpdateLocalUserWithUserDTO(user2DTO,
@@ -203,8 +203,8 @@ final class DataManagerTests: XCTestCase {
     // MARK: - Event
     func test_createOrUpdateLocalEventWithEventDTO_createsEvent_andUpdatesEvent()async {
         let id = UUID().uuidString
-        let eventDto = EventDTO.mock(id:id)
-        let request = Event.fetchRequest()
+        let eventDto = BroadcastDTO.mock(id:id)
+        let request = Broadcast.fetchRequest()
         var results = try? context.fetch(request)
         XCTAssertEqual(results?.count, 0)
         let _ = sut.createOrUpdateLocalEventWithEventDTO(eventDto, inContext: .main)
@@ -214,11 +214,11 @@ final class DataManagerTests: XCTestCase {
     }
     func test_createOrUpdateLocalEventWithEventDTO_fetchesEvent_andUpdatesEvent(){
         let id = UUID().uuidString
-        let eventDto = EventDTO.mock(id:id)
-        let localEvent = Event(context: context)
+        let eventDto = BroadcastDTO.mock(id:id)
+        let localEvent = Broadcast(context: context)
         localEvent.id = id
         
-        let request = Event.fetchRequest()
+        let request = Broadcast.fetchRequest()
         request.predicate = NSPredicate(format: "id == %@", id)
         let results = try? context.fetch(request)
         XCTAssertEqual(results?.count, 1)
@@ -235,10 +235,10 @@ final class DataManagerTests: XCTestCase {
     }
     func test_updateLocalEvent_updatesLocalEventWithDTO()async{
         let id = UUID().uuidString
-        let eventDto = EventDTO.mock(id:id,
+        let eventDto = BroadcastDTO.mock(id:id,
                                      ownersIds: ["1","2"],
                                      usersIds: ["3","4"])
-        let localEvent = Event(context: context)
+        let localEvent = Broadcast(context: context)
         sut.updateLocalEvent(localEvent, withDTO: eventDto, inContext: .main)
         XCTAssertEqual(localEvent.viewId, eventDto.id)
         XCTAssertEqual(localEvent.date ?? Date.now, eventDto.date)
@@ -256,9 +256,9 @@ final class DataManagerTests: XCTestCase {
     @MainActor
     func test_removeEvent_removesLocalEventUsingDTO(){
         let id = UUID().uuidString
-        let eventDto = EventDTO.mock(id:id)
+        let eventDto = BroadcastDTO.mock(id:id)
         
-        let request = Event.fetchRequest()
+        let request = Broadcast.fetchRequest()
         var results = try? context.fetch(request)
         XCTAssertEqual(results?.count, 0)
 
@@ -267,8 +267,8 @@ final class DataManagerTests: XCTestCase {
         XCTAssertEqual(results?.count, 1)
         //check if LocalImages for previews, points and units are created and existed
         assertEntitiesExistence(ofType: LocalImage.self, withIds: ["locPrevId-\(id)","obvanPrevId-\(id)"], in: context, shouldExist: true)
-        var resultPoints = try? context.fetch(LocationPoint.fetchRequest())
-        var resultUnits = try? context.fetch(Unit.fetchRequest())
+        var resultPoints = try? context.fetch(VenuePoint.fetchRequest())
+        var resultUnits = try? context.fetch(Crew.fetchRequest())
         XCTAssertEqual(resultPoints?.count, 3)
         XCTAssertEqual(resultUnits?.count, 3)
         
@@ -277,21 +277,21 @@ final class DataManagerTests: XCTestCase {
         XCTAssertEqual(results?.count, 0)
         //check if LocalImages for previews, points and units are removed
         assertEntitiesExistence(ofType: LocalImage.self, withIds: ["locPrevId-\(id)","obvanPrevId-\(id)"], in: context, shouldExist: false)
-        resultPoints = try? context.fetch(LocationPoint.fetchRequest())
-        resultUnits = try? context.fetch(Unit.fetchRequest())
+        resultPoints = try? context.fetch(VenuePoint.fetchRequest())
+        resultUnits = try? context.fetch(Crew.fetchRequest())
         XCTAssertEqual(resultPoints?.count, 0)
         XCTAssertEqual(resultUnits?.count, 0)
     }
     @MainActor
     func test_removeLocalEvent_removesLocalEvent() {
         let id = UUID().uuidString
-        let request = Event.fetchRequest()
+        let request = Broadcast.fetchRequest()
         let results = try? context.fetch(request)
         XCTAssertEqual(results?.count, 0)
-        let localEvent = sut.fetchOrCreateObject(ofType: Event.self,
+        let localEvent = sut.fetchOrCreateObject(ofType: Broadcast.self,
                                                  predicate: NSPredicate(format: "id == %@", id),
                                                  in: context) { ctx in
-            let newEvent = Event(context: ctx)
+            let newEvent = Broadcast(context: ctx)
             newEvent.id = id
             return newEvent
         }
@@ -381,7 +381,7 @@ final class DataManagerTests: XCTestCase {
         XCTAssertFalse(filesExist)
     }
 
-    // MARK: - Location
+    // MARK: - Venue
     func test_createOrUpdateLocalLocationWithLocation_createsNewLocationAndAssignsData() {
         // Given
         let id = UUID().uuidString
@@ -389,7 +389,7 @@ final class DataManagerTests: XCTestCase {
         let imageId2 = UUID().uuidString
         let backgroundId = UUID().uuidString
         
-        let dto = LocationDTO(
+        let dto = VenueDTO(
             id: id,
             lastUpdated: .now,
             title: "Test Title",
@@ -409,7 +409,7 @@ final class DataManagerTests: XCTestCase {
         XCTAssertEqual(localLocation.viewLocalImages.count, 2)
         XCTAssertEqual(localLocation.background?.id, backgroundId)
         
-        let newDto = LocationDTO(
+        let newDto = VenueDTO(
             id: id,
             lastUpdated: .now,
             title: "Test New Title",
@@ -448,7 +448,7 @@ final class DataManagerTests: XCTestCase {
             andType: .location,
             inContext: .main
         )
-        let location = Location(context: sut.mainContext)
+        let location = Venue(context: sut.mainContext)
         location.id = UUID().uuidString
         location.title = "Test Location"
         location.addToImages(image1)
@@ -489,7 +489,7 @@ final class DataManagerTests: XCTestCase {
         let title = "title"
         let address = "address"
         let background = sut.createOrUpdateLocalImageWithId("bgId", withImage: UIImage.testImage, andType: .location, inContext: .main)
-        let dto = LocationDTO.mock(id: "location")
+        let dto = VenueDTO.mock(id: "location")
         let location =  sut.createOrUpdateLocalLocationWithLocationDTO(dto, inContext: .main)
         
          sut.updateLocalLocation(location, withTitle: title, address: address, localImages: images, locationBackground: background, inContext: .main)
@@ -529,7 +529,7 @@ final class DataManagerTests: XCTestCase {
             andType: .location,
             inContext: .main
         )
-        let location = Location(context: sut.mainContext)
+        let location = Venue(context: sut.mainContext)
         location.id = UUID().uuidString
         location.title = "Test Location"
         location.addToImages(image1)
@@ -550,8 +550,8 @@ final class DataManagerTests: XCTestCase {
 
         
         sut.removeLocalLocation(location, inContext: .main)
-        sut.saveContextSync(type: .main, publish: .locations, id: [])
-        let request = Location.fetchRequest()
+        sut.saveContextSync(type: .main, publish: .venues, id: [])
+        let request = Venue.fetchRequest()
         let result = try? context.fetch(request)
         
         XCTAssertEqual(result?.count, 0)
@@ -757,7 +757,7 @@ final class DataManagerTests: XCTestCase {
         let contacts = "contacts"
         let urlString = "urlString"
         let locationId = "loctionId"
-        let location =  sut.createOrUpdateLocalLocationWithLocationDTO(LocationDTO.mock(id: locationId), inContext: .main)
+        let location =  sut.createOrUpdateLocalLocationWithLocationDTO(VenueDTO.mock(id: locationId), inContext: .main)
 
          sut.updateClubWith(id: id, title: title, uiimage: image, contacts: contacts, urlString: urlString, location: location, inContext: .main)
         result = try? context.fetch(request)
@@ -799,7 +799,7 @@ final class DataManagerTests: XCTestCase {
         let contacts = "contacts"
         let urlString = "urlString"
         let locationId = "loctionId"
-        let location =  sut.createOrUpdateLocalLocationWithLocationDTO(LocationDTO.mock(id: locationId), inContext: .main)
+        let location =  sut.createOrUpdateLocalLocationWithLocationDTO(VenueDTO.mock(id: locationId), inContext: .main)
 
          sut.updateClubWithClub(club:club, title: title, uiimage: image, contacts: contacts, urlString: urlString, location: location, inContext: .main)
         result = try? context.fetch(request)
@@ -832,7 +832,7 @@ final class DataManagerTests: XCTestCase {
         let contacts = "contacts"
         let urlString = "urlString"
         let locationId = "loctionId"
-        let location =  sut.createOrUpdateLocalLocationWithLocationDTO(LocationDTO.mock(id: locationId), inContext: .main)
+        let location =  sut.createOrUpdateLocalLocationWithLocationDTO(VenueDTO.mock(id: locationId), inContext: .main)
 
          sut.updateClubWithClub(club:club, title: title, uiimage: image, contacts: contacts, urlString: urlString, location: location, inContext: .main)
         let imageId = club.imageLogo?.id
@@ -869,7 +869,7 @@ final class DataManagerTests: XCTestCase {
         let contacts = "contacts"
         let urlString = "urlString"
         let locationId = "loctionId"
-        let location =  sut.createOrUpdateLocalLocationWithLocationDTO(LocationDTO.mock(id: locationId), inContext: .main)
+        let location =  sut.createOrUpdateLocalLocationWithLocationDTO(VenueDTO.mock(id: locationId), inContext: .main)
 
          sut.updateClubWithClub(club:club, title: title, uiimage: image, contacts: contacts, urlString: urlString, location: location, inContext: .main)
         let imageId = club.imageLogo?.id
@@ -910,7 +910,7 @@ final class DataManagerTests: XCTestCase {
         let id = "camId"
         let dto = CameraDTO.mock(id: id)
         let camera = sut.createOrUpdateCamera(dto, inContext: .main)
-        let point = LocationPoint(context: context)
+        let point = VenuePoint(context: context)
         
         sut.linkLocalCamera(camera, withPoint: point, inContext: .main)
         XCTAssertEqual(camera.point, point)
@@ -960,7 +960,7 @@ final class DataManagerTests: XCTestCase {
     
     func test_linkLocalSound_links(){
         let sound = Sound(context: context)
-        let point = LocationPoint(context: context)
+        let point = VenuePoint(context: context)
         sut.linkLocalSound(sound, withPoint: point, inContext: .main)
         XCTAssertEqual(sound.point, point)
         XCTAssertTrue(point.viewLocalSounds.contains(sound))
@@ -1006,7 +1006,7 @@ final class DataManagerTests: XCTestCase {
     
     func test_linkLocalLight_lonks(){
         let light = Light(context: context)
-        let point = LocationPoint(context: context)
+        let point = VenuePoint(context: context)
         sut.linkLocalLight(light, WithPoint: point, InContext: .main)
         XCTAssertEqual(light.point, point)
         XCTAssertTrue(point.viewLocalLights.contains(light))
@@ -1051,7 +1051,7 @@ final class DataManagerTests: XCTestCase {
     
     func test_linkLocalHardware_links(){
         let hardware = Hardware(context: context)
-        let unit = Unit(context: context)
+        let unit = Crew(context: context)
         sut.linkLocalHardware(hardware, withUnit: unit, inContext: .main)
         XCTAssertEqual(hardware.obvanUnit, unit)
         XCTAssertEqual(unit.hardware, hardware)
@@ -1086,7 +1086,7 @@ final class DataManagerTests: XCTestCase {
         let id = "pointDtoId"
         let pointDto = PointDTO.mock(id: id)
         
-        let request = LocationPoint.fetchRequest()
+        let request = VenuePoint.fetchRequest()
         request.predicate = NSPredicate(format: "id == %@", id)
         var result = try? context.fetch(request)
         XCTAssertEqual(result?.count, 0)
@@ -1128,7 +1128,7 @@ final class DataManagerTests: XCTestCase {
         let rot = 90
         let scale = 2.0
         
-        let point = LocationPoint(context: context)
+        let point = VenuePoint(context: context)
         sut.updateLocalPoint(point,
                              withX: x,
                              y: y,
@@ -1146,13 +1146,13 @@ final class DataManagerTests: XCTestCase {
         let id = "pointDtoId"
         let pointDto = PointDTO.mock(id: id)
         
-       let point = LocationPoint(context: context)
+       let point = VenuePoint(context: context)
         
          sut.updateLocalPoint(point,
                              withPointDTO: pointDto,
                              inContext: .main)
         
-//        XCTAssertEqual(point.id, id)
+//        XCTAssertEqual(venuePoint.id, id)
         XCTAssertEqual(point.coordinateX, Float(pointDto.coordinateX))
         XCTAssertEqual(point.coordinateY, Float(pointDto.coordinateY))
         XCTAssertEqual(point.rotation, Int16(pointDto.rotation))
@@ -1166,7 +1166,7 @@ final class DataManagerTests: XCTestCase {
     func test_updateLocalPoint_withTemplatePoint_updatesPoint(){
         let templatePoint = sut.createOrUpdateTemplatePointWithTemplatePointDTO(TemplatePointDTO.mock(id: "id"), inContext: .main)
         
-        let localPoint = LocationPoint(context: context)
+        let localPoint = VenuePoint(context: context)
         
         sut.updateLocalPoint(localPoint,
                              withTemplatePoint: templatePoint,
@@ -1216,7 +1216,7 @@ final class DataManagerTests: XCTestCase {
         sut.removeLocationPoint(dto, inContext: .main)
         try? context.save()
         
-        let request = LocationPoint.fetchRequest()
+        let request = VenuePoint.fetchRequest()
         request.predicate = NSPredicate(format: "id == %@", dto.id)
         let result = try? context.fetch(request)
         XCTAssertEqual(result?.count, 0)
@@ -1230,9 +1230,9 @@ final class DataManagerTests: XCTestCase {
     @MainActor
     func test_createOrUpdateLocalObvanUnitWithObvanUnit_createsAndUpdatesUnit(){
         let id = "unitId"
-        let dto = UnitDTO.mock(id: id)
+        let dto = CrewDTO.mock(id: id)
         
-        let request = Unit.fetchRequest()
+        let request = Crew.fetchRequest()
         request.predicate = NSPredicate(format: "id == %@", id)
         var result = try? context.fetch(request)
         XCTAssertEqual(result?.count, 0)
@@ -1255,7 +1255,7 @@ final class DataManagerTests: XCTestCase {
     
     func test_createUnitWithUser_createsUnitWithUser(){
         let userId = "userId"
-        let userDto = UserDTO.mock(id: userId)
+        let userDto = MemberDTO.mock(id: userId)
         let localUser = sut.createOrUpdateLocalUserWithUserDTO(userDto, inContext: .main)
         let localHardwareType = ReplayType.evs
         let position = UserSpecialization.director
@@ -1264,7 +1264,7 @@ final class DataManagerTests: XCTestCase {
                                    andPosition: position,
                                    andHardware: localHardwareType,
                                    inContext: .main)
-        let result = try? context.fetch(Unit.fetchRequest())
+        let result = try? context.fetch(Crew.fetchRequest())
         
         XCTAssertEqual(result?.count, 1)
         XCTAssertEqual(localUnit.user, localUser)
@@ -1276,10 +1276,10 @@ final class DataManagerTests: XCTestCase {
     func test_removeLocalUnit_removesLocalUnitAndHardware() async{
         let id  = "unitId"
         let hardwareId = "hardwareId-\(id)"
-        let dto = UnitDTO.mock(id: id)
+        let dto = CrewDTO.mock(id: id)
         let _ = sut.createOrUpdateLocalUnitWithUnitDTO(dto, inContext: .main)
         
-        assertEntitiesExistence(ofType: Unit.self,
+        assertEntitiesExistence(ofType: Crew.self,
                                 withIds: [id],
                                 in: context,
                                 shouldExist: true)
@@ -1292,7 +1292,7 @@ final class DataManagerTests: XCTestCase {
         sut.removeLocalUnitUsingUnitDTO(dto, inContext: .main)
         await sut.saveContextAsync(type: .main, publish: .none, id: [])
         
-        assertEntitiesExistence(ofType: Unit.self,
+        assertEntitiesExistence(ofType: Crew.self,
                                 withIds: [id],
                                 in: context,
                                 shouldExist: false)
@@ -1402,7 +1402,7 @@ final class DataManagerTests: XCTestCase {
             TemplatePoint.fetchRequest()
         let points = try? container.viewContext.fetch(fetchRequest)
         guard let templatePoint = points?.first else {
-            XCTFail("No template point created")
+            XCTFail("No template venuePoint created")
             return
         }
 
@@ -1499,7 +1499,7 @@ final class DataManagerTests: XCTestCase {
         
         for point in points {
             guard let viewPoint = template.viewPoints.first(where: { $0.pointDescription == point.pointDescription }) else {
-                XCTFail("Missing view point with id \(point.id ?? "nil")")
+                XCTFail("Missing view venuePoint with id \(point.id ?? "nil")")
                 continue
             }
 
@@ -1526,7 +1526,7 @@ final class DataManagerTests: XCTestCase {
         
         for point in points {
             guard let viewPoint = template.viewPoints.first(where: { $0.pointDescription == point.pointDescription }) else {
-                XCTFail("Missing view point with id \(point.id ?? "nil")")
+                XCTFail("Missing view venuePoint with id \(point.id ?? "nil")")
                 continue
             }
 
@@ -1643,7 +1643,7 @@ final class DataManagerTests: XCTestCase {
             lights: [LightDTO(id: lightId)]
         )
 
-        let point = LocationPoint(context: context)
+        let point = VenuePoint(context: context)
         point.id = pointId
 
         // when
@@ -1801,20 +1801,20 @@ extension UIImage {
     }
 }
 
-extension UserDTO {
-    static func mock(id: String = UUID().uuidString) -> UserDTO{
-        UserDTO(id: id)
+extension MemberDTO {
+    static func mock(id: String = UUID().uuidString) -> MemberDTO{
+        MemberDTO(id: id)
     }
 }
 
-extension EventDTO{
-    static func mock(id: String = UUID().uuidString, ownersIds:[String] = [], usersIds: [String] = [])->EventDTO{
-        var eventDTO = EventDTO(id: id,
+extension BroadcastDTO{
+    static func mock(id: String = UUID().uuidString, ownersIds:[String] = [], usersIds: [String] = [])->BroadcastDTO{
+        var eventDTO = BroadcastDTO(id: id,
                                 date: Date(),
                                 lastUpdated: .now,
                                 obVanId: "obvanId-\(id)",
                                 locationPoints: [PointDTO.mock(id: "1-\(id)"),PointDTO.mock(id: "2-\(id)"),PointDTO.mock(id: "3-\(id)")],
-                                obvanUnits: [UnitDTO.mock(id: "1-\(id)"),UnitDTO.mock(id: "2"),UnitDTO.mock(id: "3-\(id)")],
+                                obvanUnits: [CrewDTO.mock(id: "1-\(id)"),CrewDTO.mock(id: "2"),CrewDTO.mock(id: "3-\(id)")],
                                 locationID: "locationId-\(id)",
                                 homeClubId: "homeClubId-\(id)",
                                 guestClubId: "guestClubId-\(id)",
@@ -1826,9 +1826,9 @@ extension EventDTO{
     }
 }
 
-extension LocationDTO{
-    static func mock(id: String)->LocationDTO{
-        LocationDTO(id: id,
+extension VenueDTO{
+    static func mock(id: String)->VenueDTO{
+        VenueDTO(id: id,
                     lastUpdated: .now,
                     title: "title-\(id)",
                     address: "address-\(id)",
@@ -1885,9 +1885,9 @@ extension PointDTO{
     }
 }
 
-extension UnitDTO{
-    static func mock(id: String) -> UnitDTO{
-        UnitDTO(id: id,
+extension CrewDTO{
+    static func mock(id: String) -> CrewDTO{
+        CrewDTO(id: id,
                 position: UserSpecialization.replayOperator,
                 coordinateX: 100,
                 coordinateY: 100,

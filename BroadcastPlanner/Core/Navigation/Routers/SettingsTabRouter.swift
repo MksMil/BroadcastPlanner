@@ -15,7 +15,7 @@ enum SettingsTabPath: Hashable{
     case clubSheet
     case locationSheet(Club?)
     case addEditClub(Club)
-    case addEditLocation(Location)
+    case addEditLocation(Venue)
 }
 
 final class SettingsTabRouter: ObservableObject {

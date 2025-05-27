@@ -17,12 +17,12 @@ extension LocalImage {
     @NSManaged public var lastUpdated: Date?
     @NSManaged public var parentPoint: NSSet?
     @NSManaged public var parentClubLogo: Club?
-    @NSManaged public var parentLocationBackground: Location?
-    @NSManaged public var parentLocationImage: Location?
-    @NSManaged public var parentLocationPreviewEvent: Event?
+    @NSManaged public var parentLocationBackground: Venue?
+    @NSManaged public var parentLocationImage: Venue?
+    @NSManaged public var parentLocationPreviewEvent: Broadcast?
     @NSManaged public var parentObvan: Obvan?
-    @NSManaged public var parentObvanPreviewEvent: Event?
-    @NSManaged public var parentUser: LocalUser?
+    @NSManaged public var parentObvanPreviewEvent: Broadcast?
+    @NSManaged public var parentUser: Member?
 
 }
 
@@ -30,10 +30,10 @@ extension LocalImage {
 extension LocalImage {
 
     @objc(addParentPointObject:)
-    @NSManaged public func addToParentPoint(_ value: LocationPoint)
+    @NSManaged public func addToParentPoint(_ value: VenuePoint)
 
     @objc(removeParentPointObject:)
-    @NSManaged public func removeFromParentPoint(_ value: LocationPoint)
+    @NSManaged public func removeFromParentPoint(_ value: VenuePoint)
 
     @objc(addParentPoint:)
     @NSManaged public func addToParentPoint(_ values: NSSet)
@@ -113,4 +113,10 @@ extension LocalImage : Identifiable {
         let _ = ImagesManager.saveResizedImages(image: uiimage, id: viewId, type: viewType)
     }
     
+}
+
+extension LocalImage: CoreDataUpdatable{
+    func update(from dto: ImageDTO, in context: NSManagedObjectContext) {
+            self.id = dto.id
+        }
 }

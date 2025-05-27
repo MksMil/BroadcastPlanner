@@ -143,11 +143,11 @@ struct SaveEditControlPanelView: View {
         userId: "123"
     )
     let localEvent = lm.fetchOrCreateObject(
-        ofType: Event.self,
+        ofType: Broadcast.self,
         predicate: NSPredicate(format: "id == %@", "id"),
         in: lm.mainContext
     ) { ctx in
-        let newEvent = Event(context: ctx)
+        let newEvent = Broadcast(context: ctx)
         newEvent.id = "id"
         return newEvent
     }

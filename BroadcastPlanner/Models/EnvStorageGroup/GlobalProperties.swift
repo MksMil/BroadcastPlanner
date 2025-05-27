@@ -6,11 +6,11 @@ import UIKit
 struct GlobalProperties {
  
     enum Path: String{
-        case users, events, locations, clubs, obvans, images, templates, cameras, sounds, lights, hardwares, none
+        case members, broadcasts, venues, clubs, obvans, images, templates, cameras, sounds, lights, hardwares, none
     }
     
     enum PublishChanges: String{
-        case currentUser, users, events, locations, clubs, obvans, images, cameras, sounds, lights, hardwares, templates, point, unit, none
+        case currentUser, members, broadcasts, venues, clubs, obvans, images, cameras, sounds, lights, hardwares, templates, venuePoint, crew, none
     }
     
     enum ImageType: String{

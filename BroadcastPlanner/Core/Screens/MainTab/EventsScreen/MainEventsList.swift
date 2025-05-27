@@ -8,10 +8,10 @@ struct MainEventsList: View {
 
     @StateObject private var eventRouter = EventTabRouter()
 
-    @FetchRequest<Event>(sortDescriptors: [
+    @FetchRequest<Broadcast>(sortDescriptors: [
         SortDescriptor(\.date, order: .forward)
     ]) var events
-    @State private var selectedEvent: Event?
+    @State private var selectedEvent: Broadcast?
 
     @State private var filter: FilterEventOwnerCases = FilterEventOwnerCases.notFiltered
     @State private var expired: Bool = true
@@ -78,7 +78,7 @@ struct MainEventsList: View {
                             )
                             eventRouter.routeToCreateEdit()
                         } label: {
-                            Text("New Event")
+                            Text("New Broadcast")
                                 .font(.title2)
                                 .frame(maxWidth: .infinity)
                                 .padding()
@@ -124,8 +124,8 @@ struct MainEventsList: View {
         }
         .environmentObject(eventRouter)
         .onReceive(mdm.updatePublisher) { value in
-            if value.0 == GlobalProperties.PublishChanges.events {
-                print("events update received in EventList")
+            if value.0 == GlobalProperties.PublishChanges.broadcasts {
+                print("broadcasts update received in EventList")
 //                updateEvents()
             }
         }
@@ -139,10 +139,10 @@ struct MainEventsList: View {
             newTitle = "All Events"
         case .userOwned:
             corePredicate = NSPredicate(format: "owners CONTAINS %@",mdm.currentUser)
-            newTitle = "My owned events"
+            newTitle = "My owned broadcasts"
         case .userPartisipation:
             corePredicate = NSPredicate(
-                format: "users CONTAINS %@",
+                format: "members CONTAINS %@",
                 argumentArray: [mdm.currentUser]
             )
             newTitle = "My participation"

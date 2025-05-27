@@ -3,7 +3,7 @@ import SwiftUI
 
 struct AddUnitFormUserCell: View {
     
-    let user: LocalUser
+    let user: Member
 //    let image: Image
 //    let text: String
 //    let selected: Bool

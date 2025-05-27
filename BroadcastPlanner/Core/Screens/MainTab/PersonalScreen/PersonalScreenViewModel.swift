@@ -5,7 +5,7 @@ import UIKit
 //@MainActor
 final class PersonalScreenViewModel: ObservableObject {
     
-    var localUser: LocalUser
+    var localUser: Member
     
     @Published var showedImage: Image = Image(systemName: "person")
     @Published var selectedPhoto: PhotosPickerItem?{
@@ -34,7 +34,7 @@ final class PersonalScreenViewModel: ObservableObject {
     
     @Published var userSpecialization: [String] = []
     
-    init(localUser: LocalUser) {
+    init(localUser: Member) {
         self.localUser = localUser
         self.firstName = localUser.viewFirstName
         self.lastName = localUser.viewLastName

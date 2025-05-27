@@ -2,14 +2,14 @@ import UIKit
 import SwiftUI
 import CoreData
 
-public class LocalUser: NSManagedObject {
+public class Member: NSManagedObject {
 
 }
 
-extension LocalUser {
+extension Member {
 
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<LocalUser> {
-        return NSFetchRequest<LocalUser>(entityName: "LocalUser")
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<Member> {
+        return NSFetchRequest<Member>(entityName: "Member")
     }
 
     @NSManaged public var creationDate: Date?
@@ -33,13 +33,13 @@ extension LocalUser {
 }
 
 // MARK: Generated accessors for points
-extension LocalUser {
+extension Member {
 
     @objc(addPointsObject:)
-    @NSManaged public func addToPoints(_ value: LocationPoint)
+    @NSManaged public func addToPoints(_ value: VenuePoint)
 
     @objc(removePointsObject:)
-    @NSManaged public func removeFromPoints(_ value: LocationPoint)
+    @NSManaged public func removeFromPoints(_ value: VenuePoint)
 
     @objc(addPoints:)
     @NSManaged public func addToPoints(_ values: NSSet)
@@ -50,13 +50,13 @@ extension LocalUser {
 }
 
 // MARK: Generated accessors for units
-extension LocalUser {
+extension Member {
 
     @objc(addUnitsObject:)
-    @NSManaged public func addToUnits(_ value: Unit)
+    @NSManaged public func addToUnits(_ value: Crew)
 
     @objc(removeUnitsObject:)
-    @NSManaged public func removeFromUnits(_ value: Unit)
+    @NSManaged public func removeFromUnits(_ value: Crew)
 
     @objc(addUnits:)
     @NSManaged public func addToUnits(_ values: NSSet)
@@ -67,13 +67,13 @@ extension LocalUser {
 }
 
 // MARK: Generated accessors for ownedEvents
-extension LocalUser {
+extension Member {
 
     @objc(addOwnedEventsObject:)
-    @NSManaged public func addToOwnedEvents(_ value: Event)
+    @NSManaged public func addToOwnedEvents(_ value: Broadcast)
 
     @objc(removeOwnedEventsObject:)
-    @NSManaged public func removeFromOwnedEvents(_ value: Event)
+    @NSManaged public func removeFromOwnedEvents(_ value: Broadcast)
 
     @objc(addOwnedEvents:)
     @NSManaged public func addToOwnedEvents(_ values: NSSet)
@@ -84,13 +84,13 @@ extension LocalUser {
 }
 
 // MARK: Generated accessors for participateEvents
-extension LocalUser {
+extension Member {
 
     @objc(addParticipateEventsObject:)
-    @NSManaged public func addToParticipateEvents(_ value: Event)
+    @NSManaged public func addToParticipateEvents(_ value: Broadcast)
 
     @objc(removeParticipateEventsObject:)
-    @NSManaged public func removeFromParticipateEvents(_ value: Event)
+    @NSManaged public func removeFromParticipateEvents(_ value: Broadcast)
 
     @objc(addParticipateEvents:)
     @NSManaged public func addToParticipateEvents(_ values: NSSet)
@@ -102,7 +102,7 @@ extension LocalUser {
 
 //data unwrapping
 
-extension LocalUser : Identifiable {
+extension Member : Identifiable {
     var viewId: String { id ?? "" }
     var viewFirstName: String{ firstName ?? "" }
     var viewLastName: String { lastName ?? "" }
@@ -138,14 +138,14 @@ extension LocalUser : Identifiable {
         return array
     }
    
-    var viewOwnedEvents: [Event] {
-        return ownedEvents?.allObjects as? [Event] ?? []
+    var viewOwnedEvents: [Broadcast] {
+        return ownedEvents?.allObjects as? [Broadcast] ?? []
     }
-    var viewParticipatedEvents: [Event] {
-        return participateEvents?.allObjects as? [Event] ?? []
+    var viewParticipatedEvents: [Broadcast] {
+        return participateEvents?.allObjects as? [Broadcast] ?? []
     }
     
-    func isAvailableToEvent(event: Event) -> Bool{
+    func isAvailableToEvent(event: Broadcast) -> Bool{
         for existEvent in viewParticipatedEvents{
             if event.date?.formatted(date: .abbreviated, time: .omitted) == existEvent.date?.formatted(date: .abbreviated, time: .omitted){
                 return false
@@ -154,16 +154,16 @@ extension LocalUser : Identifiable {
         return true
     }
     
-    var viewLocationPoints: [LocationPoint] {
-        points?.allObjects as? [LocationPoint] ?? []
+    var viewLocationPoints: [VenuePoint] {
+        points?.allObjects as? [VenuePoint] ?? []
     }
     
     var viewLastUpdated: Date {
         lastUpdated ?? .now
     }
     
-    var dto: UserDTO {
-        var user = UserDTO(id: viewId)
+    var dto: MemberDTO {
+        var user = MemberDTO(id: viewId)
         user.accessLevel = Int(accessLevel)
         user.firstName = viewFirstName
         user.lastName = viewLastName
@@ -183,4 +183,10 @@ extension LocalUser : Identifiable {
         
         return user
     }
+}
+
+extension Member: CoreDataUpdatable{
+    func update(from dto: MemberDTO, in context: NSManagedObjectContext) {
+            self.id = dto.id
+        }
 }

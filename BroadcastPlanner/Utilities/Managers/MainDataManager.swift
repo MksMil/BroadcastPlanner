@@ -9,8 +9,9 @@ class MainDataManager: ObservableObject {
 
     var updatePublisher: PassthroughSubject = PassthroughSubject<(GlobalProperties.PublishChanges, [String]), Never>()
     var cancellables: Set<AnyCancellable> = []
+    
     let currentId: String
-    let currentUser: LocalUser
+    let currentUser: Member
 
     init(
         localDataManager: DataManager,
@@ -21,11 +22,11 @@ class MainDataManager: ObservableObject {
         self.globalDataManager = globalDataManager
         self.currentId = userId
         self.currentUser = localDataManager.fetchOrCreateObject(
-            ofType: LocalUser.self,
+            ofType: Member.self,
             predicate: NSPredicate(format: "id == %@", userId),
             in: localDataManager.mainContext
         ) { ctx in
-            let newUser = LocalUser(context: ctx)
+            let newUser = Member(context: ctx)
             newUser.id = userId
             return newUser
         }
@@ -39,8 +40,17 @@ class MainDataManager: ObservableObject {
         .store(in: &cancellables)
     }
 }
+
 //bg work
 extension MainDataManager: @preconcurrency UpdateDelegateProtocol {
+    
+    func updateWithDTO(_ dto: any CoreDataRepresentable){
+        dto.updateOrCreate(in: localDataManager.backgroundContext)
+    }
+    func removeWithDTO(_ dto: any CoreDataRepresentable){
+        
+    }
+    
     func updateObvans(dtos: [ObvanDTO]) {
         print("obvans updated: \(dtos)")
         //fetch all entity data
@@ -85,10 +95,10 @@ extension MainDataManager: @preconcurrency UpdateDelegateProtocol {
         //create / update / continue
     }
     
-    func updateEvents(dtos: [EventDTO]) {
-        print("events updated: \(dtos)")
+    func updateEvents(dtos: [BroadcastDTO]) {
+        print("broadcasts updated: \(dtos)")
         localDataManager.backgroundContext.performAndWait {
-            let request = Event.fetchRequest()
+            let request = Broadcast.fetchRequest()
             do{
                 let events = try localDataManager.backgroundContext.fetch(request)
                 for event in events{
@@ -118,7 +128,7 @@ extension MainDataManager: @preconcurrency UpdateDelegateProtocol {
                         _ = localDataManager.createOrUpdateLocalEventWithEventDTO(dto, inContext: .bg)
                     }
                 }
-                localDataManager.saveContextSync(type: .bg, publish: .events, id: dtos.map{$0.id})
+                localDataManager.saveContextSync(type: .bg, publish: .broadcasts, id: dtos.map{$0.id})
             } catch {
                 print("MDM: updateEvents error: \(error)")
             }
@@ -165,10 +175,10 @@ extension MainDataManager: @preconcurrency UpdateDelegateProtocol {
         }
     }
     
-    func updateLocations(dtos: [LocationDTO]) {
-        print("locations updated: \(dtos)")
+    func updateLocations(dtos: [VenueDTO]) {
+        print("venues updated: \(dtos)")
         localDataManager.backgroundContext.performAndWait {
-            let request = Location.fetchRequest()
+            let request = Venue.fetchRequest()
             do{
                 let locations = try localDataManager.backgroundContext.fetch(request)
                 for location in locations{
@@ -198,7 +208,7 @@ extension MainDataManager: @preconcurrency UpdateDelegateProtocol {
                         _ = localDataManager.createOrUpdateLocalLocationWithLocationDTO(dto, inContext: .bg)
                     }
                 }
-                localDataManager.saveContextSync(type: .bg, publish: .locations, id: dtos.map{$0.id})
+                localDataManager.saveContextSync(type: .bg, publish: .venues, id: dtos.map{$0.id})
             } catch {
                 print("MDM: updateLocations error: \(error)")
             }
@@ -289,10 +299,10 @@ extension MainDataManager: @preconcurrency UpdateDelegateProtocol {
         }
     }
     
-    func updateUsers(dtos: [UserDTO]) {
-        print("users updated: \(dtos)")
+    func updateUsers(dtos: [MemberDTO]) {
+        print("members updated: \(dtos)")
         localDataManager.backgroundContext.performAndWait {
-            let request = LocalUser.fetchRequest()
+            let request = Member.fetchRequest()
             do{
                 let users = try self.localDataManager.backgroundContext.fetch(request)
                 
@@ -324,7 +334,7 @@ extension MainDataManager: @preconcurrency UpdateDelegateProtocol {
                         _ = self.localDataManager.createOrUpdateLocalUserWithUserDTO(dto, inContext: .bg)
                     }
                 }
-                self.localDataManager.saveContextSync(type: .bg, publish: .users, id: dtos.map{$0.id})
+                self.localDataManager.saveContextSync(type: .bg, publish: .members, id: dtos.map{$0.id})
             } catch {
                 print("MDM: updateUsers error: \(error)")
             }
@@ -336,27 +346,27 @@ extension MainDataManager: @preconcurrency UpdateDelegateProtocol {
             var type: GlobalProperties.PublishChanges = .none
             var publishId: String = ""
             switch value {
-                case is UserDTO:
+                case is MemberDTO:
                     print("isLocalUser")
-                    if let dto = value as? UserDTO{
+                    if let dto = value as? MemberDTO{
                         if updated {
                             _ = localDataManager.createOrUpdateLocalUserWithUserDTO(dto, inContext: .bg)
                         } else {
                             localDataManager.removeUserWithDTO(dto, inContext: .bg)
                         }
-                        type = .users
+                        type = .members
                         publishId = dto.id
                     }
-                case is EventDTO:
+                case is BroadcastDTO:
                     print("isEvent")
-                    if let dto = value as? EventDTO{
+                    if let dto = value as? BroadcastDTO{
                         if updated {
                             _ = localDataManager.createOrUpdateLocalEventWithEventDTO(dto, inContext: .bg)
                         } else {
                             print("procees with event listener")
                             localDataManager.removeEventWithDTO(dto, inContext: .bg)
                         }
-                        type = .events
+                        type = .broadcasts
                         publishId = dto.id
                     }
                 case is ClubDTO:
@@ -370,15 +380,15 @@ extension MainDataManager: @preconcurrency UpdateDelegateProtocol {
                         type = .clubs
                         publishId = dto.id
                     }
-                case is LocationDTO:
+                case is VenueDTO:
                     print("isLocation")
-                    if let dto = value as? LocationDTO{
+                    if let dto = value as? VenueDTO{
                         if updated {
                             _ = localDataManager.createOrUpdateLocalLocationWithLocationDTO(dto, inContext: .bg)
                         } else {
                             localDataManager.removeLocationWithDTO(dto, inContext: .bg)
                         }
-                        type = .locations
+                        type = .venues
                         publishId = dto.id
                     }
                 case is ObvanDTO:
@@ -429,11 +439,11 @@ extension MainDataManager {
     //creates new user cloud entity
     @MainActor
     func createUser(id: String) async {
-        let userDTO = UserDTO(id: id)
+        let userDTO = MemberDTO(id: id)
         await globalDataManager.saveData(
             userDTO,
             withId: id,
-            withType: GlobalProperties.Path.users
+            withType: GlobalProperties.Path.members
         )
     }
     @MainActor
@@ -494,7 +504,7 @@ extension MainDataManager {
             .saveData(
                 currentUser.dto,
                 withId: currentId,
-                withType: GlobalProperties.Path.users
+                withType: GlobalProperties.Path.members
             )
     }
     func removeCurrrentUser() {
@@ -503,19 +513,19 @@ extension MainDataManager {
         // remove user and user image in local
     }
 
-    func removeUser(user: UserDTO) {
+    func removeUser(user: MemberDTO) {
         // remove user and user image in local
     }
 
     @MainActor
-    func fetchUsersAvailableForEvent(_ event: Event) -> [LocalUser] {
+    func fetchUsersAvailableForEvent(_ event: Broadcast) -> [Member] {
         localDataManager.fetchUsersAvailableToEvent(event)
     }
 }
-// MARK: - Event managment
+// MARK: - Broadcast managment
 extension MainDataManager {
     
-    func availabletoEdit(event: Event)->Bool {
+    func availabletoEdit(event: Broadcast)->Bool {
         if currentUser.accessLevel == 0 {
             return false
         } else if currentUser.accessLevel == 1, event.viewOwners.contains(currentUser){
@@ -527,13 +537,13 @@ extension MainDataManager {
     
     @MainActor
     func createEventWithCurrentUserOwnerInContextType(_ type: ContextType)
-        -> Event {
+        -> Broadcast {
         let event = localDataManager.fetchOrCreateObject(
-            ofType: Event.self,
+            ofType: Broadcast.self,
             predicate: NSPredicate(format: "id == %@", UUID().uuidString),
             in: localDataManager.mainContext
         ) { ctx in
-            let newEvent = Event(context: ctx)
+            let newEvent = Broadcast(context: ctx)
             newEvent.id = UUID().uuidString
             return newEvent
         }
@@ -543,16 +553,16 @@ extension MainDataManager {
             event.addToOwners(self.currentUser)
             currentUser.addToOwnedEvents(event)
         }
-            saveContextSync(type: .main, publish: GlobalProperties.PublishChanges.events, id: [])
+            saveContextSync(type: .main, publish: GlobalProperties.PublishChanges.broadcasts, id: [])
         return event
     }
     @MainActor
     func updateEvent(
-        _ event: Event,
+        _ event: Broadcast,
         homeClub: Club?,
         guestClub: Club?,
         eventDate: Date,
-        location: Location?) async {
+        location: Venue?) async {
         //coreData save
         await localDataManager.mainContext.perform { [weak self] in
             guard let self else { return }
@@ -562,28 +572,28 @@ extension MainDataManager {
             event.location = location
             event.addToOwners(self.currentUser)
         }
-        await saveContextAsync(type: .main, publish: .events, id: [event.viewId])
+        await saveContextAsync(type: .main, publish: .broadcasts, id: [event.viewId])
 
         //network save
         await globalDataManager.saveData(
             event.dto,
             withId: event.viewId,
-            withType: GlobalProperties.Path.events
+            withType: GlobalProperties.Path.broadcasts
         )
     }
     @MainActor
-    func removeEvent(event: Event) async {
+    func removeEvent(event: Broadcast) async {
         let id = event.viewId
         localDataManager.removeLocalEvent(event, inContext: .main)
-        await saveContextAsync(type: .main, publish: .events, id: [])
+        await saveContextAsync(type: .main, publish: .broadcasts, id: [])
         await globalDataManager.removeDataOfType(
-            GlobalProperties.Path.events,
+            GlobalProperties.Path.broadcasts,
             withId: id
         )
     }
     @MainActor
     func assignSnapshot(_ image: UIImage?,
-        toEvent event: Event) async {
+        toEvent event: Broadcast) async {
         if let image {
             let localImage =
                  localDataManager.createOrUpdateLocalImageWithImageData(
@@ -607,8 +617,8 @@ extension MainDataManager {
 extension MainDataManager {
     @MainActor
     func updateEvent(
-        _ event: Event,
-        withPoints points: [LocationPoint]
+        _ event: Broadcast,
+        withPoints points: [VenuePoint]
     ) {
         localDataManager.mainContext.performAndWait {
             event.points = Set(points) as NSSet
@@ -617,7 +627,7 @@ extension MainDataManager {
 
     @MainActor
     func updatePoint(
-        _ point: LocationPoint,
+        _ point: VenuePoint,
         x: Double,
         y: Double,
         rotation: Int,
@@ -632,7 +642,7 @@ extension MainDataManager {
             inContext: .main
         )
     }
-    @MainActor func updatePoint(_ point: LocationPoint?, withNumber number: Int, user: LocalUser?, optic: OpticType, placeType: PlaceType, windDefence: WindDefence, lightType: LightType){
+    @MainActor func updatePoint(_ point: VenuePoint?, withNumber number: Int, user: Member?, optic: OpticType, placeType: PlaceType, windDefence: WindDefence, lightType: LightType){
         guard let point else { return }
         localDataManager.mainContext.performAndWait {
             point.number = Int16(number)
@@ -644,7 +654,7 @@ extension MainDataManager {
                         event.removeFromUsers(userToRemove)
                         userToRemove.removeFromParticipateEvents(event)
                     } else {
-                        print("event in point error occured")
+                        print("event in venuePoint error occured")
                     }
                 }
             if let user{
@@ -655,7 +665,7 @@ extension MainDataManager {
                     user.addToParticipateEvents(event)
                     event.addToUsers(user)
                 } else {
-                    print("event in point error occured")
+                    print("event in venuePoint error occured")
                 }
             }
             //
@@ -688,13 +698,13 @@ extension MainDataManager {
                 let light = localDataManager.createOrUpdateLight(lightDto, inContext: .main)
                 localDataManager.linkLocalLight(light, WithPoint: point, InContext: .main)
             }
-//            saveContextSync(type: .main, publish: .point, id: [point.viewId])
+//            saveContextSync(type: .main, publish: .venuePoint, id: [venuePoint.viewId])
         }
     }
     
     @MainActor
     func updatePoint(
-        _ point: LocationPoint?,
+        _ point: VenuePoint?,
         withNumber num: Int
     ) async {
         guard let point else { return }
@@ -704,7 +714,7 @@ extension MainDataManager {
     }
     @MainActor
     func updatePoint(
-        _ point: LocationPoint?,
+        _ point: VenuePoint?,
         withDescription desk: String
     ) async {
         guard let point else { return }
@@ -715,7 +725,7 @@ extension MainDataManager {
 
     @MainActor
     func updatePoint(
-        _ point: LocationPoint?,
+        _ point: VenuePoint?,
         withCamera camera: Camera
     ) async {
         guard let point else { return }
@@ -728,7 +738,7 @@ extension MainDataManager {
     @MainActor
     func removeCamera(
         _ camera: Camera,
-        fromPoint point: LocationPoint?
+        fromPoint point: VenuePoint?
     ) async {
         guard let point else { return }
         localDataManager.mainContext.performAndWait {
@@ -738,7 +748,7 @@ extension MainDataManager {
     }
     @MainActor
     func updatePoint(
-        _ point: LocationPoint?,
+        _ point: VenuePoint?,
         withSound sound: Sound
     ) async {
         guard let point else { return }
@@ -749,7 +759,7 @@ extension MainDataManager {
     @MainActor
     func removeSound(
         _ sound: Sound,
-        fromPoint point: LocationPoint?
+        fromPoint point: VenuePoint?
     ) async {
         guard let point else { return }
         localDataManager.mainContext.performAndWait {
@@ -759,7 +769,7 @@ extension MainDataManager {
     }
     @MainActor
     func updatePoint(
-        _ point: LocationPoint?,
+        _ point: VenuePoint?,
         withLight light: Light
     ) async {
         guard let point else { return }
@@ -770,7 +780,7 @@ extension MainDataManager {
     @MainActor
     func removeLight(
         _ light: Light,
-        fromPoint point: LocationPoint?
+        fromPoint point: VenuePoint?
     ) async {
         guard let point else { return }
         localDataManager.mainContext.performAndWait {
@@ -780,8 +790,8 @@ extension MainDataManager {
     }
     @MainActor
     func addUser(
-        _ user: LocalUser,
-        toPoint point: LocationPoint?
+        _ user: Member,
+        toPoint point: VenuePoint?
     ) async {
         if let point {
             localDataManager.mainContext.performAndWait {
@@ -791,15 +801,15 @@ extension MainDataManager {
                     user.addToParticipateEvents(event)
                     event.addToUsers(user)
                 } else {
-                    print("event in point error occured")
+                    print("event in venuePoint error occured")
                 }
             }
         }
     }
     @MainActor
     func removeUser(
-        _ user: LocalUser,
-        fromPoint point: LocationPoint?
+        _ user: Member,
+        fromPoint point: VenuePoint?
     ) async {
         if let point {
             localDataManager.mainContext.performAndWait {
@@ -809,7 +819,7 @@ extension MainDataManager {
                     event.removeFromUsers(user)
                     user.removeFromParticipateEvents(event)
                 } else {
-                    print("event in point error occured")
+                    print("event in venuePoint error occured")
                 }
             }
         }
@@ -817,15 +827,15 @@ extension MainDataManager {
 
     @MainActor
     func newPointInEvent(
-        _ event: Event,
+        _ event: Broadcast,
         withNumber number: Int
-    ) -> LocationPoint {
+    ) -> VenuePoint {
         let newPoint = localDataManager.fetchOrCreateObject(
-            ofType: LocationPoint.self,
+            ofType: VenuePoint.self,
             predicate: NSPredicate(format: "id == %@", UUID().uuidString),
             in: localDataManager.mainContext
         ) { ctx in
-            let newLocationPoint = LocationPoint(context: ctx)
+            let newLocationPoint = VenuePoint(context: ctx)
             newLocationPoint.id = UUID().uuidString
             return newLocationPoint
         }
@@ -837,16 +847,16 @@ extension MainDataManager {
     }
     @MainActor
     func deletePoint(
-        _ point: LocationPoint,
-        inEvent event: Event
+        _ point: VenuePoint,
+        inEvent event: Broadcast
     ) {
         localDataManager.removeLocalLocationPoint(point, inContext: .main)
     }
 }
-// MARK: - Unit managment
+// MARK: - Crew managment
 extension MainDataManager {
     @MainActor
-    func removeUnit(_ unit: Unit) {
+    func removeUnit(_ unit: Crew) {
         localDataManager.mainContext.perform {
             if let event = unit.event, let user = unit.user {
                 user.removeFromParticipateEvents(event)
@@ -856,11 +866,11 @@ extension MainDataManager {
         localDataManager.removeLocalUnit(unit, inContext: .main)
     }
     func createUnitWithUser(
-        _ user: LocalUser,
+        _ user: Member,
         andSpecialization specialization: UserSpecialization,
         andHardware hardware: ReplayType?,
-        inEvent event: Event
-    ) -> Unit {
+        inEvent event: Broadcast
+    ) -> Crew {
         let unit = localDataManager.createUnitWithUser(
             user,
             andPosition: specialization,
@@ -901,7 +911,7 @@ extension MainDataManager {
                     uiimage: UIImage?,
                     contacts: String,
                     urlString: String,
-                    location: Location?,
+                    location: Venue?,
                     inContext contextType: ContextType) async {
         //save image logo in local storage,
 
@@ -949,20 +959,20 @@ extension MainDataManager {
 // MARK: - LocationManagment
 extension MainDataManager {
     @MainActor
-    func getNewLocation() -> Location {
+    func getNewLocation() -> Venue {
         localDataManager.fetchOrCreateObject(
-            ofType: Location.self,
+            ofType: Venue.self,
             predicate: NSPredicate(format: "id == %@", UUID().uuidString),
             in: localDataManager.mainContext
         ) { ctx in
-            let newLocation = Location(context: ctx)
+            let newLocation = Venue(context: ctx)
             newLocation.id = UUID().uuidString
             return newLocation
         }
     }
     @MainActor
     func updateLocalLocation(
-        _ location: Location,
+        _ location: Venue,
         withTitle title: String,
         address: String,
         images: [UIImage],
@@ -979,7 +989,7 @@ extension MainDataManager {
         )
         await localDataManager.saveContextAsync(
             type: .main,
-            publish: .locations,
+            publish: .venues,
             id: []
         )
         // location image upload to firestore, and image properties in firebase
@@ -1007,11 +1017,11 @@ extension MainDataManager {
         await globalDataManager.saveData(
             location.dto,
             withId: location.viewId,
-            withType: GlobalProperties.Path.locations
+            withType: GlobalProperties.Path.venues
         )
     }
     @MainActor
-    func removeLocation(_ location: Location) async {
+    func removeLocation(_ location: Venue) async {
         //remove background images for location from firestore, and image properties from firebase
         await withTaskGroup { group in
             let imageIds = location.viewLocalImages.map { $0.viewId }
@@ -1028,39 +1038,39 @@ extension MainDataManager {
         }
         //remove location from firebase
         await globalDataManager.removeDataOfType(
-            .locations,
+            .venues,
             withId: location.viewId
         )
         //remove images and location from CoreData
          localDataManager.removeLocalLocation(location, inContext: .main)
-        await saveContextAsync(type: .main, publish: .locations, id: [])
+        await saveContextAsync(type: .main, publish: .venues, id: [])
     }
 }
 // MARK: - Template managment
 extension MainDataManager {
     @MainActor
     func makeLocalPointsFromTemplate(_ template: Template)
-        -> [LocationPoint]
+        -> [VenuePoint]
     {
         return localDataManager.mapTemplateToLocationPoints(
             template: template,
             inContext: .main
         )
     }
-    @MainActor func cleanLocalPoints(_ points: [LocationPoint], inEvent event: Event){
+    @MainActor func cleanLocalPoints(_ points: [VenuePoint], inEvent event: Broadcast){
         localDataManager.unlinkPoints(points, inContext: .main)
         points.forEach { pointToRemove in
             localDataManager.removeLocalLocationPoint(pointToRemove, inContext: .main)
         }
     }
     
-    @MainActor func loadTemplatePoints(_ points:[LocationPoint], toEvent event: Event){
+    @MainActor func loadTemplatePoints(_ points:[VenuePoint], toEvent event: Broadcast){
         localDataManager.linkPoints(points, toEvent: event, inContext: .main)
     }
 
     @MainActor
     func saveTemplateFromSchema(
-        localPoints: [LocationPoint],
+        localPoints: [VenuePoint],
         withName name: String
     ) async {
         let template =
@@ -1134,7 +1144,7 @@ extension MainDataManager {
     @MainActor
     func createNewLocalImagesWith(uiimages: [UIImage],
                                   andType type: GlobalProperties.ImageType,
-                                  linkToLocation location: Location? = nil) {
+                                  linkToLocation location: Venue? = nil) {
         var localImages: [LocalImage] = []
         for uiimage in uiimages {
             let id = UUID().uuidString
@@ -1171,9 +1181,9 @@ extension MainDataManager {
             }
         }
     }
-    @MainActor func linkEventTemplate(_ localImage: LocalImage, toLocation location: Location){
+    @MainActor func linkEventTemplate(_ localImage: LocalImage, toLocation location: Venue){
         localDataManager.linkEventTemplate(localImage, toLocalLocation: location, inContext: .main)
-        saveContextSync(type: .main, publish: GlobalProperties.PublishChanges.locations, id: [location.viewId])
+        saveContextSync(type: .main, publish: GlobalProperties.PublishChanges.venues, id: [location.viewId])
     }
 }
 // MARK: - Online status managment

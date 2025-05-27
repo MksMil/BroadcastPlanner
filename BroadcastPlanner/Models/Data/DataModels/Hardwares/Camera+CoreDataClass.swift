@@ -14,7 +14,7 @@ extension Camera {
 
     @NSManaged public var optic: String?
     @NSManaged public var id: String?
-    @NSManaged public var point: LocationPoint?
+    @NSManaged public var point: VenuePoint?
 
 }
 
@@ -32,4 +32,10 @@ extension Camera : Identifiable {
         CameraDTO(id: viewId,
                   optic: viewOptic)
     }
+}
+
+extension Camera: CoreDataUpdatable{
+    func update(from dto: CameraDTO, in context: NSManagedObjectContext) {
+            self.id = dto.id
+        }
 }

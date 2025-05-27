@@ -2,9 +2,14 @@ import Foundation
 
 //structure to generate directors group in broadcast obvan
 
-struct UnitDTO: Codable, Identifiable,BPDataProtocol{
+struct CrewDTO: Codable, Identifiable,BPDataProtocol,CoreDataRepresentable {
+    
+    typealias Entity = Crew
+    var primaryKeyPredicate: NSPredicate {
+        NSPredicate(format: "id == %@", id as CVarArg)
+    }
     var id: String
-    var position: UserSpecialization
+    var position: String
     var coordinateX: Double
     var coordinateY: Double
     var rotation: Double

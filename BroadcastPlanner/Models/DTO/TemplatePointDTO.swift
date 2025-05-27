@@ -1,5 +1,11 @@
+import Foundation
 
-struct TemplatePointDTO: Identifiable, Codable,BPDataProtocol {
+struct TemplatePointDTO: Identifiable, Codable,BPDataProtocol,CoreDataRepresentable {
+    
+    typealias Entity = TemplatePoint
+    var primaryKeyPredicate: NSPredicate {
+        NSPredicate(format: "id == %@", id as CVarArg)
+    }
     var id: String
     
     var coordinateX: Double

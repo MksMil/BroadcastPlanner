@@ -1,22 +1,22 @@
 import SwiftUI
 
 final class AddUnitFormViewModel: ObservableObject{
-    @Published var selectedUser: LocalUser?
+    @Published var selectedUser: Member?
 }
 
 struct AddUnitFormView: View {
     @StateObject private var vm: AddUnitFormViewModel = AddUnitFormViewModel()
     
-    let availableUsers: [LocalUser]
+    let availableUsers: [Member]
     let cancelAction: ()->()
-    let addAction: (UserSpecialization, LocalUser,ReplayType?)->()
+    let addAction: (UserSpecialization, Member,ReplayType?)->()
     
     @State private var selectedSpecialization: UserSpecialization?
     @State private var selectedHardware: ReplayType?
-//    @State private var selectedUser: LocalUser?
+//    @State private var selectedUser: Member?
     
     @State private var isShowInfo: Bool = false
-    @State private var userForInfo: LocalUser?
+    @State private var userForInfo: Member?
     
     var isAcceptAvailable: Bool {
         guard vm.selectedUser != nil else { return false}
@@ -25,7 +25,7 @@ struct AddUnitFormView: View {
         return true
     }
     
-    private var filteredUsers: [LocalUser] {
+    private var filteredUsers: [Member] {
         guard let selectedSpecialization else { return availableUsers }
         return availableUsers.filter { user in
             user.viewSpecialization.contains{$0 == selectedSpecialization}
@@ -33,7 +33,7 @@ struct AddUnitFormView: View {
     }
     var body: some View {
         VStack{
-            Text("Add Unit form here")
+            Text("Add Crew form here")
             //data for new obvanUnit -> out
             //position, user , hardware?
             Spacer()

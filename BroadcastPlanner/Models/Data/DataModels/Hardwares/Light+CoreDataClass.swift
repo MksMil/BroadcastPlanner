@@ -13,7 +13,7 @@ extension Light {
 
     @NSManaged public var lightType: String?
     @NSManaged public var id: String?
-    @NSManaged public var point: LocationPoint?
+    @NSManaged public var point: VenuePoint?
 
 }
 
@@ -31,5 +31,11 @@ extension Light : Identifiable {
         LightDTO(id: viewId,
                  lightType: viewLightType)
     }
+}
+
+extension Light: CoreDataUpdatable{
+    func update(from dto: LightDTO, in context: NSManagedObjectContext) {
+            self.id = dto.id
+        }
 }
 

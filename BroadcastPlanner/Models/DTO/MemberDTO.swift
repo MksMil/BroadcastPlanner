@@ -1,8 +1,12 @@
 import Foundation
-import FirebaseFirestore
 
 
-struct UserDTO: Identifiable, Codable,BPDataProtocol {
+struct MemberDTO: Identifiable, Codable,BPDataProtocol,CoreDataRepresentable {
+    
+    typealias Entity = Member
+    var primaryKeyPredicate: NSPredicate {
+        NSPredicate(format: "id == %@", id as CVarArg)
+    }
     
     var id: String
     // 0-root
@@ -30,9 +34,7 @@ struct UserDTO: Identifiable, Codable,BPDataProtocol {
     init(id: String = UUID().uuidString){
         self.id = id
     }
-
 }
-
 
 
 

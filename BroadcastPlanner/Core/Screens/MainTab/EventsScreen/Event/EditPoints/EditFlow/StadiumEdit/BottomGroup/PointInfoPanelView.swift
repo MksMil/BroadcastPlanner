@@ -7,9 +7,9 @@ struct PointInfoPanelView: View {
     @Environment(\.dismiss) var dismiss
 
     @StateObject var vm: PointInfoPanelViewModel
-    @FetchRequest<LocalUser>(sortDescriptors: [SortDescriptor(\.lastName, order: .forward)]) var availableUsers
-    let saveAction: (Int,LocalUser?,OpticType,PlaceType,WindDefence,LightType)->()
-    init(point: LocationPoint, saveAction: @escaping (Int,LocalUser?,OpticType,PlaceType,WindDefence,LightType)->()) {
+    @FetchRequest<Member>(sortDescriptors: [SortDescriptor(\.lastName, order: .forward)]) var availableUsers
+    let saveAction: (Int,Member?,OpticType,PlaceType,WindDefence,LightType)->()
+    init(point: VenuePoint, saveAction: @escaping (Int,Member?,OpticType,PlaceType,WindDefence,LightType)->()) {
         self._vm = StateObject(
             wrappedValue: PointInfoPanelViewModel(point: point)
         )
@@ -184,7 +184,7 @@ struct PointInfoPanelView: View {
                     Button(" Save "){
                         print("Save tapped: num:\(vm.number), user: \(vm.selectedUser?.viewCompactName ?? "no user"), optic: \(vm.selectedCameraOptic.rawValue), sound: \(vm.selectedSoundPlaceType.rawValue) / \(vm.selectedSoundWindDefence.rawValue), light: \(vm.selectedLight.rawValue)")
                         saveAction(vm.number,vm.selectedUser,vm.selectedCameraOptic,vm.selectedSoundPlaceType,vm.selectedSoundWindDefence,vm.selectedLight)
-                        //save point invoked here
+                        //save venuePoint invoked here
                         dismiss()
                     }
                     .padding(8)
@@ -209,11 +209,11 @@ struct PointInfoPanelView: View {
         userId: "123"
     )
     let localEvent = lm.fetchOrCreateObject(
-        ofType: Event.self,
+        ofType: Broadcast.self,
         predicate: NSPredicate(format: "id == %@", "id"),
         in: lm.mainContext
     ) { ctx in
-        let newEvent = Event(context: ctx)
+        let newEvent = Broadcast(context: ctx)
         newEvent.id = "id"
         return newEvent
     }

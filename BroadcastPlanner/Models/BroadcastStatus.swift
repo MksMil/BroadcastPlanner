@@ -6,6 +6,6 @@
 //
 
 
-enum EventStatus {
+enum BroadcastStatus {
     case currentUserOwned, currentUserParticipated, none
 }

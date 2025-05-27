@@ -3,14 +3,14 @@
 struct EventPointInfoPanelView: View {
     @EnvironmentObject var vm: BPEditStadiumViewModel
     
-//    let point: LocationPoint?
+//    let venuePoint: VenuePoint?
 //    let text: String
 //    @State var isEditMode: Bool = false
 //    let acceptAction: (String) -> Void
     
 //    init(acceptAction: @escaping (String)->Void ) {
-//        self.point = point
-//        self.text =  point?.viewTask ?? ""
+//        self.venuePoint = venuePoint
+//        self.text =  venuePoint?.viewTask ?? ""
 //        self.isEditMode = isEditMode
 //        self.acceptAction = acceptAction
 //    }
@@ -18,8 +18,8 @@ struct EventPointInfoPanelView: View {
     var body: some View {
         if let point = vm.selectedEventPoint{
 //            Text(vm.selectedEventPoint?.viewId ?? "hello")
-            //point number
-            //point position?
+            //venuePoint number
+            //venuePoint position?
             VStack(alignment: .leading, spacing: 0){
                 HStack{
                     Image(systemName: "\(point.viewNumber).circle")
@@ -37,17 +37,17 @@ struct EventPointInfoPanelView: View {
 //                //cam
 //                HStack{
 //                    Image(systemName: "video")
-//                    Text("\(point.viewLocalCameras.first?.viewOptic.rawValue ?? "---")")
+//                    Text("\(venuePoint.viewLocalCameras.first?.viewOptic.rawValue ?? "---")")
 //                }
 //                //sound
 //                HStack{
 //                    Image(systemName: "mic")
-//                    Text("\(point.viewLocalSounds.first?.viewPlaceType.rawValue ?? "---")")
+//                    Text("\(venuePoint.viewLocalSounds.first?.viewPlaceType.rawValue ?? "---")")
 //                }
 //                //light
 //                HStack{
 //                    Image(systemName: "warninglight")
-//                    Text("\(point.viewLocalLights.first?.viewLightType.rawValue ?? "---")")
+//                    Text("\(venuePoint.viewLocalLights.first?.viewLightType.rawValue ?? "---")")
 //                }
                 HStack{
                     Spacer()
@@ -140,10 +140,10 @@ struct CustomTextEditor: View {
     let mdm = MainDataManager(localDataManager: lm,
                               globalDataManager: NetworkManager(),
                               userId: "123")
-    let localEvent = lm.fetchOrCreateObject(ofType: Event.self,
+    let localEvent = lm.fetchOrCreateObject(ofType: Broadcast.self,
                   predicate: NSPredicate(format: "id == %@", "id"),
                                       in: lm.mainContext) { ctx in
-        let newEvent = Event(context: ctx)
+        let newEvent = Broadcast(context: ctx)
         newEvent.id = "id"
         return newEvent
     }
