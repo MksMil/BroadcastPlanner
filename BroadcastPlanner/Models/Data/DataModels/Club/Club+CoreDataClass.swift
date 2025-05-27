@@ -16,9 +16,9 @@ extension Club {
     @NSManaged public var lastUpdated: Date?
     @NSManaged public var title: String?
     @NSManaged public var urlString: String?
-    @NSManaged public var guestEvent: NSSet?
-    @NSManaged public var homeEvent: NSSet?
-    @NSManaged public var homeLocation: Venue?
+    @NSManaged public var guestBroadcasts: NSSet?
+    @NSManaged public var homeBroadcasts: NSSet?
+    @NSManaged public var homeVenue: Venue?
     @NSManaged public var imageLogo: LocalImage?
 
 }
@@ -73,12 +73,12 @@ extension Club : Identifiable {
         urlString ?? ""
     }
     
-    var viewGuestEvents: [Broadcast] {
-        guestEvent?.allObjects as? [Broadcast] ?? []
+    var viewGuestBroadcasts: [Broadcast] {
+        guestBroadcasts?.allObjects as? [Broadcast] ?? []
     }
     
-    var viewHomeEvents: [Broadcast] {
-        homeEvent?.allObjects as? [Broadcast] ?? []
+    var viewHomeBroadcasts: [Broadcast] {
+        homeBroadcasts?.allObjects as? [Broadcast] ?? []
     }
     
     var viewImageSmallLogo: Image {
@@ -99,7 +99,8 @@ extension Club : Identifiable {
                 contacts: viewContacts,
                 urlString: viewUrl,
                 imageLogoID: imageLogo?.viewId,
-                homeLocationID: homeLocation?.viewId, lastUpdated: viewLastUpdated)
+                homeLocationID: homeVenue?.viewId,
+                lastUpdated: viewLastUpdated)
     }
 }
 
@@ -107,6 +108,14 @@ extension Club: CoreDataUpdatable{
     func update(from dto: ClubDTO, in context: NSManagedObjectContext) {
             self.id = dto.id
         }
+    public override func prepareForDeletion(){
+        super.prepareForDeletion()
+        if let context = self.managedObjectContext{
+            if let imageLogo {
+                context.delete(imageLogo)
+            }
+        }
+    }
 }
 
 

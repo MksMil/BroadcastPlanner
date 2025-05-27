@@ -15,18 +15,18 @@ extension LocalImage {
     @NSManaged public var id: String?
     @NSManaged public var type: String?
     @NSManaged public var lastUpdated: Date?
-    @NSManaged public var parentPoint: NSSet?
-    @NSManaged public var parentClubLogo: Club?
-    @NSManaged public var parentLocationBackground: Venue?
-    @NSManaged public var parentLocationImage: Venue?
-    @NSManaged public var parentLocationPreviewEvent: Broadcast?
+    @NSManaged public var parentVenuePoint: NSSet?
+    @NSManaged public var parentClub: Club?
+    @NSManaged public var parentVenueSchema: Venue?
+    @NSManaged public var parentVenueImage: Venue?
+    @NSManaged public var parentVenuePreview: Broadcast?
     @NSManaged public var parentObvan: Obvan?
-    @NSManaged public var parentObvanPreviewEvent: Broadcast?
-    @NSManaged public var parentUser: Member?
+    @NSManaged public var parentObvanPreview: Broadcast?
+    @NSManaged public var parentMember: Member?
 
 }
 
-// MARK: Generated accessors for parentPoint
+// MARK: Generated accessors for parentVenuePoint
 extension LocalImage {
 
     @objc(addParentPointObject:)
@@ -117,6 +117,12 @@ extension LocalImage : Identifiable {
 
 extension LocalImage: CoreDataUpdatable{
     func update(from dto: ImageDTO, in context: NSManagedObjectContext) {
-            self.id = dto.id
+        self.id = dto.id
         }
+    public override func prepareForDeletion() {
+        super.prepareForDeletion()
+        if let context = self.managedObjectContext{
+            
+        }
+    }
 }

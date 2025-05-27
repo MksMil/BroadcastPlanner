@@ -6,8 +6,8 @@ enum SettingsTabPath: Hashable{
      update password
      club sheet
      add edit club
-     location sheet
-     add edit location
+     venue sheet
+     add edit venue
      
      */
     case updateEmail

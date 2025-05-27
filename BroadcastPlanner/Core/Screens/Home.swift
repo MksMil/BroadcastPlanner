@@ -20,7 +20,7 @@ struct Home: View {
         ZStack(alignment:.bottom){
             
             TabView(selection: $selection) {
-                //event list
+                //broadcast list
                 
                 MainEventsList()
                     .tabItem { Label("Hello", systemImage: "calendar") }

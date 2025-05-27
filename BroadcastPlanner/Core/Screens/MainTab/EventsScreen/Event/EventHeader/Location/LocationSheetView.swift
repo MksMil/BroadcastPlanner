@@ -46,13 +46,13 @@ struct LocationSheetView: View {
                        let location = vm.selectedLocation{
                         Task{
                             mdm.localDataManager.mainContext.perform {
-                                club.homeLocation = location
+                                club.homeVenue = location
                             }
                         }
                     }
                     saveAction(vm.selectedLocation)
                 },content: {
-                    Text(isEditMode ?  (vm.selectedLocation == nil ? "Add location":"Edit location"):"Choose Venue")
+                    Text(isEditMode ?  (vm.selectedLocation == nil ? "Add location":"Edit venue"):"Choose Venue")
                         .bold()
                         .frame(maxWidth: .infinity,maxHeight: .infinity)
                         .background {

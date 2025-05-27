@@ -17,14 +17,14 @@ extension Broadcast {
     @NSManaged public var lastUpdated: Date?
     @NSManaged public var guestClub: Club?
     @NSManaged public var homeClub: Club?
-    @NSManaged public var location: Venue?
+    @NSManaged public var venue: Venue?
     @NSManaged public var locationPreview: LocalImage?
-    @NSManaged public var obvan: Obvan?
     @NSManaged public var obvanPreview: LocalImage?
+    @NSManaged public var obvan: Obvan?
     @NSManaged public var owners: NSSet?
-    @NSManaged public var points: NSSet?
-    @NSManaged public var units: NSSet?
-    @NSManaged public var users: NSSet?
+    @NSManaged public var venuePoints: NSSet?
+    @NSManaged public var crews: NSSet?
+    @NSManaged public var members: NSSet?
 
 }
 
@@ -45,7 +45,7 @@ extension Broadcast {
 
 }
 
-// MARK: Generated accessors for points
+// MARK: Generated accessors for venuePoints
 extension Broadcast {
 
     @objc(addPointsObject:)
@@ -62,7 +62,7 @@ extension Broadcast {
 
 }
 
-// MARK: Generated accessors for units
+// MARK: Generated accessors for crews
 extension Broadcast {
 
     @objc(addUnitsObject:)
@@ -115,27 +115,27 @@ extension Broadcast : Identifiable {
     }
 
     var viewUsers: [Member] {
-        users?.allObjects.compactMap{$0 as? Member} ?? []
+        members?.allObjects.compactMap{$0 as? Member} ?? []
     }
     var viewOwners: [Member] {
         owners?.allObjects.compactMap{$0 as? Member} ?? []
     }
     
     var viewLocationPoints: [VenuePoint]{
-        points?.allObjects.compactMap{$0 as? VenuePoint} ?? []
+        venuePoints?.allObjects.compactMap{$0 as? VenuePoint} ?? []
     }
     
     var viewObvanUnits: [Crew]{
-        units?.allObjects.compactMap{$0 as? Crew} ?? []
+        crews?.allObjects.compactMap{$0 as? Crew} ?? []
     }
     
     var viewTitle: String {
-        guard let title = location?.title else { return "Broadcast location"}
+        guard let title = venue?.title else { return "Broadcast venue"}
         return title
     }
     
     var viewAddress: String {
-        guard let address = location?.address else { return "Broadcast address"}
+        guard let address = venue?.address else { return "Broadcast address"}
         return address
     }
     
@@ -156,7 +156,7 @@ extension Broadcast : Identifiable {
     }
     
     var viewLocationBackgroundImages: [Image] {
-        location?.viewImages ?? [Image("neutral")]
+        venue?.viewImages ?? [Image("neutral")]
     }
     
     var viewLocationPreview: Image {
@@ -177,7 +177,7 @@ extension Broadcast : Identifiable {
                              obVanId: obvan?.id,
                              locationPoints: viewLocationPoints.compactMap{$0.dto},
                              obvanUnits: viewObvanUnits.compactMap{ $0.dto},
-                             locationID: location?.id,
+                             locationID: venue?.id,
                              homeClubId: homeClub?.id,
                              guestClubId: guestClub?.id,
                              locationPreviewId: locationPreview?.id,

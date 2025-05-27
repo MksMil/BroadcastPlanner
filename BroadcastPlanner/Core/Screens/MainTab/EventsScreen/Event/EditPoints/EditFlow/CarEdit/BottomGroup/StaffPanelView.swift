@@ -73,7 +73,7 @@ struct StaffPanelCellView: View {
     
     var body: some View {
         HStack{
-            unit.user?.viewImage
+            unit.member?.viewImage
                 .resizable()
                 .scaledToFill()
                 .clipShape(Circle())
@@ -82,7 +82,7 @@ struct StaffPanelCellView: View {
                 })
                 .frame(width:30, height: 30)
             VStack(alignment: .leading){
-                if let user = unit.user{
+                if let user = unit.member{
                     Text(user.viewCompactName)
                         .font(.system(size: 14))
                         .minimumScaleFactor(0.6)

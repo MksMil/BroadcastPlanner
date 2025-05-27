@@ -142,7 +142,7 @@ struct PointInfoPanelView: View {
                 //                }
                 //            }
                 //            .frame(height: 50)
-                DividerWithText(text: "select user")
+                DividerWithText(text: "select member")
                     .padding(.bottom,5)
                 TabViewList(
                     source: availableUsers.compactMap{ user in
@@ -182,7 +182,7 @@ struct PointInfoPanelView: View {
                     }
                     Spacer()
                     Button(" Save "){
-                        print("Save tapped: num:\(vm.number), user: \(vm.selectedUser?.viewCompactName ?? "no user"), optic: \(vm.selectedCameraOptic.rawValue), sound: \(vm.selectedSoundPlaceType.rawValue) / \(vm.selectedSoundWindDefence.rawValue), light: \(vm.selectedLight.rawValue)")
+                        print("Save tapped: num:\(vm.number), member: \(vm.selectedUser?.viewCompactName ?? "no member"), optic: \(vm.selectedCameraOptic.rawValue), sound: \(vm.selectedSoundPlaceType.rawValue) / \(vm.selectedSoundWindDefence.rawValue), light: \(vm.selectedLight.rawValue)")
                         saveAction(vm.number,vm.selectedUser,vm.selectedCameraOptic,vm.selectedSoundPlaceType,vm.selectedSoundWindDefence,vm.selectedLight)
                         //save venuePoint invoked here
                         dismiss()

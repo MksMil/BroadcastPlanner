@@ -11,7 +11,7 @@ final class AddEditLocationViewModel: ObservableObject{
     @Published var locationPhotoItems: [PhotosPickerItem] = []
     @Published var locationUiimages: [UIImage] = []
     
-    //remove images from location.images
+    //remove images from venue.images
     @Published var backgroundImageToRemove: LocalImage?
     let publisher = PassthroughSubject<(LocationEditPublishType,LocalImage),Never>()
     
@@ -19,7 +19,7 @@ final class AddEditLocationViewModel: ObservableObject{
     @Published var eventBackgroundItem: PhotosPickerItem?
     @Published var eventBackgroundUIImage: UIImage?
 
-    //to link to location
+    //to link to venue
     @Published var selectedEventTemplate: LocalImage?
     var tempImages: [UIImage] = []
     var cancellables: Set<AnyCancellable> = []
@@ -74,7 +74,7 @@ final class AddEditLocationViewModel: ObservableObject{
     init(location: Venue){
         self.title = location.viewTitle
         self.address = location.viewAddress
-        if let locationBackground = location.background{
+        if let locationBackground = location.broadcastSchema{
             self.selectedEventTemplate = locationBackground
         }
         makePublisher()

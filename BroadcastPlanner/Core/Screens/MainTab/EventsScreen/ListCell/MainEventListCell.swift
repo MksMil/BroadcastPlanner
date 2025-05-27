@@ -109,5 +109,5 @@ struct MainEventListCell: View {
 
 
 //#Preview {
-//    MainEventListCell(event: LocalEvent(context: DataManager.preview.moc))
+//    MainEventListCell(broadcast: LocalEvent(context: DataManager.preview.moc))
 //}

@@ -37,5 +37,10 @@ extension Light: CoreDataUpdatable{
     func update(from dto: LightDTO, in context: NSManagedObjectContext) {
             self.id = dto.id
         }
+    
+    public override func prepareForDeletion() {
+         super.prepareForDeletion()
+         
+     }
 }
 

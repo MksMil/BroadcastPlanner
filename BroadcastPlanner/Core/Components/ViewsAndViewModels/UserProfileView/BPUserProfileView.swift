@@ -102,7 +102,7 @@ struct BPUserProfileView: View {
     @ViewBuilder func specializationSection() -> some View {
 //        VStack{
 //            SmartLayout(hSpacing: 5, vSpacing: 5){
-//                ForEach(user.userSpecialization,id: \.self) { text in
+//                ForEach(member.userSpecialization,id: \.self) { text in
 //                    BPSpecializationCellView(text: text.rawValue)
 //                }
 //            }
@@ -145,5 +145,5 @@ struct BPUserProfileView: View {
 }
 
 //#Preview {
-//    BPUserProfileView(user: MockData.sampleUser)
+//    BPUserProfileView(member: MockData.sampleUser)
 //}

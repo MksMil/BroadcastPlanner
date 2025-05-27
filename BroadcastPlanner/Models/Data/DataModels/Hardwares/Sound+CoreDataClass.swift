@@ -43,4 +43,9 @@ extension Sound: CoreDataUpdatable{
     func update(from dto: SoundDTO, in context: NSManagedObjectContext) {
             self.id = dto.id
         }
+    
+    public override func prepareForDeletion() {
+         super.prepareForDeletion()
+         
+     }
 }

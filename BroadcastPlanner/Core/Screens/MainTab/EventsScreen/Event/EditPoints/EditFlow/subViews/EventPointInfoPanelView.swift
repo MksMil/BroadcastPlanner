@@ -25,24 +25,24 @@ struct EventPointInfoPanelView: View {
                     Image(systemName: "\(point.viewNumber).circle")
                     Text("\(point.viewDescription)")
                 }
-                // user
+                // member
                 HStack{
-                    if point.viewUsers.isEmpty{
+                    if point.viewMembers.isEmpty{
                      Image(systemName: "person")
                     } else {
-                        point.viewUsers.first?.viewImage
+                        point.viewMembers.first?.viewImage
                     }
-                    Text("\(point.viewUsers.first?.viewCompactName ?? "---")")
+                    Text("\(point.viewMembers.first?.viewCompactName ?? "---")")
                 }
 //                //cam
 //                HStack{
 //                    Image(systemName: "video")
-//                    Text("\(venuePoint.viewLocalCameras.first?.viewOptic.rawValue ?? "---")")
+//                    Text("\(venuePoint.viewCameras.first?.viewOptic.rawValue ?? "---")")
 //                }
 //                //sound
 //                HStack{
 //                    Image(systemName: "mic")
-//                    Text("\(venuePoint.viewLocalSounds.first?.viewPlaceType.rawValue ?? "---")")
+//                    Text("\(venuePoint.viewSounds.first?.viewPlaceType.rawValue ?? "---")")
 //                }
 //                //light
 //                HStack{
@@ -69,7 +69,7 @@ struct EventPointInfoPanelView: View {
             }
 //            .border(.blue, width: 1)
         } else {
-            Text("event summary")
+            Text("broadcast summary")
         }
 //        .fullScreenCover(isPresented: $isEditMode) {
 //            VStack{

@@ -1,22 +1,20 @@
 import Foundation
 import CoreData
 
-public class Template: NSManagedObject {
-
-}
+public class Template: NSManagedObject {}
 
 extension Template {
-
+    
     @nonobjc public class func fetchRequest() -> NSFetchRequest<Template> {
         return NSFetchRequest<Template>(entityName: "Template")
     }
-
+    
     @NSManaged public var id: String?
     @NSManaged public var lastUpdated: Date?
     @NSManaged public var name: String?
     @NSManaged public var templatePoints: NSSet?
-
-
+    
+    
 }
 
 // MARK: Generated accessors for templatePoints
@@ -38,13 +36,9 @@ extension Template {
 
 extension Template : Identifiable {
 
-    var viewId: String {
-        id ?? ""
-    }
+    var viewId: String { id ?? "" }
     
-    var viewName: String{
-        name ?? ""
-    }
+    var viewName: String{ name ?? "" }
     
     var viewPoints: [TemplatePoint]{
         templatePoints?.allObjects as? [TemplatePoint] ?? []
@@ -64,6 +58,17 @@ extension Template : Identifiable {
 
 extension Template: CoreDataUpdatable{
     func update(from dto: TemplateDTO, in context: NSManagedObjectContext) {
-            self.id = dto.id
-        }
+        self.id = dto.id
+    }
+    
+   public override func prepareForDeletion() {
+        super.prepareForDeletion()
+       if let context = self.managedObjectContext{
+           for point in self.viewPoints {
+               context.delete(point)
+           }
+       }
+    }
+
+    
 }

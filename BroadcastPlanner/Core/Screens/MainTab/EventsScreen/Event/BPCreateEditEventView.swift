@@ -16,7 +16,7 @@ final class BPCreateEditEventViewModel: ObservableObject{
         if let club = event.guestClub{
             guestClub = club
         }
-        if let location = event.location{
+        if let location = event.venue{
             self.location = location
         }
         self.eventDate = event.date ?? Date()
@@ -90,7 +90,7 @@ struct BPCreateEditEventView: View {
                     }
                 }
                 .padding(.horizontal)
-                //header: time, date, teams, location
+                //header: time, date, teams, venue
                 VStack{
                     ZStack{
                         LocationSelectionView(location: vm.location, offset: logoSize) {
@@ -108,7 +108,7 @@ struct BPCreateEditEventView: View {
                                               accessAction: { club in
                                     vm.homeClub = club
                                 })
-                                //event date section
+                                //broadcast date section
                                 TimeAndDateSelectionView(date: vm.eventDate,
                                                          logoSize: logoSize) {newDate in
                                     vm.eventDate = newDate
@@ -176,7 +176,7 @@ struct BPCreateEditEventView: View {
 //            return newEvent
 //        }
 //    
-//        return BPCreateEditEventView(event: localEvent)
+//        return BPCreateEditEventView(broadcast: localEvent)
 //        .environmentObject(SessionManager())
 //        .environmentObject(GlobalSettings())
 //        .environmentObject(EventTabRouter())

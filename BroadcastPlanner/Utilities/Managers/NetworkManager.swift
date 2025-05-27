@@ -42,9 +42,15 @@ final class NetworkManager: ObservableObject {
     weak var syncDelegate: UpdateDelegateProtocol?
     init() {}
     deinit{
+        stopListeners()
         print("networkmanager deinit")
-        _ = listeners.map{$0.remove()}
     }
+    
+    func stopListeners(){
+        _ = listeners.map{$0.remove()}
+        listeners = []
+    }
+    
     func startToObserveChanges() {
         observeUsersUpdates { dto in
             self.syncDelegate?.handleListenerEvent(updated: true,
@@ -391,7 +397,7 @@ extension NetworkManager {
         } catch {
             #if DEBUG
                 print(
-                    "DEBUG: /NetworkManager/ save user Image error: \(error.localizedDescription)"
+                    "DEBUG: /NetworkManager/ save member Image error: \(error.localizedDescription)"
                 )
             #endif
         }

@@ -35,7 +35,7 @@ struct BPEditStadiumView: View {
                     vm.selectedEventPoint = nil
                     vm.renderPitchScene.deselect()
                     vm.isEdit = false
-//                    mdm.updateEvent(event, withPoints: vm.localPoints)
+//                    mdm.updateEvent(broadcast, withPoints: vm.localPoints)
                     Task{
                         await mdm.assignSnapshot(vm.makeSceneScreenshot(), toEvent: event)
                         await mdm.saveContextAsync(type: .main, publish: .broadcasts, id: [event.viewId])
@@ -62,8 +62,8 @@ struct BPEditStadiumView: View {
                                     }
                             }
                             .onTapGesture {
-                                // TODO: Select / Edit location flow
-                                print("edit event location")
+                                // TODO: Select / Edit venue flow
+                                print("edit broadcast venue")
                                 
                             }
                     
@@ -124,7 +124,7 @@ struct BPEditStadiumView: View {
                             //                    Spacer()
                             SaveEditControlPanelView(
                                 addAction: {
-                                    //mdm: 'addPoint to event' & delegete it to scene
+                                    //mdm: 'addPoint to broadcast' & delegete it to scene
                                     let newPoint = mdm.newPointInEvent(event,withNumber: vm.numberForNewPoint())
                                     vm.addPoint(point: newPoint)
                                 },
@@ -168,10 +168,10 @@ struct BPEditStadiumView: View {
                                                 PointPanelCell(size: cellWidth,
                                                                state: vm.stateForPoint(point),
                                                                number: point.viewNumber,
-                                                               isCamera: !point.viewLocalCameras.isEmpty,
-                                                               isSound: !point.viewLocalSounds.isEmpty,
-                                                               isLight: !point.viewLocalLights.isEmpty,
-                                                               isUser: !point.viewUsers.isEmpty,
+                                                               isCamera: !point.viewCameras.isEmpty,
+                                                               isSound: !point.viewSounds.isEmpty,
+                                                               isLight: !point.viewLights.isEmpty,
+                                                               isUser: !point.viewMembers.isEmpty,
                                                                selectedPoint: $vm.selectedEventPoint)
                                                 .onTapGesture {
                                                     withAnimation{

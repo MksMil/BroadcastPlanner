@@ -42,4 +42,9 @@ extension Hardware: CoreDataUpdatable{
     func update(from dto: HardwareDTO, in context: NSManagedObjectContext) {
             self.id = dto.id
         }
+    
+    public override func prepareForDeletion() {
+         super.prepareForDeletion()
+         
+     }
 }

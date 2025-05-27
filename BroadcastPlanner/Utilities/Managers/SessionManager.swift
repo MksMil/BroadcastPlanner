@@ -157,7 +157,7 @@ extension SessionManager {
         } catch {
             //alert?
 #if DEBUG
-            print("DEBUG: SessionManager:/func signUp/ - user creation failed: \(error)")
+            print("DEBUG: SessionManager:/func signUp/ - member creation failed: \(error)")
 #endif
         }
     }
@@ -179,7 +179,7 @@ extension SessionManager {
 
 // MARK: - User Managment
 extension SessionManager{
-    // MARK: Delete user
+    // MARK: Delete member
     func deleteUser() async throws{
         guard let user = Auth.auth().currentUser else { throw BPError.authError }
         try await user.delete()

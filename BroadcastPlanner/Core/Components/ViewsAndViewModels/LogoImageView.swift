@@ -51,7 +51,7 @@ struct LogoImageView: View {
                 vm.isSheetPresented.toggle()
             }
             .disabled(!editable)
-        //club/location select/add/edit/remove sheet
+        //club/venue select/add/edit/remove sheet
         .sheet(
             isPresented: $vm.isSheetPresented,
             content: {

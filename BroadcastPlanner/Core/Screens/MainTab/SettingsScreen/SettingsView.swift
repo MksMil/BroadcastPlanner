@@ -131,7 +131,7 @@ struct SettingsView: View {
                                     .clipShape(RoundedRectangle(cornerRadius: 20))
                                     .padding(.horizontal)
                             }
-                            //add location
+                            //add venue
                             Button {
                                 settingsRouter.path.append(SettingsTabPath.locationSheet(nil))
                             }label: {
@@ -174,7 +174,7 @@ struct SettingsView: View {
                         })
                         .padding(.bottom)
                         
-                        // MARK: - Delete user
+                        // MARK: - Delete member
                         Button(role: .destructive) {
                             // TODO: Alert with delete confirmation must have
                             Task{

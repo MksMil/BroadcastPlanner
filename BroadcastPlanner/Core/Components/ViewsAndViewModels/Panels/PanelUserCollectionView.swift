@@ -36,7 +36,7 @@ struct PanelUserCollectionView: View {
                     Divider()
                         .padding(.vertical,3)
                     
-                    Text("Add user")
+                    Text("Add member")
                         .font(.system(size: 14))
                         .lineLimit(1)
                         .minimumScaleFactor(0.2)
@@ -63,8 +63,8 @@ struct PanelUserCollectionView: View {
         .sheet(isPresented: $isSelect) {
             List{
                 ForEach(availableUsers){ user in
-                    //user cell
-//                    Text("\(user.userFirstName) \(user.userLastName)")
+                    //member cell
+//                    Text("\(member.userFirstName) \(member.userLastName)")
                     AddUnitFormUserCell(user: user, infoAction: {
                         
                     })

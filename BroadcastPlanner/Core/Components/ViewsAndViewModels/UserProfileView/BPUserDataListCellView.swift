@@ -17,7 +17,7 @@ struct BPUserDataListCellView: View {
                 .clipShape(Circle())
            
             VStack(alignment: .leading, spacing: 0){
-                Text("\(user.viewFirstName) \(user.viewLastName)")//user.fullCompactName)
+                Text("\(user.viewFirstName) \(user.viewLastName)")//member.fullCompactName)
                     .font(.system(size: 10))
                     .bold()
                 
@@ -48,6 +48,6 @@ struct BPUserDataListCellView: View {
 }
 
 //#Preview {
-//    BPUserDataListCellView(user: Member(context: DataManager.preview.moc), text: "text")
+//    BPUserDataListCellView(member: Member(context: DataManager.preview.moc), text: "text")
 //}
 

@@ -35,7 +35,7 @@ struct AddUnitFormView: View {
         VStack{
             Text("Add Crew form here")
             //data for new obvanUnit -> out
-            //position, user , hardware?
+            //position, member , hardware?
             Spacer()
                 .frame(height: 50)
                 .frame(maxWidth: .infinity)

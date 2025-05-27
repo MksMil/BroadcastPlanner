@@ -18,9 +18,9 @@ extension Crew {
     @NSManaged public var rotation: Int16
     @NSManaged public var scaleFactor: Float
     @NSManaged public var task: String?
-    @NSManaged public var event: Broadcast?
+    @NSManaged public var broadcast: Broadcast?
     @NSManaged public var hardware: Hardware?
-    @NSManaged public var user: Member?
+    @NSManaged public var member: Member?
 
 }
 
@@ -31,41 +31,29 @@ extension Crew : Identifiable {
     var viewX: Double{
         Double(coordinateX)
     }
-    
     var viewY: Double{
         Double(coordinateY)
     }
-    
     var viewRotation: Double {
         Double(rotation)
-        
     }
     var viewScaleFactor: Double{
         Double(scaleFactor)
     }
-    
     var viewPosition: UserSpecialization{
         UserSpecialization(rawValue: position ?? "") ?? UserSpecialization.producer
     }
-    
-    var viewUserId: String {
-        user?.viewId ?? ""
+    var viewMemberId: String {
+        member?.viewId ?? ""
     }
-    
-    var viewHardware: HardwareDTO?{
-        guard let hardware else { return nil }
-       return HardwareDTO(id: hardware.veiwId, envType: hardware.viewType, chanels: hardware.viewChannels)
-     }
-    
     var viewTask: String {
         task ?? "Task"
     }
-//
-//    var viewLocalHardware: [LocalHardware]{
-//        guard let hardware else { return [] }
-//       return [Hardware(id: hardware.veiwId, envType: hardware.viewType, chanels: hardware.viewChannels)]
-//     }
     
+    var hardwareDTO: HardwareDTO?{
+        guard let hardware else { return nil }
+        return HardwareDTO(id: hardware.veiwId, envType: hardware.viewType, chanels: hardware.viewChannels)
+    }
     var dto: CrewDTO{
         CrewDTO(id: viewId,
                 position: viewPosition.rawValue,
@@ -74,8 +62,8 @@ extension Crew : Identifiable {
                 rotation: viewRotation,
                 scale: viewScaleFactor,
                 task: viewTask,
-                userId: viewUserId,
-                hardware: viewHardware)
+                userId: viewMemberId,
+                hardware: hardwareDTO)
     }
 }
 
@@ -83,4 +71,15 @@ extension Crew: CoreDataUpdatable{
     func update(from dto: CrewDTO, in context: NSManagedObjectContext) {
             self.id = dto.id
         }
+    public override func prepareForDeletion() {
+        super.prepareForDeletion()
+        if let context = self.managedObjectContext{
+            if let hardware {
+                context.delete(hardware)
+            }
+            if let broadcast, let member{
+                broadcast.removeFromUsers(member)
+            }
+        }
+    }
 }

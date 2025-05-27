@@ -96,4 +96,11 @@ extension Obvan: CoreDataUpdatable{
     func update(from dto: ObvanDTO, in context: NSManagedObjectContext) {
             self.id = dto.id
         }
+    
+    public override func prepareForDeletion() {
+         super.prepareForDeletion()
+        if let context = self.managedObjectContext{
+            viewObvanTemplateUnits.forEach{context.delete($0)}
+        }
+     }
 }

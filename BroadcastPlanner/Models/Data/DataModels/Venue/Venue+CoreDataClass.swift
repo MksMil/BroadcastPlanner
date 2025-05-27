@@ -16,8 +16,8 @@ extension Venue {
     @NSManaged public var id: String?
     @NSManaged public var lastUpdated: Date?
     @NSManaged public var title: String?
-    @NSManaged public var background: LocalImage?
-    @NSManaged public var events: NSSet?
+    @NSManaged public var broadcastSchema: LocalImage?
+    @NSManaged public var broadcasts: NSSet?
     @NSManaged public var homeClub: NSSet?
     @NSManaged public var images: NSSet?
     
@@ -87,15 +87,15 @@ extension Venue : Identifiable {
     }
     
     var viewBackground: UIImage {
-        background?.makeUIImage() ?? UIImage(imageLiteralResourceName: "stadium")
+        broadcastSchema?.makeUIImage() ?? UIImage(imageLiteralResourceName: "stadium")
     }
     
     var viewBackgroundPreview: Image{
-        background?.mediumImage ?? Image(systemName: "compass.drawing")
+        broadcastSchema?.mediumImage ?? Image(systemName: "compass.drawing")
     }
     
-    var viewEvents: [Broadcast] {
-        events?.allObjects as? [Broadcast] ?? []
+    var viewBrodcasts: [Broadcast] {
+        broadcasts?.allObjects as? [Broadcast] ?? []
     }
     
     var viewImages: [Image] {
@@ -116,7 +116,7 @@ extension Venue : Identifiable {
             title: viewTitle,
             address: viewAddress,
             imagesIds: viewLocalImages.map{$0.viewId},
-            locationBackgroundId: background?.id
+            locationBackgroundId: broadcastSchema?.id
         )
     }
 }
@@ -125,4 +125,11 @@ extension Venue: CoreDataUpdatable{
     func update(from dto: VenueDTO, in context: NSManagedObjectContext) {
             self.id = dto.id
         }
+    
+    public override func prepareForDeletion() {
+        super.prepareForDeletion()
+        if let context =  self.managedObjectContext{
+            viewLocalImages.forEach{context.delete($0)}
+        }
+    }
 }

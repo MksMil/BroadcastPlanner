@@ -196,7 +196,7 @@ struct BPEditCarView: View {
 
     @State private var isConfirmDiscardChanges: Bool = false
 
-    //if user cant edit(he is not owner)
+    //if member cant edit(he is not owner)
     var editable: Bool
 
     @State var obvanTitle: String = "choose car"

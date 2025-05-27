@@ -21,11 +21,11 @@ extension VenuePoint {
     @NSManaged public var task: String?
     @NSManaged public var scaleFactor: Float
     @NSManaged public var cameras: NSSet?
-    @NSManaged public var event: Broadcast?
+    @NSManaged public var broadcast: Broadcast?
     @NSManaged public var image: LocalImage?
     @NSManaged public var lights: NSSet?
     @NSManaged public var sounds: NSSet?
-    @NSManaged public var user: NSSet?
+    @NSManaged public var members: NSSet?
 
 }
 
@@ -80,7 +80,7 @@ extension VenuePoint {
 
 }
 
-// MARK: Generated accessors for user
+// MARK: Generated accessors for member
 extension VenuePoint {
 
     @objc(addUserObject:)
@@ -98,6 +98,12 @@ extension VenuePoint {
 }
 
 extension VenuePoint : Identifiable {
+    var viewId: String{
+        id ?? ""
+    }
+    var viewNumber: Int {
+        Int(number)
+    }
 
     var viewX: Double {
         Double(coordinateX)
@@ -113,35 +119,15 @@ extension VenuePoint : Identifiable {
     var viewScaleFactor: Double{
         Double(scaleFactor)
     }
-    var viewId: String{
-        id ?? ""
-    }
     
-    var viewNumber: Int {
-        Int(number)
-    }
-    
-    var viewCameras: [CameraDTO] {
-        (cameras?.allObjects as? [Camera] ?? []).map{CameraDTO(id: $0.viewId, optic: $0.viewOptic)}
-    }
-    
-    var viewLocalCameras: [Camera]{
+    var viewCameras: [Camera]{
         cameras?.allObjects as? [Camera] ?? []
     }
-    
-    var viewSounds: [SoundDTO] {
-        (sounds?.allObjects as? [Sound] ?? []).map{SoundDTO(id: $0.viewId, windDefence: $0.viewWindDefence, placeType: $0.viewPlaceType)}
-    }
-    
-    var viewLocalSounds: [Sound] {
+    var viewSounds: [Sound] {
         sounds?.allObjects as? [Sound] ?? []
     }
     
-    var viewLights: [LightDTO] {
-        (lights?.allObjects as? [Light] ?? []).map{LightDTO(id: $0.viewId, lightType: $0.viewLightType)}
-    }
-    
-    var viewLocalLights: [Light] {
+    var viewLights: [Light] {
         lights?.allObjects as? [Light] ?? []
     }
 
@@ -158,17 +144,27 @@ extension VenuePoint : Identifiable {
         task ?? "no task"
     }
     
-    var viewUsers: [Member]{
-        (user?.allObjects as? [Member]) ?? []
+    var viewMembers: [Member]{
+        (members?.allObjects as? [Member]) ?? []
     }
     
     var viewImage: Image {
         image?.smallImage ?? Image("cam1")
     }
     
+    //DTO
+    var cameraDTOs: [CameraDTO] {
+        (cameras?.allObjects as? [Camera] ?? []).map{CameraDTO(id: $0.viewId, optic: $0.viewOptic)}
+    }
+    var soundDTOs: [SoundDTO] {
+        (sounds?.allObjects as? [Sound] ?? []).map{SoundDTO(id: $0.viewId, windDefence: $0.viewWindDefence, placeType: $0.viewPlaceType)}
+    }
+    var lightDTOs: [LightDTO] {
+        (lights?.allObjects as? [Light] ?? []).map{LightDTO(id: $0.viewId, lightType: $0.viewLightType)}
+    }
     var dto: PointDTO{
         PointDTO(id: viewId,
-                 userId: viewUsers.map{$0.viewId},
+                 userId: viewMembers.map{$0.viewId},
                  coordinateX: viewX,
                  coordinateY: viewY,
                  rotation: viewRotation.radians,
@@ -177,9 +173,9 @@ extension VenuePoint : Identifiable {
                  number: viewNumber,
                  description: viewDescription,
                  task: viewTask,
-                 cameras: viewCameras,
-                 sounds: viewSounds,
-                 lights: viewLights)
+                 cameras: cameraDTOs,
+                 sounds: soundDTOs,
+                 lights: lightDTOs)
     }
 }
 
@@ -187,4 +183,18 @@ extension VenuePoint: CoreDataUpdatable{
     func update(from dto: PointDTO, in context: NSManagedObjectContext) {
             self.id = dto.id
         }
+    
+    public override func prepareForDeletion() {
+        super.prepareForDeletion()
+        if let context = self.managedObjectContext{
+            viewCameras.forEach{context.delete($0)}
+            viewSounds.forEach{context.delete($0)}
+            viewLights.forEach{context.delete($0)}
+            //
+            if let broadcast {
+                viewMembers.forEach { broadcast.removeFromUsers($0)}
+            }
+        }
+    }
+
 }

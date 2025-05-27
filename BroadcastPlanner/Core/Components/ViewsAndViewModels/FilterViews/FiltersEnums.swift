@@ -1,7 +1,7 @@
 import Foundation
 protocol Customfilter: CaseIterable, Identifiable, Codable, RawRepresentable {}
 
-// MARK: - Filter points
+// MARK: - Filter venuePoints
 enum BPEventPlanPointStadiumFilter: String, Customfilter //CaseIterable,Identifiable, Codable
 {
     case all = "square.grid.3x3.fill"

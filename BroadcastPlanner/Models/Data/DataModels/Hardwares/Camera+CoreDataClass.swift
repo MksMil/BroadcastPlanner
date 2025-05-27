@@ -38,4 +38,9 @@ extension Camera: CoreDataUpdatable{
     func update(from dto: CameraDTO, in context: NSManagedObjectContext) {
             self.id = dto.id
         }
+    
+    public override func prepareForDeletion() {
+         super.prepareForDeletion()
+         
+     }
 }

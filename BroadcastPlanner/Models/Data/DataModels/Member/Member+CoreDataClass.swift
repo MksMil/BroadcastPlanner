@@ -25,14 +25,14 @@ extension Member {
     @NSManaged public var specializations: String?
     @NSManaged public var lastUpdated: Date?
     @NSManaged public var image: LocalImage?
-    @NSManaged public var points: NSSet?
-    @NSManaged public var units: NSSet?
+    @NSManaged public var venuePoints: NSSet?
+    @NSManaged public var crews: NSSet?
     @NSManaged public var ownedEvents: NSSet?
     @NSManaged public var participateEvents: NSSet?
 
 }
 
-// MARK: Generated accessors for points
+// MARK: Generated accessors for venuePoints
 extension Member {
 
     @objc(addPointsObject:)
@@ -49,7 +49,7 @@ extension Member {
 
 }
 
-// MARK: Generated accessors for units
+// MARK: Generated accessors for crews
 extension Member {
 
     @objc(addUnitsObject:)
@@ -154,8 +154,11 @@ extension Member : Identifiable {
         return true
     }
     
-    var viewLocationPoints: [VenuePoint] {
-        points?.allObjects as? [VenuePoint] ?? []
+    var viewVenuePoints: [VenuePoint] {
+        venuePoints?.allObjects as? [VenuePoint] ?? []
+    }
+    var viewCrews: [Crew] {
+        crews?.allObjects as? [Crew] ?? []
     }
     
     var viewLastUpdated: Date {
@@ -189,4 +192,19 @@ extension Member: CoreDataUpdatable{
     func update(from dto: MemberDTO, in context: NSManagedObjectContext) {
             self.id = dto.id
         }
+    // TODO: update from optional data
+    
+    
+    public override func prepareForDeletion() {
+         super.prepareForDeletion()
+        if let context = self.managedObjectContext{
+            if let image{
+                context.delete(image)
+            }
+            viewOwnedEvents.forEach{$0.removeFromUsers(self)}
+            viewParticipatedEvents.forEach{$0.removeFromUsers(self)}
+            viewVenuePoints.forEach{$0.removeFromUser(self)}
+            viewCrews.forEach{$0.member = nil}
+        }
+     }
 }

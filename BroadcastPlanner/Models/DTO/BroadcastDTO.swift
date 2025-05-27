@@ -7,7 +7,7 @@ struct BroadcastDTO: Identifiable, Codable, BPDataProtocol,CoreDataRepresentable
     }
     var id: String
     
-    //event date
+    //broadcast date
     var date: Date
     var lastUpdated: Date
     
@@ -15,7 +15,7 @@ struct BroadcastDTO: Identifiable, Codable, BPDataProtocol,CoreDataRepresentable
     var locationID: String?
     var obVanId: String?
     
-    //crew points
+    //crew venuePoints
     var locationPoints: [PointDTO]
     var obVanUnits: [CrewDTO]
     

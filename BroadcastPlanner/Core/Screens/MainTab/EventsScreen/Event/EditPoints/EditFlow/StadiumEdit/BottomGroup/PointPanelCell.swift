@@ -51,7 +51,7 @@ struct PointPanelCell: View {
                 .offset(x: size * 1 / 3, y: -size * 1 / 3.5)
                 .opacity(isLight ? 1: 0.1)
             
-            //user image
+            //member image
             //person.fill.checkmark
             //person.crop.circle.badge.questionmark
             //person.crop.circle.badge.checkmark

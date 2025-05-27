@@ -23,7 +23,7 @@ struct NetworkTestView: View {
         ZStack{
             MainBackground()
             VStack{
-                //user section for test: create + , update +
+                //member section for test: create + , update +
                 Section {
                     Button("Create User") {
                         Task{
@@ -45,7 +45,7 @@ struct NetworkTestView: View {
                     Text("User")
                         .font(.title)
                 }
-                //event section : create +, update +, remove +
+                //broadcast section : create +, update +, remove +
                 Section {
                     Button("Create Broadcast"){
                         vm.selectedEvent = mdm.createEventWithCurrentUserOwnerInContextType(.main)
@@ -97,7 +97,7 @@ struct NetworkTestView: View {
                 } header: {
                     Text("Club")
                 }
-                //location section:
+                //venue section:
                 Section {
                     Button("Create Venue"){
                         

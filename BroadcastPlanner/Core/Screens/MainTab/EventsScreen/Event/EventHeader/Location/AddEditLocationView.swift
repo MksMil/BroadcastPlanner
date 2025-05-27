@@ -49,7 +49,7 @@ struct AddEditLocationView: View {
                     },
                     acceptAction: {
                         Task {
-                            //update location with data
+                            //update venue with data
 //                            acceptAction(vm.title,vm.address,vm.newImages,vm.locationBackground)
                         }
                     },
@@ -101,7 +101,7 @@ struct AddEditLocationView: View {
                    
                     DividerWithText(text: "Venue images")
                     
-                    //location photos collection
+                    //venue photos collection
                     TabViewList(source: location.viewLocalImages.sorted{$0.viewLastUpdated < $1.viewLastUpdated}, pageCount: 3, spacing: 5) { localImage in
                         vm.backgroundSelected(localImage)
                     } content: { localImage in
@@ -146,7 +146,7 @@ struct AddEditLocationView: View {
                         
                         
                         Spacer()
-                        //add localImages to location
+                        //add localImages to venue
                         PhotosPicker(selection: $vm.locationPhotoItems) {
                             Image(systemName: "plus")
                                 .resizable()
@@ -169,8 +169,8 @@ struct AddEditLocationView: View {
                         }
                         Spacer()
                     }
-                    //event background representation
-                    DividerWithText(text: "select event plan background")
+                    //broadcast broadcastSchema representation
+                    DividerWithText(text: "select broadcast plan broadcastSchema")
                     
                     TabViewList(source: eventTemplates.map{$0},
                                 selectedItem: vm.selectedEventTemplate,
@@ -237,7 +237,7 @@ struct AddEditLocationView: View {
                         }
                         Spacer()
                         Button {
-                            //ling eventTemplate to location
+                            //ling eventTemplate to venue
                             if let template = vm.selectedEventTemplate{
                                 mdm.linkEventTemplate(template, toLocation: location)
                             }
@@ -274,7 +274,7 @@ struct AddEditLocationView: View {
                 .scrollDismissesKeyboard(.immediately)
                 
                 
-                //background photo remove confirmation dialog
+                //broadcastSchema photo remove confirmation dialog
                 .confirmationDialog(
                     Text("Permanently erase the photo in the trash?"),
                     isPresented: $isRemoveBackgroundDialog
@@ -289,7 +289,7 @@ struct AddEditLocationView: View {
                         
                     }
                 }
-                //event template remove confirmation dialog
+                //broadcast template remove confirmation dialog
                 .confirmationDialog(
                     Text("Permanently erase the photo in the trash?"),
                     isPresented: $isRemoveEventTemplate
@@ -304,7 +304,7 @@ struct AddEditLocationView: View {
                         
                     }
                 }
-                //location remove confirmation dialog
+                //venue remove confirmation dialog
                 .confirmationDialog(
                     Text("Permanently erase the Venue in the trash?"),
                     isPresented: $isRemoveLocationDialog

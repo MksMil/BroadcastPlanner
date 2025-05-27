@@ -108,8 +108,8 @@ struct AuthenticationScreen: View {
                 Task{
                     await sessionManager.signUp()
 //                    guard let id = sessionManager.sessionUser?.id else { return }
-//                    var user = BPUser(id: id)
-//                    signUpHandler(user)
+//                    var member = BPUser(id: id)
+//                    signUpHandler(member)
                 }
             }
         }

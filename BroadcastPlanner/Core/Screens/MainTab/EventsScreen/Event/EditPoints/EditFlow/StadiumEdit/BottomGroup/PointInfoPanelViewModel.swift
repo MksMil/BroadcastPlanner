@@ -20,7 +20,7 @@ final class PointInfoPanelViewModel: ObservableObject {
     let point: VenuePoint
     var availableNumbers: [Int] {
         var nums: [Int] = []
-        if let event = point.event{
+        if let event = point.broadcast{
             nums = event.viewLocationPoints.map{$0.viewNumber}
         }
         nums.removeAll { num in
@@ -35,20 +35,20 @@ final class PointInfoPanelViewModel: ObservableObject {
 
     init(point: VenuePoint) {
         self.point = point
-        if let user = point.viewUsers.first {
+        if let user = point.viewMembers.first {
             selectedUser = user
         }
 
-        if let camera = point.viewLocalCameras.first {
+        if let camera = point.viewCameras.first {
             selectedCameraOptic = camera.viewOptic
         }
 
-        if let sound = point.viewLocalSounds.first {
+        if let sound = point.viewSounds.first {
             selectedSoundPlaceType = sound.viewPlaceType
             selectedSoundWindDefence = sound.viewWindDefence
         }
 
-        if let light = point.viewLocalLights.first {
+        if let light = point.viewLights.first {
             selectedLight = light.viewLightType
         }
         number = point.viewNumber

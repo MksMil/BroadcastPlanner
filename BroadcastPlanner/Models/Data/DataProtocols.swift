@@ -26,13 +26,11 @@ extension CoreDataRepresentable where Self == Entity.DTO {
         fetchRequest.fetchLimit = 1
         
         if let object = try? context.fetch(fetchRequest).first{
+            object.prepareForDeletion()
             context.delete(object)
         }
-        
     }
 }
-
-
 
 extension NSManagedObjectContext {
     func applyDTOs<DTO: CoreDataRepresentable>(

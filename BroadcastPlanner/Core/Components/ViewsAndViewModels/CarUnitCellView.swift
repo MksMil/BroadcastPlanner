@@ -78,7 +78,7 @@ struct CarUnitCellView: View {
 //}
 //#Preview {
 //    let manager = EditPlanPointsManager()
-//    return BPEditCarView(event: .constant(MockData.sampleEvent),
+//    return BPEditCarView(broadcast: .constant(MockData.sampleEvent),
 //                  editable: true)
 //    .environmentObject(manager)
 //    .environmentObject(GlobalSettings())

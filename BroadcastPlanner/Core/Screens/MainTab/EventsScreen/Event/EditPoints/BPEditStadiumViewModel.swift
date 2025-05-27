@@ -129,7 +129,7 @@ final class BPEditStadiumViewModel: ObservableObject {
             return image
     }
 }
-// MARK: - filter points & venuePoint state
+// MARK: - filter venuePoints & venuePoint state
 extension BPEditStadiumViewModel {
     
     func filterPointsWithCase(_ filter: BPEventPlanPointStadiumFilter){
@@ -138,18 +138,18 @@ extension BPEditStadiumViewModel {
             case .all:
                 filteredLocationPoints = localPoints
             case .cam:
-                filteredLocationPoints = localPoints.filter({!$0.viewLocalCameras.isEmpty})
+                filteredLocationPoints = localPoints.filter({!$0.viewCameras.isEmpty})
             case .person:
                 filteredLocationPoints = localPoints.filter({//$0.viewLocalCameras.isEmpty &&
-                    !$0.viewUsers.isEmpty})
+                    !$0.viewMembers.isEmpty})
             case .mic:
                 filteredLocationPoints = localPoints.filter({//$0.viewLocalCameras.isEmpty && $0.viewUsers.isEmpty &&
-                    !$0.viewLocalSounds.isEmpty})
+                    !$0.viewSounds.isEmpty})
             case .light:
                 filteredLocationPoints = localPoints.filter({//$0.viewLocalCameras.isEmpty &&
                     //$0.viewUsers.isEmpty &&
-                    //$0.viewLocalSounds.isEmpty &&
-                    !$0.viewLocalLights.isEmpty})
+                    //$0.viewSounds.isEmpty &&
+                    !$0.viewLights.isEmpty})
         }
     }
     
@@ -189,8 +189,8 @@ extension BPEditStadiumViewModel{
 }
 //// MARK: - CarEditScene managment
 //extension EditPlanPointsManager{
-//    func updateCarScene(units: [OBVanUnit]){
-//        renderCarScene.points = units
+//    func updateCarScene(crews: [OBVanUnit]){
+//        renderCarScene.venuePoints = crews
 //        renderCarScene.setupNodes()
 //    }
 //    
@@ -200,8 +200,8 @@ extension BPEditStadiumViewModel{
 //    
 //    func setEnabledToUnit(name: String){
 //        print("set in manager \(name), ")
-////        if let index = selectedCar?.units.firstIndex(where: {$0.id == name}){
-////            selectedCar?.units[index].isEnabled.toggle()
+////        if let index = selectedCar?.crews.firstIndex(where: {$0.id == name}){
+////            selectedCar?.crews[index].isEnabled.toggle()
 ////        }
 //        renderCarScene.setNode(name: name)
 //    }

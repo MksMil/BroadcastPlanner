@@ -22,7 +22,7 @@
 //                                        Text(day.date.format("dd"))
 //                                    }
 //                                    .foregroundStyle(.white)
-//                                    .background {
+//                                    .broadcastSchema {
 //                                        
 //                                    }
 //                                }

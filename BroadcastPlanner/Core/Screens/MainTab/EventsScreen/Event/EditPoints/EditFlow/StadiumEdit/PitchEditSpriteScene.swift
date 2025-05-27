@@ -125,34 +125,34 @@ class PitchEditSpriteScene: SKScene{
         } else {
             rotation = point.viewRotation.radians
         }
-        if !point.viewLocalCameras.isEmpty{
+        if !point.viewCameras.isEmpty{
             
             addSpriteWithName(camSpriteName,
                               andType: .camera,
                               toNode: node,
                               toZone: .main,
                               rotation: rotation)
-            if !point.viewLocalSounds.isEmpty{
+            if !point.viewSounds.isEmpty{
                 addSpriteWithName(soundSpriteName,
                                   andType: .sound,
                                   toNode: node,
                                   toZone: .rightDown,
                                   rotation: rotation)
             }
-            if !point.viewLocalLights.isEmpty{
+            if !point.viewLights.isEmpty{
                 addSpriteWithName(lightSpriteName,
                                   andType: .light,
                                   toNode: node,
                                   toZone: .rightUp,
                                   rotation: rotation)
             }
-        } else if !point.viewLocalSounds.isEmpty {
+        } else if !point.viewSounds.isEmpty {
             addSpriteWithName(soundSpriteName,
                               andType: .sound,
                               toNode: node,
                               toZone: .main,
                               rotation: rotation)
-        } else if !point.viewLocalLights.isEmpty{
+        } else if !point.viewLights.isEmpty{
             addSpriteWithName(lightSpriteName,
                               andType: .light,
                               toNode: node,
@@ -459,7 +459,7 @@ extension PitchEditSpriteScene{
                 deltaXinTouch = innerLocation.x
                 deltaYinTouch = innerLocation.y
             } else {
-                //background selected
+                //broadcastSchema selected
                 sceneState = .idle
                 lastPanLocation = touch.location(in: view)
             }

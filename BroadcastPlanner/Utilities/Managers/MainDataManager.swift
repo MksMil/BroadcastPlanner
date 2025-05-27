@@ -363,7 +363,7 @@ extension MainDataManager: @preconcurrency UpdateDelegateProtocol {
                         if updated {
                             _ = localDataManager.createOrUpdateLocalEventWithEventDTO(dto, inContext: .bg)
                         } else {
-                            print("procees with event listener")
+                            print("procees with broadcast listener")
                             localDataManager.removeEventWithDTO(dto, inContext: .bg)
                         }
                         type = .broadcasts
@@ -436,7 +436,7 @@ extension MainDataManager: @preconcurrency UpdateDelegateProtocol {
 
 // MARK: - User managment
 extension MainDataManager {
-    //creates new user cloud entity
+    //creates new member cloud entity
     @MainActor
     func createUser(id: String) async {
         let userDTO = MemberDTO(id: id)
@@ -470,7 +470,7 @@ extension MainDataManager {
                 if let localImage = currentUser.image {
                     localImage.uploadImage(uiimage: image)
                     currentUser.image = localImage
-                    localImage.parentUser = currentUser
+                    localImage.parentMember = currentUser
                 } else {
                     let localImage = localDataManager.fetchOrCreateObject(
                         ofType: LocalImage.self,
@@ -483,7 +483,7 @@ extension MainDataManager {
                     }
                     localImage.uploadImage(uiimage: image)
                     currentUser.image = localImage
-                    localImage.parentUser = currentUser
+                    localImage.parentMember = currentUser
                 }
             }
         }
@@ -508,13 +508,13 @@ extension MainDataManager {
             )
     }
     func removeCurrrentUser() {
-        //remove user and user image in global
+        //remove member and member image in global
 
-        // remove user and user image in local
+        // remove member and member image in local
     }
 
     func removeUser(user: MemberDTO) {
-        // remove user and user image in local
+        // remove member and member image in local
     }
 
     @MainActor
@@ -547,7 +547,7 @@ extension MainDataManager {
             newEvent.id = UUID().uuidString
             return newEvent
         }
-        //link event to user
+        //link broadcast to member
         localDataManager.contextFromType(type).perform { [weak self] in
             guard let self else { return }
             event.addToOwners(self.currentUser)
@@ -569,7 +569,7 @@ extension MainDataManager {
             event.homeClub = homeClub
             event.guestClub = guestClub
             event.date = eventDate
-            event.location = location
+            event.venue = location
             event.addToOwners(self.currentUser)
         }
         await saveContextAsync(type: .main, publish: .broadcasts, id: [event.viewId])
@@ -608,7 +608,7 @@ extension MainDataManager {
                 )
             localDataManager.mainContext.performAndWait {
                 event.locationPreview = localImage
-                localImage.parentLocationPreviewEvent = event
+                localImage.parentVenuePreview = event
             }
         }
     }
@@ -621,7 +621,7 @@ extension MainDataManager {
         withPoints points: [VenuePoint]
     ) {
         localDataManager.mainContext.performAndWait {
-            event.points = Set(points) as NSSet
+            event.venuePoints = Set(points) as NSSet
         }
     }
 
@@ -646,11 +646,11 @@ extension MainDataManager {
         guard let point else { return }
         localDataManager.mainContext.performAndWait {
             point.number = Int16(number)
-                //remove user
-                if let userToRemove = point.viewUsers.first{
+                //remove member
+                if let userToRemove = point.viewMembers.first{
                     point.removeFromUser(userToRemove)
                     userToRemove.removeFromPoints(point)
-                    if let event = point.event {
+                    if let event = point.broadcast {
                         event.removeFromUsers(userToRemove)
                         userToRemove.removeFromParticipateEvents(event)
                     } else {
@@ -658,10 +658,10 @@ extension MainDataManager {
                     }
                 }
             if let user{
-                //add new user
+                //add new member
                 point.addToUser(user)
                 user.addToPoints(point)
-                if let event = point.event {
+                if let event = point.broadcast {
                     user.addToParticipateEvents(event)
                     event.addToUsers(user)
                 } else {
@@ -669,7 +669,7 @@ extension MainDataManager {
                 }
             }
             //
-            for cam in point.viewLocalCameras {
+            for cam in point.viewCameras {
                 point.removeFromCameras(cam)
                 localDataManager.removeLocalCamera(cam, inContext: .main)
             }
@@ -678,7 +678,7 @@ extension MainDataManager {
                 let camera = localDataManager.createOrUpdateCamera(cameraDTO, inContext: .main)
                 localDataManager.linkLocalCamera(camera, withPoint: point, inContext: .main)
             }
-            for sound in point.viewLocalSounds {
+            for sound in point.viewSounds {
                 point.removeFromSounds(sound)
                 localDataManager.removeLocalSound(sound, inContext: .main)
             }
@@ -689,7 +689,7 @@ extension MainDataManager {
                 localDataManager.linkLocalSound(sound, withPoint: point, inContext: .main)
             }
             
-                for light in point.viewLocalLights {
+                for light in point.viewLights {
                     point.removeFromLights(light)
                     localDataManager.removeLocalLight(light, inContext: .main)
                 }
@@ -797,7 +797,7 @@ extension MainDataManager {
             localDataManager.mainContext.performAndWait {
                 point.addToUser(user)
                 user.addToPoints(point)
-                if let event = point.event {
+                if let event = point.broadcast {
                     user.addToParticipateEvents(event)
                     event.addToUsers(user)
                 } else {
@@ -815,7 +815,7 @@ extension MainDataManager {
             localDataManager.mainContext.performAndWait {
                 point.removeFromUser(user)
                 user.removeFromPoints(point)
-                if let event = point.event {
+                if let event = point.broadcast {
                     event.removeFromUsers(user)
                     user.removeFromParticipateEvents(event)
                 } else {
@@ -858,7 +858,7 @@ extension MainDataManager {
     @MainActor
     func removeUnit(_ unit: Crew) {
         localDataManager.mainContext.perform {
-            if let event = unit.event, let user = unit.user {
+            if let event = unit.broadcast, let user = unit.member {
                 user.removeFromParticipateEvents(event)
                 event.removeFromUsers(user)
             }
@@ -882,8 +882,8 @@ extension MainDataManager {
             event.addToUsers(user)
             user.addToParticipateEvents(event)
             user.addToUnits(unit)
-            unit.user = user
-            unit.event = event
+            unit.member = user
+            unit.broadcast = event
         }
         return unit
     }
@@ -992,7 +992,7 @@ extension MainDataManager {
             publish: .venues,
             id: []
         )
-        // location image upload to firestore, and image properties in firebase
+        // venue image upload to firestore, and image properties in firebase
         let images = location.viewLocalImages
         if !images.isEmpty {
             await withTaskGroup { group in
@@ -1010,7 +1010,7 @@ extension MainDataManager {
                 }
             }
             //            group.addTask { [weak self] in
-            //                //background?
+            //                //broadcastSchema?
             //            }
 
         }
@@ -1022,7 +1022,7 @@ extension MainDataManager {
     }
     @MainActor
     func removeLocation(_ location: Venue) async {
-        //remove background images for location from firestore, and image properties from firebase
+        //remove broadcastSchema images for venue from firestore, and image properties from firebase
         await withTaskGroup { group in
             let imageIds = location.viewLocalImages.map { $0.viewId }
             if !imageIds.isEmpty {
@@ -1036,12 +1036,12 @@ extension MainDataManager {
                 }
             }
         }
-        //remove location from firebase
+        //remove venue from firebase
         await globalDataManager.removeDataOfType(
             .venues,
             withId: location.viewId
         )
-        //remove images and location from CoreData
+        //remove images and venue from CoreData
          localDataManager.removeLocalLocation(location, inContext: .main)
         await saveContextAsync(type: .main, publish: .venues, id: [])
     }
@@ -1158,7 +1158,7 @@ extension MainDataManager {
                 )
             )
         }
-        //link images to location
+        //link images to venue
         if let location{
             localDataManager.linkImages(localImages, toLocalLocation: location, inContext: .main)
         }

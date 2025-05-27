@@ -1,6 +1,6 @@
 import SwiftUI
 
-// TODO: link to chat somewhere if currentUser == (owner || paticipated user)
+// TODO: link to chat somewhere if currentUser == (owner || paticipated member)
 
 struct ExploreEventView: View {
     
@@ -21,7 +21,7 @@ struct ExploreEventView: View {
         ZStack{
             MainBackground()
             VStack(alignment: .center, spacing: 5) {
-                //header: time, date, teams, location
+                //header: time, date, teams, venue
                 VStack{
                     ZStack{
                         LocationSelectionView(location: vm.location, offset: logoSize,editable: false) {
@@ -41,7 +41,7 @@ struct ExploreEventView: View {
                                     vm.homeClub = club
                                 })
                                 
-                                //event date section
+                                //broadcast date section
                                 VStack(spacing: 20) {
                                     Text(
                                         vm.eventDate.formatted(

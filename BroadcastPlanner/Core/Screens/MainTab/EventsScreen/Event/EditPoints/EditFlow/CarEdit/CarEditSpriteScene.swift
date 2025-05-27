@@ -54,7 +54,7 @@ class CarEditSpriteScene: SKScene{
         setupCamera()
         setupBackground() 
         pointNodes.removeAll()
-//        for point in points{
+//        for point in venuePoints{
 //            let texture = textureFromSFSymbol(named: "person.fill")
 //            let node = SKSpriteNode(texture: texture)
 //            if point.coordinates.rotation != 0 {
@@ -97,7 +97,7 @@ class CarEditSpriteScene: SKScene{
     }
     
     func setupBackground(){
-        backGroundNode.name = "background"
+        backGroundNode.name = "broadcastSchema"
         addChild(backGroundNode)
         backGroundNode.position = CGPoint(x: size.width / 2,
                                           y: size.height / 2)
@@ -114,9 +114,9 @@ class CarEditSpriteScene: SKScene{
     func setNode(name: String){
 //        guard let node = childNode(withName: name) else{ return }
 //        
-//        if let index = points.firstIndex(where: {$0.id == name}){
-//            points[index].isEnabled.toggle()
-//            if points[index].isEnabled{
+//        if let index = venuePoints.firstIndex(where: {$0.id == name}){
+//            venuePoints[index].isEnabled.toggle()
+//            if venuePoints[index].isEnabled{
 //                node.run(SKAction.fadeAlpha(to: 1, duration: 1))
 //            } else {
 //                node.run(SKAction.fadeAlpha(to: 0.3, duration: 1))
@@ -267,7 +267,7 @@ extension CarEditSpriteScene{
 extension CarEditSpriteScene{
     func rotateClockwiseSelectedPointCameraNode(){
 //        if let selectedPointNode,
-//           selectedPointNode.isNotNodeWithName(NodeType.background.rawValue),
+//           selectedPointNode.isNotNodeWithName(NodeType.broadcastSchema.rawValue),
 //           let name = selectedPointNode.name,
 //           let node = selectedPointNode.childNode(withName: name + NodeZone.main.rawValue){
 //            node.run(SKAction.rotate(byAngle: angle, duration: animationDuration))
@@ -278,7 +278,7 @@ extension CarEditSpriteScene{
     
     func rotateCounterClockwiseSelectedPointCameraNode(){
 //        if let selectedPointNode,
-//           selectedPointNode.isNotNodeWithName(NodeType.background.rawValue),
+//           selectedPointNode.isNotNodeWithName(NodeType.broadcastSchema.rawValue),
 //           let name = selectedPointNode.name,
 //           let node = selectedPointNode.childNode(withName: name + NodeZone.main.rawValue){
 //            node.run(SKAction.rotate(byAngle: -angle, duration: animationDuration))
@@ -289,7 +289,7 @@ extension CarEditSpriteScene{
     
     func swapSelectedPointCameraNode(){
 //        if let selectedPointNode,
-//           selectedPointNode.isNotNodeWithName(NodeType.background.rawValue),
+//           selectedPointNode.isNotNodeWithName(NodeType.broadcastSchema.rawValue),
 //           let name = selectedPointNode.name,
 //           let node = selectedPointNode.childNode(withName: name + NodeZone.main.rawValue){
 //            let newScale = node.xScale * (-1)
@@ -302,7 +302,7 @@ extension CarEditSpriteScene{
 // MARK: - Scaling selected venuePoint node
 extension CarEditSpriteScene{
     func scaleUpSelectedPoint(){
-//        if let selectedPointNode, selectedPointNode.isNotNodeWithName(NodeType.background.rawValue) {
+//        if let selectedPointNode, selectedPointNode.isNotNodeWithName(NodeType.broadcastSchema.rawValue) {
 //            let xValue = Double(round(10 * selectedPointNode.xScale) / 10)
 //            let yValue = Double(round(10 * selectedPointNode.yScale) / 10)
 //           
@@ -313,7 +313,7 @@ extension CarEditSpriteScene{
 //                    
 //                    let tempSize = CGSize(width: selectedPointNode.frame.width * (1 + xValue - newXScale), height: selectedPointNode.frame.height * (1 + yValue - newYScale))
 //                    
-//                    let newPosition = optimalPositionForSize(tempSize, location: selectedPointNode.position)
+//                    let newPosition = optimalPositionForSize(tempSize, venue: selectedPointNode.position)
 //
 //                    selectedPointNode.run(SKAction.group([SKAction.scaleX(to: newXScale, y: newYScale, duration: animationDuration),SKAction.move(to: newPosition, duration: animationDuration)]))
 //                }
@@ -324,7 +324,7 @@ extension CarEditSpriteScene{
 //                    
 //                    let tempSize = CGSize(width: (selectedPointNode.frame.width * (1 - xValue + newXScale)).rounded(), height: (selectedPointNode.frame.height * (1 - yValue + newYScale)).rounded())
 //                    
-//                    let newPosition = optimalPositionForSize(tempSize, location: selectedPointNode.position)
+//                    let newPosition = optimalPositionForSize(tempSize, venue: selectedPointNode.position)
 //
 //                    selectedPointNode.run(SKAction.group([SKAction.scaleX(to: newXScale, y: newYScale, duration: animationDuration),SKAction.move(to: newPosition, duration: animationDuration)]))
 //                }
@@ -334,7 +334,7 @@ extension CarEditSpriteScene{
     }
     
     func scaleDownSelectedPoint(){
-//        if let selectedPointNode, selectedPointNode.isNotNodeWithName(NodeType.background.rawValue) {
+//        if let selectedPointNode, selectedPointNode.isNotNodeWithName(NodeType.broadcastSchema.rawValue) {
 //            let xValue = Double(round(10 * selectedPointNode.xScale) / 10)
 //            let yValue = Double(round(10 * selectedPointNode.yScale) / 10)
 //            if xValue < 0{

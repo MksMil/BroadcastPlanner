@@ -35,13 +35,13 @@ final class AddEditClubViewModel: ObservableObject{
         self.contacts = club.viewContacts
         self.urlString = club.viewUrl
         self.showedImage = club.viewImageMediumLogo
-        if let location = club.homeLocation{
+        if let location = club.homeVenue{
             self.location = location
         }
     }
     
     func update(){
-        self.location = club.homeLocation
+        self.location = club.homeVenue
     }
 }
 
@@ -163,7 +163,7 @@ struct AddEditClubView: View {
         .task{
             vm.update()
         }
-        //location remove confirmation dialog
+        //venue remove confirmation dialog
         .confirmationDialog(
             Text("Permanently erase the Club in the trash?"),
             isPresented: $isRemoveClubDialog
