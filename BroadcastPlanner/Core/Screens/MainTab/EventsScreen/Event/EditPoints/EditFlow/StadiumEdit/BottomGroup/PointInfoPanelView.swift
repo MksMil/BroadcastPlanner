@@ -147,7 +147,7 @@ struct PointInfoPanelView: View {
                 TabViewList(
                     source: availableUsers.compactMap{ user in
                         if user != vm.selectedUser{
-                            return user.isAvailableToEvent(event: pointManager.event) ? user: nil
+                            return user.isAvailableTo(broadcast: pointManager.event) ? user: nil
                         } else {
                             return user
                         }

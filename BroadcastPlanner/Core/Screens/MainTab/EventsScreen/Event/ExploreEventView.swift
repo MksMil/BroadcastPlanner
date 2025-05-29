@@ -99,7 +99,7 @@ struct ExploreEventView: View {
                 
                 //previews
                 HStack(spacing: 15) {
-                    event.viewLocationPreview
+                    event.viewVenueSchemaPreview
                         .resizable()
                         .scaledToFit()
                         .onTapGesture {

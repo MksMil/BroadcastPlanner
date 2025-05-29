@@ -35,9 +35,11 @@ extension Camera : Identifiable {
 }
 
 extension Camera: CoreDataUpdatable{
-    func update(from dto: CameraDTO, in context: NSManagedObjectContext) {
+    func updateFromDTO(_ dto: CameraDTO) {
+        if let context = self.managedObjectContext{
             self.id = dto.id
         }
+    }
     
     public override func prepareForDeletion() {
          super.prepareForDeletion()

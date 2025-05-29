@@ -10,5 +10,5 @@ struct TemplateDTO: Identifiable, Codable,BPDataProtocol,CoreDataRepresentable {
     var lastUpdated: Date = .now
     
     var name: String
-    var templatePoints: [TemplatePointDTO]
+    var templatePointDTOs: [TemplatePointDTO]
 }

@@ -27,76 +27,76 @@ extension Member {
     @NSManaged public var image: LocalImage?
     @NSManaged public var venuePoints: NSSet?
     @NSManaged public var crews: NSSet?
-    @NSManaged public var ownedEvents: NSSet?
-    @NSManaged public var participateEvents: NSSet?
+    @NSManaged public var ownedBroadcasts: NSSet?
+    @NSManaged public var participateBroadcasts: NSSet?
+
+}
+
+// MARK: Generated accessors for ownedBroadcasts
+extension Member {
+
+    @objc(addOwnedBroadcastsObject:)
+    @NSManaged public func addToOwnedBroadcasts(_ value: Broadcast)
+
+    @objc(removeOwnedBroadcastsObject:)
+    @NSManaged public func removeFromOwnedBroadcasts(_ value: Broadcast)
+
+    @objc(addOwnedBroadcasts:)
+    @NSManaged public func addToOwnedBroadcasts(_ values: NSSet)
+
+    @objc(removeOwnedBroadcasts:)
+    @NSManaged public func removeFromOwnedBroadcasts(_ values: NSSet)
+
+}
+
+// MARK: Generated accessors for participateBroadcasts
+extension Member {
+
+    @objc(addParticipateBroadcastsObject:)
+    @NSManaged public func addToParticipateBroadcasts(_ value: Broadcast)
+
+    @objc(removeParticipateBroadcastsObject:)
+    @NSManaged public func removeFromParticipateBroadcasts(_ value: Broadcast)
+
+    @objc(addParticipateBroadcasts:)
+    @NSManaged public func addToParticipateBroadcasts(_ values: NSSet)
+
+    @objc(removeParticipateBroadcasts:)
+    @NSManaged public func removeFromParticipateBroadcasts(_ values: NSSet)
 
 }
 
 // MARK: Generated accessors for venuePoints
 extension Member {
 
-    @objc(addPointsObject:)
-    @NSManaged public func addToPoints(_ value: VenuePoint)
+    @objc(addVenuePointsObject:)
+    @NSManaged public func addToVenuePoints(_ value: VenuePoint)
 
-    @objc(removePointsObject:)
-    @NSManaged public func removeFromPoints(_ value: VenuePoint)
+    @objc(removeVenuePointsObject:)
+    @NSManaged public func removeFromVenuePoints(_ value: VenuePoint)
 
-    @objc(addPoints:)
-    @NSManaged public func addToPoints(_ values: NSSet)
+    @objc(addVenuePoints:)
+    @NSManaged public func addToVenuePoints(_ values: NSSet)
 
-    @objc(removePoints:)
-    @NSManaged public func removeFromPoints(_ values: NSSet)
+    @objc(removeVenuePoints:)
+    @NSManaged public func removeFromVenuePoints(_ values: NSSet)
 
 }
 
 // MARK: Generated accessors for crews
 extension Member {
 
-    @objc(addUnitsObject:)
-    @NSManaged public func addToUnits(_ value: Crew)
+    @objc(addCrewsObject:)
+    @NSManaged public func addToCrews(_ value: Crew)
 
-    @objc(removeUnitsObject:)
-    @NSManaged public func removeFromUnits(_ value: Crew)
+    @objc(removeCrewsObject:)
+    @NSManaged public func removeFromCrews(_ value: Crew)
 
-    @objc(addUnits:)
-    @NSManaged public func addToUnits(_ values: NSSet)
+    @objc(addCrews:)
+    @NSManaged public func addToCrews(_ values: NSSet)
 
-    @objc(removeUnits:)
-    @NSManaged public func removeFromUnits(_ values: NSSet)
-
-}
-
-// MARK: Generated accessors for ownedEvents
-extension Member {
-
-    @objc(addOwnedEventsObject:)
-    @NSManaged public func addToOwnedEvents(_ value: Broadcast)
-
-    @objc(removeOwnedEventsObject:)
-    @NSManaged public func removeFromOwnedEvents(_ value: Broadcast)
-
-    @objc(addOwnedEvents:)
-    @NSManaged public func addToOwnedEvents(_ values: NSSet)
-
-    @objc(removeOwnedEvents:)
-    @NSManaged public func removeFromOwnedEvents(_ values: NSSet)
-
-}
-
-// MARK: Generated accessors for participateEvents
-extension Member {
-
-    @objc(addParticipateEventsObject:)
-    @NSManaged public func addToParticipateEvents(_ value: Broadcast)
-
-    @objc(removeParticipateEventsObject:)
-    @NSManaged public func removeFromParticipateEvents(_ value: Broadcast)
-
-    @objc(addParticipateEvents:)
-    @NSManaged public func addToParticipateEvents(_ values: NSSet)
-
-    @objc(removeParticipateEvents:)
-    @NSManaged public func removeFromParticipateEvents(_ values: NSSet)
+    @objc(removeCrews:)
+    @NSManaged public func removeFromCrews(_ values: NSSet)
 
 }
 
@@ -138,16 +138,16 @@ extension Member : Identifiable {
         return array
     }
    
-    var viewOwnedEvents: [Broadcast] {
-        return ownedEvents?.allObjects as? [Broadcast] ?? []
+    var viewOwnedBroadcasts: [Broadcast] {
+        return ownedBroadcasts?.allObjects as? [Broadcast] ?? []
     }
-    var viewParticipatedEvents: [Broadcast] {
-        return participateEvents?.allObjects as? [Broadcast] ?? []
+    var viewParticipatedBroadcasts: [Broadcast] {
+        return participateBroadcasts?.allObjects as? [Broadcast] ?? []
     }
     
-    func isAvailableToEvent(event: Broadcast) -> Bool{
-        for existEvent in viewParticipatedEvents{
-            if event.date?.formatted(date: .abbreviated, time: .omitted) == existEvent.date?.formatted(date: .abbreviated, time: .omitted){
+    func isAvailableTo(broadcast: Broadcast) -> Bool{
+        for existEvent in viewParticipatedBroadcasts{
+            if broadcast.date?.formatted(date: .abbreviated, time: .omitted) == existEvent.date?.formatted(date: .abbreviated, time: .omitted){
                 return false
             }
         }
@@ -166,45 +166,53 @@ extension Member : Identifiable {
     }
     
     var dto: MemberDTO {
-        var user = MemberDTO(id: viewId)
-        user.accessLevel = Int(accessLevel)
-        user.firstName = viewFirstName
-        user.lastName = viewLastName
-        user.email = viewEmail
-        user.phoneNumber = viewPhoneNumber
-        user.homeAddress = viewAddress
-        user.specialization = viewSpecialization.map{ $0.rawValue}
-        user.isOnline = true
+        var member = MemberDTO(id: viewId)
+        member.accessLevel = Int(accessLevel)
+        member.firstName = viewFirstName
+        member.lastName = viewLastName
+        member.email = viewEmail
+        member.phoneNumber = viewPhoneNumber
+        member.homeAddress = viewAddress
+        member.specialization = viewSpecialization.map{ $0.rawValue}
+        member.isOnline = true
         if let date = creationDate{
-            user.creationDate = date
+            member.creationDate = date
         }
         if let date = leaveDate{
-            user.leaveDate = date
+            member.leaveDate = date
         }
-        user.ownedEventIds = viewOwnedEvents.compactMap{$0.id}
-        user.participatedEventIds = viewParticipatedEvents.compactMap{$0.id}
+        member.ownedBroadcastIds = viewOwnedBroadcasts.compactMap{$0.id}
+        member.participatedBroadcastIds = viewParticipatedBroadcasts.compactMap{$0.id}
         
-        return user
+        return member
     }
 }
 
 extension Member: CoreDataUpdatable{
-    func update(from dto: MemberDTO, in context: NSManagedObjectContext) {
+    func updateFromDTO(_ dto: MemberDTO, in context: NSManagedObjectContext) {
             self.id = dto.id
-        }
+
+        
+        
+    }
     // TODO: update from optional data
+    
+    
     
     
     public override func prepareForDeletion() {
          super.prepareForDeletion()
         if let context = self.managedObjectContext{
             if let image{
+                image.parentMember = nil
                 context.delete(image)
             }
-            viewOwnedEvents.forEach{$0.removeFromUsers(self)}
-            viewParticipatedEvents.forEach{$0.removeFromUsers(self)}
-            viewVenuePoints.forEach{$0.removeFromUser(self)}
-            viewCrews.forEach{$0.member = nil}
+            viewOwnedBroadcasts.forEach{if $0.viewOwners.count == 1,
+                                           $0.viewOwners[0] == self {
+                $0.removeFromOwners(self)
+                context.delete($0)
+            }}
+            
         }
      }
 }

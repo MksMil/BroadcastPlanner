@@ -1,9 +1,7 @@
 import SwiftUI
 import CoreData
 
-public class Obvan: NSManagedObject {
-
-}
+public class Obvan: NSManagedObject {}
 
 extension Obvan {
 
@@ -15,46 +13,46 @@ extension Obvan {
     @NSManaged public var id: String?
     @NSManaged public var lastUpdated: Date?
     @NSManaged public var name: String?
-    @NSManaged public var events: NSSet?
-    @NSManaged public var image: LocalImage?
-    @NSManaged public var templateUnits: NSSet?
+    @NSManaged public var broadcasts: NSSet? //remote
+    @NSManaged public var image: LocalImage? //self control
+    @NSManaged public var templateCrews: NSSet? // self control
 
 }
 
 // MARK: Generated accessors for broadcasts
 extension Obvan {
 
-    @objc(addEventsObject:)
-    @NSManaged public func addToEvents(_ value: Broadcast)
+    @objc(addBroadcastsObject:)
+    @NSManaged public func addToBroadcasts(_ value: Broadcast)
 
-    @objc(removeEventsObject:)
-    @NSManaged public func removeFromEvents(_ value: Broadcast)
+    @objc(removeBroadcastsObject:)
+    @NSManaged public func removeFromBroadcasts(_ value: Broadcast)
 
-    @objc(addEvents:)
-    @NSManaged public func addToEvents(_ values: NSSet)
+    @objc(addBroadcasts:)
+    @NSManaged public func addToBroadcasts(_ values: NSSet)
 
-    @objc(removeEvents:)
-    @NSManaged public func removeFromEvents(_ values: NSSet)
+    @objc(removeBroadcasts:)
+    @NSManaged public func removeFromBroadcasts(_ values: NSSet)
 
 }
 
-// MARK: Generated accessors for templateUnits
+// MARK: Generated accessors for templateCrews
 extension Obvan {
 
-    @objc(addTemplateUnitsObject:)
-    @NSManaged public func addToTemplateUnits(_ value: ObvanTemplateUnit)
+    @objc(addTemplateCrewsObject:)
+    @NSManaged public func addToTemplateCrews(_ value: ObvanTemplateCrew)
 
-    @objc(removeTemplateUnitsObject:)
-    @NSManaged public func removeFromTemplateUnits(_ value: ObvanTemplateUnit)
+    @objc(removeTemplateCrewsObject:)
+    @NSManaged public func removeFromTemplateCrews(_ value: ObvanTemplateCrew)
 
-    @objc(addTemplateUnits:)
-    @NSManaged public func addToTemplateUnits(_ values: NSSet)
+    @objc(addTemplateCrews:)
+    @NSManaged public func addToTemplateCrews(_ values: NSSet)
 
-    @objc(removeTemplateUnits:)
-    @NSManaged public func removeFromTemplateUnits(_ values: NSSet)
+    @objc(removeTemplateCrews:)
+    @NSManaged public func removeFromTemplateCrews(_ values: NSSet)
 
 }
-
+// MARK: - Unwrapped properties + DTO
 extension Obvan : Identifiable {
     var viewId: String {
         id ?? ""
@@ -64,11 +62,11 @@ extension Obvan : Identifiable {
     }
     
     var viewBroadcasterName: String {
-        broadcaster ?? "no broadcaster"
+        broadcaster ?? "\"Roga AND Kopita\" co."
     }
     
-    var viewEvents: [Broadcast] {
-        events?.allObjects as? [Broadcast] ?? []
+    var viewBroadcasts: [Broadcast] {
+        broadcasts?.allObjects as? [Broadcast] ?? []
     }
     
     var viewImage: Image {
@@ -78,8 +76,8 @@ extension Obvan : Identifiable {
         lastUpdated ?? .now
     }
     
-    var viewObvanTemplateUnits: [ObvanTemplateUnit] {
-        return templateUnits?.allObjects  as? [ObvanTemplateUnit] ?? []
+    var viewTemplateCrews: [ObvanTemplateCrew] {
+        return templateCrews?.allObjects  as? [ObvanTemplateCrew] ?? []
     }
     
     var dto: ObvanDTO {
@@ -88,19 +86,85 @@ extension Obvan : Identifiable {
                  name: viewName,
                  imageId: image?.viewId ?? "",
                  broadcaster: viewBroadcasterName,
-                 templateUnits: viewObvanTemplateUnits.map{$0.dto})
+                 obvanTemplateCrewDTOs: viewTemplateCrews.map{$0.dto})
     }
 }
 
+// MARK: - Processing
 extension Obvan: CoreDataUpdatable{
-    func update(from dto: ObvanDTO, in context: NSManagedObjectContext) {
-            self.id = dto.id
-        }
     
-    public override func prepareForDeletion() {
-         super.prepareForDeletion()
-        if let context = self.managedObjectContext{
-            viewObvanTemplateUnits.forEach{context.delete($0)}
+    func updateFromDTO(_ dto: ObvanDTO, in context: NSManagedObjectContext) {
+        self.id = dto.id
+        self.name = dto.name
+        self.lastUpdated = dto.lastUpdated
+        self.broadcaster = dto.broadcaster
+        
+        cleanTemplateCrews(in: context)
+        dto.obvanTemplateCrewDTOs.forEach {
+            let templateCrew = context.makeObjectFromDTO($0)
+            addToTemplateCrews(templateCrew)
+            templateCrew.parentObvan = self
         }
-     }
+        if let image {
+            image.parentObvan = nil
+        }
+        let image: LocalImage = context.fetchOrCreateObject(withID: dto.imageId)
+        image.id = dto.imageId
+        image.parentObvan = self
+        self.image = image
+    }
+    
+    func updateWithValue(name: String?,broadcaster: String?,
+                         lastUpdated: Date?,image: LocalImage?,
+                         templateCrews: [ObvanTemplateCrew]?,
+                         in context: NSManagedObjectContext){
+        if let name {
+            self.name = name
+        }
+        
+        if let broadcaster {
+            self.broadcaster = broadcaster
+        }
+        
+        if let lastUpdated {
+            self.lastUpdated = lastUpdated
+        }
+        
+        if let image {
+            self.image?.parentObvan = nil
+            self.image = image
+            image.parentObvan = self
+        }
+        cleanTemplateCrews(in: context)
+        if let templateCrews{
+            templateCrews.forEach{
+                addToTemplateCrews($0)
+                $0.parentObvan = self
+            }
+        }
+    }
+    
+    func cleanTemplateCrews(in context: NSManagedObjectContext){
+        viewTemplateCrews.forEach{
+            $0.parentObvan = nil
+            removeFromTemplateCrews($0)
+            context.delete($0)}
+    }
+    
+}
+
+// MARK: - Remove
+extension Obvan{
+    public override func prepareForDeletion() {
+        super.prepareForDeletion()
+        if let context = self.managedObjectContext{
+            if let image {
+                image.parentObvan = nil
+            }
+            for broadcast in self.viewBroadcasts {
+                broadcast.obvan = nil
+            }
+            cleanTemplateCrews(in: context)
+        }
+    }
 }

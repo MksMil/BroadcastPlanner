@@ -62,15 +62,17 @@ extension Crew : Identifiable {
                 rotation: viewRotation,
                 scale: viewScaleFactor,
                 task: viewTask,
-                userId: viewMemberId,
+                memberId: viewMemberId,
                 hardware: hardwareDTO)
     }
 }
 
 extension Crew: CoreDataUpdatable{
-    func update(from dto: CrewDTO, in context: NSManagedObjectContext) {
+    func updateFromDTO(_ dto: CrewDTO) {
+        if let context = self.managedObjectContext{
             self.id = dto.id
         }
+    }
     public override func prepareForDeletion() {
         super.prepareForDeletion()
         if let context = self.managedObjectContext{
@@ -78,7 +80,7 @@ extension Crew: CoreDataUpdatable{
                 context.delete(hardware)
             }
             if let broadcast, let member{
-                broadcast.removeFromUsers(member)
+                broadcast.removeFromMembers(member)
             }
         }
     }

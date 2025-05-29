@@ -103,7 +103,7 @@ struct MainEventsList: View {
                         if let selectedEvent{
                             if mdm.currentUser.accessLevel == 0{
                                 BPCreateEditEventView(event: selectedEvent)
-                            } else if selectedEvent.status(user: mdm.currentUser) == .currentUserOwned{
+                            } else if selectedEvent.status(user: mdm.currentUser) == .currentMemberOwned{
                                 BPCreateEditEventView(event: selectedEvent)
                             } else {
                                 ExploreEventView(event: selectedEvent)

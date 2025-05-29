@@ -607,7 +607,7 @@ extension MainDataManager {
                     inContext: .main
                 )
             localDataManager.mainContext.performAndWait {
-                event.locationPreview = localImage
+                event.venueSchemaPreview = localImage
                 localImage.parentVenuePreview = event
             }
         }
@@ -993,7 +993,7 @@ extension MainDataManager {
             id: []
         )
         // venue image upload to firestore, and image properties in firebase
-        let images = location.viewLocalImages
+        let images = location.viewImages
         if !images.isEmpty {
             await withTaskGroup { group in
                 images.forEach { image in
@@ -1024,7 +1024,7 @@ extension MainDataManager {
     func removeLocation(_ location: Venue) async {
         //remove broadcastSchema images for venue from firestore, and image properties from firebase
         await withTaskGroup { group in
-            let imageIds = location.viewLocalImages.map { $0.viewId }
+            let imageIds = location.viewImages.map { $0.viewId }
             if !imageIds.isEmpty {
                 imageIds.forEach { id in
                     group.addTask { [weak self] in

@@ -7,5 +7,5 @@
 
 
 enum BroadcastStatus {
-    case currentUserOwned, currentUserParticipated, none
+    case currentMemberOwned, currentMemberParticipated, none
 }

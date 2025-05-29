@@ -139,7 +139,7 @@ extension DataManager {
         
         do {
             let users = try mainContext.fetch(request)
-            return users.filter { $0.isAvailableToEvent(event: event) }
+            return users.filter { $0.isAvailableTo(broadcast: event) }
         } catch {
             return []
         }
@@ -234,7 +234,7 @@ extension DataManager {
                     newImage.id = locationPreviewId
                     return newImage
                 }
-                localEvent.locationPreview = localImage
+                localEvent.venueSchemaPreview = localImage
                 localImage.parentVenuePreview = localEvent
             }
             if let obvanPreviewId = eventDto.obvanPreviewId {
@@ -307,14 +307,14 @@ extension DataManager {
                           inContext contextType: ContextType)  {
         let context = contextFromType(contextType)
         context.performAndWait {
-            for locationPoint in localEvent.viewLocationPoints {
+            for locationPoint in localEvent.viewVenuePoints {
                 self.removeLocalLocationPoint(locationPoint,
                                               inContext: contextType)
             }
-            for unit in localEvent.viewObvanUnits {
+            for unit in localEvent.viewCrews {
                 self.removeLocalUnit(unit, inContext: contextType)
             }
-            if let eventPreview = localEvent.locationPreview {
+            if let eventPreview = localEvent.venueSchemaPreview {
                 self.removeLocalImage(eventPreview,
                                       inContext: contextType)
             }
@@ -431,7 +431,7 @@ extension DataManager {
                                     andBackground isBg: Bool,
                                     inContext contextType: ContextType)  {
         let context = contextFromType(contextType)
-        let imagesToRemove = localLocation.viewLocalImages
+        let imagesToRemove = localLocation.viewImages
          context.performAndWait {
             for image in imagesToRemove {
                 localLocation.removeFromImages(image)
@@ -489,7 +489,7 @@ extension DataManager {
                 localLocation.addToImages(image)
                 image.parentVenueImage = localLocation
             }
-            if let imageId = location.locationBackgroundId {
+            if let imageId = location.venueSchemaId {
                 let backgroundImage = self.fetchOrCreateObject(ofType: LocalImage.self,
                                                                predicate: NSPredicate(format: "id == %@", imageId),
                                                                in: context) { ctx in
@@ -676,7 +676,7 @@ extension DataManager {
                 return newImage
             }
             localClub.imageLogo = image
-            if let locationId = club.homeLocationID {
+            if let locationId = club.homeVenueID {
                 let location = fetchOrCreateObject(ofType: Venue.self,
                                                    predicate: NSPredicate(format: "id == %@", locationId),
                                                    in: context) { ctx in
@@ -959,7 +959,7 @@ extension DataManager {
 // MARK: - Venue Points CRUD
 extension DataManager {
     //venue venuePoint
-    func createOrUpdateLocalPointWithPointDTO(_ point: PointDTO,
+    func createOrUpdateLocalPointWithPointDTO(_ point: VenuePointDTO,
                                               inContext contextType: ContextType) -> VenuePoint {
         let context = contextFromType(contextType)
         var localPoint: VenuePoint!
@@ -980,7 +980,7 @@ extension DataManager {
     }
 
     func updateLocalPoint(_ localPoint: VenuePoint,
-                          withPointDTO point: PointDTO,
+                          withPointDTO point: VenuePointDTO,
                           inContext contextType: ContextType) {
         let context = contextFromType(contextType)
         context.performAndWait {
@@ -1110,7 +1110,7 @@ extension DataManager {
         }
     }
 
-    func removeLocationPoint(_ point: PointDTO,
+    func removeLocationPoint(_ point: VenuePointDTO,
                              inContext contextType: ContextType) {
         let context = contextFromType(contextType)
         context.performAndWait {
@@ -1308,7 +1308,7 @@ extension DataManager {
             localtemplate.removeFromTemplatePoints(
                 localtemplate.templatePoints ?? []
             )
-            for point in template.templatePoints {
+            for point in template.templatePointDTOs {
                 let localTemplatePoint =
                     createOrUpdateTemplatePointWithTemplatePointDTO(point,
                                                                       inContext: contextType)
@@ -1477,7 +1477,7 @@ extension DataManager {
                                      inContext contextType: ContextType) -> [VenuePoint] {
         var array = [VenuePoint]()
         
-        for point in template.viewPoints {
+        for point in template.viewTemplatePoints {
             array.append(self.createLocalLocationPointFromTemplatePoint(point,
                                                                         inContext: contextType)
             )
@@ -1501,8 +1501,8 @@ extension DataManager {
                 return newTemplate
             }
             template.name = name
-            if !template.viewPoints.isEmpty {
-                for point in template.viewPoints {
+            if !template.viewTemplatePoints.isEmpty {
+                for point in template.viewTemplatePoints {
                     template.removeFromTemplatePoints(point)
                     removeLocalTemplatePoint(point, inContext: contextType)
                 }

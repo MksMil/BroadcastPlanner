@@ -5,7 +5,7 @@ struct StaffPanelView: View {
 
     @FetchRequest<Member>(sortDescriptors: []) var users
     var availableUsers: [Member] {
-        users.filter{$0.isAvailableToEvent(event: event)}
+        users.filter{$0.isAvailableTo(broadcast: event)}
     }
         
     let addUnitAction: (Member, UserSpecialization, ReplayType?)->()
@@ -41,13 +41,13 @@ struct StaffPanelView: View {
             }
             .padding(8)
             List{
-                ForEach(event.viewObvanUnits){ unit in
+                ForEach(event.viewCrews){ unit in
                     StaffPanelCellView(unit: unit)
                         .listRowBackground(Color.clear)
                 }
                 .onDelete { indexSet in
                     guard let index = indexSet.first else { return }
-                    let unitToRemove = event.viewObvanUnits[index]
+                    let unitToRemove = event.viewCrews[index]
                     removeUnitAction(unitToRemove)
                 }
             }

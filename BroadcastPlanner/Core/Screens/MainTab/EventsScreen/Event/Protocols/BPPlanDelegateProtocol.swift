@@ -1,11 +1,11 @@
 import Foundation
 
 protocol BPPlanDelegateProtocol: AnyObject {
-    var points: [PointDTO] {get set}
-    func addPoint(point: PointDTO)
+    var points: [VenuePointDTO] {get set}
+    func addPoint(point: VenuePointDTO)
     
     func updateScene()
-    func select(point: PointDTO)
+    func select(point: VenuePointDTO)
     func deselect()
     func removeSelectedPoint()
     func saveSelectedPoint()

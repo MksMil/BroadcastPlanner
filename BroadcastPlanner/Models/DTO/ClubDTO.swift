@@ -12,6 +12,6 @@ struct ClubDTO: Codable, Identifiable,BPDataProtocol,CoreDataRepresentable {
     var contacts: String = ""
     var urlString: String = ""
     var imageLogoID: String?
-    var homeLocationID: String?
+    var homeVenueID: String?
     var lastUpdated: Date = .now
 }

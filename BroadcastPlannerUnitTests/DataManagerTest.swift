@@ -242,15 +242,15 @@ final class DataManagerTests: XCTestCase {
         sut.updateLocalEvent(localEvent, withDTO: eventDto, inContext: .main)
         XCTAssertEqual(localEvent.viewId, eventDto.id)
         XCTAssertEqual(localEvent.date ?? Date.now, eventDto.date)
-        XCTAssertEqual(localEvent.obvan?.viewId, eventDto.obVanId)
-        XCTAssertEqual(localEvent.venue?.id, eventDto.locationID)
+        XCTAssertEqual(localEvent.obvan?.viewId, eventDto.obvanId)
+        XCTAssertEqual(localEvent.venue?.id, eventDto.venueID)
         XCTAssertEqual(localEvent.homeClub?.id, eventDto.homeClubId)
         XCTAssertEqual(localEvent.guestClub?.id, eventDto.guestClubId)
         XCTAssertEqual(localEvent.owners?.count, eventDto.ownersIds.count)
-        XCTAssertEqual(localEvent.members?.count, eventDto.usersIds.count)
-        XCTAssertEqual(localEvent.venuePoints?.count, eventDto.locationPoints.count)
-        XCTAssertEqual(localEvent.crews?.count, eventDto.obVanUnits.count)
-        XCTAssertEqual(localEvent.locationPreview?.id, eventDto.locationPreviewId)
+        XCTAssertEqual(localEvent.members?.count, eventDto.membersIds.count)
+        XCTAssertEqual(localEvent.venuePoints?.count, eventDto.venuePoints.count)
+        XCTAssertEqual(localEvent.crews?.count, eventDto.crews.count)
+        XCTAssertEqual(localEvent.venueSchemaPreview?.id, eventDto.venuePreviewId)
         XCTAssertEqual(localEvent.obvanPreview?.id, eventDto.obvanPreviewId)
     }
     @MainActor
@@ -395,7 +395,7 @@ final class DataManagerTests: XCTestCase {
             title: "Test Title",
             address: "Test Address",
             imagesIds: [imageId1, imageId2],
-            locationBackgroundId: backgroundId
+            venueSchemaId: backgroundId
         )
         
         // When
@@ -406,7 +406,7 @@ final class DataManagerTests: XCTestCase {
         XCTAssertEqual(localLocation.title, dto.title)
         XCTAssertEqual(localLocation.lastUpdated, dto.lastUpdated)
         XCTAssertEqual(localLocation.address, dto.address)
-        XCTAssertEqual(localLocation.viewLocalImages.count, 2)
+        XCTAssertEqual(localLocation.viewImages.count, 2)
         XCTAssertEqual(localLocation.broadcastSchema?.id, backgroundId)
         
         let newDto = VenueDTO(
@@ -415,7 +415,7 @@ final class DataManagerTests: XCTestCase {
             title: "Test New Title",
             address: "Test New Address",
             imagesIds: [imageId1],
-            locationBackgroundId: nil
+            venueSchemaId: nil
         )
         localLocation = sut.createOrUpdateLocalLocationWithLocationDTO(newDto, inContext: .main)
         
@@ -423,7 +423,7 @@ final class DataManagerTests: XCTestCase {
         XCTAssertEqual(localLocation.title, newDto.title)
         XCTAssertEqual(localLocation.lastUpdated, newDto.lastUpdated)
         XCTAssertEqual(localLocation.address, newDto.address)
-        XCTAssertEqual(localLocation.viewLocalImages.count, 1)
+        XCTAssertEqual(localLocation.viewImages.count, 1)
         XCTAssertEqual(localLocation.broadcastSchema?.id, nil)
     }
     
@@ -455,7 +455,7 @@ final class DataManagerTests: XCTestCase {
         location.addToImages(image2)
         location.broadcastSchema = backgroundImage
 
-        XCTAssertEqual(location.viewLocalImages.count, 2)
+        XCTAssertEqual(location.viewImages.count, 2)
         XCTAssertNotNil(location.broadcastSchema)
 
         let exist1 = ImagesManager.imageExists(withId: image1.viewId)
@@ -470,7 +470,7 @@ final class DataManagerTests: XCTestCase {
         
         sut.cleanImagesInLocalLocation(location,andBackground: true, inContext: .main)
 
-        XCTAssertEqual(location.viewLocalImages.count, 0)
+        XCTAssertEqual(location.viewImages.count, 0)
         XCTAssertNil(location.broadcastSchema)
 
         let allImages = sut.fetchImagesByType(.location, inContext: .main)
@@ -494,7 +494,7 @@ final class DataManagerTests: XCTestCase {
         
          sut.updateLocalLocation(location, withTitle: title, address: address, localImages: images, locationBackground: background, inContext: .main)
         
-        XCTAssertEqual(location.viewLocalImages.count, 1)
+        XCTAssertEqual(location.viewImages.count, 1)
         XCTAssertEqual(location.title, title)
         XCTAssertEqual(location.address, address)
         XCTAssertNotNil(location.broadcastSchema)
@@ -503,7 +503,7 @@ final class DataManagerTests: XCTestCase {
         let newAddress = "newAddress"
         let newImages = [UIImage.testImage,UIImage.testImage,UIImage.testImage]
          sut.updateLocalLocation(location, withTitle: newTitle, address: newAddress, localImages: newImages, locationBackground: nil, inContext: .main)
-        XCTAssertEqual(location.viewLocalImages.count, 3)
+        XCTAssertEqual(location.viewImages.count, 3)
         XCTAssertEqual(location.title, newTitle)
         XCTAssertEqual(location.address, newAddress)
         XCTAssertNil(location.broadcastSchema)
@@ -536,7 +536,7 @@ final class DataManagerTests: XCTestCase {
         location.addToImages(image2)
         location.broadcastSchema = backgroundImage
 
-        XCTAssertEqual(location.viewLocalImages.count, 2)
+        XCTAssertEqual(location.viewImages.count, 2)
         XCTAssertNotNil(location.broadcastSchema)
 
         let exist1 = ImagesManager.imageExists(withId: image1.viewId)
@@ -555,7 +555,7 @@ final class DataManagerTests: XCTestCase {
         let result = try? context.fetch(request)
         
         XCTAssertEqual(result?.count, 0)
-        XCTAssertEqual(location.viewLocalImages.count, 0)
+        XCTAssertEqual(location.viewImages.count, 0)
         XCTAssertNil(location.broadcastSchema)
 
         let allImages = sut.fetchImagesByType(.location, inContext: .main)
@@ -704,7 +704,7 @@ final class DataManagerTests: XCTestCase {
         XCTAssertEqual(result?.first?.contacts, dto.contacts)
         XCTAssertEqual(result?.first?.urlString, dto.urlString)
         XCTAssertEqual(result?.first?.imageLogo?.id, dto.imageLogoID)
-        XCTAssertEqual(result?.first?.homeVenue?.id, dto.homeLocationID)
+        XCTAssertEqual(result?.first?.homeVenue?.id, dto.homeVenueID)
         
     }
     func test_createOrUpdateLocalClubWithDTO_fetchAndUpdateExistingClub(){
@@ -735,7 +735,7 @@ final class DataManagerTests: XCTestCase {
         XCTAssertEqual(result?.first?.contacts, dto.contacts)
         XCTAssertEqual(result?.first?.urlString, dto.urlString)
         XCTAssertEqual(result?.first?.imageLogo?.id, dto.imageLogoID)
-        XCTAssertEqual(result?.first?.homeVenue?.id, dto.homeLocationID)
+        XCTAssertEqual(result?.first?.homeVenue?.id, dto.homeVenueID)
     }
  
     func test_updateLocalClubWithIdAndData_updatesClub(){
@@ -1084,7 +1084,7 @@ final class DataManagerTests: XCTestCase {
     // MARK: - LocationPoints
     func test_createOrUpdateLocalPointWithPointDTO_createsAndUpdatesPoint()async{
         let id = "pointDtoId"
-        let pointDto = PointDTO.mock(id: id)
+        let pointDto = VenuePointDTO.mock(id: id)
         
         let request = VenuePoint.fetchRequest()
         request.predicate = NSPredicate(format: "id == %@", id)
@@ -1101,7 +1101,7 @@ final class DataManagerTests: XCTestCase {
         XCTAssertEqual(result?.first?.rotation, Int16(pointDto.rotation))
         XCTAssertEqual(result?.first?.scaleFactor, Float(pointDto.scale))
         XCTAssertEqual(result?.first?.image?.id, pointDto.imageId)
-        XCTAssertEqual(result?.first?.members?.count, pointDto.userId.count)
+        XCTAssertEqual(result?.first?.members?.count, pointDto.memberIds.count)
         XCTAssertEqual(result?.first?.cameras?.count, pointDto.cameras.count)
         XCTAssertEqual(result?.first?.sounds?.count, pointDto.sounds.count)
         XCTAssertEqual(result?.first?.lights?.count, pointDto.lights.count)
@@ -1117,7 +1117,7 @@ final class DataManagerTests: XCTestCase {
         XCTAssertEqual(result?.first?.rotation, Int16(pointDto.rotation))
         XCTAssertEqual(result?.first?.scaleFactor, Float(pointDto.scale))
         XCTAssertEqual(result?.first?.image?.id, pointDto.imageId)
-        XCTAssertEqual(result?.first?.members?.count, pointDto.userId.count)
+        XCTAssertEqual(result?.first?.members?.count, pointDto.memberIds.count)
         XCTAssertEqual(result?.first?.cameras?.count, pointDto.cameras.count)
         XCTAssertEqual(result?.first?.sounds?.count, pointDto.sounds.count)
         XCTAssertEqual(result?.first?.lights?.count, pointDto.lights.count)
@@ -1144,7 +1144,7 @@ final class DataManagerTests: XCTestCase {
     }
     func test_updateLocalPoint_withDTO_updatesPoint() {
         let id = "pointDtoId"
-        let pointDto = PointDTO.mock(id: id)
+        let pointDto = VenuePointDTO.mock(id: id)
         
        let point = VenuePoint(context: context)
         
@@ -1158,7 +1158,7 @@ final class DataManagerTests: XCTestCase {
         XCTAssertEqual(point.rotation, Int16(pointDto.rotation))
         XCTAssertEqual(point.scaleFactor, Float(pointDto.scale))
         XCTAssertEqual(point.image?.id, pointDto.imageId)
-        XCTAssertEqual(point.members?.count, pointDto.userId.count)
+        XCTAssertEqual(point.members?.count, pointDto.memberIds.count)
         XCTAssertEqual(point.cameras?.count, pointDto.cameras.count)
         XCTAssertEqual(point.sounds?.count, pointDto.sounds.count)
         XCTAssertEqual(point.lights?.count, pointDto.lights.count)
@@ -1201,7 +1201,7 @@ final class DataManagerTests: XCTestCase {
 
     }
     func test_removeLocationPoint_withDTO_removesPoint() async {
-        let dto = PointDTO.mock(id: "id")
+        let dto = VenuePointDTO.mock(id: "id")
         let locationPoint = sut.createOrUpdateLocalPointWithPointDTO(dto, inContext: .main)
         let camIds = locationPoint.viewCameras.map{$0.viewId}
         let soundIds = locationPoint.viewSounds.map{$0.viewId}
@@ -1248,7 +1248,7 @@ final class DataManagerTests: XCTestCase {
         XCTAssertEqual(result?.first?.rotation, Int16(dto.rotation))
         XCTAssertEqual(result?.first?.scaleFactor, Float(dto.scale))
         XCTAssertEqual(result?.first?.task, dto.task)
-        XCTAssertEqual(result?.first?.member?.id, dto.userId)
+        XCTAssertEqual(result?.first?.member?.id, dto.memberId)
         XCTAssertEqual(result?.first?.hardware?.id, dto.hardware?.id)
         
     }
@@ -1354,7 +1354,7 @@ final class DataManagerTests: XCTestCase {
             id: "template2",
             lastUpdated: .now,
             name: "UpdatedName",
-            templatePoints: dto.templatePoints
+            templatePoints: dto.templatePointDTOs
         )
         _ = sut.createOrUpdateLocalTemplateWithTemplateDTO(
             updatedDTO,
@@ -1424,29 +1424,29 @@ final class DataManagerTests: XCTestCase {
         
         XCTAssertEqual(template.id, id)
         XCTAssertEqual(template.name, dto.name)
-        XCTAssertEqual(template.templatePoints?.count, dto.templatePoints.count)
-        (0..<dto.templatePoints.count).forEach { index in
-            XCTAssertEqual(template.viewPoints[index].viewCameras.count, dto.templatePoints[index].cameras.count)
-            XCTAssertEqual(template.viewPoints[index].viewSounds.count, dto.templatePoints[index].sounds.count)
-            XCTAssertEqual(template.viewPoints[index].viewLights.count, dto.templatePoints[index].lights.count)
+        XCTAssertEqual(template.templatePoints?.count, dto.templatePointDTOs.count)
+        (0..<dto.templatePointDTOs.count).forEach { index in
+            XCTAssertEqual(template.viewTemplatePoints[index].viewCameras.count, dto.templatePointDTOs[index].cameras.count)
+            XCTAssertEqual(template.viewTemplatePoints[index].viewSounds.count, dto.templatePointDTOs[index].sounds.count)
+            XCTAssertEqual(template.viewTemplatePoints[index].viewLights.count, dto.templatePointDTOs[index].lights.count)
         }
         
         var result =  sut.mapTemplateToLocationPoints(template: template, inContext: .main)
         
-        XCTAssertLessThanOrEqual(template.viewPoints.count,result.count)
+        XCTAssertLessThanOrEqual(template.viewTemplatePoints.count,result.count)
         
         (0..<result.count).forEach { index in
             
-            XCTAssertEqual(template.viewPoints[index].pointDescription, result[index].pointDescription)
-            XCTAssertEqual(template.viewPoints[index].coordinateX, result[index].coordinateX)
-            XCTAssertEqual(template.viewPoints[index].coordinateY, result[index].coordinateY)
-            XCTAssertEqual(template.viewPoints[index].rotation, result[index].rotation)
-            XCTAssertEqual(template.viewPoints[index].scaleFactor, result[index].scaleFactor)
-            XCTAssertEqual(template.viewPoints[index].task, result[index].task)
-            XCTAssertEqual(template.viewPoints[index].number, result[index].number)
-            XCTAssertEqual(template.viewPoints[index].viewCameras.count, result[index].cameras?.count)
-            XCTAssertEqual(template.viewPoints[index].viewSounds.count, result[index].sounds?.count)
-            XCTAssertEqual(template.viewPoints[index].viewLights.count, result[index].lights?.count)
+            XCTAssertEqual(template.viewTemplatePoints[index].pointDescription, result[index].pointDescription)
+            XCTAssertEqual(template.viewTemplatePoints[index].coordinateX, result[index].coordinateX)
+            XCTAssertEqual(template.viewTemplatePoints[index].coordinateY, result[index].coordinateY)
+            XCTAssertEqual(template.viewTemplatePoints[index].rotation, result[index].rotation)
+            XCTAssertEqual(template.viewTemplatePoints[index].scaleFactor, result[index].scaleFactor)
+            XCTAssertEqual(template.viewTemplatePoints[index].task, result[index].task)
+            XCTAssertEqual(template.viewTemplatePoints[index].number, result[index].number)
+            XCTAssertEqual(template.viewTemplatePoints[index].viewCameras.count, result[index].cameras?.count)
+            XCTAssertEqual(template.viewTemplatePoints[index].viewSounds.count, result[index].sounds?.count)
+            XCTAssertEqual(template.viewTemplatePoints[index].viewLights.count, result[index].lights?.count)
         }
         
         //twice
@@ -1454,25 +1454,25 @@ final class DataManagerTests: XCTestCase {
 
         result =  sut.mapTemplateToLocationPoints(template: template, inContext: .main)
         
-        XCTAssertLessThanOrEqual(template.viewPoints.count,result.count)
+        XCTAssertLessThanOrEqual(template.viewTemplatePoints.count,result.count)
         
         (0..<result.count).forEach { index in
             
-            XCTAssertEqual(template.viewPoints[index].pointDescription, result[index].pointDescription)
-            XCTAssertEqual(template.viewPoints[index].coordinateX, result[index].coordinateX)
-            XCTAssertEqual(template.viewPoints[index].coordinateY, result[index].coordinateY)
-            XCTAssertEqual(template.viewPoints[index].rotation, result[index].rotation)
-            XCTAssertEqual(template.viewPoints[index].scaleFactor, result[index].scaleFactor)
-            XCTAssertEqual(template.viewPoints[index].task, result[index].task)
-            XCTAssertEqual(template.viewPoints[index].number, result[index].number)
-            XCTAssertEqual(template.viewPoints[index].viewCameras.count, result[index].cameras?.count)
-            XCTAssertEqual(template.viewPoints[index].viewSounds.count, result[index].sounds?.count)
-            XCTAssertEqual(template.viewPoints[index].viewLights.count, result[index].lights?.count)
+            XCTAssertEqual(template.viewTemplatePoints[index].pointDescription, result[index].pointDescription)
+            XCTAssertEqual(template.viewTemplatePoints[index].coordinateX, result[index].coordinateX)
+            XCTAssertEqual(template.viewTemplatePoints[index].coordinateY, result[index].coordinateY)
+            XCTAssertEqual(template.viewTemplatePoints[index].rotation, result[index].rotation)
+            XCTAssertEqual(template.viewTemplatePoints[index].scaleFactor, result[index].scaleFactor)
+            XCTAssertEqual(template.viewTemplatePoints[index].task, result[index].task)
+            XCTAssertEqual(template.viewTemplatePoints[index].number, result[index].number)
+            XCTAssertEqual(template.viewTemplatePoints[index].viewCameras.count, result[index].cameras?.count)
+            XCTAssertEqual(template.viewTemplatePoints[index].viewSounds.count, result[index].sounds?.count)
+            XCTAssertEqual(template.viewTemplatePoints[index].viewLights.count, result[index].lights?.count)
         }
     }
     
     func test_localPointCreatedWithCameras()  {
-        let dto = PointDTO.mock(id: "123")
+        let dto = VenuePointDTO.mock(id: "123")
         let point = sut.createOrUpdateLocalPointWithPointDTO(dto, inContext: .main)
 
         XCTAssertEqual(point.cameras?.count, 2, "Expected 2 cameras")
@@ -1481,11 +1481,11 @@ final class DataManagerTests: XCTestCase {
     }
 
     func test_createTemplateWithLocalLocationPoints_createsLocalTemplate(){
-        let dtos = [PointDTO.mock(id: "1"),
-                    PointDTO.mock(id: "2"),
-                    PointDTO.mock(id: "3"),
-                    PointDTO.mock(id: "4"),
-                    PointDTO.mock(id: "5")]
+        let dtos = [VenuePointDTO.mock(id: "1"),
+                    VenuePointDTO.mock(id: "2"),
+                    VenuePointDTO.mock(id: "3"),
+                    VenuePointDTO.mock(id: "4"),
+                    VenuePointDTO.mock(id: "5")]
         
         let points = dtos.map{sut.createOrUpdateLocalPointWithPointDTO($0, inContext: .main)}
 
@@ -1498,7 +1498,7 @@ final class DataManagerTests: XCTestCase {
 
         
         for point in points {
-            guard let viewPoint = template.viewPoints.first(where: { $0.pointDescription == point.pointDescription }) else {
+            guard let viewPoint = template.viewTemplatePoints.first(where: { $0.pointDescription == point.pointDescription }) else {
                 XCTFail("Missing view venuePoint with id \(point.id ?? "nil")")
                 continue
             }
@@ -1525,7 +1525,7 @@ final class DataManagerTests: XCTestCase {
 
         
         for point in points {
-            guard let viewPoint = template.viewPoints.first(where: { $0.pointDescription == point.pointDescription }) else {
+            guard let viewPoint = template.viewTemplatePoints.first(where: { $0.pointDescription == point.pointDescription }) else {
                 XCTFail("Missing view venuePoint with id \(point.id ?? "nil")")
                 continue
             }
@@ -1553,9 +1553,9 @@ final class DataManagerTests: XCTestCase {
         let soundId = UUID().uuidString
         let lightId = UUID().uuidString
 
-        let dto = PointDTO(
+        let dto = VenuePointDTO(
             id: pointId,
-            userId: [userId],
+            memberId: [userId],
             coordinateX: 10,
             coordinateY: 20,
             rotation: 45,
@@ -1588,9 +1588,9 @@ final class DataManagerTests: XCTestCase {
         XCTAssertEqual(point.viewLights.first?.id, lightId)
 
         // when — update
-        let updatedDTO = PointDTO(
+        let updatedDTO = VenuePointDTO(
             id: pointId, // same id
-            userId: [userId],
+            memberId: [userId],
             coordinateX: 99,
             coordinateY: 88,
             rotation: 180,
@@ -1629,9 +1629,9 @@ final class DataManagerTests: XCTestCase {
         let soundId = UUID().uuidString
         let lightId = UUID().uuidString
 
-        let dto = PointDTO(
+        let dto = VenuePointDTO(
             id: pointId,
-            userId: [userId], coordinateX: 123.45,
+            memberId: [userId], coordinateX: 123.45,
             coordinateY: 67.89,
             rotation: 90,
             scale: 1.5,
@@ -1739,7 +1739,7 @@ final class DataManagerTests: XCTestCase {
 
     func testAddCamerasToPoint() async {
             // Создадим мок PointDTO с камерами
-            let pointDTO = PointDTO.mock(id: "testPoint")
+            let pointDTO = VenuePointDTO.mock(id: "testPoint")
             
             // Обновим LocalLocationPoint
         let localPoint = sut.createOrUpdateLocalPointWithPointDTO(pointDTO, inContext: .main)
@@ -1755,7 +1755,7 @@ final class DataManagerTests: XCTestCase {
         
         func testNoCamerasIfPointNotUpdated() async {
             // Создадим точку без камер
-            let pointDTO = PointDTO(id: "testPointWithoutCameras", userId: [], coordinateX: 0, coordinateY: 0, rotation: 0, scale: 1, imageId: "", number: 0, description: "", task: "", cameras: [], sounds: [], lights: [])
+            let pointDTO = VenuePointDTO(id: "testPointWithoutCameras", memberId: [], coordinateX: 0, coordinateY: 0, rotation: 0, scale: 1, imageId: "", number: 0, description: "", task: "", cameras: [], sounds: [], lights: [])
             
             // Обновим LocalLocationPoint
             let localPoint = sut.createOrUpdateLocalPointWithPointDTO(pointDTO, inContext: .main)
@@ -1812,16 +1812,16 @@ extension BroadcastDTO{
         var eventDTO = BroadcastDTO(id: id,
                                 date: Date(),
                                 lastUpdated: .now,
-                                obVanId: "obvanId-\(id)",
-                                locationPoints: [PointDTO.mock(id: "1-\(id)"),PointDTO.mock(id: "2-\(id)"),PointDTO.mock(id: "3-\(id)")],
-                                obvanUnits: [CrewDTO.mock(id: "1-\(id)"),CrewDTO.mock(id: "2"),CrewDTO.mock(id: "3-\(id)")],
-                                locationID: "locationId-\(id)",
+                                obvanId: "obvanId-\(id)",
+                                venuePoints: [VenuePointDTO.mock(id: "1-\(id)"),VenuePointDTO.mock(id: "2-\(id)"),VenuePointDTO.mock(id: "3-\(id)")],
+                                crews: [CrewDTO.mock(id: "1-\(id)"),CrewDTO.mock(id: "2"),CrewDTO.mock(id: "3-\(id)")],
+                                venueID: "locationId-\(id)",
                                 homeClubId: "homeClubId-\(id)",
                                 guestClubId: "guestClubId-\(id)",
-                                locationPreviewId: "locPrevId-\(id)",
+                                venuePreviewId: "locPrevId-\(id)",
                                 obvanPreviewId: "obvanPrevId-\(id)")
         eventDTO.ownersIds = ownersIds
-        eventDTO.usersIds = usersIds
+        eventDTO.membersIds = usersIds
         return eventDTO
     }
 }
@@ -1833,7 +1833,7 @@ extension VenueDTO{
                     title: "title-\(id)",
                     address: "address-\(id)",
                     imagesIds: ["img1-\(id)","img2-\(id)"],
-                    locationBackgroundId: "bg-\(id)")
+                    venueSchemaId: "bg-\(id)")
     }
 }
 
@@ -1867,10 +1867,10 @@ extension ImageDTO{
     }
 }
 
-extension PointDTO{
-    static func mock(id: String) -> PointDTO{
-        PointDTO(id: id,
-                 userId: [],
+extension VenuePointDTO{
+    static func mock(id: String) -> VenuePointDTO{
+        VenuePointDTO(id: id,
+                 memberId: [],
                  coordinateX: 100,
                  coordinateY: 100,
                  rotation: 45,

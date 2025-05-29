@@ -1,6 +1,6 @@
 import Foundation
 
-struct PointDTO: Identifiable, Codable,BPDataProtocol,CoreDataRepresentable {
+struct VenuePointDTO: Identifiable, Codable,BPDataProtocol,CoreDataRepresentable {
     
     typealias Entity = VenuePoint
     var primaryKeyPredicate: NSPredicate {
@@ -8,7 +8,7 @@ struct PointDTO: Identifiable, Codable,BPDataProtocol,CoreDataRepresentable {
     }
  
     var id: String
-    var userId : [String]
+    var memberIds : [String]
 
     var coordinateX: Double
     var coordinateY: Double

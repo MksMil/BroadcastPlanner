@@ -23,37 +23,37 @@ extension Club {
 
 }
 
-// MARK: Generated accessors for guestEvent
+// MARK: Generated accessors for guestBroadcasts
 extension Club {
 
-    @objc(addGuestEventObject:)
-    @NSManaged public func addToGuestEvent(_ value: Broadcast)
+    @objc(addGuestBroadcastsObject:)
+    @NSManaged public func addToGuestBroadcasts(_ value: Broadcast)
 
-    @objc(removeGuestEventObject:)
-    @NSManaged public func removeFromGuestEvent(_ value: Broadcast)
+    @objc(removeGuestBroadcastsObject:)
+    @NSManaged public func removeFromGuestBroadcasts(_ value: Broadcast)
 
-    @objc(addGuestEvent:)
-    @NSManaged public func addToGuestEvent(_ values: NSSet)
+    @objc(addGuestBroadcasts:)
+    @NSManaged public func addToGuestBroadcasts(_ values: NSSet)
 
-    @objc(removeGuestEvent:)
-    @NSManaged public func removeFromGuestEvent(_ values: NSSet)
+    @objc(removeGuestBroadcasts:)
+    @NSManaged public func removeFromGuestBroadcasts(_ values: NSSet)
 
 }
 
-// MARK: Generated accessors for homeEvent
+// MARK: Generated accessors for homeBroadcasts
 extension Club {
 
-    @objc(addHomeEventObject:)
-    @NSManaged public func addToHomeEvent(_ value: Broadcast)
+    @objc(addHomeBroadcastsObject:)
+    @NSManaged public func addToHomeBroadcasts(_ value: Broadcast)
 
-    @objc(removeHomeEventObject:)
-    @NSManaged public func removeFromHomeEvent(_ value: Broadcast)
+    @objc(removeHomeBroadcastsObject:)
+    @NSManaged public func removeFromHomeBroadcasts(_ value: Broadcast)
 
-    @objc(addHomeEvent:)
-    @NSManaged public func addToHomeEvent(_ values: NSSet)
+    @objc(addHomeBroadcasts:)
+    @NSManaged public func addToHomeBroadcasts(_ values: NSSet)
 
-    @objc(removeHomeEvent:)
-    @NSManaged public func removeFromHomeEvent(_ values: NSSet)
+    @objc(removeHomeBroadcasts:)
+    @NSManaged public func removeFromHomeBroadcasts(_ values: NSSet)
 
 }
 
@@ -99,15 +99,18 @@ extension Club : Identifiable {
                 contacts: viewContacts,
                 urlString: viewUrl,
                 imageLogoID: imageLogo?.viewId,
-                homeLocationID: homeVenue?.viewId,
+                homeVenueID: homeVenue?.viewId,
                 lastUpdated: viewLastUpdated)
     }
 }
 
 extension Club: CoreDataUpdatable{
-    func update(from dto: ClubDTO, in context: NSManagedObjectContext) {
+    func updateFromDTO(_ dto: ClubDTO) {
+        if let context = self.managedObjectContext{
             self.id = dto.id
         }
+        
+    }
     public override func prepareForDeletion(){
         super.prepareForDeletion()
         if let context = self.managedObjectContext{

@@ -29,17 +29,17 @@ extension LocalImage {
 // MARK: Generated accessors for parentVenuePoint
 extension LocalImage {
 
-    @objc(addParentPointObject:)
-    @NSManaged public func addToParentPoint(_ value: VenuePoint)
+    @objc(addParentVenuePointObject:)
+    @NSManaged public func addToParentVenuePoint(_ value: VenuePoint)
 
-    @objc(removeParentPointObject:)
-    @NSManaged public func removeFromParentPoint(_ value: VenuePoint)
+    @objc(removeParentVenuePointObject:)
+    @NSManaged public func removeFromParentVenuePoint(_ value: VenuePoint)
 
-    @objc(addParentPoint:)
-    @NSManaged public func addToParentPoint(_ values: NSSet)
+    @objc(addParentVenuePoint:)
+    @NSManaged public func addToParentVenuePoint(_ values: NSSet)
 
-    @objc(removeParentPoint:)
-    @NSManaged public func removeFromParentPoint(_ values: NSSet)
+    @objc(removeParentVenuePoint:)
+    @NSManaged public func removeFromParentVenuePoint(_ values: NSSet)
 
 }
 
@@ -115,10 +115,24 @@ extension LocalImage : Identifiable {
     
 }
 
+// MARK: - Custom Creation
+extension LocalImage {
+   static func makeLocalImage(id: String, in context: NSManagedObjectContext) -> LocalImage{
+        let request  = LocalImage.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", id)
+        request.fetchLimit = 1
+        let image = (try? context.fetch(request).first) ?? LocalImage(context: context)
+        image.id = id
+        return image
+    }
+}
+
 extension LocalImage: CoreDataUpdatable{
-    func update(from dto: ImageDTO, in context: NSManagedObjectContext) {
-        self.id = dto.id
+    func updateFromDTO(_ dto: ImageDTO,in context: NSManagedObjectContext) {
+        if let context = self.managedObjectContext{
+            self.id = dto.id
         }
+    }
     public override func prepareForDeletion() {
         super.prepareForDeletion()
         if let context = self.managedObjectContext{

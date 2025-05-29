@@ -21,7 +21,7 @@ struct MainEventListCell: View {
     var body: some View {
         ZStack{
             GeometryReader { geo in
-                Rectangle().fill(Color.white.opacity(status == .currentUserParticipated ? 0.5: 0.3))
+                Rectangle().fill(Color.white.opacity(status == .currentMemberParticipated ? 0.5: 0.3))
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                     .overlay {
                         HStack{
@@ -68,7 +68,7 @@ struct MainEventListCell: View {
                         }
                         .overlay {
                             RoundedRectangle(cornerRadius: 8)
-                                .strokeBorder(status == .currentUserOwned ? .red.opacity(0.4):.white.opacity(0.4), lineWidth: 2)
+                                .strokeBorder(status == .currentMemberOwned ? .red.opacity(0.4):.white.opacity(0.4), lineWidth: 2)
                         }
                     }
             }

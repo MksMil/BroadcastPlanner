@@ -80,20 +80,20 @@ extension VenuePoint {
 
 }
 
-// MARK: Generated accessors for member
+// MARK: Generated accessors for members
 extension VenuePoint {
 
-    @objc(addUserObject:)
-    @NSManaged public func addToUser(_ value: Member)
+    @objc(addMembersObject:)
+    @NSManaged public func addToMembers(_ value: Member)
 
-    @objc(removeUserObject:)
-    @NSManaged public func removeFromUser(_ value: Member)
+    @objc(removeMembersObject:)
+    @NSManaged public func removeFromMembers(_ value: Member)
 
-    @objc(addUser:)
-    @NSManaged public func addToUser(_ values: NSSet)
+    @objc(addMembers:)
+    @NSManaged public func addToMembers(_ values: NSSet)
 
-    @objc(removeUser:)
-    @NSManaged public func removeFromUser(_ values: NSSet)
+    @objc(removeMembers:)
+    @NSManaged public func removeFromMembers(_ values: NSSet)
 
 }
 
@@ -162,9 +162,9 @@ extension VenuePoint : Identifiable {
     var lightDTOs: [LightDTO] {
         (lights?.allObjects as? [Light] ?? []).map{LightDTO(id: $0.viewId, lightType: $0.viewLightType)}
     }
-    var dto: PointDTO{
-        PointDTO(id: viewId,
-                 userId: viewMembers.map{$0.viewId},
+    var dto: VenuePointDTO{
+        VenuePointDTO(id: viewId,
+                 memberIds: viewMembers.map{$0.viewId},
                  coordinateX: viewX,
                  coordinateY: viewY,
                  rotation: viewRotation.radians,
@@ -180,9 +180,11 @@ extension VenuePoint : Identifiable {
 }
 
 extension VenuePoint: CoreDataUpdatable{
-    func update(from dto: PointDTO, in context: NSManagedObjectContext) {
+    func updateFromDTO(_ dto: VenuePointDTO) {
+        if let context = self.managedObjectContext{
             self.id = dto.id
         }
+    }
     
     public override func prepareForDeletion() {
         super.prepareForDeletion()
@@ -192,7 +194,7 @@ extension VenuePoint: CoreDataUpdatable{
             viewLights.forEach{context.delete($0)}
             //
             if let broadcast {
-                viewMembers.forEach { broadcast.removeFromUsers($0)}
+                viewMembers.forEach { broadcast.removeFromMembers($0)}
             }
         }
     }

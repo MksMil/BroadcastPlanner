@@ -17,7 +17,7 @@ extension Template {
     
 }
 
-// MARK: Generated accessors for templatePoints
+// MARK: Generated accessors for templatePointDTOs
 extension Template {
 
     @objc(addTemplatePointsObject:)
@@ -40,7 +40,7 @@ extension Template : Identifiable {
     
     var viewName: String{ name ?? "" }
     
-    var viewPoints: [TemplatePoint]{
+    var viewTemplatePoints: [TemplatePoint]{
         templatePoints?.allObjects as? [TemplatePoint] ?? []
     }
     
@@ -52,21 +52,54 @@ extension Template : Identifiable {
         TemplateDTO(id: viewId,
                     lastUpdated: viewLastUpdated,
                     name: viewName,
-                    templatePoints: viewPoints.map{$0.dto})
+                    templatePointDTOs: viewTemplatePoints.map{$0.dto})
     }
 }
 
 extension Template: CoreDataUpdatable{
-    func update(from dto: TemplateDTO, in context: NSManagedObjectContext) {
+    func updateFromDTO(_ dto: TemplateDTO,
+                       in context: NSManagedObjectContext) {
         self.id = dto.id
+        self.name = dto.name
+        self.lastUpdated = lastUpdated
+        
+        cleanTemplatePoints(in: context)
+        dto.templatePointDTOs.forEach{
+            let templatePoint = context.makeObjectFromDTO($0)
+            self.addToTemplatePoints(templatePoint)
+            templatePoint.parentTemplate = self
+        }
+    }
+    func updateValues(name: String?,lastUpdated: Date?,
+                      templatePoints:[TemplatePoint]?,
+                      in context: NSManagedObjectContext){
+        if let name{
+            self.name = name
+        }
+        
+        if let lastUpdated {
+            self.lastUpdated = lastUpdated
+        }
+        cleanTemplatePoints(in: context)
+        if let templatePoints {
+            templatePoints.forEach{
+                addToTemplatePoints($0)
+                $0.parentTemplate = self
+            }
+        }
+    }
+    
+    func cleanTemplatePoints(in context: NSManagedObjectContext){
+            viewTemplatePoints.forEach{
+                $0.parentTemplate = nil
+                removeFromTemplatePoints($0)
+                context.delete($0)}
     }
     
    public override func prepareForDeletion() {
         super.prepareForDeletion()
        if let context = self.managedObjectContext{
-           for point in self.viewPoints {
-               context.delete(point)
-           }
+           cleanTemplatePoints(in: context)
        }
     }
 

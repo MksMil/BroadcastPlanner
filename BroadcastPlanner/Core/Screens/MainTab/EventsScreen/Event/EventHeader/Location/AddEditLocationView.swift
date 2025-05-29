@@ -102,7 +102,7 @@ struct AddEditLocationView: View {
                     DividerWithText(text: "Venue images")
                     
                     //venue photos collection
-                    TabViewList(source: location.viewLocalImages.sorted{$0.viewLastUpdated < $1.viewLastUpdated}, pageCount: 3, spacing: 5) { localImage in
+                    TabViewList(source: location.viewImages.sorted{$0.viewLastUpdated < $1.viewLastUpdated}, pageCount: 3, spacing: 5) { localImage in
                         vm.backgroundSelected(localImage)
                     } content: { localImage in
                         SelectableLocationCellWithContent(val: localImage, publishType: LocationEditPublishType.background) {
@@ -342,7 +342,7 @@ struct AddEditLocationView: View {
         globalDataManager: NetworkManager(),
         userId: "123"
     )
-    let dto = VenueDTO(id: "id", lastUpdated: Date.now, title: "Title", address: "address", imagesIds: [], locationBackgroundId: nil)
+    let dto = VenueDTO(id: "id", lastUpdated: Date.now, title: "Title", address: "address", imagesIds: [], venueSchemaId: nil)
     let location = mdm.localDataManager.createOrUpdateLocalLocationWithLocationDTO(dto, inContext: .main)
     
    return AddEditLocationView(location: location) { _, _, _, _ in

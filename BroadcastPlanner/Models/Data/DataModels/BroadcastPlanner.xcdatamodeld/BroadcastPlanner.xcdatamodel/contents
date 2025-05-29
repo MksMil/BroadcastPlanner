@@ -7,13 +7,13 @@
         <relationship name="crews" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Crew" inverseName="broadcast" inverseEntity="Crew"/>
         <relationship name="guestClub" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Club" inverseName="guestBroadcasts" inverseEntity="Club"/>
         <relationship name="homeClub" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Club" inverseName="homeBroadcasts" inverseEntity="Club"/>
-        <relationship name="locationPreview" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalImage" inverseName="parentVenuePreview" inverseEntity="LocalImage"/>
-        <relationship name="members" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Member" inverseName="participateEvents" inverseEntity="Member"/>
-        <relationship name="obvan" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Obvan" inverseName="events" inverseEntity="Obvan"/>
+        <relationship name="members" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Member" inverseName="participateBroadcasts" inverseEntity="Member"/>
+        <relationship name="obvan" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Obvan" inverseName="broadcasts" inverseEntity="Obvan"/>
         <relationship name="obvanPreview" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalImage" inverseName="parentObvanPreview" inverseEntity="LocalImage"/>
-        <relationship name="owners" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Member" inverseName="ownedEvents" inverseEntity="Member"/>
+        <relationship name="owners" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Member" inverseName="ownedBroadcasts" inverseEntity="Member"/>
         <relationship name="venue" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Venue" inverseName="broadcasts" inverseEntity="Venue"/>
         <relationship name="venuePoints" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="VenuePoint" inverseName="broadcast" inverseEntity="VenuePoint"/>
+        <relationship name="venueSchemaPreview" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalImage" inverseName="parentVenuePreview" inverseEntity="LocalImage"/>
     </entity>
     <entity name="Camera" representedClassName=".Camera" syncable="YES">
         <attribute name="id" optional="YES" attributeType="String"/>
@@ -64,7 +64,7 @@
         <relationship name="parentObvanPreview" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Broadcast" inverseName="obvanPreview" inverseEntity="Broadcast"/>
         <relationship name="parentVenueImage" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Venue" inverseName="images" inverseEntity="Venue"/>
         <relationship name="parentVenuePoint" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="VenuePoint" inverseName="image" inverseEntity="VenuePoint"/>
-        <relationship name="parentVenuePreview" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Broadcast" inverseName="locationPreview" inverseEntity="Broadcast"/>
+        <relationship name="parentVenuePreview" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Broadcast" inverseName="venueSchemaPreview" inverseEntity="Broadcast"/>
         <relationship name="parentVenueSchema" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Venue" inverseName="broadcastSchema" inverseEntity="Venue"/>
     </entity>
     <entity name="Member" representedClassName=".Member" syncable="YES">
@@ -82,8 +82,8 @@
         <attribute name="specializations" optional="YES" attributeType="String"/>
         <relationship name="crews" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Crew" inverseName="member" inverseEntity="Crew"/>
         <relationship name="image" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalImage" inverseName="parentMember" inverseEntity="LocalImage"/>
-        <relationship name="ownedEvents" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Broadcast" inverseName="owners" inverseEntity="Broadcast"/>
-        <relationship name="participateEvents" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Broadcast" inverseName="members" inverseEntity="Broadcast"/>
+        <relationship name="ownedBroadcasts" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Broadcast" inverseName="owners" inverseEntity="Broadcast"/>
+        <relationship name="participateBroadcasts" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Broadcast" inverseName="members" inverseEntity="Broadcast"/>
         <relationship name="venuePoints" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="VenuePoint" inverseName="members" inverseEntity="VenuePoint"/>
     </entity>
     <entity name="Obvan" representedClassName=".Obvan" syncable="YES">
@@ -91,11 +91,11 @@
         <attribute name="id" optional="YES" attributeType="String"/>
         <attribute name="lastUpdated" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="name" optional="YES" attributeType="String"/>
-        <relationship name="events" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Broadcast" inverseName="obvan" inverseEntity="Broadcast"/>
+        <relationship name="broadcasts" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Broadcast" inverseName="obvan" inverseEntity="Broadcast"/>
+        <relationship name="crews" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="ObvanTemplateCrew" inverseName="parentObvan" inverseEntity="ObvanTemplateCrew"/>
         <relationship name="image" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalImage" inverseName="parentObvan" inverseEntity="LocalImage"/>
-        <relationship name="templateUnits" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="ObvanTemplateUnit" inverseName="parentObvan" inverseEntity="ObvanTemplateUnit"/>
     </entity>
-    <entity name="ObvanTemplateUnit" representedClassName="ObvanTemplateUnit" syncable="YES">
+    <entity name="ObvanTemplateCrew" representedClassName="ObvanTemplateCrew" syncable="YES">
         <attribute name="coordinateX" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="coordinateY" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="id" optional="YES" attributeType="String"/>
@@ -103,7 +103,7 @@
         <attribute name="required" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="rotation" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="scaleFactor" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <relationship name="parentObvan" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Obvan" inverseName="templateUnits" inverseEntity="Obvan"/>
+        <relationship name="parentObvan" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Obvan" inverseName="crews" inverseEntity="Obvan"/>
     </entity>
     <entity name="Sound" representedClassName=".Sound" syncable="YES">
         <attribute name="id" optional="YES" attributeType="String"/>

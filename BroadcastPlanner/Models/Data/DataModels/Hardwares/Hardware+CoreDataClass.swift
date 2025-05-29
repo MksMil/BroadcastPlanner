@@ -39,9 +39,11 @@ extension Hardware : Identifiable {
 }
 
 extension Hardware: CoreDataUpdatable{
-    func update(from dto: HardwareDTO, in context: NSManagedObjectContext) {
+    func updateFromDTO(_ dto: HardwareDTO) {
+        if let context = self.managedObjectContext{
             self.id = dto.id
         }
+    }
     
     public override func prepareForDeletion() {
          super.prepareForDeletion()

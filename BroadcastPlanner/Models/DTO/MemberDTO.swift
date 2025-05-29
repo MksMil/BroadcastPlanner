@@ -28,8 +28,8 @@ struct MemberDTO: Identifiable, Codable,BPDataProtocol,CoreDataRepresentable {
     
     var leaveDate: Date = .now
     
-    var ownedEventIds = [String]()
-    var participatedEventIds = [String]()
+    var ownedBroadcastIds = [String]()
+    var participatedBroadcastIds = [String]()
     
     init(id: String = UUID().uuidString){
         self.id = id

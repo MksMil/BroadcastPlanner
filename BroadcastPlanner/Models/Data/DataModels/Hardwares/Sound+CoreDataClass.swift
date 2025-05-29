@@ -40,9 +40,11 @@ extension Sound : Identifiable {
 }
 
 extension Sound: CoreDataUpdatable{
-    func update(from dto: SoundDTO, in context: NSManagedObjectContext) {
+    func updateFromDTO(_ dto: SoundDTO) {
+        if let context = self.managedObjectContext{
             self.id = dto.id
         }
+    }
     
     public override func prepareForDeletion() {
          super.prepareForDeletion()

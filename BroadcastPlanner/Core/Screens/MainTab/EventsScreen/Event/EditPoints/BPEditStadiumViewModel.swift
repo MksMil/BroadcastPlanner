@@ -58,7 +58,7 @@ final class BPEditStadiumViewModel: ObservableObject {
     
     init(event: Broadcast){
         self.event = event
-        self.localPoints = event.viewLocationPoints
+        self.localPoints = event.viewVenuePoints
         self.filteredLocationPoints = localPoints
         self.renderPitchScene = PitchEditSpriteScene()
         renderPitchScene.pointDelegate = self
@@ -75,7 +75,7 @@ final class BPEditStadiumViewModel: ObservableObject {
     }
     
     func configureWith(event: Broadcast){
-        renderPitchScene.points = event.viewLocationPoints
+        renderPitchScene.points = event.viewVenuePoints
         renderPitchScene.updateScene()
     }
     
@@ -101,7 +101,7 @@ final class BPEditStadiumViewModel: ObservableObject {
     
     // TODO: think about compare localPoints and templatePoints...
     func compareTempateWithPoints()->Bool{
-        guard let points = selectedTemplate?.viewPoints else { return false}
+        guard let points = selectedTemplate?.viewTemplatePoints else { return false}
         guard points.count == localPoints.count else { return false}
         return true
     }
@@ -143,11 +143,11 @@ extension BPEditStadiumViewModel {
                 filteredLocationPoints = localPoints.filter({//$0.viewLocalCameras.isEmpty &&
                     !$0.viewMembers.isEmpty})
             case .mic:
-                filteredLocationPoints = localPoints.filter({//$0.viewLocalCameras.isEmpty && $0.viewUsers.isEmpty &&
+                filteredLocationPoints = localPoints.filter({//$0.viewLocalCameras.isEmpty && $0.viewMembers.isEmpty &&
                     !$0.viewSounds.isEmpty})
             case .light:
                 filteredLocationPoints = localPoints.filter({//$0.viewLocalCameras.isEmpty &&
-                    //$0.viewUsers.isEmpty &&
+                    //$0.viewMembers.isEmpty &&
                     //$0.viewSounds.isEmpty &&
                     !$0.viewLights.isEmpty})
         }

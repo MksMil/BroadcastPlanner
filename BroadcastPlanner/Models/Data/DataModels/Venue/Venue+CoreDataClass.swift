@@ -7,7 +7,6 @@ public class Venue: NSManagedObject {
 }
 
 extension Venue {
-
     @nonobjc public class func fetchRequest() -> NSFetchRequest<Venue> {
         return NSFetchRequest<Venue>(entityName: "Venue")
     }
@@ -19,24 +18,24 @@ extension Venue {
     @NSManaged public var broadcastSchema: LocalImage?
     @NSManaged public var broadcasts: NSSet?
     @NSManaged public var homeClub: NSSet?
-    @NSManaged public var images: NSSet?
+    @NSManaged public var images: NSSet? //controlled by self
     
 }
 
 // MARK: Generated accessors for broadcasts
 extension Venue {
 
-    @objc(addEventsObject:)
-    @NSManaged public func addToEvents(_ value: Broadcast)
+    @objc(addBroadcastsObject:)
+    @NSManaged public func addToBroadcasts(_ value: Broadcast)
 
-    @objc(removeEventsObject:)
-    @NSManaged public func removeFromEvents(_ value: Broadcast)
+    @objc(removeBroadcastsObject:)
+    @NSManaged public func removeFromBroadcasts(_ value: Broadcast)
 
-    @objc(addEvents:)
-    @NSManaged public func addToEvents(_ values: NSSet)
+    @objc(addBroadcasts:)
+    @NSManaged public func addToBroadcasts(_ values: NSSet)
 
-    @objc(removeEvents:)
-    @NSManaged public func removeFromEvents(_ values: NSSet)
+    @objc(removeBroadcasts:)
+    @NSManaged public func removeFromBroadcasts(_ values: NSSet)
 
 }
 
@@ -99,7 +98,7 @@ extension Venue : Identifiable {
     }
     
     var viewImages: [Image] {
-        (images?.allObjects as? [LocalImage] ?? []).compactMap{$0.largeImage}
+        viewLocalImages.map{$0.largeImage}
     }
     
     var viewLocalImages: [LocalImage]{
@@ -116,20 +115,76 @@ extension Venue : Identifiable {
             title: viewTitle,
             address: viewAddress,
             imagesIds: viewLocalImages.map{$0.viewId},
-            locationBackgroundId: broadcastSchema?.id
+            venueSchemaId: broadcastSchema?.id
         )
     }
 }
 
 extension Venue: CoreDataUpdatable{
-    func update(from dto: VenueDTO, in context: NSManagedObjectContext) {
-            self.id = dto.id
+    func updateFromDTO(_ dto: VenueDTO, in context: NSManagedObjectContext) {
+        self.id = dto.id
+        self.address = dto.address
+        self.title = dto.title
+        self.lastUpdated = dto.lastUpdated
+        cleanImages(in: context)
+            for id in dto.imagesIds {
+                let image: LocalImage = context.fetchOrCreateObject(withID: id)
+                image.id = id
+                self.addToImages(image)
+                image.parentVenueImage = self
+            }
+        
+        if let imageSchemaId = dto.venueSchemaId{
+            let image: LocalImage = context.fetchOrCreateObject(withID: imageSchemaId)
+            image.id = imageSchemaId
+            broadcastSchema = image
+            image.parentVenueSchema = self
+        } else {
+            //broadcastSchema = nil, remove link
+            if let schema = broadcastSchema{
+                schema.parentVenueSchema = nil
+                broadcastSchema = nil
+            }
         }
+    }
+    
+    func updateValues(title: String?,address: String?,lastUpdated: Date?,broadcastSchema: LocalImage?, images: [LocalImage]?, in context: NSManagedObjectContext){
+        if let title {
+            self.title = title
+        }
+        if let address {
+            self.address = address
+        }
+        if let lastUpdated {
+            self.lastUpdated = lastUpdated
+        }
+        if let broadcastSchema{
+            self.broadcastSchema?.parentVenueSchema = nil
+            self.broadcastSchema = broadcastSchema
+            broadcastSchema.parentVenueSchema = self
+        }
+        
+        if let images {
+            cleanImages(in: context)
+            images.forEach{
+                addToImages($0)
+                $0.parentVenueImage = self
+            }
+        }
+    }
+    //private ?
+    func cleanImages(in context: NSManagedObjectContext){
+        viewLocalImages.forEach{
+            $0.parentVenueImage = nil
+            removeFromImages($0)
+            context.delete($0)
+        }
+    }
     
     public override func prepareForDeletion() {
         super.prepareForDeletion()
         if let context =  self.managedObjectContext{
-            viewLocalImages.forEach{context.delete($0)}
+            cleanImages(in: context)
         }
     }
 }

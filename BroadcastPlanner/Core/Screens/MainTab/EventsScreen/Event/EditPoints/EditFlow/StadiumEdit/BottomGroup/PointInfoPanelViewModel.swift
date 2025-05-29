@@ -21,7 +21,7 @@ final class PointInfoPanelViewModel: ObservableObject {
     var availableNumbers: [Int] {
         var nums: [Int] = []
         if let event = point.broadcast{
-            nums = event.viewLocationPoints.map{$0.viewNumber}
+            nums = event.viewVenuePoints.map{$0.viewNumber}
         }
         nums.removeAll { num in
             num == number

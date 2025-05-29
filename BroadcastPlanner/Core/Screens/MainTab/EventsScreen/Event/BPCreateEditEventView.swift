@@ -131,7 +131,7 @@ struct BPCreateEditEventView: View {
                 
                 //preview + fsc editStad / editCar  views
                 HStack(spacing: 15) {
-                    event.viewLocationPreview
+                    event.viewVenueSchemaPreview
                         .resizable()
                         .scaledToFit()
                         .onTapGesture {
@@ -167,7 +167,7 @@ struct BPCreateEditEventView: View {
 //
 //#Preview {
 //        let lm = DataManager(forPreview: true)
-//        let mdm = MainDataManager(localDataManager: lm, globalDataManager: NetworkManager(),userId: "123")
+//        let mdm = MainDataManager(localDataManager: lm, globalDataManager: NetworkManager(),memberIds: "123")
 //        let localEvent = lm.fetchOrCreateObject(ofType: Broadcast.self,
 //                      predicate: NSPredicate(format: "id == %@", "id"),
 //                                          in: lm.mainContext) { ctx in

@@ -34,9 +34,11 @@ extension Light : Identifiable {
 }
 
 extension Light: CoreDataUpdatable{
-    func update(from dto: LightDTO, in context: NSManagedObjectContext) {
+    func updateFromDTO(_ dto: LightDTO) {
+        if let context = self.managedObjectContext{
             self.id = dto.id
         }
+    }
     
     public override func prepareForDeletion() {
          super.prepareForDeletion()

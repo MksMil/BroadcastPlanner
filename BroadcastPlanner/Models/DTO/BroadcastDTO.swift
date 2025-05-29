@@ -12,35 +12,35 @@ struct BroadcastDTO: Identifiable, Codable, BPDataProtocol,CoreDataRepresentable
     var lastUpdated: Date
     
     //info
-    var locationID: String?
-    var obVanId: String?
+    var venueID: String?
+    var obvanId: String?
     
     //crew venuePoints
-    var locationPoints: [PointDTO]
-    var obVanUnits: [CrewDTO]
+    var venuePoints: [VenuePointDTO]
+    var crews: [CrewDTO]
     
     //owners Id's
     var ownersIds: [String] = []
-    var usersIds: [String] = []
+    var membersIds: [String] = []
     //clubs Id's
     var homeClubId: String?
     var guestClubId: String?
     
-    var locationPreviewId: String?
+    var venuePreviewId: String?
     var obvanPreviewId: String?
    
     // MARK: - Initialization
-    init( id: String = UUID().uuidString, date: Date = Date(),lastUpdated: Date = .now ,obVanId: String?, locationPoints: [PointDTO] = [], obvanUnits: [CrewDTO] = [], locationID: String?, homeClubId: String?, guestClubId: String?,locationPreviewId: String?,obvanPreviewId: String? ) {
+    init( id: String = UUID().uuidString, date: Date = Date(),lastUpdated: Date = .now ,obvanId: String?, venuePoints: [VenuePointDTO] = [], crews: [CrewDTO] = [], venueID: String?, homeClubId: String?, guestClubId: String?,venuePreviewId: String?,obvanPreviewId: String? ) {
         self.id = id
         self.date = date
         self.lastUpdated = lastUpdated
-        self.obVanId = obVanId
-        self.locationPoints = locationPoints
-        self.obVanUnits = obvanUnits
-        self.locationID = locationID
+        self.obvanId = obvanId
+        self.venuePoints = venuePoints
+        self.crews = crews
+        self.venueID = venueID
         self.homeClubId = homeClubId
         self.guestClubId = guestClubId
-        self.locationPreviewId = locationPreviewId
+        self.venuePreviewId = venuePreviewId
         self.obvanPreviewId = obvanPreviewId
     }
 

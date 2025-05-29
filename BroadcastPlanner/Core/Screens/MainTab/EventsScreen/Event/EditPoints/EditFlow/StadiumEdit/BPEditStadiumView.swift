@@ -71,7 +71,7 @@ struct BPEditStadiumView: View {
                 //template group
                 TemplateGroup(templates: templates) { templateToShow in
                     withAnimation {
-                        mdm.cleanLocalPoints(event.viewLocationPoints, inEvent: event)
+                        mdm.cleanLocalPoints(event.viewVenuePoints, inEvent: event)
                         let points =  mdm.makeLocalPointsFromTemplate(templateToShow)
                         mdm.loadTemplatePoints(points, toEvent: event)
                         vm.loadTemplate(points)
@@ -83,7 +83,7 @@ struct BPEditStadiumView: View {
                         await mdm.saveTemplateFromSchema(localPoints: vm.localPoints, withName: name)
                     }
                 } removeAction: {
-                    mdm.cleanLocalPoints(event.viewLocationPoints, inEvent: event)
+                    mdm.cleanLocalPoints(event.viewVenuePoints, inEvent: event)
                     withAnimation{
                         if let templateToRemove = vm.selectedTemplate{
                             Task{
@@ -93,7 +93,7 @@ struct BPEditStadiumView: View {
                         }
                     }
                 } setEmptyTemplateAction: {
-                    mdm.cleanLocalPoints(event.viewLocationPoints, inEvent: event)
+                    mdm.cleanLocalPoints(event.viewVenuePoints, inEvent: event)
                     withAnimation{
                         vm.setEmptyTemplate()
                     }

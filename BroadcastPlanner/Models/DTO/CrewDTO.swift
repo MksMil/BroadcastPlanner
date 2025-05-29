@@ -16,7 +16,7 @@ struct CrewDTO: Codable, Identifiable,BPDataProtocol,CoreDataRepresentable {
     var scale: Double
     var task: String
     var isEnabled: Bool = true
-    var userId: String
+    var memberId: String
     var hardware: HardwareDTO?
 }
 

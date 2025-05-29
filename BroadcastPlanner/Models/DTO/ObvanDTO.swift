@@ -11,6 +11,6 @@ struct ObvanDTO: Codable, Identifiable,BPDataProtocol,CoreDataRepresentable {
     var name: String
     var imageId: String
     var broadcaster: String
-    var templateUnits: [ObvanTemplateUnitDTO]
+    var obvanTemplateCrewDTOs: [ObvanTemplateCrewDTO]
     
 }

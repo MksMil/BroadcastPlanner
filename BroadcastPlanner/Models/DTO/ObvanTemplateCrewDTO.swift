@@ -1,8 +1,8 @@
 import Foundation
 
-struct ObvanTemplateUnitDTO: Identifiable, Codable,BPDataProtocol,CoreDataRepresentable {
+struct ObvanTemplateCrewDTO: Identifiable, Codable,BPDataProtocol,CoreDataRepresentable {
     
-    typealias Entity = ObvanTemplateUnit
+    typealias Entity = ObvanTemplateCrew
     var primaryKeyPredicate: NSPredicate {
         NSPredicate(format: "id == %@", id as CVarArg)
     }
@@ -11,8 +11,8 @@ struct ObvanTemplateUnitDTO: Identifiable, Codable,BPDataProtocol,CoreDataRepres
     var coordinateY: Double
     var rotation: Double
     var scaleFactor: Double
-
     var position: String
+    var isRequired: Bool
     
     
 }

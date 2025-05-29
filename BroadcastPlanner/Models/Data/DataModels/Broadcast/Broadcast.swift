@@ -18,9 +18,9 @@ extension Broadcast {
     @NSManaged public var guestClub: Club?
     @NSManaged public var homeClub: Club?
     @NSManaged public var venue: Venue?
-    @NSManaged public var locationPreview: LocalImage?
-    @NSManaged public var obvanPreview: LocalImage?
+    @NSManaged public var venueSchemaPreview: LocalImage?
     @NSManaged public var obvan: Obvan?
+    @NSManaged public var obvanPreview: LocalImage?
     @NSManaged public var owners: NSSet?
     @NSManaged public var venuePoints: NSSet?
     @NSManaged public var crews: NSSet?
@@ -48,51 +48,51 @@ extension Broadcast {
 // MARK: Generated accessors for venuePoints
 extension Broadcast {
 
-    @objc(addPointsObject:)
-    @NSManaged public func addToPoints(_ value: VenuePoint)
+    @objc(addVenuePointsObject:)
+    @NSManaged public func addToVenuePoints(_ value: VenuePoint)
 
-    @objc(removePointsObject:)
-    @NSManaged public func removeFromPoints(_ value: VenuePoint)
+    @objc(removeVenuePointsObject:)
+    @NSManaged public func removeFromVenuePoints(_ value: VenuePoint)
 
-    @objc(addPoints:)
-    @NSManaged public func addToPoints(_ values: NSSet)
+    @objc(addVenuePoints:)
+    @NSManaged public func addToVenuePoints(_ values: NSSet)
 
-    @objc(removePoints:)
-    @NSManaged public func removeFromPoints(_ values: NSSet)
+    @objc(removeVenuePoints:)
+    @NSManaged public func removeFromVenuePoints(_ values: NSSet)
 
 }
 
 // MARK: Generated accessors for crews
 extension Broadcast {
 
-    @objc(addUnitsObject:)
-    @NSManaged public func addToUnits(_ value: Crew)
+    @objc(addCrewsObject:)
+    @NSManaged public func addToCrews(_ value: Crew)
 
-    @objc(removeUnitsObject:)
-    @NSManaged public func removeFromUnits(_ value: Crew)
+    @objc(removeCrewsObject:)
+    @NSManaged public func removeFromCrews(_ value: Crew)
 
-    @objc(addUnits:)
-    @NSManaged public func addToUnits(_ values: NSSet)
+    @objc(addCrews:)
+    @NSManaged public func addToCrews(_ values: NSSet)
 
-    @objc(removeUnits:)
-    @NSManaged public func removeFromUnits(_ values: NSSet)
+    @objc(removeCrews:)
+    @NSManaged public func removeFromCrews(_ values: NSSet)
 
 }
 
 // MARK: Generated accessors for members
 extension Broadcast {
 
-    @objc(addUsersObject:)
-    @NSManaged public func addToUsers(_ value: Member)
+    @objc(addMembersObject:)
+    @NSManaged public func addToMembers(_ value: Member)
 
-    @objc(removeUsersObject:)
-    @NSManaged public func removeFromUsers(_ value: Member)
+    @objc(removeMembersObject:)
+    @NSManaged public func removeFromMembers(_ value: Member)
 
-    @objc(addUsers:)
-    @NSManaged public func addToUsers(_ values: NSSet)
+    @objc(addMembers:)
+    @NSManaged public func addToMembers(_ values: NSSet)
 
-    @objc(removeUsers:)
-    @NSManaged public func removeFromUsers(_ values: NSSet)
+    @objc(removeMembers:)
+    @NSManaged public func removeFromMembers(_ values: NSSet)
 
 }
 
@@ -100,32 +100,22 @@ extension Broadcast : Identifiable {
     var viewId: String {
         id ?? ""
     }
-    var viewDate: String{
-        let date = date ?? Date()
-        return BPDateFormater.format(date: date)
-    }
-    
-    var viewDayDate: String {
-        let date = date ?? Date()
-        return BPDateFormater.formatDate(date: date)
-    }
-    
-    var viewRemainingDate: Date {
+    var viewDate: Date{
         date ?? Date()
     }
 
-    var viewUsers: [Member] {
+    var viewMembers: [Member] {
         members?.allObjects.compactMap{$0 as? Member} ?? []
     }
     var viewOwners: [Member] {
         owners?.allObjects.compactMap{$0 as? Member} ?? []
     }
     
-    var viewLocationPoints: [VenuePoint]{
+    var viewVenuePoints: [VenuePoint]{
         venuePoints?.allObjects.compactMap{$0 as? VenuePoint} ?? []
     }
     
-    var viewObvanUnits: [Crew]{
+    var viewCrews: [Crew]{
         crews?.allObjects.compactMap{$0 as? Crew} ?? []
     }
     
@@ -155,12 +145,12 @@ extension Broadcast : Identifiable {
         guestClub?.imageLogo?.mediumImage ?? Image(systemName: "plus")
     }
     
-    var viewLocationBackgroundImages: [Image] {
+    var viewVenueImages: [Image] {
         venue?.viewImages ?? [Image("neutral")]
     }
     
-    var viewLocationPreview: Image {
-        locationPreview?.originImage ?? Image(systemName: "sportscourt")
+    var viewVenueSchemaPreview: Image {
+        venueSchemaPreview?.originImage ?? Image(systemName: "sportscourt")
     }
     
     var viewObvanPreview: Image {
@@ -171,21 +161,21 @@ extension Broadcast : Identifiable {
     }
     
     var dto: BroadcastDTO  {
-        var event = BroadcastDTO(id: viewId,
-                             date: viewRemainingDate,
+        var broadcast = BroadcastDTO(id: viewId,
+                             date: viewDate,
                              lastUpdated: viewLastUpdated,
-                             obVanId: obvan?.id,
-                             locationPoints: viewLocationPoints.compactMap{$0.dto},
-                             obvanUnits: viewObvanUnits.compactMap{ $0.dto},
-                             locationID: venue?.id,
+                             obvanId: obvan?.id,
+                             venuePoints: viewVenuePoints.compactMap{$0.dto},
+                             crews: viewCrews.compactMap{ $0.dto},
+                             venueID: venue?.id,
                              homeClubId: homeClub?.id,
                              guestClubId: guestClub?.id,
-                             locationPreviewId: locationPreview?.id,
+                             venuePreviewId: venueSchemaPreview?.id,
                              obvanPreviewId: obvanPreview?.id)
-        event.ownersIds = viewOwners.map({$0.viewId})
-        event.usersIds = viewUsers.map({$0.viewId})
+        broadcast.ownersIds = viewOwners.map({$0.viewId})
+        broadcast.membersIds = viewMembers.map({$0.viewId})
         
-        return event
+        return broadcast
     }
     
     var expired: Bool {
@@ -194,24 +184,45 @@ extension Broadcast : Identifiable {
         } else {
             return false
         }
-        
     }
     
     func status(user: Member) -> BroadcastStatus{
-        
         if viewOwners.contains(user){
-            return .currentUserOwned
+            return .currentMemberOwned
         }
-        if viewUsers.contains(user){
-            return .currentUserParticipated
+        if viewMembers.contains(user){
+            return .currentMemberParticipated
         }
         return .none
     }
 }
 
 extension Broadcast: CoreDataUpdatable{
-    func update(from dto: BroadcastDTO, in context: NSManagedObjectContext) {
+    func updateFromDTO(_ dto: BroadcastDTO,in context: NSManagedObjectContext) {
+        
             self.id = dto.id
+        
+        
+    }
+}
+
+// MARK: - Remove entity
+extension Broadcast{
+    public override func prepareForDeletion() {
+        super.prepareForDeletion()
+        if let context = self.managedObjectContext{
+            if let venueSchemaPreview {
+                context.delete(venueSchemaPreview)
+            }
+            if let obvanPreview {
+                context.delete(obvanPreview)
+            }
+            viewCrews.forEach{context.delete($0)}
+            viewVenuePoints.forEach{context.delete($0)}
+            viewMembers.forEach{$0.removeFromParticipateBroadcasts(self)}
+            viewOwners.forEach{$0.removeFromOwnedBroadcasts(self)}
+            
         }
+    }
 }
 
