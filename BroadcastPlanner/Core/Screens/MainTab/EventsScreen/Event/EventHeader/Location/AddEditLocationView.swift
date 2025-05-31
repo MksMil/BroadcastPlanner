@@ -18,7 +18,7 @@ struct AddEditLocationView: View {
     @State private var isRemoveEventTemplate: Bool = false
 
     @FetchRequest<LocalImage>(sortDescriptors: [SortDescriptor(\.lastUpdated, order: .forward)],
-                              predicate: NSPredicate(format: "type == %@", GlobalProperties.ImageType.eventTemplate.rawValue)) var eventTemplates
+                              predicate: NSPredicate(format: "type == %@", GlobalProperties.ImageType.venueTemplate.rawValue)) var eventTemplates
     
 //    @FetchRequest<LocalImage>(sortDescriptors: [SortDescriptor(\.lastUpdated, order: .forward)]) var locationImages
  
@@ -102,7 +102,7 @@ struct AddEditLocationView: View {
                     DividerWithText(text: "Venue images")
                     
                     //venue photos collection
-                    TabViewList(source: location.viewImages.sorted{$0.viewLastUpdated < $1.viewLastUpdated}, pageCount: 3, spacing: 5) { localImage in
+                    TabViewList(source: location.viewLocalImages.sorted{$0.viewLastUpdated < $1.viewLastUpdated}, pageCount: 3, spacing: 5) { localImage in
                         vm.backgroundSelected(localImage)
                     } content: { localImage in
                         SelectableLocationCellWithContent(val: localImage, publishType: LocationEditPublishType.background) {
@@ -237,7 +237,7 @@ struct AddEditLocationView: View {
                         }
                         Spacer()
                         Button {
-                            //ling eventTemplate to venue
+                            //ling venueTemplate to venue
                             if let template = vm.selectedEventTemplate{
                                 mdm.linkEventTemplate(template, toLocation: location)
                             }
@@ -322,11 +322,11 @@ struct AddEditLocationView: View {
         .navigationBarBackButtonHidden()
         .onReceive(vm.$eventBackgroundUIImage) { uiimage in
             guard let uiimage else { return }
-            mdm.createNewLocalImagesWith(uiimages: [uiimage], andType: .eventTemplate)
+            mdm.createNewLocalImagesWith(uiimages: [uiimage], andType: .venueTemplate)
         }
         .onReceive(vm.$locationUiimages) { images in
             if !images.isEmpty{
-                mdm.createNewLocalImagesWith(uiimages: images, andType: GlobalProperties.ImageType.location,
+                mdm.createNewLocalImagesWith(uiimages: images, andType: GlobalProperties.ImageType.venue,
                                              linkToLocation: location)
                 vm.locationUiimages = []
             }

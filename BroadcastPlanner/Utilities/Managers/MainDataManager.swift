@@ -7,11 +7,31 @@ class MainDataManager: ObservableObject {
     let localDataManager: DataManager
     let globalDataManager: NetworkManager
 
+    var mainContext: NSManagedObjectContext {
+        localDataManager.mainContext
+    }
+    var backgroundContext: NSManagedObjectContext {
+        localDataManager.backgroundContext
+    }
+    
     var updatePublisher: PassthroughSubject = PassthroughSubject<(GlobalProperties.PublishChanges, [String]), Never>()
     var cancellables: Set<AnyCancellable> = []
     
     let currentId: String
-    let currentUser: Member
+    let currentUserID: NSManagedObjectID
+
+    var currentUserInMainContext: Member {
+        mainContext.performAndWait {
+            try! mainContext.existingObject(with: currentUserID) as! Member
+        }
+    }
+
+    var currentUserInBackgroundContext: Member {
+        backgroundContext.performAndWait {
+            try! backgroundContext.existingObject(with: currentUserID) as! Member
+        }
+    }
+
 
     init(
         localDataManager: DataManager,
@@ -21,15 +41,9 @@ class MainDataManager: ObservableObject {
         self.localDataManager = localDataManager
         self.globalDataManager = globalDataManager
         self.currentId = userId
-        self.currentUser = localDataManager.fetchOrCreateObject(
-            ofType: Member.self,
-            predicate: NSPredicate(format: "id == %@", userId),
-            in: localDataManager.mainContext
-        ) { ctx in
-            let newUser = Member(context: ctx)
-            newUser.id = userId
-            return newUser
-        }
+        //init coredata context here?
+        let currentMember: Member = localDataManager.mainContext.fetchOrCreateObject(withID: userId)
+        self.currentUserID = currentMember.objectID
         self.globalDataManager.syncDelegate = self
         Task{
             await self.globalDataManager.start()
@@ -42,402 +56,60 @@ class MainDataManager: ObservableObject {
 }
 
 //bg work
-extension MainDataManager: @preconcurrency UpdateDelegateProtocol {
+extension MainDataManager: UpdateDelegateProtocol {
     
     func updateWithDTO(_ dto: any CoreDataRepresentable){
-        dto.updateOrCreate(in: localDataManager.backgroundContext)
+        backgroundContext.performAndWait {
+           _ = dto.updateOrCreate(in: backgroundContext)
+        }
     }
+    
+    
     func removeWithDTO(_ dto: any CoreDataRepresentable){
+        backgroundContext.performAndWait {
+            dto.remove(in: backgroundContext)
+        }
+    }
+    
+    /// Синхронизирует сущности из массива DTO: обновляет/создаёт + удаляет лишние
+    func sync<DTO: CoreDataRepresentable>(with dtos: [DTO]) {
+        localDataManager.backgroundContext.performAndWait {
+            createOrUpdate(dtos: dtos, in: localDataManager.backgroundContext)
+            removeMissing(dtos: dtos,in: localDataManager.backgroundContext)
+            try? localDataManager.backgroundContext.save()
+        }
+       }
+       
+       /// Создаёт или обновляет объекты Core Data из DTO
+    func createOrUpdate<DTO: CoreDataRepresentable>(dtos: [DTO],in context: NSManagedObjectContext) {
+        for dto in dtos {
+            let object: DTO.Entity = context.fetchOrCreateObject(withID: dto.id)
+            object.updateFromDTO(dto, in: context)
+        }
         
     }
-    
-    func updateObvans(dtos: [ObvanDTO]) {
-        print("obvans updated: \(dtos)")
-        //fetch all entity data
-        localDataManager.backgroundContext.performAndWait {
-            let request = Obvan.fetchRequest()
-            do{
-                let obvans = try localDataManager.backgroundContext.fetch(request)
-                for obvan in obvans{
-                    if dtos.contains (where: { dto in
-                        obvan.viewId == dto.id
-                    }){} else {
-                        localDataManager.removeObvan(obvan, inContext: .bg)
-                    }
-                }
-                for dto in dtos {
-                    if obvans.contains(where: { obvan in
-                        if obvan.viewId == dto.id {
-                            if obvan.viewLastUpdated == dto.lastUpdated{
-                                //id, lastUpdate ==
-                                return true
-                            } else {
-                                // id ==, lastUpdate !=
-                                localDataManager.updateLocalObvan(obvan,
-                                                                  withObvan: dto, inContext: .bg)
-                                return true
-                            }
-                        }
-                        return false
-                    }){
-                        
-                    } else {
-                        //entity with dto.id doesn't exist
-                        _ = localDataManager.createOrUpdateLocalObvanWithDTO(dto, inContext: .bg)
-                    }
-                }
-                localDataManager.saveContextSync(type: .bg, publish: .obvans, id: dtos.map{$0.id})
-            } catch {
-                print("MDM: updateObvans error: \(error)")
+
+       /// Удаляет объекты Core Data, которых нет среди DTO.id
+    func removeMissing<DTO: CoreDataRepresentable>(dtos: [DTO],in context: NSManagedObjectContext) {
+        let ids = dtos.map { $0.id }
+        let request = DTO.Entity.fetchRequest()
+        request.predicate = NSPredicate(format: "NOT (id IN %@)", ids)
+        
+        do {
+            if let toDelete = try context.fetch(request) as? [DTO.Entity] {
+                toDelete.forEach { context.delete($0) }
             }
+        } catch {
+            print("❌ Ошибка при удалении объектов типа \(DTO.Entity.self): \(error)")
         }
-        //compare id's and lastUdate
-        //create / update / continue
-    }
-    
-    func updateEvents(dtos: [BroadcastDTO]) {
-        print("broadcasts updated: \(dtos)")
-        localDataManager.backgroundContext.performAndWait {
-            let request = Broadcast.fetchRequest()
-            do{
-                let events = try localDataManager.backgroundContext.fetch(request)
-                for event in events{
-                    if dtos.contains (where: { dto in
-                        event.viewId == dto.id
-                    }){} else {
-                        localDataManager.removeLocalEvent(event, inContext: .bg)
-                    }
-                }
-                for dto in dtos {
-                    if events.contains(where: { event in
-                        if event.viewId == dto.id {
-                            if event.viewLastUpdated == dto.lastUpdated{
-                                //id, lastUpdate ==
-                                return true
-                            } else {
-                                // id ==, lastUpdate !=
-                                localDataManager.updateLocalEvent(event, withDTO: dto, inContext: .bg)
-                                return true
-                            }
-                        }
-                        return false
-                    }){
-                        
-                    } else {
-                        //entity with dto.id doesn't exist
-                        _ = localDataManager.createOrUpdateLocalEventWithEventDTO(dto, inContext: .bg)
-                    }
-                }
-                localDataManager.saveContextSync(type: .bg, publish: .broadcasts, id: dtos.map{$0.id})
-            } catch {
-                print("MDM: updateEvents error: \(error)")
-            }
-        }
-    }
-    
-    func updateClubs(dtos: [ClubDTO]) {
-        print("clubs updated: \(dtos)")
-        localDataManager.backgroundContext.performAndWait {
-            let request = Club.fetchRequest()
-            do{
-                let clubs = try localDataManager.backgroundContext.fetch(request)
-                for club in clubs{
-                    if dtos.contains (where: { dto in
-                        club.viewId == dto.id
-                    }){} else {
-                        localDataManager.removeLocalClub(localClub: club, inContext: .bg)
-                    }
-                }
-                for dto in dtos {
-                    if clubs.contains(where: { club in
-                        if club.viewId == dto.id {
-                            if club.viewLastUpdated == dto.lastUpdated{
-                                //id, lastUpdate ==
-                                return true
-                            } else {
-                                // id ==, lastUpdate !=
-                                localDataManager.updateLocalClub(club, withDTO: dto, inContext: .bg)
-                                return true
-                            }
-                        }
-                        return false
-                    }){
-                        
-                    } else {
-                        //entity with dto.id doesn't exist
-                        _ = localDataManager.createOrUpdateLocalClubWithDTO(dto, inContext: .bg)
-                    }
-                }
-                localDataManager.saveContextSync(type: .bg, publish: .clubs, id: dtos.map{$0.id})
-            } catch {
-                print("MDM: updateClubs error: \(error)")
-            }
-        }
-    }
-    
-    func updateLocations(dtos: [VenueDTO]) {
-        print("venues updated: \(dtos)")
-        localDataManager.backgroundContext.performAndWait {
-            let request = Venue.fetchRequest()
-            do{
-                let locations = try localDataManager.backgroundContext.fetch(request)
-                for location in locations{
-                    if dtos.contains (where: { dto in
-                        location.viewId == dto.id
-                    }){} else {
-                        localDataManager.removeLocalLocation(location, inContext: .bg)
-                    }
-                }
-                for dto in dtos {
-                    if locations.contains(where: { location in
-                        if location.viewId == dto.id {
-                            if location.viewLastUpdated == dto.lastUpdated{
-                                //id, lastUpdate ==
-                                return true
-                            } else {
-                                // id ==, lastUpdate !=
-                                localDataManager.updateLocalLocation(location, withDTO: dto, inContext: .bg)
-                                return true
-                            }
-                        }
-                        return false
-                    }){
-                        
-                    } else {
-                        //entity with dto.id doesn't exist
-                        _ = localDataManager.createOrUpdateLocalLocationWithLocationDTO(dto, inContext: .bg)
-                    }
-                }
-                localDataManager.saveContextSync(type: .bg, publish: .venues, id: dtos.map{$0.id})
-            } catch {
-                print("MDM: updateLocations error: \(error)")
-            }
-        }
-    }
-    
-    func updateTemplates(dtos: [TemplateDTO]) {
-        print("templates updated: \(dtos)")
-        localDataManager.backgroundContext.performAndWait {
-            let request = Template.fetchRequest()
-            do{
-                let templates = try localDataManager.backgroundContext.fetch(request)
-                for template in templates{
-                    if dtos.contains (where: { dto in
-                        template.viewId == dto.id
-                    }){} else {
-                        localDataManager.removeLocalTemplate(template, inContext: .bg)
-                    }
-                }
-                for dto in dtos {
-                    if templates.contains(where: { template in
-                        if template.viewId == dto.id {
-                            if template.viewLastUpdated == dto.lastUpdated{
-                                //id, lastUpdate ==
-                                return true
-                            } else {
-                                // id ==, lastUpdate !=
-                                localDataManager.updateLocalTemplate(template, withTemplateDTO: dto, inConext: .bg)
-                                return true
-                            }
-                        }
-                        return false
-                    }){
-                        
-                    } else {
-                        //entity with dto.id doesn't exist
-                        _ = localDataManager.createOrUpdateLocalTemplateWithTemplateDTO(dto, inConext: .bg)
-                    }
-                }
-                localDataManager.saveContextSync(type: .bg, publish: .templates, id: dtos.map{$0.id})
-            } catch {
-                print("MDM: updateTemplates error: \(error)")
-            }
-        }
-    }
-    
-    func updateImages(dtos: [ImageDTO]) {
-        print("images updated: \(dtos)")
-        localDataManager.backgroundContext.performAndWait {
-            let request = LocalImage.fetchRequest()
-            do{
-                let images = try localDataManager.backgroundContext.fetch(request)
-                for image in images{
-                    if dtos.contains (where: { dto in
-                        image.viewId == dto.id
-                    }){} else {
-                        localDataManager.removeLocalImage(image, inContext: .bg)
-                    }
-                }
-                for dto in dtos {
-                    if images.contains(where: { image in
-                        if image.viewId == dto.id {
-                            if image.viewLastUpdated == dto.lastUpdated{
-                                //id, lastUpdate ==
-                                return true
-                            } else {
-                                // id ==, lastUpdate !=
-                                globalDataManager.loadImageFromGlobalStorage(id: dto.id) { uiimage in
-                                    _ = self.localDataManager.createOrUpdateLocalImageWithImageData(imageDTO: dto, withImage: uiimage, inContext: .bg)
-                                }
-                                return true
-                            }
-                        }
-                        return false
-                    }){
-                        
-                    } else {
-                        //entity with dto.id doesn't exist
-                        globalDataManager.loadImageFromGlobalStorage(id: dto.id) { uiimage in
-                            _ = self.localDataManager.createOrUpdateLocalImageWithImageData(imageDTO: dto, withImage: uiimage, inContext: .bg)
-                        }
-                    }
-                }
-                localDataManager.saveContextSync(type: .bg, publish: .images, id: dtos.map{$0.id})
-            } catch {
-                print("MDM: updateImages error: \(error)")
-            }
-        }
-    }
-    
-    func updateUsers(dtos: [MemberDTO]) {
-        print("members updated: \(dtos)")
-        localDataManager.backgroundContext.performAndWait {
-            let request = Member.fetchRequest()
-            do{
-                let users = try self.localDataManager.backgroundContext.fetch(request)
-                
-                for user in users{
-                    if dtos.contains (where: { dto in
-                        user.viewId == dto.id
-                    }){} else {
-                        localDataManager.removeLocalUser(user, inContext: .bg)
-                    }
-                }
-                
-                for dto in dtos {
-                    if users.contains(where: { user in
-                        if user.viewId == dto.id {
-                            if user.viewLastUpdated == dto.lastUpdated{
-                                //id, lastUpdate ==
-                                return true
-                            } else {
-                                // id ==, lastUpdate !=
-                                self.localDataManager.updateLocalUser(user, withUserDTO: dto, inContext: .bg)
-                                return true
-                            }
-                        }
-                        return false
-                    }){
-                        
-                    } else {
-                        //entity with dto.id doesn't exist
-                        _ = self.localDataManager.createOrUpdateLocalUserWithUserDTO(dto, inContext: .bg)
-                    }
-                }
-                self.localDataManager.saveContextSync(type: .bg, publish: .members, id: dtos.map{$0.id})
-            } catch {
-                print("MDM: updateUsers error: \(error)")
-            }
-        }
-    }
-    @MainActor
-    func handleListenerEvent<T: BPDataProtocol>(updated: Bool, value: T){
-        localDataManager.backgroundContext.performAndWait {
-            var type: GlobalProperties.PublishChanges = .none
-            var publishId: String = ""
-            switch value {
-                case is MemberDTO:
-                    print("isLocalUser")
-                    if let dto = value as? MemberDTO{
-                        if updated {
-                            _ = localDataManager.createOrUpdateLocalUserWithUserDTO(dto, inContext: .bg)
-                        } else {
-                            localDataManager.removeUserWithDTO(dto, inContext: .bg)
-                        }
-                        type = .members
-                        publishId = dto.id
-                    }
-                case is BroadcastDTO:
-                    print("isEvent")
-                    if let dto = value as? BroadcastDTO{
-                        if updated {
-                            _ = localDataManager.createOrUpdateLocalEventWithEventDTO(dto, inContext: .bg)
-                        } else {
-                            print("procees with broadcast listener")
-                            localDataManager.removeEventWithDTO(dto, inContext: .bg)
-                        }
-                        type = .broadcasts
-                        publishId = dto.id
-                    }
-                case is ClubDTO:
-                    print("isClub")
-                    if let dto = value as? ClubDTO{
-                        if updated {
-                            _ = localDataManager.createOrUpdateLocalClubWithDTO(dto, inContext: .bg)
-                        } else {
-                            localDataManager.removeClubWithDTO(dto, inContext: .bg)
-                        }
-                        type = .clubs
-                        publishId = dto.id
-                    }
-                case is VenueDTO:
-                    print("isLocation")
-                    if let dto = value as? VenueDTO{
-                        if updated {
-                            _ = localDataManager.createOrUpdateLocalLocationWithLocationDTO(dto, inContext: .bg)
-                        } else {
-                            localDataManager.removeLocationWithDTO(dto, inContext: .bg)
-                        }
-                        type = .venues
-                        publishId = dto.id
-                    }
-                case is ObvanDTO:
-                    print("isObvan")
-                    if let dto = value as? ObvanDTO{
-                        if updated {
-                            _ = localDataManager.createOrUpdateLocalObvanWithDTO(dto, inContext: .bg)
-                        } else {
-                            localDataManager.removeObvanWithId(dto.id, inContext: .bg)
-                        }
-                        type = .obvans
-                        publishId = dto.id
-                    }
-                case is TemplateDTO:
-                    print("isTemplate")
-                    if let dto = value as? TemplateDTO{
-                        if updated {
-                            _ = localDataManager.createOrUpdateLocalTemplateWithTemplateDTO(dto, inConext: .bg)
-                        } else {
-                            localDataManager.removeTemplateWithDTO(dto, inContext: .bg)
-                        }
-                        type = .templates
-                        publishId = dto.id
-                    }
-                case is ImageDTO:
-                    print("isImage")
-                    if let dto = value as? ImageDTO{
-                        if updated {
-                            globalDataManager.loadImageFromGlobalStorage(id: dto.id) { uiimage in
-                                _ = self.localDataManager.createOrUpdateLocalImageWithImageData(imageDTO: dto, withImage: uiimage, inContext: .bg)
-                            }
-                            
-                        } else {
-                            localDataManager.removeImageWithId(dto.id, inContext: .bg)
-                        }
-                        type = .images
-                        publishId = dto.id
-                    }
-                default: print("unexpected update type")
-            }
-            localDataManager.saveContextSync(type: .bg, publish: type, id: [publishId])
-        }
+        
     }
 }
 
 // MARK: - User managment
 extension MainDataManager {
     //creates new member cloud entity
-    @MainActor
+    
     func createUser(id: String) async {
         let userDTO = MemberDTO(id: id)
         await globalDataManager.saveData(
@@ -456,53 +128,41 @@ extension MainDataManager {
         userSpecialization: [String],
         inputImage: UIImage?
     ) async {
-        await localDataManager.mainContext.perform { [weak self] in
-            guard let self else { return }
-            currentUser.firstName = firstName
-            currentUser.lastName = lastName
-            currentUser.email = email
-            currentUser.phoneNumber = phoneNumber
-            currentUser.homeAddress = address
-            currentUser.specializations = userSpecialization.joined(
-                separator: ","
-            )
-            if let image = inputImage {
-                if let localImage = currentUser.image {
-                    localImage.uploadImage(uiimage: image)
-                    currentUser.image = localImage
-                    localImage.parentMember = currentUser
-                } else {
-                    let localImage = localDataManager.fetchOrCreateObject(
-                        ofType: LocalImage.self,
-                        predicate: NSPredicate(format: "id == %@", currentId),
-                        in: localDataManager.mainContext
-                    ) { ctx in
-                        let newImage = LocalImage(context: ctx)
-                        newImage.id = self.currentId
-                        return newImage
-                    }
-                    localImage.uploadImage(uiimage: image)
-                    currentUser.image = localImage
-                    localImage.parentMember = currentUser
-                }
+        await mainContext.perform {
+            var localImage: LocalImage?
+            if let inputImage {
+                localImage = self.mainContext.fetchOrCreateObject(withID: self.currentId)
+                localImage?.updateValues(type: GlobalProperties.ImageType.member.rawValue,
+                                         lastUpdated: Date.now,
+                                         uiimage: inputImage,
+                                         in: self.mainContext)
             }
+            self.currentUserInMainContext.updateValues(firstName: firstName,
+                                          lastName: lastName,
+                                          phoneNumber: phoneNumber,
+                                          homeAddress: address,
+                                          email: email,
+                                          image: localImage,
+                                          accessLevel: nil,
+                                          isOnline: nil,
+                                          lastUpdated: Date.now,
+                                          creationDate: nil,
+                                          leaveDate: nil,
+                                          specializations:userSpecialization.joined(separator: ","),
+                                          in: self.mainContext)
+            try? self.mainContext.save()
         }
-        await saveContextAsync(
-            type: .main,
-            publish: .none,
-            id: []
-        )
 
         if let inputImage {
-            await globalDataManager.saveImageToGlobalStorage(
+            _ = await globalDataManager.saveImageToGlobalStorage(
                 id: currentId,
                 uiimage: inputImage,
-                type: GlobalProperties.ImageType.user
+                type: GlobalProperties.ImageType.member
             )
         }
         await globalDataManager
             .saveData(
-                currentUser.dto,
+                currentUserInMainContext.dto,
                 withId: currentId,
                 withType: GlobalProperties.Path.members
             )
@@ -526,9 +186,10 @@ extension MainDataManager {
 extension MainDataManager {
     
     func availabletoEdit(event: Broadcast)->Bool {
-        if currentUser.accessLevel == 0 {
+        let user = currentUserInMainContext
+        if user.accessLevel == 0 {
             return false
-        } else if currentUser.accessLevel == 1, event.viewOwners.contains(currentUser){
+        } else if user.accessLevel == 1, event.viewOwners.map({$0.viewId}).contains(currentId){
             return false
         } else {
             return true
@@ -536,26 +197,17 @@ extension MainDataManager {
     }
     
     @MainActor
-    func createEventWithCurrentUserOwnerInContextType(_ type: ContextType)
-        -> Broadcast {
-        let event = localDataManager.fetchOrCreateObject(
-            ofType: Broadcast.self,
-            predicate: NSPredicate(format: "id == %@", UUID().uuidString),
-            in: localDataManager.mainContext
-        ) { ctx in
-            let newEvent = Broadcast(context: ctx)
-            newEvent.id = UUID().uuidString
-            return newEvent
+    func createEventWithCurrentUserOwnerInContextType() async throws -> Broadcast {
+        try await mainContext.perform {
+            let broadcast: Broadcast = self.mainContext.fetchOrCreateObject(withID: UUID().uuidString)
+            let user = self.currentUserInMainContext
+            broadcast.addToOwners(user)
+            user.addToOwnedBroadcasts(broadcast)
+            try self.mainContext.save()
+            return broadcast
         }
-        //link broadcast to member
-        localDataManager.contextFromType(type).perform { [weak self] in
-            guard let self else { return }
-            event.addToOwners(self.currentUser)
-            currentUser.addToOwnedEvents(event)
-        }
-            saveContextSync(type: .main, publish: GlobalProperties.PublishChanges.broadcasts, id: [])
-        return event
     }
+
     @MainActor
     func updateEvent(
         _ event: Broadcast,
@@ -564,22 +216,22 @@ extension MainDataManager {
         eventDate: Date,
         location: Venue?) async {
         //coreData save
-        await localDataManager.mainContext.perform { [weak self] in
-            guard let self else { return }
-            event.homeClub = homeClub
-            event.guestClub = guestClub
-            event.date = eventDate
-            event.venue = location
-            event.addToOwners(self.currentUser)
-        }
-        await saveContextAsync(type: .main, publish: .broadcasts, id: [event.viewId])
-
-        //network save
-        await globalDataManager.saveData(
-            event.dto,
-            withId: event.viewId,
-            withType: GlobalProperties.Path.broadcasts
-        )
+//        await localDataManager.mainContext.perform { [weak self] in
+//            guard let self else { return }
+//            event.homeClub = homeClub
+//            event.guestClub = guestClub
+//            event.date = eventDate
+//            event.venue = location
+//            event.addToOwners(self.currentUser)
+//        }
+//        await saveContextAsync(type: .main, publish: .broadcasts, id: [event.viewId])
+//
+//        //network save
+//        await globalDataManager.saveData(
+//            event.dto,
+//            withId: event.viewId,
+//            withType: GlobalProperties.Path.broadcasts
+//        )
     }
     @MainActor
     func removeEvent(event: Broadcast) async {
@@ -599,7 +251,7 @@ extension MainDataManager {
                  localDataManager.createOrUpdateLocalImageWithImageData(
                     imageDTO: .init(
                         id: UUID().uuidString,
-                        type: GlobalProperties.ImageType.locationPreview
+                        type: GlobalProperties.ImageType.venuePreview
                             .rawValue,
                         lastUpdated: .now
                     ),
@@ -648,25 +300,18 @@ extension MainDataManager {
             point.number = Int16(number)
                 //remove member
                 if let userToRemove = point.viewMembers.first{
-                    point.removeFromUser(userToRemove)
-                    userToRemove.removeFromPoints(point)
+                    point.removeFromMembers(userToRemove)
+                    userToRemove.removeFromVenuePoints(point)
                     if let event = point.broadcast {
-                        event.removeFromUsers(userToRemove)
-                        userToRemove.removeFromParticipateEvents(event)
+                        event.removeFromOwners(userToRemove)
                     } else {
                         print("event in venuePoint error occured")
                     }
                 }
             if let user{
                 //add new member
-                point.addToUser(user)
-                user.addToPoints(point)
-                if let event = point.broadcast {
-                    user.addToParticipateEvents(event)
-                    event.addToUsers(user)
-                } else {
-                    print("event in venuePoint error occured")
-                }
+                point.addToMembers(user)
+                user.addToVenuePoints(point)
             }
             //
             for cam in point.viewCameras {
@@ -795,14 +440,8 @@ extension MainDataManager {
     ) async {
         if let point {
             localDataManager.mainContext.performAndWait {
-                point.addToUser(user)
-                user.addToPoints(point)
-                if let event = point.broadcast {
-                    user.addToParticipateEvents(event)
-                    event.addToUsers(user)
-                } else {
-                    print("event in venuePoint error occured")
-                }
+                point.addToMembers(user)
+                user.addToVenuePoints(point)
             }
         }
     }
@@ -813,14 +452,8 @@ extension MainDataManager {
     ) async {
         if let point {
             localDataManager.mainContext.performAndWait {
-                point.removeFromUser(user)
-                user.removeFromPoints(point)
-                if let event = point.broadcast {
-                    event.removeFromUsers(user)
-                    user.removeFromParticipateEvents(event)
-                } else {
-                    print("event in venuePoint error occured")
-                }
+                point.removeFromMembers(user)
+                user.removeFromVenuePoints(point)
             }
         }
     }
@@ -841,7 +474,7 @@ extension MainDataManager {
         }
         localDataManager.mainContext.perform {
             newPoint.number = Int16(number)
-            event.addToPoints(newPoint)
+            event.addToVenuePoints(newPoint)
         }
         return newPoint
     }
@@ -857,18 +490,12 @@ extension MainDataManager {
 extension MainDataManager {
     @MainActor
     func removeUnit(_ unit: Crew) {
-        localDataManager.mainContext.perform {
-            if let event = unit.broadcast, let user = unit.member {
-                user.removeFromParticipateEvents(event)
-                event.removeFromUsers(user)
-            }
-        }
         localDataManager.removeLocalUnit(unit, inContext: .main)
     }
     func createUnitWithUser(
         _ user: Member,
         andSpecialization specialization: UserSpecialization,
-        andHardware hardware: ReplayType?,
+        andHardware hardware: HardwareType?,
         inEvent event: Broadcast
     ) -> Crew {
         let unit = localDataManager.createUnitWithUser(
@@ -878,10 +505,8 @@ extension MainDataManager {
             inContext: .main
         )
         localDataManager.mainContext.perform {
-            event.addToUnits(unit)
-            event.addToUsers(user)
-            user.addToParticipateEvents(event)
-            user.addToUnits(unit)
+            event.addToCrews(unit)
+            user.addToCrews(unit)
             unit.member = user
             unit.broadcast = event
         }
@@ -928,7 +553,7 @@ extension MainDataManager {
 
         //upload image to firestore and image properties and clubDTO to firebase
         if let imageId = club.imageLogo?.viewId, let uiimage {
-            await self.globalDataManager.saveImageToGlobalStorage(
+            _ = await self.globalDataManager.saveImageToGlobalStorage(
                 id: imageId,
                 uiimage: uiimage,
                 type: GlobalProperties.ImageType.club
@@ -993,17 +618,17 @@ extension MainDataManager {
             id: []
         )
         // venue image upload to firestore, and image properties in firebase
-        let images = location.viewImages
+        let images = location.viewLocalImages
         if !images.isEmpty {
             await withTaskGroup { group in
                 images.forEach { image in
                     if let uiimage = image.makeUIImage() {
                         group.addTask { [weak self] in
                             guard let self else { return }
-                            await globalDataManager.saveImageToGlobalStorage(
+                            _ = await globalDataManager.saveImageToGlobalStorage(
                                 id: image.viewId,
                                 uiimage: uiimage,
-                                type: GlobalProperties.ImageType.location
+                                type: GlobalProperties.ImageType.venue
                             )
                         }
                     }
@@ -1024,7 +649,7 @@ extension MainDataManager {
     func removeLocation(_ location: Venue) async {
         //remove broadcastSchema images for venue from firestore, and image properties from firebase
         await withTaskGroup { group in
-            let imageIds = location.viewImages.map { $0.viewId }
+            let imageIds = location.viewLocalImages.map { $0.viewId }
             if !imageIds.isEmpty {
                 imageIds.forEach { id in
                     group.addTask { [weak self] in

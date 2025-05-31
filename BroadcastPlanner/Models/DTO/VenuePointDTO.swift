@@ -8,19 +8,19 @@ struct VenuePointDTO: Identifiable, Codable,BPDataProtocol,CoreDataRepresentable
     }
  
     var id: String
-    var memberIds : [String]
+    var number: Int
 
     var coordinateX: Double
     var coordinateY: Double
     var rotation: Double
-    var scale: Double
-
-    var imageId: String
+    var scaleFactor: Double
     
-    var number: Int
     var description: String
     var task: String
     
+    var imageId: String
+    
+    var memberIds : [String]
     var cameras: [CameraDTO]
     var sounds: [SoundDTO]
     var lights: [LightDTO]

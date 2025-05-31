@@ -5,16 +5,16 @@ import Combine
 
 struct MainEventListCell: View {
     @EnvironmentObject var mdm : MainDataManager
-    let event: Broadcast
+    let broadcast: Broadcast
     
     @StateObject var vm: MainEventListCellViewModel
     @State private var rowHeight: Double = 70
 
     var status: BroadcastStatus {
-        event.status(user: mdm.currentUser)
+        broadcast.status(user: mdm.currentUserInMainContext)
     }
     init(event: Broadcast){
-        self.event = event
+        self.broadcast = event
         self._vm = StateObject(wrappedValue: MainEventListCellViewModel(event: event))
     }
     
@@ -75,11 +75,11 @@ struct MainEventListCell: View {
             .foregroundStyle(Color.black)
         }
         .frame(height: rowHeight)
-        .opacity(event.expired ? 0.3 : 1)
+        .opacity(broadcast.isExpired ? 0.3 : 1)
         .onReceive(mdm.localDataManager.updatePublisher) { value in
             if value.0 == .broadcasts{
                 value.1.forEach { id in
-                    if id == event.viewId{
+                    if id == broadcast.viewId{
                         vm.update()
                     }
                 }

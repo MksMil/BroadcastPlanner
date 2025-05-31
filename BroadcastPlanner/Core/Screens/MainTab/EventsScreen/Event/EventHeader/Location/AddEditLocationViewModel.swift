@@ -15,7 +15,7 @@ final class AddEditLocationViewModel: ObservableObject{
     @Published var backgroundImageToRemove: LocalImage?
     let publisher = PassthroughSubject<(LocationEditPublishType,LocalImage),Never>()
     
-    //create eventTemplate
+    //create venueTemplate
     @Published var eventBackgroundItem: PhotosPickerItem?
     @Published var eventBackgroundUIImage: UIImage?
 

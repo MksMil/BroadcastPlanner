@@ -175,7 +175,7 @@ extension DataManager {
             localEvent.date = eventDto.date
             localEvent.id = eventDto.id
             localEvent.lastUpdated = eventDto.lastUpdated
-            if let obvanId = eventDto.obVanId {
+            if let obvanId = eventDto.obvanId {
                 let obvan = self.fetchOrCreateObject(
                     ofType: Obvan.self,
                     predicate: NSPredicate(format: "id == %@", obvanId),
@@ -185,9 +185,9 @@ extension DataManager {
                         return newObvan
                     }
                 localEvent.obvan = obvan
-                obvan.addToEvents(localEvent)
+                obvan.addToBroadcasts(localEvent)
             }
-            if let locationID = eventDto.locationID {
+            if let locationID = eventDto.venueID {
                 let location = self.fetchOrCreateObject(
                     ofType: Venue.self,
                     predicate: NSPredicate(format: "id == %@", locationID),
@@ -198,7 +198,7 @@ extension DataManager {
                     return newLocation
                 }
                 localEvent.venue = location
-                location.addToEvents(localEvent)
+                location.addToBroadcasts(localEvent)
             }
             if let homeClubId = eventDto.homeClubId {
                 let homeClub = self.fetchOrCreateObject(ofType: Club.self,
@@ -209,7 +209,7 @@ extension DataManager {
                     return newClub
                 }
                 localEvent.homeClub = homeClub
-                homeClub.addToHomeEvent(localEvent)
+                homeClub.addToHomeBroadcasts(localEvent)
             }
             if let guestClubId = eventDto.guestClubId {
                 let guestClub = self.fetchOrCreateObject(
@@ -221,9 +221,9 @@ extension DataManager {
                         return newClub
                     }
                 localEvent.guestClub = guestClub
-                guestClub.addToGuestEvent(localEvent)
+                guestClub.addToGuestBroadcasts(localEvent)
             }
-            if let locationPreviewId = eventDto.locationPreviewId {
+            if let locationPreviewId = eventDto.venuePreviewId {
                 let localImage = self.fetchOrCreateObject(ofType: LocalImage.self,
                                                           predicate: NSPredicate(
                                                             format: "id == %@",
@@ -257,31 +257,21 @@ extension DataManager {
                     return newUser
                 }
                 localEvent.addToOwners(user)
-                user.addToOwnedEvents(localEvent)
+                user.addToOwnedBroadcasts(localEvent)
             }
-            for user in eventDto.usersIds {
-                let user = self.fetchOrCreateObject(ofType: Member.self,
-                                                    predicate: NSPredicate(format: "id == %@", user),
-                                                    in: context) { ctx in
-                    let newUser = Member(context: ctx)
-                    newUser.id = user
-                    return newUser
-                }
-                user.addToParticipateEvents(localEvent)
-                localEvent.addToUsers(user)
-            }
-            for locationPoint in eventDto.locationPoints {
+            
+            for locationPoint in eventDto.venuePoints {
                 let point = self.createOrUpdateLocalPointWithPointDTO(
                     locationPoint,
                     inContext: contextType
                 )
-                localEvent.addToPoints(point)
+                localEvent.addToVenuePoints(point)
                 point.broadcast = localEvent
             }
-            for unit in eventDto.obVanUnits {
+            for unit in eventDto.crews {
                 let localUnit = self.createOrUpdateLocalUnitWithUnitDTO(unit,
                                                                         inContext: contextType)
-                localEvent.addToUnits(localUnit)
+                localEvent.addToCrews(localUnit)
                 localUnit.broadcast = localEvent
             }
         }
@@ -431,7 +421,7 @@ extension DataManager {
                                     andBackground isBg: Bool,
                                     inContext contextType: ContextType)  {
         let context = contextFromType(contextType)
-        let imagesToRemove = localLocation.viewImages
+        let imagesToRemove = localLocation.viewLocalImages
          context.performAndWait {
             for image in imagesToRemove {
                 localLocation.removeFromImages(image)
@@ -520,7 +510,7 @@ extension DataManager {
             let id = UUID().uuidString
             let newImage = createOrUpdateLocalImageWithImageData(
                 imageDTO: ImageDTO(id: id,
-                                   type: GlobalProperties.ImageType.location.rawValue, lastUpdated: .now),
+                                   type: GlobalProperties.ImageType.venue.rawValue, lastUpdated: .now),
                 withImage: image,
                 inContext: .main)
             newLocalImages.append(newImage)
@@ -592,7 +582,7 @@ extension DataManager {
             localObvan.lastUpdated = obvan.lastUpdated
             localObvan.name = obvan.name
             localObvan.broadcaster = obvan.broadcaster
-            obvan.templateUnits.forEach { dto in
+            obvan.obvanTemplateCrewDTOs.forEach { dto in
                 //create coredate entity
             }
             let image = fetchOrCreateObject(ofType: LocalImage.self,
@@ -931,7 +921,7 @@ extension DataManager {
                            inContext contextType: ContextType) {
         let context = contextFromType(contextType)
         context.performAndWait {
-            hardware.obvanUnit = unit
+            hardware.crew = unit
             unit.hardware = hardware
         }
     }
@@ -987,7 +977,7 @@ extension DataManager {
             localPoint.coordinateX = Float(point.coordinateX)
             localPoint.coordinateY = Float(point.coordinateY)
             localPoint.rotation = Int16(point.rotation)
-            localPoint.scaleFactor = Float(point.scale)
+            localPoint.scaleFactor = Float(point.scaleFactor)
             localPoint.number = Int16(point.number)
             let image = self.fetchOrCreateObject(
                 ofType: LocalImage.self,
@@ -998,13 +988,13 @@ extension DataManager {
                 return newImage
             }
             localPoint.image = image
-            image.addToParentPoint(localPoint)
+            image.addToParentVenuePoint(localPoint)
             localPoint.pointDescription = point.description
             localPoint.task = point.task
             for user in localPoint.viewMembers {
-                localPoint.removeFromUser(user)
+                localPoint.removeFromMembers(user)
             }
-            for id in point.userId {
+            for id in point.memberIds {
                 let user = fetchOrCreateObject(
                     ofType: Member.self,
                     predicate: NSPredicate(format: "id == %@", id),
@@ -1013,8 +1003,8 @@ extension DataManager {
                     let newUser = Member(context: ctx)
                     newUser.id = id
                     return newUser }
-                localPoint.addToUser(user)
-                user.addToPoints(localPoint)
+                localPoint.addToMembers(user)
+                user.addToVenuePoints(localPoint)
             }
             for cam in localPoint.viewCameras {
                 localPoint.removeFromCameras(cam)
@@ -1082,7 +1072,7 @@ extension DataManager {
                 localPoint.removeFromSounds(sound)
                 removeLocalSound(sound, inContext: contextType)
             }
-            for sound in point.viewSounds {
+            for sound in point.soundDTOs {
                 let localSound = createOrUpdateSound(sound,
                                                      inContext: contextType)
                 localPoint.addToSounds(localSound)
@@ -1092,7 +1082,7 @@ extension DataManager {
                 localPoint.removeFromCameras(cam)
                 removeLocalCamera(cam, inContext: contextType)
             }
-            for cam in point.viewCameras {
+            for cam in point.cameraDTOs {
                 let camera = createOrUpdateCamera(cam, inContext: contextType)
                 localPoint.addToCameras(camera)
                 camera.point = localPoint
@@ -1101,7 +1091,7 @@ extension DataManager {
                 localPoint.removeFromLights(light)
                 removeLocalLight(light, inContext: contextType)
             }
-            for light in point.viewLights {
+            for light in point.lightDTOs {
                 let localLight = createOrUpdateLight(light,
                                                      inContext: contextType)
                 localPoint.addToLights(localLight)
@@ -1166,7 +1156,7 @@ extension DataManager {
 
     func createUnitWithUser(_ user: Member,
                             andPosition position: UserSpecialization,
-                            andHardware hardware: ReplayType?,
+                            andHardware hardware: HardwareType?,
                             inContext contextType: ContextType) -> Crew {
         let context = contextFromType(contextType)
         var localUnit: Crew!
@@ -1191,19 +1181,19 @@ extension DataManager {
             localUnit.coordinateX = Float(unit.coordinateX)
             localUnit.coordinateY = Float(unit.coordinateY)
             localUnit.rotation = Int16(unit.rotation)
-            localUnit.scaleFactor = Float(unit.scale)
+            localUnit.scaleFactor = Float(unit.scaleFactor)
             localUnit.task = unit.task
             let user = fetchOrCreateObject(
                 ofType: Member.self,
-                predicate: NSPredicate(format: "id == %@", unit.userId),
+                predicate: NSPredicate(format: "id == %@", unit.memberId),
                 in: context
             ) { ctx in
                 let newUser = Member(context: ctx)
-                newUser.id = unit.userId
+                newUser.id = unit.memberId
                 return newUser
             }
             localUnit.member = user
-            user.addToUnits(localUnit)
+            user.addToCrews(localUnit)
             let hardwareId = unit.hardware?.id ?? UUID().uuidString
             let hardware = fetchOrCreateObject(
                 ofType: Hardware.self,
@@ -1215,20 +1205,20 @@ extension DataManager {
                 return newHardware
             }
             localUnit.hardware = hardware
-            hardware.obvanUnit = localUnit
+            hardware.crew = localUnit
         }
     }
 
     func updateLocalUnit(_ localUnit: Crew,
                          withPosition position: UserSpecialization,
                          andUser user: Member,
-                         andHardware hardware: ReplayType?,
+                         andHardware hardware: HardwareType?,
                          inContext contextType: ContextType) {
         let context = contextFromType(contextType)
         context.performAndWait {
             localUnit.position = position.rawValue
             localUnit.member = user
-            user.addToUnits(localUnit)
+            user.addToCrews(localUnit)
             if let hardware {
                 let localHardware = fetchOrCreateObject(
                     ofType: Hardware.self,
@@ -1244,7 +1234,7 @@ extension DataManager {
                 }
                 localHardware.type = hardware.rawValue
                 localUnit.hardware = localHardware
-                localHardware.obvanUnit = localUnit
+                localHardware.crew = localUnit
             }
         }
     }
@@ -1413,7 +1403,7 @@ extension DataManager {
                     localLocationPoint.removeFromCameras($0)
                 }
             }
-            for camera in templatePoint.viewCameras {
+            for camera in templatePoint.cameraDTOs {
                 localLocationPoint.addToCameras(
                     createOrUpdateCamera(camera, inContext: contextType)
                 )
@@ -1423,7 +1413,7 @@ extension DataManager {
                     localLocationPoint.removeFromSounds($0)
                 }
             }
-            for sound in templatePoint.viewSounds {
+            for sound in templatePoint.soundDTOs {
                 localLocationPoint.addToSounds(
                     createOrUpdateSound(sound, inContext: contextType)
                 )
@@ -1433,7 +1423,7 @@ extension DataManager {
                     localLocationPoint.removeFromLights($0)
                 }
             }
-            for light in templatePoint.viewLights {
+            for light in templatePoint.lightDTOs {
                 localLocationPoint.addToLights(
                     createOrUpdateLight(light,
                                         inContext: contextType)
@@ -1447,12 +1437,8 @@ extension DataManager {
         let context = contextFromType(contextType)
         context.performAndWait {
             points.forEach { point in
-                event.addToPoints(point)
+                event.addToVenuePoints(point)
                 point.broadcast = event
-                point.viewMembers.forEach({ user in
-                    user.addToParticipateEvents(event)
-                    event.addToUsers(user)
-                })
             }
         }
     }
@@ -1461,14 +1447,11 @@ extension DataManager {
         let context = contextFromType(contextType)
         context.performAndWait {
             points.forEach { point in
-                if let event = point.broadcast{
                     point.viewMembers.forEach { user in
-                        user.removeFromParticipateEvents(event)
-                        event.removeFromUsers(user)
-                        user.removeFromPoints(point)
-                        point.removeFromUser(user)
+                        user.removeFromVenuePoints(point)
+                        point.removeFromMembers(user)
                     }
-                }
+
             }
         }
     }

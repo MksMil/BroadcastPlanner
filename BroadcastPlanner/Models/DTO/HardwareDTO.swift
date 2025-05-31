@@ -7,6 +7,6 @@ struct HardwareDTO: Codable, Identifiable, BPDataProtocol,CoreDataRepresentable 
     }
     
     var id: String
-    var envType: ReplayType = .none
+    var envType: HardwareType = .none
     var chanels: [String] = []
 }

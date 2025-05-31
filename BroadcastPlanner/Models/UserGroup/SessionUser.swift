@@ -1,4 +1,4 @@
-// Data model for authenticated user
+// Data model for authenticated member
 
 import Foundation
 import Firebase

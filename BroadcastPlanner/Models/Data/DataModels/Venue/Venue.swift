@@ -2,9 +2,7 @@ import SwiftUI
 import UIKit
 import CoreData
 
-public class Venue: NSManagedObject {
-
-}
+public class Venue: NSManagedObject {}
 
 extension Venue {
     @nonobjc public class func fetchRequest() -> NSFetchRequest<Venue> {
@@ -93,6 +91,10 @@ extension Venue : Identifiable {
         broadcastSchema?.mediumImage ?? Image(systemName: "compass.drawing")
     }
     
+    var viewHomeClubs: [Club] {
+        homeClub?.allObjects as? [Club] ?? []
+    }
+    
     var viewBrodcasts: [Broadcast] {
         broadcasts?.allObjects as? [Broadcast] ?? []
     }
@@ -121,26 +123,27 @@ extension Venue : Identifiable {
 }
 
 extension Venue: CoreDataUpdatable{
+    
     func updateFromDTO(_ dto: VenueDTO, in context: NSManagedObjectContext) {
         self.id = dto.id
         self.address = dto.address
         self.title = dto.title
         self.lastUpdated = dto.lastUpdated
         cleanImages(in: context)
-            for id in dto.imagesIds {
-                let image: LocalImage = context.fetchOrCreateObject(withID: id)
-                image.id = id
-                self.addToImages(image)
-                image.parentVenueImage = self
-            }
+        for id in dto.imagesIds {
+            let image: LocalImage = context.fetchOrCreateObject(withID: id)
+            self.addToImages(image)
+            image.parentVenueImage = self
+        }
         
         if let imageSchemaId = dto.venueSchemaId{
+            if let oldSchema = self.broadcastSchema{
+                oldSchema.parentVenueSchema = nil
+            }
             let image: LocalImage = context.fetchOrCreateObject(withID: imageSchemaId)
-            image.id = imageSchemaId
             broadcastSchema = image
             image.parentVenueSchema = self
         } else {
-            //broadcastSchema = nil, remove link
             if let schema = broadcastSchema{
                 schema.parentVenueSchema = nil
                 broadcastSchema = nil
@@ -172,7 +175,7 @@ extension Venue: CoreDataUpdatable{
             }
         }
     }
-    //private ?
+
     func cleanImages(in context: NSManagedObjectContext){
         viewLocalImages.forEach{
             $0.parentVenueImage = nil
@@ -180,11 +183,25 @@ extension Venue: CoreDataUpdatable{
             context.delete($0)
         }
     }
-    
+}
+// MARK: - Remove
+extension Venue {
     public override func prepareForDeletion() {
         super.prepareForDeletion()
         if let context =  self.managedObjectContext{
+            self.broadcastSchema?.parentVenueSchema = nil
+            self.broadcastSchema = nil
             cleanImages(in: context)
+           //opt
+            viewBrodcasts.forEach{
+                $0.venue = nil
+            removeFromBroadcasts($0)
+            }
+            //
+            viewHomeClubs.forEach{
+                $0.homeVenue = nil
+                removeFromHomeClub($0)
+            }
         }
     }
 }

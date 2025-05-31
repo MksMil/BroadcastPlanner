@@ -50,7 +50,7 @@
     "Add light" : {
 
     },
-    "Add location" : {
+    "Add member" : {
 
     },
     "Add mic" : {
@@ -62,7 +62,7 @@
     "Add new template" : {
 
     },
-    "Add user" : {
+    "Add venue" : {
 
     },
     "Add Venue" : {
@@ -75,6 +75,9 @@
 
     },
     "Broadcast" : {
+
+    },
+    "broadcast summary" : {
 
     },
     "Cancel" : {
@@ -146,7 +149,7 @@
     "Edit" : {
 
     },
-    "Edit location" : {
+    "Edit venue" : {
 
     },
     "Email and Password" : {
@@ -165,9 +168,6 @@
 
     },
     "Event" : {
-
-    },
-    "event summary" : {
 
     },
     "Forget password" : {
@@ -248,13 +248,13 @@
     "Remove light hardware" : {
 
     },
+    "Remove member" : {
+
+    },
     "Remove Photo" : {
 
     },
     "Remove sound hardware" : {
-
-    },
-    "Remove user" : {
 
     },
     "Remove Venue" : {

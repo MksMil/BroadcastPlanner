@@ -3,7 +3,8 @@ import Foundation
 struct BroadcastDTO: Identifiable, Codable, BPDataProtocol,CoreDataRepresentable {
     
     typealias Entity = Broadcast
-    var primaryKeyPredicate: NSPredicate { NSPredicate(format: "id == %@", id as CVarArg)
+    var primaryKeyPredicate: NSPredicate {
+        NSPredicate(format: "id == %@", id as CVarArg)
     }
     var id: String
     
@@ -13,7 +14,7 @@ struct BroadcastDTO: Identifiable, Codable, BPDataProtocol,CoreDataRepresentable
     
     //info
     var venueID: String?
-    var obvanId: String?
+    var obvanId: [String] = []
     
     //crew venuePoints
     var venuePoints: [VenuePointDTO]
@@ -21,7 +22,6 @@ struct BroadcastDTO: Identifiable, Codable, BPDataProtocol,CoreDataRepresentable
     
     //owners Id's
     var ownersIds: [String] = []
-    var membersIds: [String] = []
     //clubs Id's
     var homeClubId: String?
     var guestClubId: String?
@@ -30,7 +30,7 @@ struct BroadcastDTO: Identifiable, Codable, BPDataProtocol,CoreDataRepresentable
     var obvanPreviewId: String?
    
     // MARK: - Initialization
-    init( id: String = UUID().uuidString, date: Date = Date(),lastUpdated: Date = .now ,obvanId: String?, venuePoints: [VenuePointDTO] = [], crews: [CrewDTO] = [], venueID: String?, homeClubId: String?, guestClubId: String?,venuePreviewId: String?,obvanPreviewId: String? ) {
+    init( id: String = UUID().uuidString, date: Date = Date(),lastUpdated: Date = .now ,obvanId: [String] = [], venuePoints: [VenuePointDTO] = [], crews: [CrewDTO] = [], venueID: String?, homeClubId: String?, guestClubId: String?,venuePreviewId: String?,obvanPreviewId: String? ) {
         self.id = id
         self.date = date
         self.lastUpdated = lastUpdated

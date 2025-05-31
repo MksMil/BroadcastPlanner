@@ -81,7 +81,7 @@ struct PanelUserCollectionView: View {
             .presentationDetents([.fraction(0.5)])
         }
         .confirmationDialog("", isPresented: $isConfirm) {
-            Button("Remove user", role: .destructive) {
+            Button("Remove member", role: .destructive) {
                 if let userToRemove{
                     removeAction(userToRemove)
                 }

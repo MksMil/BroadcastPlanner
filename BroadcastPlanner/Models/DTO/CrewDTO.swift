@@ -13,7 +13,7 @@ struct CrewDTO: Codable, Identifiable,BPDataProtocol,CoreDataRepresentable {
     var coordinateX: Double
     var coordinateY: Double
     var rotation: Double
-    var scale: Double
+    var scaleFactor: Double
     var task: String
     var isEnabled: Bool = true
     var memberId: String

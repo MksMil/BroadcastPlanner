@@ -15,21 +15,17 @@ struct MemberDTO: Identifiable, Codable,BPDataProtocol,CoreDataRepresentable {
     var accessLevel: Int = 1
     var lastUpdated: Date = .now
     
-    var firstName : String = "empty first name"
-    var lastName: String = "empty last name"
+    var firstName : String = "empty"
+    var lastName: String = "empty"
     var isOnline: Bool = false
     
     var phoneNumber: String = "1234567890"
     var email: String = "email"
-    var homeAddress: String = "homeAddress"
+    var homeAddress: String = "address"
     var specialization = [String]()
     
     var creationDate: Date = .now
-    
     var leaveDate: Date = .now
-    
-    var ownedBroadcastIds = [String]()
-    var participatedBroadcastIds = [String]()
     
     init(id: String = UUID().uuidString){
         self.id = id

@@ -48,7 +48,9 @@ struct NetworkTestView: View {
                 //broadcast section : create +, update +, remove +
                 Section {
                     Button("Create Broadcast"){
-                        vm.selectedEvent = mdm.createEventWithCurrentUserOwnerInContextType(.main)
+                        Task{
+                            vm.selectedEvent = try? await  mdm.createEventWithCurrentUserOwnerInContextType()
+                        }
                     }
                     
                     Button("Update Broadcast"){

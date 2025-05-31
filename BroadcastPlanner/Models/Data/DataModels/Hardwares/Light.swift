@@ -34,15 +34,28 @@ extension Light : Identifiable {
 }
 
 extension Light: CoreDataUpdatable{
-    func updateFromDTO(_ dto: LightDTO) {
-        if let context = self.managedObjectContext{
-            self.id = dto.id
+    func updateFromDTO(_ dto: LightDTO,in context: NSManagedObjectContext) {
+        self.id = dto.id
+        self.lightType = dto.lightType.rawValue
+    }
+    
+    func updateValues(lightType: LightType?,point: VenuePoint?){
+        if let lightType{
+            self.lightType = lightType.rawValue
+        }
+        if let point {
+            if let oldPoint = self.point{
+                oldPoint.removeFromLights(self)
+            }
+            self.point = point
         }
     }
     
     public override func prepareForDeletion() {
          super.prepareForDeletion()
-         
+        if let point {
+            point.removeFromLights(self)
+        }
      }
 }
 

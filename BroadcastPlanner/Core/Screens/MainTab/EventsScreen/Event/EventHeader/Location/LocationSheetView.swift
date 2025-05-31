@@ -52,7 +52,7 @@ struct LocationSheetView: View {
                     }
                     saveAction(vm.selectedLocation)
                 },content: {
-                    Text(isEditMode ?  (vm.selectedLocation == nil ? "Add location":"Edit venue"):"Choose Venue")
+                    Text(isEditMode ?  (vm.selectedLocation == nil ? "Add venue":"Edit venue"):"Choose Venue")
                         .bold()
                         .frame(maxWidth: .infinity,maxHeight: .infinity)
                         .background {

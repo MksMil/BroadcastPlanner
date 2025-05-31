@@ -162,7 +162,7 @@ struct BPAccountInfoView: View {
     let mdm = MainDataManager(localDataManager: DataManager(),
                               globalDataManager: NetworkManager(),
                               userId: "123")
-    return BPAccountInfoView(user: mdm.currentUser)
+    return BPAccountInfoView(user: mdm.currentUserInMainContext)
         .environment(\.managedObjectContext, mdm.localDataManager.mainContext)
         .environmentObject(mdm)
 }

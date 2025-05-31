@@ -26,7 +26,7 @@ final class ImagesManagerTests: XCTestCase {
     func testSaveAndLoadImage() {
         let image = UIImage(systemName: "star.fill")!
         let id = UUID().uuidString
-        let type = GlobalProperties.ImageType.eventTemplate
+        let type = GlobalProperties.ImageType.venueTemplate
         
         ImagesManager.saveResizedImages(image: image, id: id, type: type)
 

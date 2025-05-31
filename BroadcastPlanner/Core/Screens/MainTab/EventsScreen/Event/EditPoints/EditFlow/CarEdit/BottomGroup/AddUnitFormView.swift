@@ -9,10 +9,10 @@ struct AddUnitFormView: View {
     
     let availableUsers: [Member]
     let cancelAction: ()->()
-    let addAction: (UserSpecialization, Member,ReplayType?)->()
+    let addAction: (UserSpecialization, Member,HardwareType?)->()
     
     @State private var selectedSpecialization: UserSpecialization?
-    @State private var selectedHardware: ReplayType?
+    @State private var selectedHardware: HardwareType?
 //    @State private var selectedUser: Member?
     
     @State private var isShowInfo: Bool = false
@@ -34,7 +34,7 @@ struct AddUnitFormView: View {
     var body: some View {
         VStack{
             Text("Add Crew form here")
-            //data for new obvanUnit -> out
+            //data for new crew -> out
             //position, member , hardware?
             Spacer()
                 .frame(height: 50)
@@ -66,7 +66,7 @@ struct AddUnitFormView: View {
                         .font(.title3)
                         .foregroundStyle(.white)
                     SmartLayout(hSpacing: 5, vSpacing: 5){
-                        ForEach(ReplayType.withoutEmpty){ replay in
+                        ForEach(HardwareType.withoutEmpty){ replay in
                             Text(replay.rawValue)
                                 .font(.callout)
                                 .foregroundStyle(.black)

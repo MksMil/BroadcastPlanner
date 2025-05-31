@@ -1,9 +1,7 @@
 import Foundation
 import CoreData
 
-public class TemplatePoint: NSManagedObject {
-
-}
+public class TemplatePoint: NSManagedObject {}
 
 extension TemplatePoint {
     
@@ -26,6 +24,7 @@ extension TemplatePoint {
 
 }
 
+// MARK: - Unwrapped + DTO
 extension TemplatePoint : Identifiable {
     var viewId: String {
         id ?? ""
@@ -60,7 +59,7 @@ extension TemplatePoint : Identifiable {
     }
     
     //to dto map helper
-    var viewCameras: [CameraDTO] {
+    var cameraDTOs: [CameraDTO] {
         var array = [CameraDTO]()
         if let cameras {
           let results = cameras.split(separator: ",")
@@ -74,7 +73,7 @@ extension TemplatePoint : Identifiable {
         return array
     }
     //to dto map helper
-    var viewSounds: [SoundDTO] {
+    var soundDTOs: [SoundDTO] {
         var array = [SoundDTO]()
         if let sounds {
             let results = sounds.split(separator: ",")
@@ -87,7 +86,7 @@ extension TemplatePoint : Identifiable {
         return array
     }
     //to dto map helper
-    var viewLights: [LightDTO] {
+    var lightDTOs: [LightDTO] {
         var array = [LightDTO]()
         if let lights {
             let results = lights.split(separator: ",")
@@ -108,9 +107,9 @@ extension TemplatePoint : Identifiable {
             coordinateY: viewY,
             rotation: viewRotation,
             scaleFactor: viewScaleFactor,
-            cameras: viewCameras,
-            sounds: viewSounds,
-            lights: viewLights,
+            cameras: cameraDTOs,
+            sounds: soundDTOs,
+            lights: lightDTOs,
             number: viewNumber,
             pointDescription: viewPointDescription,
             task: viewTask
@@ -118,19 +117,23 @@ extension TemplatePoint : Identifiable {
     }
 }
 
+
+// MARK: - Update
 extension TemplatePoint: CoreDataUpdatable{
+    
+    //bg work
     func updateFromDTO(_ dto: TemplatePointDTO, in context: NSManagedObjectContext) {
-                self.id = dto.id
-                self.number = Int16(dto.number)
-                self.coordinateX = Float(dto.coordinateX)
-                self.coordinateY = Float(dto.coordinateY)
-                self.scaleFactor = Float(dto.scaleFactor)
-                self.rotation = Int16(dto.rotation)
-                self.task = dto.task
-                self.pointDescription = dto.pointDescription
-                self.cameras = dto.cameras.map{$0.optic.rawValue}.joined(separator: ", ")
-                self.sounds = dto.sounds.map{$0.placeType.rawValue}.joined(separator: ", ")
-                self.lights = dto.lights.map{$0.lightType.rawValue}.joined(separator: ", ")
+        self.id = dto.id
+        self.number = Int16(dto.number)
+        self.coordinateX = Float(dto.coordinateX)
+        self.coordinateY = Float(dto.coordinateY)
+        self.scaleFactor = Float(dto.scaleFactor)
+        self.rotation = Int16(dto.rotation)
+        self.task = dto.task
+        self.pointDescription = dto.pointDescription
+        self.cameras = dto.cameras.map{$0.optic.rawValue}.joined(separator: ",")
+        self.sounds = dto.sounds.map{$0.placeType.rawValue}.joined(separator: ",")
+        self.lights = dto.lights.map{$0.lightType.rawValue}.joined(separator: ",")
     }
     
     func updateValues(number: Int?,x:Double?,y:Double?,
@@ -162,18 +165,24 @@ extension TemplatePoint: CoreDataUpdatable{
         }
         
         if let cameras {
-            self.cameras = cameras.map{$0.viewOptic.rawValue}.joined(separator: ", ")
+            self.cameras = cameras.map{$0.viewOptic.rawValue}.joined(separator: ",")
         }
         if let sounds {
-            self.sounds = sounds.map{$0.viewPlaceType.rawValue}.joined(separator: ", ")
+            self.sounds = sounds.map{$0.viewPlaceType.rawValue}.joined(separator: ",")
         }
         if let lights {
-            self.lights = lights.map{$0.viewLightType.rawValue}.joined(separator: ", ")
+            self.lights = lights.map{$0.viewLightType.rawValue}.joined(separator: ",")
         }
     }
-    
+}
+
+// MARK: - Remove
+extension TemplatePoint{
     public override func prepareForDeletion() {
          super.prepareForDeletion()
-        
+        if let parentTemplate {
+            parentTemplate.removeFromTemplatePoints(self)
+        }
+        parentTemplate = nil
      }
 }

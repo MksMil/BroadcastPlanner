@@ -127,11 +127,11 @@ enum ImagesManager {
         type: GlobalProperties.ImageType
     ) -> URL? {
         guard let image = image, let directory = directory else { return nil }
-        let fileExtension = (type == .club || type == .eventTemplate || type == .obvan) ? "png" : "jpeg"
+        let fileExtension = (type == .club || type == .venueTemplate || type == .obvan) ? "png" : "jpeg"
         let fileURL = directory.appendingPathComponent("\(id).\(fileExtension)")
 
         //png flow
-        if type == .club || type == .eventTemplate || type == .obvan {
+        if type == .club || type == .venueTemplate || type == .obvan {
             guard let data = image.pngData() else { return nil }
             do {
                 try data.write(to: fileURL)

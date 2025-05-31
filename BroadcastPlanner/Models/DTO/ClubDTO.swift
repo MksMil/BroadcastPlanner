@@ -3,7 +3,8 @@ import Foundation
 struct ClubDTO: Codable, Identifiable,BPDataProtocol,CoreDataRepresentable {
     
     typealias Entity = Club
-    var primaryKeyPredicate: NSPredicate { NSPredicate(format: "id == %@", id as CVarArg)
+    var primaryKeyPredicate: NSPredicate {
+        NSPredicate(format: "id == %@", id as CVarArg)
     }
     
     

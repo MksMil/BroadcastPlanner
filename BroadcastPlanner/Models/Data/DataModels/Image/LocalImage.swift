@@ -2,9 +2,7 @@ import UIKit
 import SwiftUI
 import CoreData
 
-public class LocalImage: NSManagedObject {
-
-}
+public class LocalImage: NSManagedObject {}
 
 extension LocalImage {
 
@@ -43,7 +41,7 @@ extension LocalImage {
 
 }
 
-
+// MARK: - Unwrapped + DTO
 extension LocalImage : Identifiable {
     var viewId: String {
         id ?? ""
@@ -59,6 +57,21 @@ extension LocalImage : Identifiable {
             return .none
         }
     }
+    
+    var viewParentVenuePoints: [VenuePoint]{
+        return parentVenuePoint?.allObjects as? [VenuePoint] ?? []
+    }
+    
+    var dto: ImageDTO {
+        ImageDTO(id: viewId,
+                 type: viewType.rawValue,
+                 lastUpdated: viewLastUpdated)
+    }
+    
+}
+
+// MARK: - Image representation and processing
+extension LocalImage{
     
     var originImage: Image {
         makeImageWithSize(size: .originImages, type: viewType)
@@ -83,17 +96,17 @@ extension LocalImage : Identifiable {
             return Image(uiImage: result)
         } else {
             switch viewType {
-                case .user:
+                case .member:
                     return Image(systemName: "person")
-                case .eventTemplate:
+                case .venueTemplate:
                     return Image(systemName: "compass.drawing")
                 case .club:
                     return Image(systemName: "rhombus")
-                case .location:
+                case .venue:
                     return Image(systemName: "photo")
                 case .obvan:
                     return Image(systemName: "truck.box")
-                case .locationPreview:
+                case .venuePreview:
                     return Image(systemName: "sportscourt")
                 case .obvanPreview:
                     return Image(systemName: "truck.box")
@@ -110,33 +123,76 @@ extension LocalImage : Identifiable {
                                        id: viewId )
     }
     func uploadImage(uiimage: UIImage){
-        let _ = ImagesManager.saveResizedImages(image: uiimage, id: viewId, type: viewType)
-    }
-    
-}
-
-// MARK: - Custom Creation
-extension LocalImage {
-   static func makeLocalImage(id: String, in context: NSManagedObjectContext) -> LocalImage{
-        let request  = LocalImage.fetchRequest()
-        request.predicate = NSPredicate(format: "id == %@", id)
-        request.fetchLimit = 1
-        let image = (try? context.fetch(request).first) ?? LocalImage(context: context)
-        image.id = id
-        return image
-    }
-}
-
-extension LocalImage: CoreDataUpdatable{
-    func updateFromDTO(_ dto: ImageDTO,in context: NSManagedObjectContext) {
-        if let context = self.managedObjectContext{
-            self.id = dto.id
+        if !viewId.isEmpty{
+            let _ = ImagesManager.saveResizedImages(image: uiimage, id: viewId, type: viewType)
         }
     }
+    func removeImageDataFromDevice(){
+        if !viewId.isEmpty{
+           _ = ImagesManager.removeImageFromDevice(withId: viewId)
+        }
+    }
+}
+
+// MARK: - Update
+extension LocalImage: CoreDataUpdatable{
+    func updateFromDTO(_ dto: ImageDTO,in context: NSManagedObjectContext) {
+        self.id = dto.id
+        self.type = dto.type
+        self.lastUpdated = dto.lastUpdated
+    }
+    
+    func updateValues(type: String?,lastUpdated: Date?,uiimage: UIImage?,in context: NSManagedObjectContext){
+        if let type {
+            self.type = type
+        }
+        if let lastUpdated {
+            self.lastUpdated = lastUpdated
+        }
+        if let uiimage {
+            uploadImage(uiimage: uiimage)
+        }
+    }
+}
+
+// MARK: - Remove
+extension LocalImage{
     public override func prepareForDeletion() {
         super.prepareForDeletion()
-        if let context = self.managedObjectContext{
-            
+        
+        self.removeImageDataFromDevice()
+        
+        viewParentVenuePoints.forEach{
+            $0.image = nil
+            removeFromParentVenuePoint($0)
+        }
+        if let parentClub{
+            parentClub.imageLogo = nil
+            self.parentClub = nil
+        }
+        if let parentObvan {
+            parentObvan.image = nil
+            self.parentObvan = nil
+        }
+        if let parentVenueSchema {
+            parentVenueSchema.broadcastSchema = nil
+            self.parentVenueSchema = nil
+        }
+        if let parentVenueImage {
+            parentVenueImage.removeFromImages(self)
+            self.parentVenueImage = nil
+        }
+        if let parentMember {
+            parentMember.image = nil
+            self.parentMember = nil
+        }
+        if let parentVenuePreview{
+            parentVenuePreview.venueSchemaPreview = nil
+            self.parentVenuePreview = nil
+        }
+        if let parentObvanPreview {
+            parentObvanPreview.obvanPreview = nil
+            self.parentObvanPreview = nil
         }
     }
 }

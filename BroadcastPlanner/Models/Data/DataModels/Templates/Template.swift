@@ -34,20 +34,14 @@ extension Template {
 
 }
 
+// MARK: - Unwrapped + DTO
 extension Template : Identifiable {
-
     var viewId: String { id ?? "" }
-    
     var viewName: String{ name ?? "" }
-    
     var viewTemplatePoints: [TemplatePoint]{
         templatePoints?.allObjects as? [TemplatePoint] ?? []
     }
-    
-    var viewLastUpdated: Date {
-        lastUpdated ?? .now
-    }
-    
+    var viewLastUpdated: Date { lastUpdated ?? .now }
     var dto: TemplateDTO{
         TemplateDTO(id: viewId,
                     lastUpdated: viewLastUpdated,
@@ -56,7 +50,9 @@ extension Template : Identifiable {
     }
 }
 
+// MARK: - Update
 extension Template: CoreDataUpdatable{
+    //bg work
     func updateFromDTO(_ dto: TemplateDTO,
                        in context: NSManagedObjectContext) {
         self.id = dto.id
@@ -64,6 +60,7 @@ extension Template: CoreDataUpdatable{
         self.lastUpdated = lastUpdated
         
         cleanTemplatePoints(in: context)
+        
         dto.templatePointDTOs.forEach{
             let templatePoint = context.makeObjectFromDTO($0)
             self.addToTemplatePoints(templatePoint)
@@ -73,9 +70,7 @@ extension Template: CoreDataUpdatable{
     func updateValues(name: String?,lastUpdated: Date?,
                       templatePoints:[TemplatePoint]?,
                       in context: NSManagedObjectContext){
-        if let name{
-            self.name = name
-        }
+        if let name{ self.name = name }
         
         if let lastUpdated {
             self.lastUpdated = lastUpdated
@@ -90,12 +85,15 @@ extension Template: CoreDataUpdatable{
     }
     
     func cleanTemplatePoints(in context: NSManagedObjectContext){
-            viewTemplatePoints.forEach{
-                $0.parentTemplate = nil
-                removeFromTemplatePoints($0)
-                context.delete($0)}
+        viewTemplatePoints.forEach{
+            $0.parentTemplate = nil
+            removeFromTemplatePoints($0)
+            context.delete($0)}
     }
-    
+}
+
+// MARK: - Remove
+extension Template{
    public override func prepareForDeletion() {
         super.prepareForDeletion()
        if let context = self.managedObjectContext{

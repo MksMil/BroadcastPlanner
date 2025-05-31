@@ -40,14 +40,31 @@ extension Sound : Identifiable {
 }
 
 extension Sound: CoreDataUpdatable{
-    func updateFromDTO(_ dto: SoundDTO) {
-        if let context = self.managedObjectContext{
-            self.id = dto.id
+    func updateFromDTO(_ dto: SoundDTO, in context: NSManagedObjectContext) {
+        self.id = dto.id
+        self.placeType = dto.placeType.rawValue
+        self.windDefence = dto.windDefence.rawValue
+    }
+    
+    func updateValues(placeType: PlaceType?,windDefence: WindDefence?,point: VenuePoint?){
+        if let placeType {
+            self.placeType = placeType.rawValue
+        }
+        if let windDefence {
+            self.windDefence = windDefence.rawValue
+        }
+        if let point {
+            if let oldPoint = self.point{
+                oldPoint.removeFromSounds(self)
+            }
+            self.point = point
         }
     }
     
     public override func prepareForDeletion() {
          super.prepareForDeletion()
-         
+        if let point {
+            point.removeFromSounds(self)
+        }
      }
 }

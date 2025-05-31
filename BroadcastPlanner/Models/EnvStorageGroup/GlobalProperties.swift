@@ -14,7 +14,7 @@ struct GlobalProperties {
     }
     
     enum ImageType: String{
-        case user, eventTemplate, club, location, obvan, locationPreview, obvanPreview, none
+        case member, venueTemplate, club, venue, obvan, venuePreview, obvanPreview, none
     }
     
     

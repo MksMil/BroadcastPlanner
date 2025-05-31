@@ -10,8 +10,8 @@ struct MainEventsList: View {
 
     @FetchRequest<Broadcast>(sortDescriptors: [
         SortDescriptor(\.date, order: .forward)
-    ]) var events
-    @State private var selectedEvent: Broadcast?
+    ]) var broadcasts
+    @State private var selectedBroadcast: Broadcast?
 
     @State private var filter: FilterEventOwnerCases = FilterEventOwnerCases.notFiltered
     @State private var expired: Bool = true
@@ -56,11 +56,11 @@ struct MainEventsList: View {
                         
                     ScrollView{
                         LazyVStack{
-                            ForEach(events) { event in
-                                MainEventListCell(event: event)
-                                    .id(event.viewId)
+                            ForEach(broadcasts) { broadcast in
+                                MainEventListCell(event: broadcast)
+                                    .id(broadcast.viewId)
                                     .onTapGesture {
-                                        selectedEvent = event
+                                        selectedBroadcast = broadcast
                                         eventRouter.routeToCreateEdit()
                                     }
                                     .transition(.move(edge: .top).combined(with: .opacity))
@@ -71,12 +71,12 @@ struct MainEventsList: View {
                     }
                     .padding(.horizontal, 8)
 
-                    if mdm.currentUser.accessLevel < 2 {
+                    if mdm.currentUserInMainContext.accessLevel < 2 {
                         Button {
-                            selectedEvent = mdm.createEventWithCurrentUserOwnerInContextType(
-                                .main
-                            )
-                            eventRouter.routeToCreateEdit()
+                            Task{
+                                selectedBroadcast = try? await  mdm.createEventWithCurrentUserOwnerInContextType()
+                                eventRouter.routeToCreateEdit()
+                            }
                         } label: {
                             Text("New Broadcast")
                                 .font(.title2)
@@ -100,24 +100,24 @@ struct MainEventsList: View {
             .navigationDestination(for: EventTabPath.self) { path in
                 switch path {
                 case .createEdit:
-                        if let selectedEvent{
-                            if mdm.currentUser.accessLevel == 0{
-                                BPCreateEditEventView(event: selectedEvent)
-                            } else if selectedEvent.status(user: mdm.currentUser) == .currentMemberOwned{
-                                BPCreateEditEventView(event: selectedEvent)
+                        if let selectedBroadcast{
+                            if mdm.currentUserInMainContext.accessLevel == 0{
+                                BPCreateEditEventView(event: selectedBroadcast)
+                            } else if selectedBroadcast.status(user: mdm.currentUserInMainContext) == .currentMemberOwned{
+                                BPCreateEditEventView(event: selectedBroadcast)
                             } else {
-                                ExploreEventView(event: selectedEvent)
+                                ExploreEventView(event: selectedBroadcast)
                             }
                         } else {
                             Text("something wrong")
                         }
                 case .stadPointsEdit:
-                        if let selectedEvent {
-                            BPEditStadiumView(event: selectedEvent)
+                        if let selectedBroadcast {
+                            BPEditStadiumView(event: selectedBroadcast)
                         }
                 case .carPointsEdit(let editable):
-                        if let selectedEvent {
-                            BPEditCarView(event: selectedEvent, editable: editable)
+                        if let selectedBroadcast {
+                            BPEditCarView(event: selectedBroadcast, editable: editable)
                         }
                 }
             }
@@ -138,13 +138,14 @@ struct MainEventsList: View {
             corePredicate = NSPredicate(format: "id != %@","" )
             newTitle = "All Events"
         case .userOwned:
-            corePredicate = NSPredicate(format: "owners CONTAINS %@",mdm.currentUser)
+            corePredicate = NSPredicate(format: "owners CONTAINS %@",mdm.currentUserInMainContext)
             newTitle = "My owned broadcasts"
         case .userPartisipation:
-            corePredicate = NSPredicate(
-                format: "members CONTAINS %@",
-                argumentArray: [mdm.currentUser]
-            )
+            corePredicate = NSPredicate(format: "id != %@","" )
+                //NSPredicate(
+//                format: "members CONTAINS %@",
+//                argumentArray: [mdm.currentUser]
+//            )
             newTitle = "My participation"
         }
         var predicateArray = [corePredicate]
@@ -154,7 +155,7 @@ struct MainEventsList: View {
         }
         withAnimation(.easeIn(duration: 0.3)){
             title = newTitle
-            events.nsPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicateArray)
+            broadcasts.nsPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicateArray)
         }
     }
 }

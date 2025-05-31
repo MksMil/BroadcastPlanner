@@ -8,14 +8,14 @@ struct StaffPanelView: View {
         users.filter{$0.isAvailableTo(broadcast: event)}
     }
         
-    let addUnitAction: (Member, UserSpecialization, ReplayType?)->()
+    let addUnitAction: (Member, UserSpecialization, HardwareType?)->()
     let removeUnitAction: (Crew)->()
     let editUnitAction: ()->()
     
     @State private var isAddUnit: Bool = false
     
     init(event: Broadcast,
-         addUnitAction: @escaping (Member, UserSpecialization, ReplayType?) -> Void,
+         addUnitAction: @escaping (Member, UserSpecialization, HardwareType?) -> Void,
          removeUnitAction: @escaping (Crew) -> Void,
          editUnitAction: @escaping () -> Void) {
         self.event = event

@@ -28,7 +28,7 @@ struct Home: View {
                     .padding(.bottom,1)
                
                 // MyInfo Screen
-                BPAccountInfoView(user: mdm.currentUser)
+                BPAccountInfoView(user: mdm.currentUserInMainContext)
                     .tabItem { Label("Info", systemImage: "figure.mind.and.body") }
                     .tag(1)
                     .padding(.bottom,1)

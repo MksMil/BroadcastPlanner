@@ -32,7 +32,7 @@ struct LocationSelectionView: View {
                 }
             
             VStack(spacing: 5) {
-                // location title
+                // venue title
                 Text(vm.title)
                     .font(.title2)
                     .lineLimit(2)

@@ -305,7 +305,7 @@ final class DataManagerTests: XCTestCase {
     func test_fetchImagesByType_fetchesImagesByType() async {
         let image = UIImage(systemName: "photo")!
         let id = UUID().uuidString
-        let type: GlobalProperties.ImageType = .location
+        let type: GlobalProperties.ImageType = .venue
 
         _ = sut.createOrUpdateLocalImageWithId(
             id,
@@ -339,7 +339,7 @@ final class DataManagerTests: XCTestCase {
     func test_createOrUpdateLocalImageWithImageDTO_createsLocalImage() {
         let image = UIImage(systemName: "photo")!
         let id = UUID().uuidString
-        let type: GlobalProperties.ImageType = .eventTemplate
+        let type: GlobalProperties.ImageType = .venueTemplate
         let dto = ImageDTO(id: id, type: type.rawValue, lastUpdated: .now)
         let localImage = sut.createOrUpdateLocalImageWithImageData(
             imageDTO: dto,
@@ -431,21 +431,21 @@ final class DataManagerTests: XCTestCase {
         let image1 = sut.createOrUpdateLocalImageWithId(
             UUID().uuidString,
             withImage: .testImage,
-            andType: .location,
+            andType: .venue,
             inContext: .main
         )
 
         let image2 = sut.createOrUpdateLocalImageWithId(
             UUID().uuidString,
             withImage: .testImage,
-            andType: .location,
+            andType: .venue,
             inContext: .main
         )
 
         let backgroundImage = sut.createOrUpdateLocalImageWithId(
             UUID().uuidString,
             withImage: .testImage,
-            andType: .location,
+            andType: .venue,
             inContext: .main
         )
         let location = Venue(context: sut.mainContext)
@@ -473,7 +473,7 @@ final class DataManagerTests: XCTestCase {
         XCTAssertEqual(location.viewImages.count, 0)
         XCTAssertNil(location.broadcastSchema)
 
-        let allImages = sut.fetchImagesByType(.location, inContext: .main)
+        let allImages = sut.fetchImagesByType(.venue, inContext: .main)
         XCTAssertEqual(allImages.count, 1) //bg exists
         let removed1 = ImagesManager.imageExists(withId: image1.viewId)
         let removed2 = ImagesManager.imageExists(withId: image2.viewId)
@@ -488,7 +488,7 @@ final class DataManagerTests: XCTestCase {
         let images = [UIImage.testImage]
         let title = "title"
         let address = "address"
-        let background = sut.createOrUpdateLocalImageWithId("bgId", withImage: UIImage.testImage, andType: .location, inContext: .main)
+        let background = sut.createOrUpdateLocalImageWithId("bgId", withImage: UIImage.testImage, andType: .venue, inContext: .main)
         let dto = VenueDTO.mock(id: "venue")
         let location =  sut.createOrUpdateLocalLocationWithLocationDTO(dto, inContext: .main)
         
@@ -512,21 +512,21 @@ final class DataManagerTests: XCTestCase {
         let image1 = sut.createOrUpdateLocalImageWithId(
             UUID().uuidString,
             withImage: .testImage,
-            andType: .location,
+            andType: .venue,
             inContext: .main
         )
 
         let image2 = sut.createOrUpdateLocalImageWithId(
             UUID().uuidString,
             withImage: .testImage,
-            andType: .location,
+            andType: .venue,
             inContext: .main
         )
 
         let backgroundImage = sut.createOrUpdateLocalImageWithId(
             UUID().uuidString,
             withImage: .testImage,
-            andType: .location,
+            andType: .venue,
             inContext: .main
         )
         let location = Venue(context: sut.mainContext)
@@ -558,7 +558,7 @@ final class DataManagerTests: XCTestCase {
         XCTAssertEqual(location.viewImages.count, 0)
         XCTAssertNil(location.broadcastSchema)
 
-        let allImages = sut.fetchImagesByType(.location, inContext: .main)
+        let allImages = sut.fetchImagesByType(.venue, inContext: .main)
         XCTAssertEqual(allImages.count, 1) //bg exists
         let removed1 = ImagesManager.imageExists(withId: image1.viewId)
         let removed2 = ImagesManager.imageExists(withId: image2.viewId)
@@ -1053,7 +1053,7 @@ final class DataManagerTests: XCTestCase {
         let hardware = Hardware(context: context)
         let unit = Crew(context: context)
         sut.linkLocalHardware(hardware, withUnit: unit, inContext: .main)
-        XCTAssertEqual(hardware.obvanUnit, unit)
+        XCTAssertEqual(hardware.crew, unit)
         XCTAssertEqual(unit.hardware, hardware)
     }
     func test_removeHardwareWithDTO_removesHardware() async {
@@ -1099,7 +1099,7 @@ final class DataManagerTests: XCTestCase {
         XCTAssertEqual(result?.first?.coordinateX, Float(pointDto.coordinateX))
         XCTAssertEqual(result?.first?.coordinateY, Float(pointDto.coordinateY))
         XCTAssertEqual(result?.first?.rotation, Int16(pointDto.rotation))
-        XCTAssertEqual(result?.first?.scaleFactor, Float(pointDto.scale))
+        XCTAssertEqual(result?.first?.scaleFactor, Float(pointDto.scaleFactor))
         XCTAssertEqual(result?.first?.image?.id, pointDto.imageId)
         XCTAssertEqual(result?.first?.members?.count, pointDto.memberIds.count)
         XCTAssertEqual(result?.first?.cameras?.count, pointDto.cameras.count)
@@ -1115,7 +1115,7 @@ final class DataManagerTests: XCTestCase {
         XCTAssertEqual(result?.first?.coordinateX, Float(pointDto.coordinateX))
         XCTAssertEqual(result?.first?.coordinateY, Float(pointDto.coordinateY))
         XCTAssertEqual(result?.first?.rotation, Int16(pointDto.rotation))
-        XCTAssertEqual(result?.first?.scaleFactor, Float(pointDto.scale))
+        XCTAssertEqual(result?.first?.scaleFactor, Float(pointDto.scaleFactor))
         XCTAssertEqual(result?.first?.image?.id, pointDto.imageId)
         XCTAssertEqual(result?.first?.members?.count, pointDto.memberIds.count)
         XCTAssertEqual(result?.first?.cameras?.count, pointDto.cameras.count)
@@ -1156,7 +1156,7 @@ final class DataManagerTests: XCTestCase {
         XCTAssertEqual(point.coordinateX, Float(pointDto.coordinateX))
         XCTAssertEqual(point.coordinateY, Float(pointDto.coordinateY))
         XCTAssertEqual(point.rotation, Int16(pointDto.rotation))
-        XCTAssertEqual(point.scaleFactor, Float(pointDto.scale))
+        XCTAssertEqual(point.scaleFactor, Float(pointDto.scaleFactor))
         XCTAssertEqual(point.image?.id, pointDto.imageId)
         XCTAssertEqual(point.members?.count, pointDto.memberIds.count)
         XCTAssertEqual(point.cameras?.count, pointDto.cameras.count)
@@ -1177,9 +1177,9 @@ final class DataManagerTests: XCTestCase {
         XCTAssertEqual(localPoint.rotation, templatePoint.rotation)
         XCTAssertEqual(localPoint.scaleFactor, templatePoint.scaleFactor)
         XCTAssertEqual(localPoint.number, templatePoint.number)
-        XCTAssertEqual(localPoint.cameras?.count, templatePoint.viewCameras.count)
-        XCTAssertEqual(localPoint.sounds?.count, templatePoint.viewSounds.count)
-        XCTAssertEqual(localPoint.lights?.count, templatePoint.viewLights.count)
+        XCTAssertEqual(localPoint.cameras?.count, templatePoint.cameraDTOs.count)
+        XCTAssertEqual(localPoint.sounds?.count, templatePoint.soundDTOs.count)
+        XCTAssertEqual(localPoint.lights?.count, templatePoint.lightDTOs.count)
         XCTAssertEqual(localPoint.task, templatePoint.task)
         XCTAssertEqual(localPoint.pointDescription, templatePoint.pointDescription)
         
@@ -1193,9 +1193,9 @@ final class DataManagerTests: XCTestCase {
         XCTAssertEqual(localPoint.rotation, templatePoint.rotation)
         XCTAssertEqual(localPoint.scaleFactor, templatePoint.scaleFactor)
         XCTAssertEqual(localPoint.number, templatePoint.number)
-        XCTAssertEqual(localPoint.cameras?.count, templatePoint.viewCameras.count)
-        XCTAssertEqual(localPoint.sounds?.count, templatePoint.viewSounds.count)
-        XCTAssertEqual(localPoint.lights?.count, templatePoint.viewLights.count)
+        XCTAssertEqual(localPoint.cameras?.count, templatePoint.cameraDTOs.count)
+        XCTAssertEqual(localPoint.sounds?.count, templatePoint.soundDTOs.count)
+        XCTAssertEqual(localPoint.lights?.count, templatePoint.lightDTOs.count)
         XCTAssertEqual(localPoint.task, templatePoint.task)
         XCTAssertEqual(localPoint.pointDescription, templatePoint.pointDescription)
 
@@ -1246,7 +1246,7 @@ final class DataManagerTests: XCTestCase {
         XCTAssertEqual(result?.first?.coordinateX, Float(dto.coordinateX))
         XCTAssertEqual(result?.first?.coordinateY, Float(dto.coordinateY))
         XCTAssertEqual(result?.first?.rotation, Int16(dto.rotation))
-        XCTAssertEqual(result?.first?.scaleFactor, Float(dto.scale))
+        XCTAssertEqual(result?.first?.scaleFactor, Float(dto.scaleFactor))
         XCTAssertEqual(result?.first?.task, dto.task)
         XCTAssertEqual(result?.first?.member?.id, dto.memberId)
         XCTAssertEqual(result?.first?.hardware?.id, dto.hardware?.id)
@@ -1257,7 +1257,7 @@ final class DataManagerTests: XCTestCase {
         let userId = "userId"
         let userDto = MemberDTO.mock(id: userId)
         let localUser = sut.createOrUpdateLocalUserWithUserDTO(userDto, inContext: .main)
-        let localHardwareType = ReplayType.evs
+        let localHardwareType = HardwareType.evs
         let position = UserSpecialization.director
         
         let localUnit = sut.createUnitWithUser(localUser,
@@ -1426,9 +1426,9 @@ final class DataManagerTests: XCTestCase {
         XCTAssertEqual(template.name, dto.name)
         XCTAssertEqual(template.templatePoints?.count, dto.templatePointDTOs.count)
         (0..<dto.templatePointDTOs.count).forEach { index in
-            XCTAssertEqual(template.viewTemplatePoints[index].viewCameras.count, dto.templatePointDTOs[index].cameras.count)
-            XCTAssertEqual(template.viewTemplatePoints[index].viewSounds.count, dto.templatePointDTOs[index].sounds.count)
-            XCTAssertEqual(template.viewTemplatePoints[index].viewLights.count, dto.templatePointDTOs[index].lights.count)
+            XCTAssertEqual(template.viewTemplatePoints[index].cameraDTOs.count, dto.templatePointDTOs[index].cameras.count)
+            XCTAssertEqual(template.viewTemplatePoints[index].soundDTOs.count, dto.templatePointDTOs[index].sounds.count)
+            XCTAssertEqual(template.viewTemplatePoints[index].lightDTOs.count, dto.templatePointDTOs[index].lights.count)
         }
         
         var result =  sut.mapTemplateToLocationPoints(template: template, inContext: .main)
@@ -1444,9 +1444,9 @@ final class DataManagerTests: XCTestCase {
             XCTAssertEqual(template.viewTemplatePoints[index].scaleFactor, result[index].scaleFactor)
             XCTAssertEqual(template.viewTemplatePoints[index].task, result[index].task)
             XCTAssertEqual(template.viewTemplatePoints[index].number, result[index].number)
-            XCTAssertEqual(template.viewTemplatePoints[index].viewCameras.count, result[index].cameras?.count)
-            XCTAssertEqual(template.viewTemplatePoints[index].viewSounds.count, result[index].sounds?.count)
-            XCTAssertEqual(template.viewTemplatePoints[index].viewLights.count, result[index].lights?.count)
+            XCTAssertEqual(template.viewTemplatePoints[index].cameraDTOs.count, result[index].cameras?.count)
+            XCTAssertEqual(template.viewTemplatePoints[index].soundDTOs.count, result[index].sounds?.count)
+            XCTAssertEqual(template.viewTemplatePoints[index].lightDTOs.count, result[index].lights?.count)
         }
         
         //twice
@@ -1465,9 +1465,9 @@ final class DataManagerTests: XCTestCase {
             XCTAssertEqual(template.viewTemplatePoints[index].scaleFactor, result[index].scaleFactor)
             XCTAssertEqual(template.viewTemplatePoints[index].task, result[index].task)
             XCTAssertEqual(template.viewTemplatePoints[index].number, result[index].number)
-            XCTAssertEqual(template.viewTemplatePoints[index].viewCameras.count, result[index].cameras?.count)
-            XCTAssertEqual(template.viewTemplatePoints[index].viewSounds.count, result[index].sounds?.count)
-            XCTAssertEqual(template.viewTemplatePoints[index].viewLights.count, result[index].lights?.count)
+            XCTAssertEqual(template.viewTemplatePoints[index].cameraDTOs.count, result[index].cameras?.count)
+            XCTAssertEqual(template.viewTemplatePoints[index].soundDTOs.count, result[index].sounds?.count)
+            XCTAssertEqual(template.viewTemplatePoints[index].lightDTOs.count, result[index].lights?.count)
         }
     }
     
@@ -1511,9 +1511,9 @@ final class DataManagerTests: XCTestCase {
             XCTAssertEqual(viewPoint.task, point.task)
             XCTAssertEqual(viewPoint.number, point.number)
 
-            XCTAssertEqual(viewPoint.viewCameras.count, point.cameras?.count ?? 0)
-            XCTAssertEqual(viewPoint.viewSounds.count, point.viewSounds.count)
-            XCTAssertEqual(viewPoint.viewLights.count, point.viewLights.count)
+            XCTAssertEqual(viewPoint.cameraDTOs.count, point.cameras?.count ?? 0)
+            XCTAssertEqual(viewPoint.soundDTOs.count, point.viewSounds.count)
+            XCTAssertEqual(viewPoint.lightDTOs.count, point.viewLights.count)
         }
         
         //twice
@@ -1538,9 +1538,9 @@ final class DataManagerTests: XCTestCase {
             XCTAssertEqual(viewPoint.task, point.task)
             XCTAssertEqual(viewPoint.number, point.number)
 
-            XCTAssertEqual(viewPoint.viewCameras.count, point.cameras?.count ?? 0)
-            XCTAssertEqual(viewPoint.viewSounds.count, point.viewSounds.count)
-            XCTAssertEqual(viewPoint.viewLights.count, point.viewLights.count)
+            XCTAssertEqual(viewPoint.cameraDTOs.count, point.cameras?.count ?? 0)
+            XCTAssertEqual(viewPoint.soundDTOs.count, point.viewSounds.count)
+            XCTAssertEqual(viewPoint.lightDTOs.count, point.viewLights.count)
         }
 
     }
@@ -1863,7 +1863,7 @@ extension ObvanDTO{
 extension ImageDTO{
     static func mock(id: String) -> ImageDTO{
         ImageDTO(id: id,
-                 type: GlobalProperties.ImageType.location.rawValue, lastUpdated: .now)
+                 type: GlobalProperties.ImageType.venue.rawValue, lastUpdated: .now)
     }
 }
 
@@ -1951,7 +1951,7 @@ extension LightDTO{
 extension HardwareDTO{
     static func mock(id: String) -> HardwareDTO{
         HardwareDTO(id: id,
-                    envType: ReplayType.evs,
+                    envType: HardwareType.evs,
                     chanels: ["one","two","three"])
     }
     

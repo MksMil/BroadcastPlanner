@@ -3,31 +3,36 @@ import CoreData
 protocol CoreDataRepresentable: Codable{
     associatedtype Entity: NSManagedObject & CoreDataUpdatable where Entity.DTO == Self
     var primaryKeyPredicate: NSPredicate { get }
+    var id: String {get set}
 }
 
 protocol CoreDataUpdatable {
     associatedtype DTO
+    var id: String? {get set}
     func updateFromDTO(_ dto: DTO, in context: NSManagedObjectContext)
 }
 extension CoreDataRepresentable where Self == Entity.DTO {
     @discardableResult
     func updateOrCreate(in context: NSManagedObjectContext) -> Entity {
-        let fetchRequest = NSFetchRequest<Entity>(entityName: String(describing: Entity.self))
-        fetchRequest.predicate = primaryKeyPredicate
-        fetchRequest.fetchLimit = 1
+            let fetchRequest = NSFetchRequest<Entity>(entityName: String(describing: Entity.self))
+            fetchRequest.predicate = primaryKeyPredicate
+            fetchRequest.fetchLimit = 1
+            
+            let object: Entity = (try? context.fetch(fetchRequest).first) ?? Entity(context: context)
+            object.updateFromDTO(self, in: context)
+            return object
         
-        let object: Entity = (try? context.fetch(fetchRequest).first) ?? Entity(context: context)
-        object.updateFromDTO(self, in: context)
-        return object
+        
     }
     func remove(in context: NSManagedObjectContext){
-        let fetchRequest = NSFetchRequest<Entity>(entityName: String(describing: Entity.self))
-        fetchRequest.predicate = primaryKeyPredicate
-        fetchRequest.fetchLimit = 1
-        
-        if let object = try? context.fetch(fetchRequest).first{
-            object.prepareForDeletion()
-            context.delete(object)
+        context.performAndWait{
+            let fetchRequest = NSFetchRequest<Entity>(entityName: String(describing: Entity.self))
+            fetchRequest.predicate = primaryKeyPredicate
+            fetchRequest.fetchLimit = 1
+            
+            if let object = try? context.fetch(fetchRequest).first{
+                context.delete(object)
+            }
         }
     }
 }
@@ -105,15 +110,21 @@ extension NSManagedObjectContext {
 }
 
 extension NSManagedObjectContext {
-    func fetchOrCreateObject<T: NSManagedObject>(
+    func fetchOrCreateObject<T: NSManagedObject & CoreDataUpdatable>(
         withID id: String,
         key: String = "id"
     ) -> T {
         let request = T.fetchRequest()
         request.predicate = NSPredicate(format: "%K == %@", key, id)
         request.fetchLimit = 1
-        
-        return (try? fetch(request).first as? T) ?? T(context: self)
+        var object: T
+        if let existing = try? fetch(request).first as? T{
+            object = existing
+        } else {
+            object = T(context: self)
+            object.id = id
+        }
+        return object
     }
 }
 

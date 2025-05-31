@@ -2,9 +2,7 @@ import Foundation
 import CoreData
 
 @objc(ObvanTemplateUnit)
-public class ObvanTemplateCrew: NSManagedObject {
-
-}
+public class ObvanTemplateCrew: NSManagedObject {}
 
 extension ObvanTemplateCrew {
 
@@ -22,7 +20,7 @@ extension ObvanTemplateCrew {
     @NSManaged public var parentObvan: Obvan?
 
 }
-
+// MARK: - Unwrapped + DTO
 extension ObvanTemplateCrew : Identifiable {
     var viewId: String{
         id ?? ""
@@ -30,23 +28,18 @@ extension ObvanTemplateCrew : Identifiable {
     var viewX: Double{
         Double(coordinateX)
     }
-    
     var viewY: Double{
         Double(coordinateY)
     }
-    
     var viewRotation: Double {
         Double(rotation)
-        
     }
     var viewScaleFactor: Double{
         Double(scaleFactor)
     }
-    
     var viewPosition: UserSpecialization{
         UserSpecialization(rawValue: position ?? "") ?? UserSpecialization.producer
     }
-    
     var dto: ObvanTemplateCrewDTO {
         ObvanTemplateCrewDTO(id: viewId,
                              coordinateX: viewX,
@@ -54,19 +47,22 @@ extension ObvanTemplateCrew : Identifiable {
                              rotation: viewRotation,
                              scaleFactor: viewScaleFactor,
                              position: viewPosition.rawValue,
-                             isRequired: self.isRequired)
+                             isRequired: isRequired)
     }
 }
 
+// MARK: - Update
 extension ObvanTemplateCrew: CoreDataUpdatable{
-    func updateFromDTO(_ dto: ObvanTemplateCrewDTO, in context: NSManagedObjectContext) {
-                self.id = dto.id
-                self.position = dto.position
-                self.coordinateX = Float(dto.coordinateX)
-                self.coordinateY = Float(dto.coordinateY)
-                self.rotation = Int16(dto.rotation)
-                self.scaleFactor = Float(dto.scaleFactor)
-                self.isRequired = dto.isRequired
+    //bg work
+    func updateFromDTO(_ dto: ObvanTemplateCrewDTO,
+                       in context: NSManagedObjectContext) {
+        self.id = dto.id
+        self.position = dto.position
+        self.coordinateX = Float(dto.coordinateX)
+        self.coordinateY = Float(dto.coordinateY)
+        self.rotation = Int16(dto.rotation)
+        self.scaleFactor = Float(dto.scaleFactor)
+        self.isRequired = dto.isRequired
     }
     
     func updateWithValues(x: Double?, y: Double?, rotation: Double?, scaleFactor: Double?, position: String?,isRequired: Bool?, in context: NSManagedObjectContext){
@@ -89,11 +85,14 @@ extension ObvanTemplateCrew: CoreDataUpdatable{
             self.isRequired = isRequired
         }
     }
-    
-//    public override func prepareForDeletion() {
-//         super.prepareForDeletion()
-//        if let context = self.managedObjectContext{
-//           
-//        }
-//     }
+}
+// MARK: - Remove
+extension ObvanTemplateCrew{
+    public override func prepareForDeletion() {
+         super.prepareForDeletion()
+        if let parentObvan {
+            parentObvan.removeFromTemplateCrews(self)
+            self.parentObvan = nil
+        }
+     }
 }

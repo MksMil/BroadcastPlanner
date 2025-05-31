@@ -2,33 +2,30 @@ import UIKit
 import SwiftUI
 import CoreData
 
-public class Member: NSManagedObject {
-
-}
+public class Member: NSManagedObject {}
 
 extension Member {
-
     @nonobjc public class func fetchRequest() -> NSFetchRequest<Member> {
         return NSFetchRequest<Member>(entityName: "Member")
     }
 
-    @NSManaged public var creationDate: Date?
-    @NSManaged public var email: String?
-    @NSManaged public var firstName: String?
-    @NSManaged public var homeAddress: String?
     @NSManaged public var id: String?
     @NSManaged public var accessLevel: Int16
-    @NSManaged public var isOnline: Bool
+    @NSManaged public var firstName: String?
     @NSManaged public var lastName: String?
-    @NSManaged public var leaveDate: Date?
     @NSManaged public var phoneNumber: String?
+    @NSManaged public var email: String?
+    @NSManaged public var homeAddress: String?
     @NSManaged public var specializations: String?
-    @NSManaged public var lastUpdated: Date?
     @NSManaged public var image: LocalImage?
+    @NSManaged public var creationDate: Date?
+    @NSManaged public var leaveDate: Date?
+    @NSManaged public var isOnline: Bool
+    @NSManaged public var lastUpdated: Date?
     @NSManaged public var venuePoints: NSSet?
     @NSManaged public var crews: NSSet?
     @NSManaged public var ownedBroadcasts: NSSet?
-    @NSManaged public var participateBroadcasts: NSSet?
+    
 
 }
 
@@ -49,22 +46,6 @@ extension Member {
 
 }
 
-// MARK: Generated accessors for participateBroadcasts
-extension Member {
-
-    @objc(addParticipateBroadcastsObject:)
-    @NSManaged public func addToParticipateBroadcasts(_ value: Broadcast)
-
-    @objc(removeParticipateBroadcastsObject:)
-    @NSManaged public func removeFromParticipateBroadcasts(_ value: Broadcast)
-
-    @objc(addParticipateBroadcasts:)
-    @NSManaged public func addToParticipateBroadcasts(_ values: NSSet)
-
-    @objc(removeParticipateBroadcasts:)
-    @NSManaged public func removeFromParticipateBroadcasts(_ values: NSSet)
-
-}
 
 // MARK: Generated accessors for venuePoints
 extension Member {
@@ -100,19 +81,18 @@ extension Member {
 
 }
 
-//data unwrapping
 
+// MARK: - Unwrapped + DTO
 extension Member : Identifiable {
     var viewId: String { id ?? "" }
     var viewFirstName: String{ firstName ?? "" }
     var viewLastName: String { lastName ?? "" }
     var viewCompactName: String{
-        viewFirstName.prefix(1).uppercased() + "." + viewLastName
+        viewFirstName.prefix(1).uppercased() + ". " + viewLastName
     }
     var viewEmail: String { email ?? "" }
     var viewPhoneNumber: String{ phoneNumber ?? "" }
     var viewAddress: String{ homeAddress ?? "" }
-//    var viewIsOnline: Bool { isOnline }
     var viewCreationDate: Date{ creationDate ?? Date() }
     var viewLeaveDate: Date { leaveDate ?? Date() }
     
@@ -142,7 +122,21 @@ extension Member : Identifiable {
         return ownedBroadcasts?.allObjects as? [Broadcast] ?? []
     }
     var viewParticipatedBroadcasts: [Broadcast] {
-        return participateBroadcasts?.allObjects as? [Broadcast] ?? []
+        var result: [Broadcast] = []
+        if !viewId.isEmpty{
+            viewCrews.forEach{
+                if $0.viewMemberId == viewId, let broadcast = $0.broadcast{
+                    result.append(broadcast)
+                }
+            }
+            viewVenuePoints.forEach{
+                if $0.viewMembers.contains(where: {$0.viewId == viewId}),
+                    let broadcast = $0.broadcast{
+                    result.append(broadcast)
+                }
+            }
+        }
+        return result
     }
     
     func isAvailableTo(broadcast: Broadcast) -> Bool{
@@ -181,38 +175,100 @@ extension Member : Identifiable {
         if let date = leaveDate{
             member.leaveDate = date
         }
-        member.ownedBroadcastIds = viewOwnedBroadcasts.compactMap{$0.id}
-        member.participatedBroadcastIds = viewParticipatedBroadcasts.compactMap{$0.id}
-        
         return member
     }
 }
 
+// MARK: - Update
 extension Member: CoreDataUpdatable{
-    func updateFromDTO(_ dto: MemberDTO, in context: NSManagedObjectContext) {
-            self.id = dto.id
-
-        
-        
+    //update from api
+    func updateFromDTO(_ dto: MemberDTO,
+                       in context: NSManagedObjectContext) {
+        self.id = dto.id
+        self.firstName = dto.firstName
+        self.lastName = dto.lastName
+        self.phoneNumber = dto.phoneNumber
+        self.homeAddress = dto.homeAddress
+        self.email = dto.email
+        self.specializations = dto.specialization.joined(separator: ",")
+        self.accessLevel = Int16(dto.accessLevel)
+        self.isOnline = dto.isOnline
+        self.lastUpdated = dto.lastUpdated
+        self.creationDate = dto.creationDate
+        self.leaveDate = dto.leaveDate
     }
-    // TODO: update from optional data
-    
-    
-    
-    
+    //update from ui
+    func updateValues(firstName: String?, lastName: String?,phoneNumber: String?,homeAddress: String?,email: String?,image: LocalImage?,accessLevel: Int?,isOnline: Bool?,lastUpdated: Date?, creationDate: Date?,leaveDate: Date?,specializations:String?, in context: NSManagedObjectContext){
+        if let firstName {
+            self.firstName = firstName
+        }
+        if let lastName {
+            self.lastName = lastName
+        }
+        if let phoneNumber {
+            self.phoneNumber = phoneNumber
+        }
+        if let homeAddress {
+            self.homeAddress = homeAddress
+        }
+        if let email {
+            self.email = email
+        }
+        if let image {
+            if let oldImage = self.image{
+                cleanImage(image: oldImage, in: context)
+            }
+            image.parentMember = self
+            self.image = image
+        }
+        if let accessLevel {
+            self.accessLevel = Int16(accessLevel)
+        }
+        if let isOnline {
+            self.isOnline = isOnline
+        }
+        if let lastUpdated {
+            self.lastUpdated = lastUpdated
+        }
+        if let creationDate {
+            self.creationDate = creationDate
+        }
+        if let leaveDate {
+            self.leaveDate = leaveDate
+        }
+        if let specializations {
+            self.specializations = specializations
+        }
+    }
+    func cleanImage(image: LocalImage, in context: NSManagedObjectContext){
+        image.parentMember = nil
+        self.image = nil
+        context.delete(image)
+    }
+}
+
+// MARK: - Remove
+extension Member {
     public override func prepareForDeletion() {
          super.prepareForDeletion()
         if let context = self.managedObjectContext{
             if let image{
-                image.parentMember = nil
-                context.delete(image)
+                cleanImage(image: image, in: context)
             }
-            viewOwnedBroadcasts.forEach{if $0.viewOwners.count == 1,
-                                           $0.viewOwners[0] == self {
+            viewVenuePoints.forEach{
+                $0.removeFromMembers(self)
+                removeFromVenuePoints($0)
+            }
+            viewCrews.forEach{
+                $0.member = nil
+                removeFromCrews($0)
+            }
+            viewOwnedBroadcasts.forEach{
                 $0.removeFromOwners(self)
+                removeFromOwnedBroadcasts($0)
                 context.delete($0)
-            }}
-            
+            }
         }
      }
 }
+

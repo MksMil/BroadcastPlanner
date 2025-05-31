@@ -105,18 +105,98 @@ extension Club : Identifiable {
 }
 
 extension Club: CoreDataUpdatable{
-    func updateFromDTO(_ dto: ClubDTO) {
-        if let context = self.managedObjectContext{
-            self.id = dto.id
+    func updateFromDTO(_ dto: ClubDTO,in context: NSManagedObjectContext) {
+        self.id = dto.id
+        self.title = dto.title
+        self.contacts = dto.contacts
+        self.urlString = dto.urlString
+        self.lastUpdated = dto.lastUpdated
+        
+        if let imageLogoID = dto.imageLogoID{
+            if imageLogoID != self.imageLogo?.viewId{
+                if let oldImage = self.imageLogo{
+                    oldImage.parentClub = nil
+                    context.delete(oldImage)
+                }
+                let newImage: LocalImage = context.fetchOrCreateObject(withID: imageLogoID)
+                newImage.id = imageLogoID
+                newImage.parentClub = self
+                self.imageLogo = newImage
+            }
+        } else {
+            if let oldImage = self.imageLogo{
+                oldImage.parentClub = nil
+                context.delete(oldImage)
+                self.imageLogo = nil
+            }
         }
         
+        if let homeVenueID = dto.homeVenueID{
+            if homeVenueID != self.homeVenue?.viewId{
+                if let oldVenue = self.homeVenue{
+                    oldVenue.removeFromHomeClub(self)
+                }
+                let newHomeVenue: Venue = context.fetchOrCreateObject(withID: homeVenueID)
+                self.homeVenue = newHomeVenue
+                newHomeVenue.addToHomeClub(self)
+            }
+        } else {
+            if let homeVenue{
+                homeVenue.homeClub = nil
+                self.homeVenue = nil
+            }
+        }
     }
+    
+    func updateValues(title: String?, contacts: String?,urlString: String?,image: LocalImage?, venue: Venue?, in context: NSManagedObjectContext){
+        if let title {
+            self.title = title
+        }
+        
+        if let contacts {
+            self.contacts = contacts
+        }
+        
+        if let urlString {
+            self.urlString = urlString
+        }
+        if let image, image != imageLogo {
+            if let oldImage = imageLogo{
+                oldImage.parentClub = nil
+                context.delete(oldImage)
+            }
+            self.imageLogo = image
+            image.parentClub = self
+        }
+        if let venue {
+            if venue != self.homeVenue{
+                if let oldVenue = self.homeVenue{
+                    oldVenue.removeFromHomeClub(self)
+                }
+                self.homeVenue = venue
+                venue.addToHomeClub(self)
+            }
+        }
+    }
+    
     public override func prepareForDeletion(){
         super.prepareForDeletion()
         if let context = self.managedObjectContext{
             if let imageLogo {
+                imageLogo.parentClub = nil
+                self.imageLogo = nil
                 context.delete(imageLogo)
             }
+            if let homeVenue{
+                homeVenue.removeFromHomeClub(self)
+            }
+            viewHomeBroadcasts.forEach{
+                $0.homeClub = nil
+            }
+            viewGuestBroadcasts.forEach{
+                $0.guestClub = nil
+            }
+            
         }
     }
 }

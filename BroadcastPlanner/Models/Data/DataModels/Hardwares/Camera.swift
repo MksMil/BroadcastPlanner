@@ -35,14 +35,27 @@ extension Camera : Identifiable {
 }
 
 extension Camera: CoreDataUpdatable{
-    func updateFromDTO(_ dto: CameraDTO) {
-        if let context = self.managedObjectContext{
-            self.id = dto.id
+    func updateFromDTO(_ dto: CameraDTO,in context: NSManagedObjectContext) {
+        self.id = dto.id
+        self.optic = dto.optic.rawValue
+    }
+    
+    func updateValues(optic: OpticType?, point: VenuePoint?){
+        if let optic {
+            self.optic = optic.rawValue
+        }
+        if let point {
+            if let oldPoint = self.point{
+                oldPoint.removeFromCameras(self)
+            }
+            self.point = point
         }
     }
     
     public override func prepareForDeletion() {
          super.prepareForDeletion()
-         
+        if let point {
+            point.removeFromCameras(self)
+        }
      }
 }
