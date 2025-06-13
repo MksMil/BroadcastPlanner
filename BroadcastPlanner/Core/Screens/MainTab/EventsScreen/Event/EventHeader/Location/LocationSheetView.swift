@@ -6,7 +6,7 @@ final class LocationSheetViewModel: ObservableObject{
 }
 
 struct LocationSheetView: View {
-    @EnvironmentObject var mdm: MainDataManager
+    @EnvironmentObject var mdm: DataManager
     
     @StateObject var vm: LocationSheetViewModel
     
@@ -42,14 +42,14 @@ struct LocationSheetView: View {
                 ConfirmationButtonGroupView(isAcceptDisabled: vm.selectedLocation == nil, cancelAction: {
                     cancelAction()
                 }, acceptAction: {
-                    if let club,
-                       let location = vm.selectedLocation{
-                        Task{
-                            mdm.localDataManager.mainContext.perform {
-                                club.homeVenue = location
-                            }
-                        }
-                    }
+//                    if let club,
+//                       let location = vm.selectedLocation{
+//                        Task{
+//                            mdm.localDataManager.mainContext.perform {
+//                                club.homeVenue = location
+//                            }
+//                        }
+//                    }
                     saveAction(vm.selectedLocation)
                 },content: {
                     Text(isEditMode ?  (vm.selectedLocation == nil ? "Add venue":"Edit venue"):"Choose Venue")
@@ -64,9 +64,9 @@ struct LocationSheetView: View {
                                 }
                         }
                         .onTapGesture {
-                            if isEditMode {
-                                addEditAction(vm.selectedLocation ?? mdm.getNewLocation() )
-                            }
+//                            if isEditMode {
+//                                addEditAction(vm.selectedLocation ?? mdm.getNewLocation() )
+//                            }
                         }
                 }
                 )
@@ -90,12 +90,12 @@ struct LocationSheetView: View {
                         }
                     }
                     .onDelete { index in
-                        if let ind = index.first{
-                            Task{
-                               await mdm.removeLocation(locations[ind])
-                                vm.selectedLocation = nil
-                            }
-                        }
+//                        if let ind = index.first{
+//                            Task{
+//                               await mdm.removeLocation(locations[ind])
+//                                vm.selectedLocation = nil
+//                            }
+//                        }
                     }
                     .listRowBackground(Color.clear)
                     .overlay {
@@ -113,13 +113,13 @@ struct LocationSheetView: View {
                 .scrollContentBackground(.hidden)
             }
         }
-        .onReceive(mdm.localDataManager.updatePublisher, perform: { value in
-            if value.0 == .venues{
-                if value.1.isEmpty{
-                    vm.selectedLocation = nil
-                }
-            }
-        })
+//        .onReceive(mdm.localDataManager.updatePublisher, perform: { value in
+//            if value.0 == .venues{
+//                if value.1.isEmpty{
+//                    vm.selectedLocation = nil
+//                }
+//            }
+//        })
             .navigationBarBackButtonHidden()
     }
 }

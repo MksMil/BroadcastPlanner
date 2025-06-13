@@ -40,7 +40,8 @@ extension Camera: CoreDataUpdatable{
         self.optic = dto.optic.rawValue
     }
     
-    func updateValues(optic: OpticType?, point: VenuePoint?){
+    func updateValues(optic: OpticType? = nil,
+                      point: VenuePoint? = nil){
         if let optic {
             self.optic = optic.rawValue
         }
@@ -54,8 +55,8 @@ extension Camera: CoreDataUpdatable{
     
     public override func prepareForDeletion() {
          super.prepareForDeletion()
-        if let point {
-            point.removeFromCameras(self)
+        if point != nil {
+            self.point = nil
         }
      }
 }

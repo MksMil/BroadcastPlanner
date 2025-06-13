@@ -129,6 +129,7 @@ extension Venue: CoreDataUpdatable{
         self.address = dto.address
         self.title = dto.title
         self.lastUpdated = dto.lastUpdated
+        
         cleanImages(in: context)
         for id in dto.imagesIds {
             let image: LocalImage = context.fetchOrCreateObject(withID: id)
@@ -136,22 +137,23 @@ extension Venue: CoreDataUpdatable{
             image.parentVenueImage = self
         }
         
+        if let oldSchema = self.broadcastSchema{
+            oldSchema.removeFromParentVenueSchema(self)
+            self.broadcastSchema = nil
+        }
         if let imageSchemaId = dto.venueSchemaId{
-            if let oldSchema = self.broadcastSchema{
-                oldSchema.parentVenueSchema = nil
-            }
             let image: LocalImage = context.fetchOrCreateObject(withID: imageSchemaId)
             broadcastSchema = image
-            image.parentVenueSchema = self
-        } else {
-            if let schema = broadcastSchema{
-                schema.parentVenueSchema = nil
-                broadcastSchema = nil
-            }
+            image.addToParentVenueSchema(self)
         }
     }
     
-    func updateValues(title: String?,address: String?,lastUpdated: Date?,broadcastSchema: LocalImage?, images: [LocalImage]?, in context: NSManagedObjectContext){
+    func updateValues(title: String? = nil,
+                      address: String? = nil,
+                      lastUpdated: Date? = nil,
+                      newBroadcastSchema: LocalImage? = nil,
+                      images: [LocalImage]? = nil,
+                      in context: NSManagedObjectContext){
         if let title {
             self.title = title
         }
@@ -161,10 +163,12 @@ extension Venue: CoreDataUpdatable{
         if let lastUpdated {
             self.lastUpdated = lastUpdated
         }
-        if let broadcastSchema{
-            self.broadcastSchema?.parentVenueSchema = nil
-            self.broadcastSchema = broadcastSchema
-            broadcastSchema.parentVenueSchema = self
+        if let newBroadcastSchema{
+            if let broadcastSchema{
+                broadcastSchema.removeFromParentVenueSchema(self)
+            }
+            newBroadcastSchema.addToParentVenueSchema(self)
+            broadcastSchema = newBroadcastSchema
         }
         
         if let images {
@@ -178,7 +182,6 @@ extension Venue: CoreDataUpdatable{
 
     func cleanImages(in context: NSManagedObjectContext){
         viewLocalImages.forEach{
-            $0.parentVenueImage = nil
             removeFromImages($0)
             context.delete($0)
         }
@@ -189,8 +192,10 @@ extension Venue {
     public override func prepareForDeletion() {
         super.prepareForDeletion()
         if let context =  self.managedObjectContext{
-            self.broadcastSchema?.parentVenueSchema = nil
-            self.broadcastSchema = nil
+            if let broadcastSchema {
+                broadcastSchema.removeFromParentVenueSchema(self)
+                self.broadcastSchema = nil
+            }        
             cleanImages(in: context)
            //opt
             viewBrodcasts.forEach{

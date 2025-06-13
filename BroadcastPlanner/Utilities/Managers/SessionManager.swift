@@ -21,7 +21,9 @@ final class SessionManager: ObservableObject{
     var appleCurrentNonce: String = ""
     
     func getUserSession() async {
-        guard let currentUser = Auth.auth().currentUser else { return }
+        guard let currentUser = Auth.auth().currentUser else {
+            sessionUser = nil
+            return }
         sessionUser = SessionUser(user: currentUser)
     }
 }

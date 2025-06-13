@@ -5,43 +5,70 @@ struct RootView: View {
     @EnvironmentObject var sessionManager: SessionManager
     @EnvironmentObject var appState: ApplicationState
     @EnvironmentObject var globalSettings: GlobalSettings
-    
-    @StateObject var localDataManager = DataManager()
-    @StateObject var globalDataManager = NetworkManager()
+
+    @StateObject var router: Router = Router()
+    let networkManager: NetworkManager
+    @StateObject var dataManager: DataManager
 
     @State var isStarted: Bool = false
+
+    init() {
+        let manager = NetworkManager()
+        self.networkManager =  manager
+        self._dataManager = StateObject(
+            wrappedValue: DataManager(globalDataManager: manager)
+        )
+    }
     var body: some View {
-            ZStack {
-                if appState.state == .authorized,
-                   let id = sessionManager.sessionUser?.id {
-                    Home(localDataManager: localDataManager,
-                         globalDataManager: globalDataManager,
-                         userId: id)
-                    .environmentObject(appState)
-                    .environmentObject(globalSettings)
-                    .environmentObject(sessionManager)
-                            } else {
-                                AuthenticationScreen()
-                            }
-                MainBackground()
-                    .opacity(isStarted ? 0 : 1)
-                AnimatedStart()
-                    .opacity(isStarted ? 0 : 1)
-                    .scaleEffect(isStarted ? 0 : 1)
+        ZStack(alignment: .top){
+            MainBackground()
+            if router.statusBarVisibility {
+                StatusView()
             }
+                
+            NavigationStack(path: $router.path) {
+                AnimatedStart()
+                    .navigationTransition(
+                        router.transition,
+                        interactivity: router.interactivity
+                    )
+                    .navigationDestination(for: RouterPath.self) { path in
+                        switch path {
+                            case .broadcastList:
+                                MainEventsList()
+                            case .authScreen:
+                                AuthenticationScreen()
+                            case .locationSheet(let club):
+                                LocationSheetView(club: club) {
+                                    
+                                } saveAction: { venue in
+                                    
+                                } addEditAction: { venue in
+                                    
+                                }
+                            case .createEdit(let broadcast):
+                                BroadcastEditView(broadcast: broadcast)
+                            default:
+                                Text("Hello Error")
+                        }
+                    }
+            }
+            .padding(.top, router.statusBarVisibility ? 70:0)
+        }
         .onAppear {
             Task {
                 await sessionManager.getUserSession()
-                withAnimation(.easeOut(duration: 0.3).delay(2)) {
-                    isStarted.toggle()
-                }
             }
         }
         .onReceive(sessionManager.$sessionUser) { user in
-            if user != nil {
+            if let user {
+                dataManager.setMember(id: user.id)
                 appState.state = .authorized
+                router.routeTo(path: .broadcastList)
             } else {
+                dataManager.clearData()
                 appState.state = .notAuthorized
+                router.routeTo(path: .authScreen)
             }
         }
         .onReceive(appState.$userOnlineStatus) { value in
@@ -49,14 +76,17 @@ struct RootView: View {
             switch value {
             case .online:
                 Task {
-                    await globalDataManager.goOnline(id: id)
+                    await networkManager.goOnline(id: id)
                 }
             case .offline:
                 Task {
-                    await globalDataManager.goOffline(id: id)
+                    await networkManager.goOffline(id: id)
                 }
             }
         }
+        .environmentObject(dataManager)
+        .environmentObject(router)
+        .environment(\.managedObjectContext, dataManager.mainContext)
     }
 }
 
@@ -65,4 +95,21 @@ struct RootView: View {
         .environmentObject(GlobalSettings())
         .environmentObject(SessionManager())
         .environmentObject(ApplicationState())
+}
+
+struct StatusView: View {
+    @EnvironmentObject var router: Router
+    @EnvironmentObject var dataManager: DataManager
+    
+    
+    var body: some View {
+        HStack{
+            Spacer()
+            Circle().stroke(Color.green, lineWidth: 2)
+                .frame(width: 60,height: 60)
+        }
+        .padding(.horizontal,8)
+        .border(.red, width: 1)
+    }
+    
 }

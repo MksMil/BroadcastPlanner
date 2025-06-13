@@ -9,7 +9,7 @@ struct ExploreEventView: View {
     @StateObject private var vm: BPCreateEditEventViewModel
     
     @EnvironmentObject var eventRouter: EventTabRouter
-    @EnvironmentObject var mdm: MainDataManager
+    @EnvironmentObject var mdm: DataManager
     
     let event: Broadcast
     
@@ -142,16 +142,13 @@ struct ExploreEventView: View {
         }
 }
 
-#Preview {
-    Home(
-        localDataManager: DataManager(forPreview: false),
-        globalDataManager: NetworkManager(),
-        userId: "123"
-    )
-    .environmentObject(GlobalSettings())
-    .environmentObject(SessionManager())
-    .environmentObject(ApplicationState())
-}
+//#Preview {
+//    Home(globalDataManager: NetworkManager(),
+//         userId: "123")
+//    .environmentObject(GlobalSettings())
+//    .environmentObject(SessionManager())
+//    .environmentObject(ApplicationState())
+//}
 
 //#Preview {
 //    ExploreEventView()

@@ -198,7 +198,19 @@ extension Member: CoreDataUpdatable{
         self.leaveDate = dto.leaveDate
     }
     //update from ui
-    func updateValues(firstName: String?, lastName: String?,phoneNumber: String?,homeAddress: String?,email: String?,image: LocalImage?,accessLevel: Int?,isOnline: Bool?,lastUpdated: Date?, creationDate: Date?,leaveDate: Date?,specializations:String?, in context: NSManagedObjectContext){
+    func updateValues(firstName: String? = nil,
+                      lastName: String? = nil,
+                      phoneNumber: String? = nil,
+                      homeAddress: String? = nil,
+                      email: String? = nil,
+                      image: LocalImage? = nil,
+                      accessLevel: Int? = nil,
+                      isOnline: Bool? = nil,
+                      lastUpdated: Date? = nil,
+                      creationDate: Date? = nil,
+                      leaveDate: Date? = nil,
+                      specializations:String? = nil,
+                      in context: NSManagedObjectContext){
         if let firstName {
             self.firstName = firstName
         }
@@ -241,8 +253,6 @@ extension Member: CoreDataUpdatable{
         }
     }
     func cleanImage(image: LocalImage, in context: NSManagedObjectContext){
-        image.parentMember = nil
-        self.image = nil
         context.delete(image)
     }
 }
@@ -264,8 +274,6 @@ extension Member {
                 removeFromCrews($0)
             }
             viewOwnedBroadcasts.forEach{
-                $0.removeFromOwners(self)
-                removeFromOwnedBroadcasts($0)
                 context.delete($0)
             }
         }

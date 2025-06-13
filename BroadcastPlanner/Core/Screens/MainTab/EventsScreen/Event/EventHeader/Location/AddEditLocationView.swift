@@ -11,7 +11,7 @@ struct AddEditLocationView: View {
     let removeAction: () -> Void
 
     @StateObject var vm: AddEditLocationViewModel
-    @EnvironmentObject var mdm: MainDataManager
+    @EnvironmentObject var mdm: DataManager
 
     @State private var isRemoveBackgroundDialog: Bool = false
     @State private var isRemoveLocationDialog: Bool = false
@@ -238,9 +238,9 @@ struct AddEditLocationView: View {
                         Spacer()
                         Button {
                             //ling venueTemplate to venue
-                            if let template = vm.selectedEventTemplate{
-                                mdm.linkEventTemplate(template, toLocation: location)
-                            }
+//                            if let template = vm.selectedEventTemplate{
+//                                mdm.linkEventTemplate(template, toLocation: location)
+//                            }
                         } label: {
                             Image(systemName: "checkmark")
                                 .resizable()
@@ -281,11 +281,11 @@ struct AddEditLocationView: View {
                 ) {
                     Button("Remove Photo", role: .destructive) {
                         // Handle empty trash action.
-                        withAnimation {
-                            if let localImageToRemove = vm.backgroundImageToRemove {
-                                mdm.removeImage(selectedImage: localImageToRemove)
-                            }
-                        }
+//                        withAnimation {
+//                            if let localImageToRemove = vm.backgroundImageToRemove {
+//                                mdm.removeImage(selectedImage: localImageToRemove)
+//                            }
+//                        }
                         
                     }
                 }
@@ -296,11 +296,11 @@ struct AddEditLocationView: View {
                 ) {
                     Button("Remove Photo", role: .destructive) {
                         // Handle empty trash action.
-                        withAnimation {
-                            if let localImageToRemove = vm.selectedEventTemplate {
-                                mdm.removeImage(selectedImage: localImageToRemove)
-                            }
-                        }
+//                        withAnimation {
+//                            if let localImageToRemove = vm.selectedEventTemplate {
+//                                mdm.removeImage(selectedImage: localImageToRemove)
+//                            }
+//                        }
                         
                     }
                 }
@@ -311,39 +311,35 @@ struct AddEditLocationView: View {
                 ) {
                     Button("Remove Venue", role: .destructive) {
                         // Handle empty trash action.
-                        Task{
-                           await mdm.removeLocation(location)
-                            removeAction()
-                        }
+//                        Task{
+//                           await mdm.removeLocation(location)
+//                            removeAction()
+//                        }
                     }
                 }
             }
         }
         .navigationBarBackButtonHidden()
-        .onReceive(vm.$eventBackgroundUIImage) { uiimage in
-            guard let uiimage else { return }
-            mdm.createNewLocalImagesWith(uiimages: [uiimage], andType: .venueTemplate)
-        }
-        .onReceive(vm.$locationUiimages) { images in
-            if !images.isEmpty{
-                mdm.createNewLocalImagesWith(uiimages: images, andType: GlobalProperties.ImageType.venue,
-                                             linkToLocation: location)
-                vm.locationUiimages = []
-            }
-        }
+//        .onReceive(vm.$eventBackgroundUIImage) { uiimage in
+//            guard let uiimage else { return }
+//            mdm.createNewLocalImagesWith(uiimages: [uiimage], andType: .venueTemplate)
+//        }
+//        .onReceive(vm.$locationUiimages) { images in
+//            if !images.isEmpty{
+//                mdm.createNewLocalImagesWith(uiimages: images, andType: GlobalProperties.ImageType.venue,
+//                                             linkToLocation: location)
+//                vm.locationUiimages = []
+//            }
+//        }
         
         .environmentObject(vm)
     }
 }
 
 #Preview {
-    let mdm = MainDataManager(
-        localDataManager: DataManager(forPreview: true),
-        globalDataManager: NetworkManager(),
-        userId: "123"
-    )
+    let mdm = DataManager(globalDataManager: NetworkManager())
     let dto = VenueDTO(id: "id", lastUpdated: Date.now, title: "Title", address: "address", imagesIds: [], venueSchemaId: nil)
-    let location = mdm.localDataManager.createOrUpdateLocalLocationWithLocationDTO(dto, inContext: .main)
+    let location = mdm.mainContext.makeObjectFromDTO(dto)
     
    return AddEditLocationView(location: location) { _, _, _, _ in
         
@@ -353,7 +349,7 @@ struct AddEditLocationView: View {
         
     }
     .environmentObject(mdm)
-    .environment(\.managedObjectContext, mdm.localDataManager.mainContext)
+    .environment(\.managedObjectContext, mdm.mainContext)
 
 }
 

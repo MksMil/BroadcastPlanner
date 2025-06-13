@@ -9,7 +9,7 @@ struct SettingsView: View {
     @EnvironmentObject var appState: ApplicationState
     @EnvironmentObject var sessionManager: SessionManager
     
-    @EnvironmentObject var mdm: MainDataManager
+    @EnvironmentObject var mdm: DataManager
 
     @Environment(\.authorizationController) private var authorizationController
 
@@ -243,36 +243,36 @@ struct SettingsView: View {
                         }
                     case .addEditClub(let club):
                         AddEditClubView(club: club) { title, uiimage, contacts, urlString, location in
-                            Task{
-                                await mdm.updateClub(club, withTitle: title, uiimage: uiimage, contacts: contacts, urlString: urlString, location: location, inContext: .main)
-                                settingsRouter.routeStepBack()
-                            }
+//                            Task{
+//                                await mdm.updateClub(club, withTitle: title, uiimage: uiimage, contacts: contacts, urlString: urlString, location: location, inContext: .main)
+//                                settingsRouter.routeStepBack()
+//                            }
                         } cancelAction: {
                             mdm.rollBackMoc()
                             settingsRouter.routeStepBack()
                         } removeAction: {
-                            Task{
-                                await mdm.removeCub(club)
-                                settingsRouter.routeStepBack()
-                            }
+//                            Task{
+//                                await mdm.removeCub(club)
+//                                settingsRouter.routeStepBack()
+//                            }
                         } defineLocation: {
                             settingsRouter.path.append(SettingsTabPath.locationSheet(club))
                         }
                     case .addEditLocation(let location):
                         AddEditLocationView(location: location) { title, address, images, localImage in
-                            Task{
-                                await mdm.updateLocalLocation(location, withTitle: title, address: address, images: images, background: localImage)
-                                settingsRouter.routeStepBack()
-                            }
+//                            Task{
+//                                await mdm.updateLocalLocation(location, withTitle: title, address: address, images: images, background: localImage)
+//                                settingsRouter.routeStepBack()
+//                            }
                         } cancelAction: {
                             mdm.rollBackMoc()
                             settingsRouter.routeStepBack()
                         } removeAction: {
-                            Task{
-                                //remove
-                                await mdm.localDataManager.saveContextAsync(type: .main, publish: .venues, id: [])
-                                settingsRouter.routeStepBack()
-                            }
+//                            Task{
+//                                //remove
+//                                await mdm.saveContextAsync(type: .main, publish: .venues, id: [])
+//                                settingsRouter.routeStepBack()
+//                            }
                         }
                 }
             }
@@ -281,13 +281,12 @@ struct SettingsView: View {
     }
 }
 
-#Preview {
-    Home(localDataManager: DataManager(forPreview: true),
-         globalDataManager: NetworkManager(),
-         userId: "123")
-    .environmentObject(GlobalSettings())
-    .environmentObject(SessionManager())
-    .environmentObject(ApplicationState())
-}
+//#Preview {
+//    Home(globalDataManager: NetworkManager(),
+//         userId: "123")
+//    .environmentObject(GlobalSettings())
+//    .environmentObject(SessionManager())
+//    .environmentObject(ApplicationState())
+//}
 
 

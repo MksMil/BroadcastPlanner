@@ -11,16 +11,33 @@ extension LocalImage {
     }
 
     @NSManaged public var id: String?
-    @NSManaged public var type: String?
     @NSManaged public var lastUpdated: Date?
-    @NSManaged public var parentVenuePoint: NSSet?
+    @NSManaged public var type: String?
     @NSManaged public var parentClub: Club?
-    @NSManaged public var parentVenueSchema: Venue?
-    @NSManaged public var parentVenueImage: Venue?
-    @NSManaged public var parentVenuePreview: Broadcast?
-    @NSManaged public var parentObvan: Obvan?
-    @NSManaged public var parentObvanPreview: Broadcast?
     @NSManaged public var parentMember: Member?
+    @NSManaged public var parentObvan: NSSet?
+    @NSManaged public var parentObvanPreview: Broadcast?
+    @NSManaged public var parentVenueImage: Venue?
+    @NSManaged public var parentVenuePoint: NSSet?
+    @NSManaged public var parentVenuePreview: Broadcast?
+    @NSManaged public var parentVenueSchema: NSSet?
+
+}
+
+// MARK: Generated accessors for parentObvan
+extension LocalImage {
+
+    @objc(addParentObvanObject:)
+    @NSManaged public func addToParentObvan(_ value: Obvan)
+
+    @objc(removeParentObvanObject:)
+    @NSManaged public func removeFromParentObvan(_ value: Obvan)
+
+    @objc(addParentObvan:)
+    @NSManaged public func addToParentObvan(_ values: NSSet)
+
+    @objc(removeParentObvan:)
+    @NSManaged public func removeFromParentObvan(_ values: NSSet)
 
 }
 
@@ -38,6 +55,23 @@ extension LocalImage {
 
     @objc(removeParentVenuePoint:)
     @NSManaged public func removeFromParentVenuePoint(_ values: NSSet)
+
+}
+
+// MARK: Generated accessors for parentVenueSchema
+extension LocalImage {
+
+    @objc(addParentVenueSchemaObject:)
+    @NSManaged public func addToParentVenueSchema(_ value: Venue)
+
+    @objc(removeParentVenueSchemaObject:)
+    @NSManaged public func removeFromParentVenueSchema(_ value: Venue)
+
+    @objc(addParentVenueSchema:)
+    @NSManaged public func addToParentVenueSchema(_ values: NSSet)
+
+    @objc(removeParentVenueSchema:)
+    @NSManaged public func removeFromParentVenueSchema(_ values: NSSet)
 
 }
 
@@ -60,6 +94,14 @@ extension LocalImage : Identifiable {
     
     var viewParentVenuePoints: [VenuePoint]{
         return parentVenuePoint?.allObjects as? [VenuePoint] ?? []
+    }
+    
+    var viewParentObvans: [Obvan] {
+        parentObvan?.allObjects as? [Obvan] ?? []
+    }
+    
+    var viewParentVenueScemas: [Venue] {
+        parentVenueSchema?.allObjects as? [Venue] ?? []
     }
     
     var dto: ImageDTO {
@@ -142,7 +184,10 @@ extension LocalImage: CoreDataUpdatable{
         self.lastUpdated = dto.lastUpdated
     }
     
-    func updateValues(type: String?,lastUpdated: Date?,uiimage: UIImage?,in context: NSManagedObjectContext){
+    func updateValues(type: String? = nil,
+                      lastUpdated: Date? = nil,
+                      uiimage: UIImage? = nil,
+                      in context: NSManagedObjectContext){
         if let type {
             self.type = type
         }
@@ -170,14 +215,16 @@ extension LocalImage{
             parentClub.imageLogo = nil
             self.parentClub = nil
         }
-        if let parentObvan {
-            parentObvan.image = nil
-            self.parentObvan = nil
+       
+        viewParentObvans.forEach{
+            $0.image = nil
+            removeFromParentObvan($0)
         }
-        if let parentVenueSchema {
-            parentVenueSchema.broadcastSchema = nil
-            self.parentVenueSchema = nil
+        viewParentVenueScemas.forEach{
+            $0.broadcastSchema = nil
+            removeFromParentVenueSchema($0)
         }
+        
         if let parentVenueImage {
             parentVenueImage.removeFromImages(self)
             self.parentVenueImage = nil

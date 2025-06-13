@@ -108,16 +108,10 @@ struct StaffPanelCellView: View {
 //    }
 //})
 
-#Preview(body: {
-    let lm = DataManager(forPreview: true)
+#Preview {
+    let mdm = DataManager(globalDataManager: NetworkManager())
+    let localEvent: Broadcast = mdm.mainContext.fetchOrCreateObject(withID: "id")
 
-    let localEvent = lm.fetchOrCreateObject(ofType: Broadcast.self,
-                  predicate: NSPredicate(format: "id == %@", "id"),
-                                      in: lm.mainContext) { ctx in
-        let newEvent = Broadcast(context: ctx)
-        newEvent.id = "id"
-        return newEvent
-    }
     return StaffPanelView(event:localEvent) { _, _, _ in
         
     } removeUnitAction: { _ in
@@ -125,5 +119,4 @@ struct StaffPanelCellView: View {
     } editUnitAction: {
         
     }
-
-})
+}

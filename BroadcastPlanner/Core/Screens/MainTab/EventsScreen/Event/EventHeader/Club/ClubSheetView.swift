@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ClubSheetView: View {
-    @EnvironmentObject var mdm: MainDataManager
+    @EnvironmentObject var mdm: DataManager
     @StateObject var vm: ClubSheetViewModel
     @Namespace var clubNS
     //    @State private var isEdit: Bool = false
@@ -65,9 +65,9 @@ struct ClubSheetView: View {
                             }
                     }
                     .onTapGesture {
-                        if editMode {
-                            addEditAction(vm.selectedClub ?? mdm.createClub())
-                        }
+//                        if editMode {
+//                            addEditAction(vm.selectedClub ?? mdm.createClub())
+//                        }
                     }
                 }
                 .padding(.horizontal)
@@ -119,18 +119,18 @@ struct ClubSheetView: View {
                 }
             }
         }
-        .onReceive(
-            mdm.localDataManager.updatePublisher,
-            perform: { value in
-                if value.0 == .clubs {
-                    if value.1.isEmpty {
-                        vm.selectedClub = nil
-                    } else {
-                        vm.selectedClub?.objectWillChange.send()
-                    }
-                }
-            }
-        )
+//        .onReceive(
+//            mdm.localDataManager.updatePublisher,
+//            perform: { value in
+//                if value.0 == .clubs {
+//                    if value.1.isEmpty {
+//                        vm.selectedClub = nil
+//                    } else {
+//                        vm.selectedClub?.objectWillChange.send()
+//                    }
+//                }
+//            }
+//        )
         .navigationBarBackButtonHidden()
     }
 }

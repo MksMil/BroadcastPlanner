@@ -194,12 +194,12 @@ public struct AnyContentViewSizePreferenceKey: PreferenceKey{
     }
 }
 
-#Preview {
-    let mdm = MainDataManager(localDataManager: DataManager(), globalDataManager: NetworkManager(),userId: "123")
-    BPAccountInfoView(user: mdm.currentUserInMainContext)
-        .environment(\.managedObjectContext, mdm.localDataManager.mainContext)
-        .environmentObject(mdm)
-}
+//#Preview {
+//    let mdm = DataManager(globalDataManager: NetworkManager())
+//    BPAccountInfoView(user:)
+//        .environment(\.managedObjectContext, mdm.mainContext)
+//        .environmentObject(mdm)
+//}
 
 extension GeometryProxy: @retroactive @unchecked Sendable{
     

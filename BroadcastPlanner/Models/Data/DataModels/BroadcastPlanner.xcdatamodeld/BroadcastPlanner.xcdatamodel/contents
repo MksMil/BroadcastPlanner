@@ -34,6 +34,7 @@
         <attribute name="coordinateX" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="coordinateY" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="id" optional="YES" attributeType="String"/>
+        <attribute name="obvanId" optional="YES" attributeType="String"/>
         <attribute name="position" optional="YES" attributeType="String"/>
         <attribute name="rotation" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="scaleFactor" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
@@ -41,7 +42,6 @@
         <relationship name="broadcast" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Broadcast" inverseName="crews" inverseEntity="Broadcast"/>
         <relationship name="hardware" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Hardware" inverseName="crew" inverseEntity="Hardware"/>
         <relationship name="member" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Member" inverseName="crews" inverseEntity="Member"/>
-        <relationship name="obvan" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Obvan" inverseName="crews" inverseEntity="Obvan"/>
     </entity>
     <entity name="Hardware" representedClassName=".Hardware" syncable="YES">
         <attribute name="channels" optional="YES" attributeType="String"/>
@@ -60,12 +60,12 @@
         <attribute name="type" optional="YES" attributeType="String"/>
         <relationship name="parentClub" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Club" inverseName="imageLogo" inverseEntity="Club"/>
         <relationship name="parentMember" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Member" inverseName="image" inverseEntity="Member"/>
-        <relationship name="parentObvan" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Obvan" inverseName="image" inverseEntity="Obvan"/>
+        <relationship name="parentObvan" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Obvan" inverseName="image" inverseEntity="Obvan"/>
         <relationship name="parentObvanPreview" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Broadcast" inverseName="obvanPreview" inverseEntity="Broadcast"/>
         <relationship name="parentVenueImage" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Venue" inverseName="images" inverseEntity="Venue"/>
         <relationship name="parentVenuePoint" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="VenuePoint" inverseName="image" inverseEntity="VenuePoint"/>
         <relationship name="parentVenuePreview" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Broadcast" inverseName="venueSchemaPreview" inverseEntity="Broadcast"/>
-        <relationship name="parentVenueSchema" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Venue" inverseName="broadcastSchema" inverseEntity="Venue"/>
+        <relationship name="parentVenueSchema" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Venue" inverseName="broadcastSchema" inverseEntity="Venue"/>
     </entity>
     <entity name="Member" representedClassName=".Member" syncable="YES">
         <attribute name="accessLevel" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
@@ -91,7 +91,6 @@
         <attribute name="lastUpdated" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="name" optional="YES" attributeType="String"/>
         <relationship name="broadcasts" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Broadcast" inverseName="obvan" inverseEntity="Broadcast"/>
-        <relationship name="crews" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Crew" inverseName="obvan" inverseEntity="Crew"/>
         <relationship name="crewTemplates" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="ObvanTemplateCrew" inverseName="parentObvan" inverseEntity="ObvanTemplateCrew"/>
         <relationship name="image" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalImage" inverseName="parentObvan" inverseEntity="LocalImage"/>
     </entity>

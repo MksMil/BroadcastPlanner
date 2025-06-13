@@ -202,22 +202,11 @@ struct PointInfoPanelView: View {
 }
 
 #Preview {
-    let lm = DataManager(forPreview: true)
-    let mdm = MainDataManager(
-        localDataManager: lm,
-        globalDataManager: NetworkManager(),
-        userId: "123"
-    )
-    let localEvent = lm.fetchOrCreateObject(
-        ofType: Broadcast.self,
-        predicate: NSPredicate(format: "id == %@", "id"),
-        in: lm.mainContext
-    ) { ctx in
-        let newEvent = Broadcast(context: ctx)
-        newEvent.id = "id"
-        return newEvent
-    }
+    
+    let mdm = DataManager(globalDataManager: NetworkManager())
+    mdm.setMember(id: "123")
+    let localEvent: Broadcast = mdm.mainContext.fetchOrCreateObject(withID: "id")
     return BPEditStadiumView(event: localEvent)
         .environmentObject(mdm)
-        .environment(\.managedObjectContext, lm.mainContext)
+        .environment(\.managedObjectContext, mdm.mainContext)
 }

@@ -2,7 +2,7 @@ import PhotosUI
 import SwiftUI
 
 struct BPAccountInfoView: View {
-    @EnvironmentObject var mdm: MainDataManager
+    @EnvironmentObject var mdm: DataManager
     
     @StateObject var vm: PersonalScreenViewModel
     
@@ -146,23 +146,21 @@ struct BPAccountInfoView: View {
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbarBackground(.white.opacity(0.4), for: .navigationBar)
         }
-        .onReceive(mdm.localDataManager.updatePublisher, perform: { value in
-            if value.0 == .members, value.1.contains(where: { $0 == mdm.currentId
-            }){
-                vm.updateData()
-            }
-        })
+//        .onReceive(mdm.updatePublisher, perform: { value in
+//            if value.0 == .members, value.1.contains(where: { $0 == mdm.currentId
+//            }){
+//                vm.updateData()
+//            }
+//        })
         
     }
 }
 
 
 
-#Preview {
-    let mdm = MainDataManager(localDataManager: DataManager(),
-                              globalDataManager: NetworkManager(),
-                              userId: "123")
-    return BPAccountInfoView(user: mdm.currentUserInMainContext)
-        .environment(\.managedObjectContext, mdm.localDataManager.mainContext)
-        .environmentObject(mdm)
-}
+//#Preview {
+//    let mdm = DataManager(globalDataManager: NetworkManager())
+//    return BPAccountInfoView(user: mdm.currentUserInMainContext)
+//        .environment(\.managedObjectContext, mdm.mainContext)
+//        .environmentObject(mdm)
+//}

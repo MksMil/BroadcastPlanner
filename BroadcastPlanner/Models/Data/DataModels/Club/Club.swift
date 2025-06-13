@@ -148,7 +148,12 @@ extension Club: CoreDataUpdatable{
         }
     }
     
-    func updateValues(title: String?, contacts: String?,urlString: String?,image: LocalImage?, venue: Venue?, in context: NSManagedObjectContext){
+    func updateValues(title: String? = nil,
+                      contacts: String? = nil,
+                      urlString: String? = nil,
+                      image: LocalImage? = nil,
+                      venue: Venue? = nil,
+                      in context: NSManagedObjectContext){
         if let title {
             self.title = title
         }
@@ -183,7 +188,6 @@ extension Club: CoreDataUpdatable{
         super.prepareForDeletion()
         if let context = self.managedObjectContext{
             if let imageLogo {
-                imageLogo.parentClub = nil
                 self.imageLogo = nil
                 context.delete(imageLogo)
             }

@@ -39,7 +39,8 @@ extension Light: CoreDataUpdatable{
         self.lightType = dto.lightType.rawValue
     }
     
-    func updateValues(lightType: LightType?,point: VenuePoint?){
+    func updateValues(lightType: LightType? = nil,
+                      point: VenuePoint? = nil){
         if let lightType{
             self.lightType = lightType.rawValue
         }
@@ -53,8 +54,8 @@ extension Light: CoreDataUpdatable{
     
     public override func prepareForDeletion() {
          super.prepareForDeletion()
-        if let point {
-            point.removeFromLights(self)
+        if point != nil {
+            self.point = nil
         }
      }
 }

@@ -1,5 +1,5 @@
 {
-  "originHash" : "097a46de7483203a0b8eecef5fb1faccc27cb7a2c57cfa035f555a42dcb8d07b",
+  "originHash" : "b1db0d6ad033e76786a096c6792ba5c671573d31ce22f87538bacea9252b5073",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -134,6 +134,15 @@
       "state" : {
         "revision" : "540318ecedd63d883069ae7f1ed811a2df00b6ac",
         "version" : "2.4.0"
+      }
+    },
+    {
+      "identity" : "rafinad",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/hhru/Rafinad.git",
+      "state" : {
+        "revision" : "94647764a75decb03d62a6782e4f3a8ae0e55650",
+        "version" : "1.0.0"
       }
     },
     {

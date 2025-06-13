@@ -7,7 +7,7 @@ struct BPEditStadiumView: View {
 
     @EnvironmentObject var settings: GlobalSettings
     @EnvironmentObject var eventRouter: EventTabRouter
-    @EnvironmentObject var mdm: MainDataManager
+    @EnvironmentObject var mdm: DataManager
     
     let event: Broadcast
 
@@ -36,11 +36,11 @@ struct BPEditStadiumView: View {
                     vm.renderPitchScene.deselect()
                     vm.isEdit = false
 //                    mdm.updateEvent(broadcast, withPoints: vm.localPoints)
-                    Task{
-                        await mdm.assignSnapshot(vm.makeSceneScreenshot(), toEvent: event)
-                        await mdm.saveContextAsync(type: .main, publish: .broadcasts, id: [event.viewId])
-                        eventRouter.routeStepBack()
-                    }
+//                    Task{
+//                        await mdm.assignSnapshot(vm.makeSceneScreenshot(), toEvent: event)
+//                        await mdm.saveContextAsync(type: .main, publish: .broadcasts, id: [event.viewId])
+//                        eventRouter.routeStepBack()
+//                    }
                 } content: {
                     Text("\(event.viewTitle)")
                         .font(.title)
@@ -71,32 +71,32 @@ struct BPEditStadiumView: View {
                 //template group
                 TemplateGroup(templates: templates) { templateToShow in
                     withAnimation {
-                        mdm.cleanLocalPoints(event.viewVenuePoints, inEvent: event)
-                        let points =  mdm.makeLocalPointsFromTemplate(templateToShow)
-                        mdm.loadTemplatePoints(points, toEvent: event)
-                        vm.loadTemplate(points)
-                        vm.selectedTemplate = templateToShow
+//                        mdm.cleanLocalPoints(event.viewVenuePoints, inEvent: event)
+//                        let points =  mdm.makeLocalPointsFromTemplate(templateToShow)
+//                        mdm.loadTemplatePoints(points, toEvent: event)
+//                        vm.loadTemplate(points)
+//                        vm.selectedTemplate = templateToShow
                     }
                     
                 } addAction: { name in
-                    Task{
-                        await mdm.saveTemplateFromSchema(localPoints: vm.localPoints, withName: name)
-                    }
+//                    Task{
+//                        await mdm.saveTemplateFromSchema(localPoints: vm.localPoints, withName: name)
+//                    }
                 } removeAction: {
-                    mdm.cleanLocalPoints(event.viewVenuePoints, inEvent: event)
-                    withAnimation{
-                        if let templateToRemove = vm.selectedTemplate{
-                            Task{
-                                vm.setEmptyTemplate()
-                                await mdm.removeLocalTemplate(templateToRemove)
-                            }
-                        }
-                    }
+//                    mdm.cleanLocalPoints(event.viewVenuePoints, inEvent: event)
+//                    withAnimation{
+//                        if let templateToRemove = vm.selectedTemplate{
+//                            Task{
+//                                vm.setEmptyTemplate()
+//                                await mdm.removeLocalTemplate(templateToRemove)
+//                            }
+//                        }
+//                    }
                 } setEmptyTemplateAction: {
-                    mdm.cleanLocalPoints(event.viewVenuePoints, inEvent: event)
-                    withAnimation{
-                        vm.setEmptyTemplate()
-                    }
+//                    mdm.cleanLocalPoints(event.viewVenuePoints, inEvent: event)
+//                    withAnimation{
+//                        vm.setEmptyTemplate()
+//                    }
                 }
                 .padding(.vertical, 15)
                 
@@ -125,25 +125,25 @@ struct BPEditStadiumView: View {
                             SaveEditControlPanelView(
                                 addAction: {
                                     //mdm: 'addPoint to broadcast' & delegete it to scene
-                                    let newPoint = mdm.newPointInEvent(event,withNumber: vm.numberForNewPoint())
-                                    vm.addPoint(point: newPoint)
+//                                    let newPoint = mdm.newPointInEvent(event,withNumber: vm.numberForNewPoint())
+//                                    vm.addPoint(point: newPoint)
                                 },
                                 deleteAction: {
-                                    if let pointToDelete = vm.selectedEventPoint{
-                                        vm.deletePoint()
-                                        mdm.deletePoint(pointToDelete,
-                                                        inEvent: event)
-                                    }
+//                                    if let pointToDelete = vm.selectedEventPoint{
+//                                        vm.deletePoint()
+//                                        mdm.deletePoint(pointToDelete,
+//                                                        inEvent: event)
+//                                    }
                                 },
                                 saveAction: {
-                                    if let point = vm.selectedEventPoint{
-                                        mdm.updatePoint(point,
-                                                        x: vm.coordinateX,
-                                                        y: vm.coordinateY,
-                                                        rotation: vm.rotation,
-                                                        scaleFactor: vm.scaleFactor)
-                                        vm.save()
-                                    }
+//                                    if let point = vm.selectedEventPoint{
+//                                        mdm.updatePoint(point,
+//                                                        x: vm.coordinateX,
+//                                                        y: vm.coordinateY,
+//                                                        rotation: vm.rotation,
+//                                                        scaleFactor: vm.scaleFactor)
+//                                        vm.save()
+//                                    }
                                 },
                                 editAction: {
 //                                    if let point = vm.selectedEventPoint{
@@ -229,15 +229,15 @@ struct BPEditStadiumView: View {
             
         }
         .task{
-            vm.savePointAction = {
-                if let point = vm.selectedEventPoint{
-                    mdm.updatePoint(point,
-                                    x: vm.coordinateX,
-                                    y: vm.coordinateY,
-                                    rotation: vm.rotation,
-                                    scaleFactor: vm.scaleFactor)
-                }
-            }
+//            vm.savePointAction = {
+//                if let point = vm.selectedEventPoint{
+//                    mdm.updatePoint(point,
+//                                    x: vm.coordinateX,
+//                                    y: vm.coordinateY,
+//                                    rotation: vm.rotation,
+//                                    scaleFactor: vm.scaleFactor)
+//                }
+//            }
         }
         .navigationBarBackButtonHidden()
         .confirmationDialog("", isPresented: $isConfirmDiscardChanges) {
@@ -250,7 +250,7 @@ struct BPEditStadiumView: View {
             if let point = vm.selectedEventPoint{
                 PointInfoPanelView(point: point){ pointNum, pointUser, pointOptic,pointPlace,pointWD,pointLight in
                     print("save venuePoint")
-                    mdm.updatePoint(point, withNumber: pointNum, user: pointUser, optic: pointOptic, placeType: pointPlace, windDefence: pointWD, lightType: pointLight)
+//                    mdm.updatePoint(point, withNumber: pointNum, user: pointUser, optic: pointOptic, placeType: pointPlace, windDefence: pointWD, lightType: pointLight)
                     vm.updatePoint(point)
                 }
                     .presentationBackground(Color.mainBackground)
@@ -261,23 +261,15 @@ struct BPEditStadiumView: View {
 }
 
 #Preview {
-    let lm = DataManager(forPreview: true)
-    let mdm = MainDataManager(localDataManager: lm,
-                              globalDataManager: NetworkManager(),
-                              userId: "123")
-    let localEvent = lm.fetchOrCreateObject(ofType: Broadcast.self,
-                  predicate: NSPredicate(format: "id == %@", "id"),
-                                      in: lm.mainContext) { ctx in
-        let newEvent = Broadcast(context: ctx)
-        newEvent.id = "id"
-        return newEvent
-    }
+    let mdm = DataManager(globalDataManager: NetworkManager())
+    mdm.setMember(id: "123")
+    let localEvent: Broadcast = mdm.mainContext.fetchOrCreateObject(withID: "id")
    return
     TabView{
         
         BPEditStadiumView(event: localEvent)
             .environmentObject(mdm)
-            .environment(\.managedObjectContext, mdm.localDataManager.mainContext)
+            .environment(\.managedObjectContext, mdm.mainContext)
             .tabItem { Label("Hello", systemImage: "calendar") }
             .tag(0)
             .padding(.bottom,1)

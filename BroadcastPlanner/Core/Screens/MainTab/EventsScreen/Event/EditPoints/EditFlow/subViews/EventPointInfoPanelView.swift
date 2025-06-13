@@ -136,18 +136,9 @@ struct CustomTextEditor: View {
 //}
 
 #Preview {
-    let lm = DataManager(forPreview: true)
-    let mdm = MainDataManager(localDataManager: lm,
-                              globalDataManager: NetworkManager(),
-                              userId: "123")
-    let localEvent = lm.fetchOrCreateObject(ofType: Broadcast.self,
-                  predicate: NSPredicate(format: "id == %@", "id"),
-                                      in: lm.mainContext) { ctx in
-        let newEvent = Broadcast(context: ctx)
-        newEvent.id = "id"
-        return newEvent
-    }
-   return BPEditStadiumView(event: localEvent)
+    let mdm = DataManager(globalDataManager: NetworkManager())
+    let localEvent: Broadcast = mdm.mainContext.fetchOrCreateObject(withID: "id")
+    return BPEditStadiumView(event: localEvent)
         .environmentObject(mdm)
-        .environment(\.managedObjectContext, mdm.localDataManager.mainContext)
+        .environment(\.managedObjectContext, mdm.mainContext)
 }

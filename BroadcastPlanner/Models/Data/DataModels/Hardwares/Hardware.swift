@@ -45,7 +45,9 @@ extension Hardware: CoreDataUpdatable{
         self.channels = dto.chanels.joined(separator: ", ")
     }
     
-    func updateValues(type: HardwareType?, channels: [String]?, crew: Crew?){
+    func updateValues(type: HardwareType? = nil,
+                      channels: [String]? = nil,
+                      crew: Crew? = nil){
         if let type {
             self.type = type.rawValue
         }
@@ -61,8 +63,8 @@ extension Hardware: CoreDataUpdatable{
     }
     public override func prepareForDeletion() {
          super.prepareForDeletion()
-        if let crew {
-            crew.hardware = nil
+        if crew != nil {
+            self.crew = nil
         }
      }
 }

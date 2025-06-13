@@ -46,7 +46,9 @@ extension Sound: CoreDataUpdatable{
         self.windDefence = dto.windDefence.rawValue
     }
     
-    func updateValues(placeType: PlaceType?,windDefence: WindDefence?,point: VenuePoint?){
+    func updateValues(placeType: PlaceType? = nil,
+                      windDefence: WindDefence? = nil,
+                      point: VenuePoint? = nil){
         if let placeType {
             self.placeType = placeType.rawValue
         }
@@ -63,8 +65,8 @@ extension Sound: CoreDataUpdatable{
     
     public override func prepareForDeletion() {
          super.prepareForDeletion()
-        if let point {
-            point.removeFromSounds(self)
+        if point != nil {
+            self.point = nil
         }
      }
 }

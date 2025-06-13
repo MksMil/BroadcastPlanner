@@ -20,4 +20,15 @@ enum BPDateFormater {
             date: .omitted,
             time: .shortened)
     }
+    
+    static func timeInterval(to date: Date, currentTime: Date) -> String {
+        let interval = date.timeIntervalSince(currentTime)
+        if interval <= 0 {
+            return "Событие завершено"
+        }
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = [.day,.hour, .minute, .second]
+        formatter.unitsStyle = .positional
+        return formatter.string(from: interval) ?? "Ошибка"
+    }
 }

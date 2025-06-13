@@ -38,22 +38,10 @@
     "Accept" : {
 
     },
-    "Add camera" : {
-
-    },
     "Add Club" : {
 
     },
     "Add Crew form here" : {
-
-    },
-    "Add light" : {
-
-    },
-    "Add member" : {
-
-    },
-    "Add mic" : {
 
     },
     "Add new crew" : {
@@ -101,9 +89,6 @@
     "Choose Venue" : {
 
     },
-    "Club" : {
-
-    },
     "Club and Venue Edit" : {
 
     },
@@ -114,18 +99,6 @@
 
     },
     "contact info" : {
-
-    },
-    "Create Broadcast" : {
-
-    },
-    "Create Club" : {
-
-    },
-    "Create User" : {
-
-    },
-    "Create Venue" : {
 
     },
     "Creation date: %@" : {
@@ -167,22 +140,16 @@
     "enter title" : {
 
     },
-    "Event" : {
-
-    },
     "Forget password" : {
 
     },
-    "Hello" : {
+    "Hello Error" : {
 
     },
     "Hours" : {
 
     },
     "id: %@" : {
-
-    },
-    "Info" : {
 
     },
     "Link with Apple" : {
@@ -197,9 +164,6 @@
     "Match Day" : {
 
     },
-    "Messege" : {
-
-    },
     "Minutes" : {
 
     },
@@ -207,9 +171,6 @@
 
     },
     "My Info" : {
-
-    },
-    "New Broadcast" : {
 
     },
     "Not Registered?   Sign Up!" : {
@@ -236,31 +197,13 @@
     "Remove %@ template!" : {
 
     },
-    "Remove Broadcast" : {
-
-    },
-    "Remove camera environment" : {
-
-    },
     "Remove Club" : {
-
-    },
-    "Remove light hardware" : {
-
-    },
-    "Remove member" : {
 
     },
     "Remove Photo" : {
 
     },
-    "Remove sound hardware" : {
-
-    },
     "Remove Venue" : {
-
-    },
-    "RemoveClub" : {
 
     },
     "Replay Hardware" : {
@@ -270,9 +213,6 @@
 
     },
     "Send" : {
-
-    },
-    "Settings" : {
 
     },
     "sfdsfsdfds" : {
@@ -285,9 +225,6 @@
 
     },
     "Sign Up" : {
-
-    },
-    "something wrong" : {
 
     },
     "Status" : {
@@ -311,22 +248,7 @@
     "Update %@" : {
 
     },
-    "Update Broadcast" : {
-
-    },
-    "Update Club" : {
-
-    },
-    "Update User" : {
-
-    },
     "url" : {
-
-    },
-    "User" : {
-
-    },
-    "Venue" : {
 
     },
     "Welcome!\nselection: %lld" : {

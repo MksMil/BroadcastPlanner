@@ -186,7 +186,7 @@ extension BPEditCarViewModel{
 struct BPEditCarView: View {
 
     @EnvironmentObject var settings: GlobalSettings
-    @EnvironmentObject var mdm: MainDataManager
+    @EnvironmentObject var mdm: DataManager
     @EnvironmentObject var eventRouter: EventTabRouter
 
     @StateObject var vm: BPEditCarViewModel
@@ -211,129 +211,120 @@ struct BPEditCarView: View {
     var body: some View {
         ZStack {
             MainBackground()
-            VStack {
-                ConfirmationButtonGroupView(isAcceptDisabled: false) {
-                    //rollback
-                    eventRouter.routeStepBack()
-                } acceptAction: {
-                    //save
-                    eventRouter.routeStepBack()
-                } content: {
-                    Menu {
-                        ScrollView {
-                            ForEach(obvans) { obvan in
-                                Text(obvan.viewName)
-                                //styling
-                                    .onTapGesture {
-                                        vm.changeObvan(car: obvan)
-                                    }
-                            }
-                        
-//                            ForEach(broadcasters) { bc in
-//                                Button("\(bc.viewTitle)") {
-//                                    broadcasterTitle = bc.viewTitle
-//                                    //vm.updateScene()
-//                                }
+//            VStack {
+//                ConfirmationButtonGroupView(isAcceptDisabled: false) {
+//                    //rollback
+//                    eventRouter.routeStepBack()
+//                } acceptAction: {
+//                    //save
+//                    eventRouter.routeStepBack()
+//                } content: {
+//                    Menu {
+//                        ScrollView {
+//                            ForEach(obvans) { obvan in
+//                                Text(obvan.viewName)
+//                                //styling
+//                                    .onTapGesture {
+//                                        vm.changeObvan(car: obvan)
+//                                    }
 //                            }
-//                            Button("+ new broadcaster") {
-//                                // TODO: add broadcaster flow
-//                                print("add new broadcaster car")
+//                        
+////                            ForEach(broadcasters) { bc in
+////                                Button("\(bc.viewTitle)") {
+////                                    broadcasterTitle = bc.viewTitle
+////                                    //vm.updateScene()
+////                                }
+////                            }
+////                            Button("+ new broadcaster") {
+////                                // TODO: add broadcaster flow
+////                                print("add new broadcaster car")
+////                            }
+//                        }
+//                    } label: {
+//                        Text(obvanTitle)
+//                            .frame(maxWidth: .infinity)
+//                            .frame(height: 45)
+//                            .background {
+//                                RoundedRectangle(cornerRadius: 5).fill(
+//                                    .white.opacity(0.4)
+//                                )
 //                            }
-                        }
-                    } label: {
-                        Text(obvanTitle)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 45)
-                            .background {
-                                RoundedRectangle(cornerRadius: 5).fill(
-                                    .white.opacity(0.4)
-                                )
-                            }
-                    }
-                }
-                // TODO: Selecte broadcaster & car fsc view
- 
-                SpriteView(
-                    scene: vm.renderCarScene,
-                    debugOptions: [.showsFPS, .showsNodeCount]
-                )
-                .aspectRatio(2.3, contentMode: .fit)
-                .frame(maxWidth: .infinity)
-                .clipShape(RoundedRectangle(cornerRadius: 10))
-                
-                HStack(alignment: .top){
-                    StaffPanelView(event: event,
-                                   addUnitAction: { user,specialization,hardware in
-                        let unit = mdm.createUnitWithUser(user, andSpecialization: specialization, andHardware: hardware, inEvent: event)
-//                        let id = crew.viewId
-                        var image = UIImage(systemName: "person")
-                        if let uiimage = user.image?.makeUIImage(){
-                            image = uiimage
-                        }
-                        vm.addUnit(unit: unit, image: image )
-                    }, removeUnitAction: { unitToRemove in
-                        mdm.removeUnit(unitToRemove)
-                    }, editUnitAction: {
-                        
-                    })
-                    .background{
-                        RoundedRectangle(cornerRadius: 5).fill(.white.opacity(0.4))
-                    }
-                    Spacer()
-                    VStack{
-                        BPEditEventControlPanel(scaleUpAction: {/*vm.scaleUp()*/},
-                                                scaleDownAction: {/*vm.scaleDown()*/},
-                                                resetScaleAction: {/*vm.resetScale()*/})
-                        
-                        BPJoystick(
-                            upAction: vm.moveUp,
-                            downAction: vm.moveDown,
-                            leftAction: vm.moveLeft,
-                            rightAction: vm.moveRight,
-                            rotationLeft: vm.rotateCounterClockwise,
-                            rotationRight: vm.rotateClockwise,
-                            swap: vm.swap,
-                            scaleUp: vm.scaleUpPoint,
-                            scaleDown: vm.scaleDownPoint
-                        )
-                        .aspectRatio(1, contentMode: .fit)
-                        .padding(5)
-                        .overlay {
-                            RoundedRectangle(cornerRadius: 5).stroke(.white.opacity(0.4), lineWidth: 2)
-                        }
-                        // Task managment
-//                        TaskDescriptionView(text: vm.selectedCarPoint?.viewTask ?? "Task", isEditMode: true)
-                        //                        .disabled(vm.selectedEventPoint == nil)
-                        //                        .opacity(vm.selectedEventPoint == nil ? 0.6 : 1)
-                        
-                    }
-                    .padding(5)
-                    .frame(width: 140)
-                }
-                Spacer()
-            }
-            .navigationBarBackButtonHidden()
-            .padding(.horizontal)
+//                    }
+//                }
+//                // TODO: Selecte broadcaster & car fsc view
+// 
+//                SpriteView(
+//                    scene: vm.renderCarScene,
+//                    debugOptions: [.showsFPS, .showsNodeCount]
+//                )
+//                .aspectRatio(2.3, contentMode: .fit)
+//                .frame(maxWidth: .infinity)
+//                .clipShape(RoundedRectangle(cornerRadius: 10))
+//                
+//                HStack(alignment: .top){
+//                    StaffPanelView(event: event,
+//                                   addUnitAction: { user,specialization,hardware in
+//                        let unit = mdm.createUnitWithUser(user, andSpecialization: specialization, andHardware: hardware, inEvent: event)
+////                        let id = crew.viewId
+//                        var image = UIImage(systemName: "person")
+//                        if let uiimage = user.image?.makeUIImage(){
+//                            image = uiimage
+//                        }
+//                        vm.addUnit(unit: unit, image: image )
+//                    }, removeUnitAction: { unitToRemove in
+//                        mdm.removeUnit(unitToRemove)
+//                    }, editUnitAction: {
+//                        
+//                    })
+//                    .background{
+//                        RoundedRectangle(cornerRadius: 5).fill(.white.opacity(0.4))
+//                    }
+//                    Spacer()
+//                    VStack{
+//                        BPEditEventControlPanel(scaleUpAction: {/*vm.scaleUp()*/},
+//                                                scaleDownAction: {/*vm.scaleDown()*/},
+//                                                resetScaleAction: {/*vm.resetScale()*/})
+//                        
+//                        BPJoystick(
+//                            upAction: vm.moveUp,
+//                            downAction: vm.moveDown,
+//                            leftAction: vm.moveLeft,
+//                            rightAction: vm.moveRight,
+//                            rotationLeft: vm.rotateCounterClockwise,
+//                            rotationRight: vm.rotateClockwise,
+//                            swap: vm.swap,
+//                            scaleUp: vm.scaleUpPoint,
+//                            scaleDown: vm.scaleDownPoint
+//                        )
+//                        .aspectRatio(1, contentMode: .fit)
+//                        .padding(5)
+//                        .overlay {
+//                            RoundedRectangle(cornerRadius: 5).stroke(.white.opacity(0.4), lineWidth: 2)
+//                        }
+//                        // Task managment
+////                        TaskDescriptionView(text: vm.selectedCarPoint?.viewTask ?? "Task", isEditMode: true)
+//                        //                        .disabled(vm.selectedEventPoint == nil)
+//                        //                        .opacity(vm.selectedEventPoint == nil ? 0.6 : 1)
+//                        
+//                    }
+//                    .padding(5)
+//                    .frame(width: 140)
+//                }
+//                Spacer()
+//            }
+//            .navigationBarBackButtonHidden()
+//            .padding(.horizontal)
         }
     }
 }
 
 #Preview {
-    let lm = DataManager(forPreview: true)
-    let mdm = MainDataManager(localDataManager: lm,
-                              globalDataManager: NetworkManager(),
-                              userId: "123")
-    let localEvent = lm.fetchOrCreateObject(ofType: Broadcast.self,
-                  predicate: NSPredicate(format: "id == %@", "id"),
-                                      in: lm.mainContext) { ctx in
-        let newEvent = Broadcast(context: ctx)
-        newEvent.id = "id"
-        return newEvent
-    }
-
+    let mdm = DataManager(globalDataManager: NetworkManager())
+    let localEvent: Broadcast = mdm.mainContext.fetchOrCreateObject(withID: "id")
+    
     return BPEditCarView(
         event: localEvent, editable: true
     )
     .environmentObject(mdm)
-    .environment(\.managedObjectContext, mdm.localDataManager.mainContext)
+    .environment(\.managedObjectContext, mdm.mainContext)
 }

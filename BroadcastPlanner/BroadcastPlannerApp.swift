@@ -1,25 +1,9 @@
 import SwiftUI
 import Firebase
-import FirebaseFirestore
 import GoogleSignIn
 
-enum AppState {
-    case authorized, notAuthorized
-}
-
-enum UserOnlineStatus {
-    case online, offline
-}
-
-class ApplicationState: ObservableObject{
-    @Published var state: AppState = .notAuthorized
-    @Published var userOnlineStatus: UserOnlineStatus = .offline
-}
-
-// MARK: - Main App
 @main
 struct BroadcastPlannerApp: App {
-    
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @Environment(\.scenePhase) var scenePhase
     

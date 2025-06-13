@@ -215,93 +215,88 @@ extension Broadcast: CoreDataUpdatable{
         self.date = dto.date
         self.lastUpdated = dto.lastUpdated
         
-        //clean club
+        //unlink home club
         if let homeClub{
             homeClub.removeFromHomeBroadcasts(self)
             self.homeClub = nil
         }
+        //add new home club
         if let dtoHomeClubId = dto.homeClubId{
             let newClub: Club = context.fetchOrCreateObject(withID: dtoHomeClubId)
-            newClub.id = dtoHomeClubId
             self.homeClub = newClub
             newClub.addToHomeBroadcasts(self)
         }
-        //clean club
+        //unlink guest club
         if let guestClub{
             guestClub.removeFromGuestBroadcasts(self)
             self.guestClub = nil
         }
+        //add new guest club
         if let dtoGuestClubId = dto.guestClubId{
             let newClub: Club = context.fetchOrCreateObject(withID: dtoGuestClubId)
-            newClub.id = dtoGuestClubId
             self.guestClub = newClub
             newClub.addToGuestBroadcasts(self)
         }
-        
+            //unlink venue
         if let venue {
             venue.removeFromBroadcasts(self)
             self.venue = nil
         }
+        // add new venur
         if let venueID = dto.venueID{
             let newVenue: Venue = context.fetchOrCreateObject(withID: venueID)
             newVenue.addToBroadcasts(self)
             self.venue = newVenue
         }
-        
-        if let obvan {
-            obvan.removeFromBroadcasts(self)
-            self.obvan = nil
-        }
+        // clean obvans
+        unlinkObvans()
+        //add new obvans
         dto.obvanId.forEach{
             let newObvan: Obvan = context.fetchOrCreateObject(withID: $0)
             newObvan.addToBroadcasts(self)
             addToObvan(newObvan)
         }
-        
+        //clean venue preview
         if let venueSchemaPreview {
-            venueSchemaPreview.parentVenuePreview = nil
             context.delete(venueSchemaPreview)
         }
+        //add new venue preview
         if let venuePreviewId = dto.venuePreviewId{
             let newPreview: LocalImage = context.fetchOrCreateObject(withID: venuePreviewId)
-            
             newPreview.parentVenuePreview = self
+            newPreview.type = GlobalProperties.ImageType.venuePreview.rawValue
             self.venueSchemaPreview = newPreview
         }
-        
+        //clean obvan preview
         if let obvanPreview {
-            obvanPreview.parentObvanPreview = nil
             context.delete(obvanPreview)
         }
+        //add new obvan previw
         if let obvanPreviewId = dto.obvanPreviewId{
             let newPreview: LocalImage = context.fetchOrCreateObject(withID: obvanPreviewId)
-            
-            newPreview.parentVenuePreview = self
+            newPreview.type = GlobalProperties.ImageType.obvanPreview.rawValue
+            newPreview.parentObvanPreview = self
             self.obvanPreview = newPreview
         }
-        
-        viewOwners.forEach{
-            removeFromOwners($0)
-            $0.removeFromOwnedBroadcasts(self)
-        }
-        
+        //unlink owners
+       unlinkOwners()
+        //add new owners
         dto.ownersIds.forEach{
             let member: Member = context.fetchOrCreateObject(withID: $0)
-            member.id = $0
             member.addToOwnedBroadcasts(self)
             addToOwners(member)
         }
-        
-        viewVenuePoints.forEach{
-            removeFromVenuePoints($0)
-            $0.broadcast = nil
-            context.delete($0)
-        }
+        //clean venue points
+        cleanVenuePoints()
+        //add new venue points
         dto.venuePoints.forEach{
             let point = context.makeObjectFromDTO($0)
             addToVenuePoints(point)
             point.broadcast = self
         }
+        //clean crews
+        cleanCrews()
+        //add new crews
         dto.crews.forEach{
             let crew = context.makeObjectFromDTO($0)
             addToCrews(crew)
@@ -309,7 +304,18 @@ extension Broadcast: CoreDataUpdatable{
         }
     }
     
-    func updateValues(date: Date?,lastUpdated: Date?,homeClub: Club?,guestClub: Club?,venue: Venue?,obvan: Obvan?,venuePreview: LocalImage?,obvanPreview: LocalImage?,owners: [Member]?,venuePoints:[VenuePoint]?,crews: [Crew]?,in context: NSManagedObjectContext ){
+    func updateValues(date: Date? = nil,
+                      lastUpdated: Date? = nil,
+                      homeClub: Club? = nil,
+                      guestClub: Club? = nil,
+                      venue: Venue? = nil,
+                      obvans: [Obvan]? = nil,
+                      venuePreview: LocalImage? = nil,
+                      obvanPreview: LocalImage? = nil,
+                      owners: [Member]? = nil,
+                      venuePoints:[VenuePoint]? = nil,
+                      crews: [Crew]? = nil,
+                      in context: NSManagedObjectContext ){
         if let date {
             self.date = date
         }
@@ -337,76 +343,77 @@ extension Broadcast: CoreDataUpdatable{
             venue.addToBroadcasts(self)
             self.venue = venue
         }
-        if let obvan{
-            if let oldObvan = self.obvan{
-                oldObvan.removeFromBroadcasts(self)
+        
+        if let obvans{
+            unlinkObvans()
+            obvans.forEach{
+                addToObvan($0)
+                $0.addToBroadcasts(self)
             }
-            obvan.addToBroadcasts(self)
-            self.obvan = obvan
         }
+        
         if let venueSchemaPreview {
             if let oldPreview = self.venueSchemaPreview {
-                oldPreview.parentVenuePreview = nil
+                context.delete(oldPreview)
             }
             venueSchemaPreview.parentVenuePreview = self
             self.venueSchemaPreview = venueSchemaPreview
         }
         if let obvanPreview {
             if let oldPreview = self.obvanPreview{
-                oldPreview.parentObvanPreview = nil
+                context.delete(oldPreview)
             }
             obvanPreview.parentObvanPreview = self
             self.obvanPreview = obvanPreview
         }
         if let owners{
-            viewOwners.forEach {
-                $0.removeFromOwnedBroadcasts(self)
-                removeFromOwners($0)
-            }
+            unlinkOwners()
             owners.forEach{
                 addToOwners($0)
                 $0.addToOwnedBroadcasts(self)
             }
         }
         if let venuePoints{
-            viewVenuePoints.forEach{
-                $0.broadcast = nil
-                removeFromVenuePoints($0)
-                context.delete($0)
-            }
+            cleanVenuePoints()
             venuePoints.forEach{
                 $0.broadcast = self
                 addToVenuePoints($0)
             }
         }
         if let crews {
-            viewCrews.forEach{
-                $0.broadcast = nil
-                removeFromCrews($0)
-                context.delete($0)
-            }
+            cleanCrews()
             crews.forEach{
                 $0.broadcast = self
                 addToCrews($0)
             }
         }
     }
-    func cleanObvans(){
+    
+    func unlinkObvans(){
         viewObvans.forEach{
-        //clean crews?
             $0.removeFromBroadcasts(self)
             removeFromObvan($0)
         }
     }
-    func cleanCrews(){
+    func cleanVenuePoints(){
+        guard let context = self.managedObjectContext else { return }
+        viewVenuePoints.forEach{
+            removeFromVenuePoints($0)
+            context.delete($0)
+        }
+    }
+    func cleanCrews(obvanId: String? = nil){
+        guard let context = self.managedObjectContext else { return }
         viewCrews.forEach{ crew in
-            crew.broadcast = nil
             removeFromCrews(crew)
-            viewObvans.forEach{ obvan in
-                if obvan.viewCrews.contains(crew) {
-                    obvan.removeFromCrews(crew)
-                }
-            }
+            context.delete(crew)
+        }
+    }
+    
+    func unlinkOwners(){
+        viewOwners.forEach {
+            $0.removeFromOwnedBroadcasts(self)
+            removeFromOwners($0)
         }
     }
 }
@@ -417,29 +424,17 @@ extension Broadcast{
         super.prepareForDeletion()
         if let context = self.managedObjectContext{
             if let venueSchemaPreview {
-                venueSchemaPreview.parentVenuePreview = nil
                 self.venueSchemaPreview = nil
                 context.delete(venueSchemaPreview)
             }
             if let obvanPreview {
-                obvanPreview.parentObvanPreview = nil
                 self.obvanPreview = nil
                 context.delete(obvanPreview)
             }
-            viewCrews.forEach{
-                $0.broadcast = nil
-                removeFromCrews($0)
-                context.delete($0)
-            }
-            viewVenuePoints.forEach{
-                $0.broadcast = nil
-                removeFromVenuePoints($0)
-                context.delete($0)}
-            viewOwners.forEach{
-                $0.removeFromOwnedBroadcasts(self)
-                removeFromOwners($0)
-            }
-            
+            unlinkObvans()
+            cleanCrews()
+            cleanVenuePoints()
+            unlinkOwners()
         }
     }
 }

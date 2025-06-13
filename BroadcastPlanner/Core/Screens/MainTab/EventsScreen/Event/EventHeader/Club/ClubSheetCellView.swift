@@ -22,7 +22,7 @@ final class ClubSheetCellViewModel: ObservableObject{
 }
 
 struct ClubSheetCellView: View {
-    @EnvironmentObject var mdm: MainDataManager
+    @EnvironmentObject var mdm: DataManager
     @StateObject private var vm: ClubSheetCellViewModel
     let club: Club
     
@@ -55,13 +55,13 @@ struct ClubSheetCellView: View {
                 }
                 
         }
-        .onReceive(mdm.localDataManager.updatePublisher) { value in
-            if value.0 == .clubs, let  id = value.1.first{
-                if id == club.viewId{
-                    vm.update()
-                }
-            }
-        }
+//        .onReceive(mdm.localDataManager.updatePublisher) { value in
+//            if value.0 == .clubs, let  id = value.1.first{
+//                if id == club.viewId{
+//                    vm.update()
+//                }
+//            }
+//        }
     }
 }
 

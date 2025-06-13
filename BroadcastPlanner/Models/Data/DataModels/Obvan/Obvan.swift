@@ -16,7 +16,7 @@ extension Obvan {
     @NSManaged public var broadcasts: NSSet?
     @NSManaged public var crewTemplates: NSSet?
     @NSManaged public var image: LocalImage?
-    @NSManaged public var crews: NSSet?
+//    @NSManaged public var crews: NSSet?
 
 }
 
@@ -54,22 +54,6 @@ extension Obvan {
 
 }
 
-// MARK: Generated accessors for crews
-extension Obvan {
-
-    @objc(addCrewsObject:)
-    @NSManaged public func addToCrews(_ value: Crew)
-
-    @objc(removeCrewsObject:)
-    @NSManaged public func removeFromCrews(_ value: Crew)
-
-    @objc(addCrews:)
-    @NSManaged public func addToCrews(_ values: NSSet)
-
-    @objc(removeCrews:)
-    @NSManaged public func removeFromCrews(_ values: NSSet)
-
-}
 // MARK: - Unwrapped + DTO
 extension Obvan : Identifiable {
     var viewId: String {
@@ -93,9 +77,7 @@ extension Obvan : Identifiable {
     var viewLastUpdated: Date {
         lastUpdated ?? .now
     }
-    var viewCrews: [Crew] {
-        crews?.allObjects as? [Crew] ?? []
-    }
+
     var viewTemplateCrews: [ObvanTemplateCrew] {
         return crewTemplates?.allObjects  as? [ObvanTemplateCrew] ?? []
     }
@@ -118,24 +100,30 @@ extension Obvan: CoreDataUpdatable{
         self.name = dto.name
         self.lastUpdated = dto.lastUpdated
         self.broadcaster = dto.broadcaster
-        cleanTemplateCrews(in: context)
+        
+        cleanTemplateCrews()
         dto.obvanTemplateCrewDTOs.forEach {
             let templateCrew = context.makeObjectFromDTO($0)
             addToCrewTemplates(templateCrew)
             templateCrew.parentObvan = self
         }
+        
         if let image {
-            image.parentObvan = nil
+            image.removeFromParentObvan(self)
+            self.image = nil
         }
-        let image: LocalImage = context.fetchOrCreateObject(withID: dto.imageId)
-        image.parentObvan = self
-        self.image = image
+        if !dto.imageId.isEmpty{
+            let image: LocalImage = context.fetchOrCreateObject(withID: dto.imageId)
+            image.addToParentObvan(self)
+            self.image = image
+        }
     }
     
-    func updateWithValue(name: String?,broadcaster: String?,
-                         lastUpdated: Date?,image: LocalImage?,
-                         crews: [Crew]?,
-                         templateCrews: [ObvanTemplateCrew]?,
+    func updateWithValue(name: String? = nil,
+                         broadcaster: String? = nil,
+                         lastUpdated: Date? = nil,
+                         obvanSchema: LocalImage? = nil,
+                         templateCrews: [ObvanTemplateCrew]? = nil,
                          in context: NSManagedObjectContext){
         if let name {
             self.name = name
@@ -148,21 +136,17 @@ extension Obvan: CoreDataUpdatable{
         if let lastUpdated {
             self.lastUpdated = lastUpdated
         }
-        
-        if let image {
-            self.image?.parentObvan = nil
-            image.parentObvan = self
-            self.image = image
-        }
-        cleanCrews(in: context)
-        if let crews {
-            crews.forEach{
-                addToCrews($0)
-                $0.obvan = self
+        //old image continue to exist
+        if let obvanSchema{
+            if let image {
+                image.removeFromParentObvan(self)
             }
+            obvanSchema.addToParentObvan(self)
+            self.image = obvanSchema
         }
+ 
+        cleanTemplateCrews()
         
-        cleanTemplateCrews(in: context)
         if let templateCrews{
             templateCrews.forEach{
                 addToCrewTemplates($0)
@@ -170,36 +154,27 @@ extension Obvan: CoreDataUpdatable{
             }
         }
     }
-    func cleanCrews(in context: NSManagedObjectContext){
-        viewCrews.forEach{
-            $0.obvan = nil
-            removeFromCrews($0)
-        }
-    }
     
-    func cleanTemplateCrews(in context: NSManagedObjectContext){
+    func cleanTemplateCrews(){
+        guard let context = self.managedObjectContext else { return }
         viewTemplateCrews.forEach{
-            $0.parentObvan = nil
-            removeFromCrewTemplates($0)
             context.delete($0)}
     }
 }
 
-// MARK: - Remove
+// MARK: - Remove (no scenario for now)
 extension Obvan{
     public override func prepareForDeletion() {
         super.prepareForDeletion()
-        if let context = self.managedObjectContext{
+            //obvan image continue to exists, unlink
             if let image {
-                image.parentObvan = nil
+                image.removeFromParentObvan(self)
                 self.image = nil
             }
+            cleanTemplateCrews()
             viewBroadcasts.forEach {
                 $0.obvan = nil
                 removeFromBroadcasts($0)
             }
-            cleanCrews(in: context)
-            cleanTemplateCrews(in: context)
-        }
     }
 }
