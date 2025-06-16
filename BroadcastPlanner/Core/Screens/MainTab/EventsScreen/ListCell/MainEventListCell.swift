@@ -24,14 +24,13 @@ struct MainEventListCell: View {
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                     .overlay {
                         HStack{
-                            VStack{
-                                Spacer()
+                            VStack(spacing: 5){
                                 Text("\(vm.firstDate)")
                                     .font(.caption2)
-                                Spacer()
                                 Text("\(vm.secondDate)")
-                                Spacer()
+                                RemainigTimveView(time: vm.date)
                             }
+                            .frame(width: 100)
                             .background{
                                 Color.randomColor()
                             }
@@ -47,7 +46,6 @@ struct MainEventListCell: View {
                                         Color.randomColor()
                                     }
 
-                                RemainigTimveView(time: vm.date)
                             }
                             .padding(.vertical,2)
                             
@@ -115,7 +113,9 @@ struct RemainigTimveView: View {
     
     init(time: Date) {
         self.time = time
-        self.text = BPDateFormater.timeInterval(to: time, currentTime: .now)
+        self.text = BPDateFormater.timeInterval(to: time,
+                                                currentTime: .now,
+                                                expiredString: "finished")
     }
     
     var body: some View {
@@ -123,7 +123,8 @@ struct RemainigTimveView: View {
             .font(.footnote)
             .onReceive(mdm.currentTime) { currentTime in
                 text = BPDateFormater.timeInterval(to: time,
-                                                   currentTime: currentTime)
+                                                   currentTime: currentTime,
+                expiredString: "finished")
             }
     }
     

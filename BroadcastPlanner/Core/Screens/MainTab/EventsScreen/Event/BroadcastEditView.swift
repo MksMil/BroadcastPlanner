@@ -46,59 +46,58 @@ struct BroadcastEditView: View {
             MainBackground()
 
             VStack(alignment: .center, spacing: 5) {
-                ConfirmationButtonGroupView(height: 50, isAcceptDisabled: false)
-                {
-                    do{
-                        mdm.rollBackMoc()
-//                        try mdm.saveContext(publish: .broadcasts, id: [])
-                        router.routeStepBack()
-                    } catch{
-                    print("cant roll back")
-                    }
-                } acceptAction: {
-                    do{
-                        broadcast.updateValues(date: vm.eventDate,
-                                               lastUpdated: Date.now,
-                                               homeClub: vm.homeClub,
-                                               guestClub: vm.guestClub,
-                                               venue: vm.location,
-                                               in: mdm.mainContext)
-                        try mdm.saveContext(publish: .broadcasts,
-                                            id: [broadcast.viewId])
-                    } catch{
-                        print("error save context: \(error.localizedDescription)")
-                        //show error in 'status'
-                        //log error
-                    }
-                    Task{
-                        await mdm.updateBroadcast(broadcast)
-                    }
-                    router.routeStepBack()
-                } content: {
-                    Button {
-                        isRemoveConfirm = true
-                    } label: {
-                        Image(systemName: "trash")
-                            .resizable()
-                            .scaledToFit()
-                            .bold()
-                            .padding(50 / 4)
-                            .frame(width: 150,height: 50)
-                            .background {
-                                RoundedRectangle(cornerRadius: 5)
-                                    .fill(.ultraThickMaterial
-                                        .opacity(0.3))
-                                    .overlay {
-                                        RoundedRectangle(cornerRadius: 5)
-                                            .stroke(
-                                                .ultraThickMaterial
-                                                .opacity(0.5),
-                                                    lineWidth: 2)
-                                    }
-                            }
-                    }
-                }
-                .padding(.horizontal)
+//                ConfirmationButtonGroupView(height: 50, isAcceptDisabled: false)
+//                {
+//                    do{
+//                        mdm.rollBackMoc()
+//                        router.routeStepBack()
+//                    } catch{
+//                    print("cant roll back")
+//                    }
+//                } acceptAction: {
+//                    do{
+//                        broadcast.updateValues(date: vm.eventDate,
+//                                               lastUpdated: Date.now,
+//                                               homeClub: vm.homeClub,
+//                                               guestClub: vm.guestClub,
+//                                               venue: vm.location,
+//                                               in: mdm.mainContext)
+//                        try mdm.saveContext(publish: .broadcasts,
+//                                            id: [broadcast.viewId])
+//                    } catch{
+//                        print("error save context: \(error.localizedDescription)")
+//                        //show error in 'status'
+//                        //log error
+//                    }
+//                    Task{
+//                        await mdm.updateBroadcast(broadcast)
+//                    }
+//                    router.routeStepBack()
+//                } content: {
+//                    Button {
+//                        isRemoveConfirm = true
+//                    } label: {
+//                        Image(systemName: "trash")
+//                            .resizable()
+//                            .scaledToFit()
+//                            .bold()
+//                            .padding(50 / 4)
+//                            .frame(width: 150,height: 50)
+//                            .background {
+//                                RoundedRectangle(cornerRadius: 5)
+//                                    .fill(.ultraThickMaterial
+//                                        .opacity(0.3))
+//                                    .overlay {
+//                                        RoundedRectangle(cornerRadius: 5)
+//                                            .stroke(
+//                                                .ultraThickMaterial
+//                                                .opacity(0.5),
+//                                                    lineWidth: 2)
+//                                    }
+//                            }
+//                    }
+//                }
+//                .padding(.horizontal)
                 //header: time, date, teams, venue
                 VStack{
                     ZStack{
@@ -146,13 +145,6 @@ struct BroadcastEditView: View {
                         .onTapGesture {
 //                            eventRouter.routeToStadPointsEdit()
                         }
-//                    broadcast.viewObvanPreview
-//                        .resizable()
-//                        .scaledToFit()
-//                        .scaleEffect(0.5)
-//                        .rotationEffect(Angle(degrees: -90))
-//                        .onTapGesture {
-//                        }
                 }
                 .padding(.horizontal)
                 Spacer()
@@ -160,19 +152,49 @@ struct BroadcastEditView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
-
         .navigationBarBackButtonHidden()
         .confirmationDialog("", isPresented: $isRemoveConfirm) {
             Button("Delete Broadcast", role: .destructive){
                 Task{
-//                    await mdm.removeEvent(event: broadcast)
-//                    eventRouter.routeStepBack()
                    await mdm.removeBroadcast(broadcast)
                     router.routeStepBack()
-                    
                 }
             }
         }
+        .onAppear{
+            mdm.globalAcceptAction = {
+                do{
+                    broadcast.updateValues(date: vm.eventDate,
+                                           lastUpdated: Date.now,
+                                           homeClub: vm.homeClub,
+                                           guestClub: vm.guestClub,
+                                           venue: vm.location,
+                                           in: mdm.mainContext)
+                    try mdm.saveContext(publish: .broadcasts,
+                                        id: [broadcast.viewId])
+                } catch{
+                    print("error save context: \(error.localizedDescription)")
+                    //show error in 'status'
+                    //log error
+                }
+                Task{
+                    await mdm.updateBroadcast(broadcast)
+                }
+                router.routeStepBack()
+                
+            }
+            mdm.globalCancelAction = {
+                mdm.rollBackMoc()
+                router.routeStepBack()
+            }
+            mdm.globalRemoveAction = {isRemoveConfirm = true}
+        }
+        .onDisappear(){
+            mdm.globalAcceptAction = {}
+            mdm.globalCancelAction = {}
+            mdm.globalRemoveAction = {}
+        }
+        
     }
 }
 

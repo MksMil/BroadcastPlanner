@@ -21,10 +21,10 @@ enum BPDateFormater {
             time: .shortened)
     }
     
-    static func timeInterval(to date: Date, currentTime: Date) -> String {
+    static func timeInterval(to date: Date, currentTime: Date,expiredString: String) -> String {
         let interval = date.timeIntervalSince(currentTime)
         if interval <= 0 {
-            return "Событие завершено"
+            return expiredString
         }
         let formatter = DateComponentsFormatter()
         formatter.allowedUnits = [.day,.hour, .minute, .second]

@@ -1,5 +1,5 @@
 import SwiftUI
-import NavigationTransitions
+import SwiftUINavigationTransitions
 
 enum RouterPath: Hashable{
     //app open
@@ -43,8 +43,19 @@ final class Router: ObservableObject {
             return false
         }
     }
+    
+    var actionBarSeq:[Bool] = [false]
+    var actionBarVisibility: Bool {
+        if let last = actionBarSeq.last, last {
+            return true
+        } else {
+            return false
+        }
+    }
+    
     @Published var path: NavigationPath = NavigationPath()
-    var transition: AnyNavigationTransition = .default
+    
+    var transition: AnyNavigationTransition = .fade(.out)
     var interactivity: AnyNavigationTransition.Interactivity = .disabled
     
     func routeStepBack(){
@@ -52,19 +63,28 @@ final class Router: ObservableObject {
         if statusBarSeq.count > 0{
             statusBarSeq.removeLast()
         }
+        if actionBarSeq.count > 0{
+            actionBarSeq.removeLast()
+        }
         path.removeLast()
+    }
+    
+    func stateForStatusBar(_ isStatus: Bool, andActionBar isAction: Bool){
+        statusBarSeq.append(isStatus)
+        actionBarSeq.append(isAction)
     }
     
     // MARK: broadcastList
     func routeTo(path: RouterPath,
-                 withTransition transition: AnyNavigationTransition = .default,
+                 withTransition transition: AnyNavigationTransition = .fade(.out),
                  andInteractivity interactivity: AnyNavigationTransition.Interactivity = .disabled){
         switch path {
-            case .animatedStart,.authScreen,.createEdit:
-                statusBarSeq.append(false)
+            case .animatedStart,.authScreen:
+                stateForStatusBar(false, andActionBar: false)
+            case .createEdit:
+                stateForStatusBar(false, andActionBar: true)
             case .broadcastList:
-                statusBarSeq.append(true)
-            
+                stateForStatusBar(true, andActionBar: false)            
 //            case .stadPointsEdit:
 //                <#code#>
 //            case .carPointsEdit(let bool):
@@ -97,6 +117,7 @@ final class Router: ObservableObject {
         transition = .fade(.out)
         path.removeLast(path.count - 1)
         statusBarSeq = [false]
+        actionBarSeq = [false]
         path.append(RouterPath.authScreen)
     }
     

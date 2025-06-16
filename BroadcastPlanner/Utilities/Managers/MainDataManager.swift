@@ -19,6 +19,10 @@ class DataManager: ObservableObject {
     var currentId: String = ""
     var accessLevel: Int = 2
     var currentUserID: NSManagedObjectID = NSManagedObjectID()
+    
+    var globalAcceptAction: ()->() = {}
+    var globalCancelAction: ()->() = {}
+    var globalRemoveAction:()->() = {}
 
     // MARK: - Init
     init(forPreview: Bool = false,

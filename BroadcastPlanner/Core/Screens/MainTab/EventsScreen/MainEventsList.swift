@@ -63,7 +63,7 @@ struct MainEventsList: View {
                                 .id(broadcast.viewId)
                                 .onTapGesture {
                                     selectedBroadcast = broadcast
-                                    router.routeTo(path: .createEdit(broadcast))
+                                    router.routeTo(path: .createEdit(broadcast),withTransition: .fade(.out))//.fade(.cross))
                                 }
                                 .transition(
                                     .move(edge: .top).combined(with: .opacity)
@@ -114,8 +114,6 @@ struct MainEventsList: View {
         .onDisappear{
             mdm.stopTimer()
         }
-        
-        //        .environmentObject(eventRouter)
         .onReceive(mdm.updatePublisher) { value in
             if value.0 == GlobalProperties.PublishChanges.broadcasts {
                 print("broadcasts update received in EventList")

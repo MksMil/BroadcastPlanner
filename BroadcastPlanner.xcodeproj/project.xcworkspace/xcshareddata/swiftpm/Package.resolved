@@ -1,5 +1,5 @@
 {
-  "originHash" : "b1db0d6ad033e76786a096c6792ba5c671573d31ce22f87538bacea9252b5073",
+  "originHash" : "6700545a74cdd937a994a05701e7284836d5ef94e5f84b3b92ac4597de26c504",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -150,8 +150,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-protobuf.git",
       "state" : {
-        "revision" : "ebc7251dd5b37f627c93698e4374084d98409633",
-        "version" : "1.28.2"
+        "revision" : "102a647b573f60f73afdce5613a51d71349fe507",
+        "version" : "1.30.0"
       }
     },
     {
@@ -168,8 +168,17 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/davdroman/swiftui-navigation-transitions.git",
       "state" : {
-        "revision" : "76ae9c621422a1f38c30a07c8b7636994b669484",
-        "version" : "0.14.0"
+        "revision" : "4148cc224e5dba72a7d7052d2fe211c83a2a78e9",
+        "version" : "0.15.1"
+      }
+    },
+    {
+      "identity" : "xctest-dynamic-overlay",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/pointfreeco/xctest-dynamic-overlay",
+      "state" : {
+        "revision" : "39de59b2d47f7ef3ca88a039dff3084688fe27f4",
+        "version" : "1.5.2"
       }
     }
   ],
