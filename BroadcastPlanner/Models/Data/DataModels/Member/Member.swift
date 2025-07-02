@@ -98,9 +98,12 @@ extension Member : Identifiable {
     
     //an image or system Person.circle symbol
     var viewImage: Image{
+        print("fetch image")
         if let image {
+            print("image exists")
             return image.mediumImage
         } else {
+            print("image not exists")
             return Image(systemName: "person.circle")
         }
     }

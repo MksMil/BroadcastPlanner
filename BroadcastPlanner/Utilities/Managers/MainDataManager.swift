@@ -83,6 +83,7 @@ class DataManager: ObservableObject {
     func clearData(){
         self.currentId = ""
         self.currentUserID = NSManagedObjectID()
+        self.accessLevel = 2
     }
 }
 
@@ -146,6 +147,9 @@ extension DataManager: UpdateDelegateProtocol {
 // MARK: - User managment
 extension DataManager {
     //creates new member cloud entity
+    @MainActor func fetchOwner() -> Member {
+        return  mainContext.fetchOrCreateObject(withID: currentId)
+    }
     
     func createUser(id: String) async {
         let userDTO = MemberDTO(id: id)
@@ -165,44 +169,41 @@ extension DataManager {
         userSpecialization: [String],
         inputImage: UIImage?
     ) async {
-//        await mainContext.perform {
-//            var localImage: LocalImage?
-//            if let inputImage {
-//                localImage = self.mainContext.fetchOrCreateObject(withID: self.currentId)
-//                localImage?.updateValues(type: GlobalProperties.ImageType.member.rawValue,
-//                                         lastUpdated: Date.now,
-//                                         uiimage: inputImage,
-//                                         in: self.mainContext)
-//            }
-//            self.currentUserInMainContext.updateValues(firstName: firstName,
-//                                          lastName: lastName,
-//                                          phoneNumber: phoneNumber,
-//                                          homeAddress: address,
-//                                          email: email,
-//                                          image: localImage,
-//                                          accessLevel: nil,
-//                                          isOnline: nil,
-//                                          lastUpdated: Date.now,
-//                                          creationDate: nil,
-//                                          leaveDate: nil,
-//                                          specializations:userSpecialization.joined(separator: ","),
-//                                          in: self.mainContext)
-//            try? self.mainContext.save()
-//        }
-//
-//        if let inputImage {
-//            _ = await networkManager.saveImageToGlobalStorage(
-//                id: currentId,
-//                uiimage: inputImage,
-//                type: GlobalProperties.ImageType.member
-//            )
-//        }
-//        await networkManager
-//            .saveData(
-//                currentUserInMainContext.dto,
-//                withId: currentId,
-//                withType: GlobalProperties.Path.members
-//            )
+            var localImage: LocalImage?
+        let currentUserInMainContext = fetchOwner()
+            if let inputImage {
+                currentUserInMainContext.image = nil
+                localImage = self.mainContext.fetchOrCreateObject(withID: self.currentId)
+                localImage?.updateValues(type: GlobalProperties.ImageType.member.rawValue,
+                                         lastUpdated: Date.now,
+                                         uiimage: inputImage,
+                                         in: self.mainContext)
+            }
+            currentUserInMainContext.updateValues(firstName: firstName,
+                                          lastName: lastName,
+                                          phoneNumber: phoneNumber,
+                                          homeAddress: address,
+                                          email: email,
+                                          image: localImage,
+                                          lastUpdated: Date.now,
+                                          specializations:userSpecialization.joined(separator: ","),
+                                          in: self.mainContext)
+        try? saveContext(publish: .images, id: [currentId])
+        
+
+        if let inputImage {
+            _ = await globalDataManager.saveImageToGlobalStorage(
+                id: currentId,
+                uiimage: inputImage,
+                type: GlobalProperties.ImageType.member
+            )
+        }
+        await globalDataManager
+            .saveData(
+                currentUserInMainContext.dto,
+                withId: currentId,
+                withType: GlobalProperties.Path.members
+            )
     }
     func removeCurrrentUser() {
         //remove member and member image in global

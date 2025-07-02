@@ -3,7 +3,7 @@ import SwiftUI
 
 struct BPAccountInfoView: View {
     @EnvironmentObject var mdm: DataManager
-    
+    @EnvironmentObject var router: Router
     @StateObject var vm: PersonalScreenViewModel
     
     @State private var isEdit: Bool = false
@@ -15,7 +15,6 @@ struct BPAccountInfoView: View {
 
     var body: some View {
 
-        NavigationStack {
             ZStack {
                 MainBackground()
                 VStack {
@@ -110,10 +109,9 @@ struct BPAccountInfoView: View {
                         .padding(.horizontal, 20)
                     Spacer()
                 }
-//                .randomColorBackground()
-
             }
             .navigationTitle(Text("My Info"))
+            .navigationBarBackButtonHidden()
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
@@ -143,8 +141,30 @@ struct BPAccountInfoView: View {
                     .foregroundStyle(.blue)
                 }
             }
-            .toolbarBackground(.visible, for: .navigationBar)
-            .toolbarBackground(.white.opacity(0.4), for: .navigationBar)
+//            .toolbarBackground(.visible, for: .navigationBar)
+//            .toolbarBackground(.white.opacity(0.4), for: .navigationBar)
+            .onAppear{
+                mdm.globalAcceptAction = {
+//                    Task{
+//                        await mdm.updateUserData(firstName: vm.firstName,
+//                                                 lastName: vm.lastName,
+//                                                 email: vm.email,
+//                                                 phoneNumber: vm.phoneNumber,
+//                                                 address: vm.address,
+//                                                 userSpecialization: vm.userSpecialization,
+//                                                 inputImage: vm.inputImage)
+//                    }
+                    router.routeStepBack()
+
+                }
+                mdm.globalCancelAction = {
+                    router.routeStepBack()
+                }
+            }
+            .onDisappear {
+                mdm.globalAcceptAction = {}
+                mdm.globalCancelAction = {}
+            }
         }
 //        .onReceive(mdm.updatePublisher, perform: { value in
 //            if value.0 == .members, value.1.contains(where: { $0 == mdm.currentId
@@ -153,9 +173,16 @@ struct BPAccountInfoView: View {
 //            }
 //        })
         
-    }
+    
 }
 
+#Preview {
+    RootView()
+        .environmentObject(GlobalSettings())
+        .environmentObject(SessionManager())
+        .environmentObject(ApplicationState())
+        .environmentObject(Router())
+}
 
 
 //#Preview {

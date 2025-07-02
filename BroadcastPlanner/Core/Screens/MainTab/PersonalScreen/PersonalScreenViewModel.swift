@@ -17,7 +17,7 @@ final class PersonalScreenViewModel: ObservableObject {
                       let image = UIImage(data: data)
                 else { return }
                 await MainActor.run {
-                    withAnimation(.easeInOut(duration: 3)) {
+                    withAnimation(.easeInOut(duration: 1)) {
                         inputImage = image
                         showedImage = Image(uiImage: image)
                     }
@@ -25,7 +25,7 @@ final class PersonalScreenViewModel: ObservableObject {
             }
         }
     }
-    @Published var inputImage: UIImage?
+    var inputImage: UIImage?
     @Published var firstName = ""
     @Published var lastName = ""
     @Published var email = ""
@@ -44,6 +44,7 @@ final class PersonalScreenViewModel: ObservableObject {
         self.userSpecialization = localUser.viewSpecialization.map {
             $0.rawValue
         }
+        print("init vm")
         self.showedImage = localUser.viewImage
     }
     @MainActor

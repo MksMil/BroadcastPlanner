@@ -11,6 +11,7 @@ struct BroadcastPlannerApp: App {
     
     @StateObject private var sessionManager: SessionManager = SessionManager()
     @StateObject private var globalSettings = GlobalSettings()
+    @StateObject var router: Router = Router()
     
     var body: some Scene {
                 
@@ -36,6 +37,7 @@ struct BroadcastPlannerApp: App {
                 .environmentObject(sessionManager)
                 .environmentObject(globalSettings)
                 .environmentObject(appState)
+                .environmentObject(router)
         }
     }
 }

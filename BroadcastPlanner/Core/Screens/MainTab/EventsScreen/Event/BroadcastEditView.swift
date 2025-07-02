@@ -194,7 +194,6 @@ struct BroadcastEditView: View {
             mdm.globalCancelAction = {}
             mdm.globalRemoveAction = {}
         }
-        
     }
 }
 
@@ -203,4 +202,5 @@ struct BroadcastEditView: View {
         .environmentObject(GlobalSettings())
         .environmentObject(SessionManager())
         .environmentObject(ApplicationState())
+        .environmentObject(Router())
 }

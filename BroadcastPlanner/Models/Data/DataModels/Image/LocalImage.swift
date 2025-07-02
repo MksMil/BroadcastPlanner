@@ -133,8 +133,7 @@ extension LocalImage{
     
     func makeImageWithSize(size: ImageSizes,
                            type: GlobalProperties.ImageType) -> Image{
-        
-        if let result = ImagesManager.loadImage(imageSize: size, id: viewId){
+        if let result = ImagesManager.loadImage(imageSize: size, id: viewId)?.copy() as? UIImage{
             return Image(uiImage: result)
         } else {
             switch viewType {
@@ -167,7 +166,7 @@ extension LocalImage{
     func uploadImage(uiimage: UIImage){
         if !viewId.isEmpty{
             let _ = ImagesManager.saveResizedImages(image: uiimage, id: viewId, type: viewType)
-        }
+        } 
     }
     func removeImageDataFromDevice(){
         if !viewId.isEmpty{
@@ -195,6 +194,7 @@ extension LocalImage: CoreDataUpdatable{
             self.lastUpdated = lastUpdated
         }
         if let uiimage {
+            print("upload")
             uploadImage(uiimage: uiimage)
         }
     }

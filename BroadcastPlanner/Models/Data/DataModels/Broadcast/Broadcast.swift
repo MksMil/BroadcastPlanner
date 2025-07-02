@@ -242,7 +242,7 @@ extension Broadcast: CoreDataUpdatable{
             venue.removeFromBroadcasts(self)
             self.venue = nil
         }
-        // add new venur
+        // add new venue
         if let venueID = dto.venueID{
             let newVenue: Venue = context.fetchOrCreateObject(withID: venueID)
             newVenue.addToBroadcasts(self)

@@ -63,7 +63,7 @@ struct MainEventsList: View {
                                 .id(broadcast.viewId)
                                 .onTapGesture {
                                     selectedBroadcast = broadcast
-                                    router.routeTo(path: .createEdit(broadcast),withTransition: .fade(.out))//.fade(.cross))
+                                    router.routeTo(path: .createEdit(broadcast),withTransition: .fade(.out))
                                 }
                                 .transition(
                                     .move(edge: .top).combined(with: .opacity)
@@ -80,7 +80,6 @@ struct MainEventsList: View {
                     }
                 }
                 .padding(.horizontal, 8)
-                
                 if mdm.accessLevel < 2 {
                     Button {
                         Task{
@@ -161,4 +160,5 @@ struct MainEventsList: View {
         .environmentObject(GlobalSettings())
         .environmentObject(SessionManager())
         .environmentObject(ApplicationState())
+        .environmentObject(Router())
 }

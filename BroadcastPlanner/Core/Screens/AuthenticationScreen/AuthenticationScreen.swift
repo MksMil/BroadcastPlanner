@@ -7,6 +7,7 @@ import SwiftUI
 
 struct AuthenticationScreen: View {
     @EnvironmentObject var sessionManager: SessionManager
+    @EnvironmentObject var router: Router
     @State private var isSignUp: Bool = false
 //    let signUpHandler: (BPUser)->()
     
@@ -130,5 +131,6 @@ struct AuthenticationScreen: View {
 #Preview {
     AuthenticationScreen()
         .environmentObject(SessionManager())
+        .environmentObject(Router())
     
 }

@@ -92,7 +92,6 @@ enum ImagesManager {
     ) {
         guard let image else { return }
         let resizingResult = resizeImages(image: image)
-
         ImageSizes.allCases.forEach { size in
             let dir = createCustomDirectory(
                 folderName: "\(size.rawValue)"
@@ -116,9 +115,6 @@ enum ImagesManager {
 
         return result
     }
-    
-
-
 
     static func saveImageToDirectory(
         image: UIImage?,
@@ -126,10 +122,10 @@ enum ImagesManager {
         id: String,
         type: GlobalProperties.ImageType
     ) -> URL? {
-        guard let image = image, let directory = directory else { return nil }
+        guard let image = image,
+              let directory = directory else { return nil }
         let fileExtension = (type == .club || type == .venueTemplate || type == .obvan) ? "png" : "jpeg"
         let fileURL = directory.appendingPathComponent("\(id).\(fileExtension)")
-
         //png flow
         if type == .club || type == .venueTemplate || type == .obvan {
             guard let data = image.pngData() else { return nil }
@@ -150,6 +146,7 @@ enum ImagesManager {
                 return fileURL
             } catch {
                 print("Error saving image: \(error.localizedDescription)")
+                print("error: \(error)")
                 return nil
             }
         }
@@ -167,14 +164,14 @@ enum ImagesManager {
         let jpegFilepath  = directoryPath.appendingPathComponent("\(id).jpeg")
         
         if fileManager.fileExists(atPath: pngFilepath.path){
-            if let image = UIImage(contentsOfFile: pngFilepath.path) {
+            if let image = UIImage(contentsOfFile: pngFilepath.path)?.copy() as? UIImage {
                 return image
             } else {
                 print("Wrong png data")
                 return nil
             }
         } else if fileManager.fileExists(atPath: jpegFilepath.path){
-            if let image = UIImage(contentsOfFile: jpegFilepath.path) {
+            if let image = UIImage(contentsOfFile: jpegFilepath.path)?.copy() as? UIImage {
                 return image
             } else {
                 print("Wrong jpeg data")

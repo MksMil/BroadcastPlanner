@@ -1,4 +1,5 @@
 import SwiftUI
+import Combine
 import SwiftUINavigationTransitions
 
 enum RouterPath: Hashable{
@@ -23,6 +24,7 @@ enum RouterPath: Hashable{
     //case existing member explore view
     case memberView
     
+    case settings
     //settings
     case updateEmail
     case updatePassword
@@ -35,93 +37,74 @@ enum RouterPath: Hashable{
 
 @MainActor
 final class Router: ObservableObject {
-    var statusBarSeq: [Bool] = [false]
-    var statusBarVisibility: Bool {
-        if let last = statusBarSeq.last, last {
-            return true
-        } else {
-            return false
-        }
-    }
-    
-    var actionBarSeq:[Bool] = [false]
-    var actionBarVisibility: Bool {
-        if let last = actionBarSeq.last, last {
-            return true
-        } else {
-            return false
-        }
-    }
     
     @Published var path: NavigationPath = NavigationPath()
     
+    var acceptAction: ()->() = {}
+    var removeAction: ()->() = {}
+    var stepBackAction: ()->() = {}
+    
+    
+    //actionView control
+    var isAcceptButtonEnabledPublisher = PassthroughSubject<Bool,Never>()
+    var isRemoveButtonEnabledPublisher = PassthroughSubject<Bool,Never>()
+    
+    var isAcceptButtonVisiblePublisher = PassthroughSubject<Bool,Never>()
+    var isRemoveButtonVisiblePublisher = PassthroughSubject<Bool,Never>()
+    
+    var isMessengerActivePublisher = PassthroughSubject<Bool,Never>()
+    var unreadMessagesPublisher = PassthroughSubject<Int,Never>()
+    var unreadMessages: Int = 999 {
+        willSet{
+            unreadMessagesPublisher.send(newValue)
+        }
+    }
+    
+    //routing
     var transition: AnyNavigationTransition = .fade(.out)
     var interactivity: AnyNavigationTransition.Interactivity = .disabled
     
     func routeStepBack(){
         guard path.count > 0 else { return }
-        if statusBarSeq.count > 0{
-            statusBarSeq.removeLast()
-        }
-        if actionBarSeq.count > 0{
-            actionBarSeq.removeLast()
-        }
         path.removeLast()
     }
     
-    func stateForStatusBar(_ isStatus: Bool, andActionBar isAction: Bool){
-        statusBarSeq.append(isStatus)
-        actionBarSeq.append(isAction)
+    func makeAcceptButtonEnabled(_ enabled: Bool){
+        isAcceptButtonEnabledPublisher.send(enabled)
     }
+    func makeRemoveButtonEnabled(_ enabled: Bool){
+        isRemoveButtonEnabledPublisher.send(enabled)
+    }
+    func makeAcceptButtonVisible(_ visible: Bool){
+        isAcceptButtonVisiblePublisher.send(visible)
+    }
+    func makeRemoveButtonVisible(_ visible: Bool){
+        isRemoveButtonVisiblePublisher.send(visible)
+    }
+    func makeMessengerActive(_ active: Bool){
+        isMessengerActivePublisher.send(active)
+    }
+    
+    func setUnreadMessages(num: Int){
+        guard num >= 0 else{ return }
+        unreadMessages = num
+    }
+    
     
     // MARK: broadcastList
     func routeTo(path: RouterPath,
                  withTransition transition: AnyNavigationTransition = .fade(.out),
                  andInteractivity interactivity: AnyNavigationTransition.Interactivity = .disabled){
-        switch path {
-            case .animatedStart,.authScreen:
-                stateForStatusBar(false, andActionBar: false)
-            case .createEdit:
-                stateForStatusBar(false, andActionBar: true)
-            case .broadcastList:
-                stateForStatusBar(true, andActionBar: false)            
-//            case .stadPointsEdit:
-//                <#code#>
-//            case .carPointsEdit(let bool):
-//                <#code#>
-//            case .ownerInfo:
-//                <#code#>
-//            case .memberView:
-//                <#code#>
-//            case .updateEmail:
-//                <#code#>
-//            case .updatePassword:
-//                <#code#>
-//            case .clubSheet:
-//                <#code#>
-//            case .locationSheet(let club):
-//                <#code#>
-//            case .addEditClub(let club):
-//                <#code#>
-//            case .addEditLocation(let venue):
-//                <#code#>
-//            case .addEditObvan:
-//                <#code#>
-            default: statusBarSeq.append(true)
-        }
-        self.path.append(path)
-        self.transition = transition
-        self.interactivity = interactivity
+
+                self.path.append(path)
+                self.transition = transition
+                self.interactivity = interactivity
     }
     func routeToAuth(){
         transition = .fade(.out)
-        path.removeLast(path.count - 1)
-        statusBarSeq = [false]
-        actionBarSeq = [false]
-        path.append(RouterPath.authScreen)
+        path.removeLast(path.count)
+        routeTo(path: .authScreen)
     }
-    
-    
 }
 
 
