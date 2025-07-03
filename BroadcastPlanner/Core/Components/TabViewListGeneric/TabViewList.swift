@@ -88,24 +88,26 @@ struct TabViewList<T: Hashable, Content: View>: View {
     }
 }
 
-//#Preview {
-//    ZStack{
-//        Color.gray.ignoresSafeArea()
-//        TabViewList(source: [1,2,3,4,5,6,7,8,9,10,11,12,13],
-//                    selectedItem: 8,
-//                    pageCount: 3,
-//                    spacing: 5,completion: { num in
-//            print("\(num) tapped")
-//        },content: { num in
-//            Text("\(num)")
-//                .frame(height: 100)
-//            
-//        }
-//        )
-////        .frame(height: 50)
-//        .border(.white, width: 2)
-//    }
-////    .frame(height: 200)
-//}
+#if DEBUG
+#Preview {
+    ZStack{
+        Color.gray.ignoresSafeArea()
+        TabViewList(source: [1,2,3,4,5,6,7,8,9,10,11,12,13],
+                    selectedItem: 8,
+                    pageCount: 3,
+                    spacing: 5,
+                    selectAction: {_ in },
+                    content: { num in
+            Text("\(num)")
+                .frame(height: 100)
+            
+        }
+        )
+        .frame(height: 80)
+        .border(.white, width: 2)
+    }
+    .frame(height: 200)
+}
+#endif
 
 

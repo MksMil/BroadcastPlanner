@@ -14,6 +14,7 @@ struct CarUnitCellView: View {
     @State var image: UIImage?
     @State var firstName: String
     @State var lastName: String
+    
     let action: ()->Void
     let infoAction: ()-> Void
     

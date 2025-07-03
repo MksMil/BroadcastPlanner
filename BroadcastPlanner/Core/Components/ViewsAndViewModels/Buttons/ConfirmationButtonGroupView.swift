@@ -76,48 +76,22 @@ struct ConfirmationButtonGroupView<T: View>: View {
         }
     }
 }
-// remove button settings to style to group
-//Button {
-//    isRemoveConfirm = true
-//} label: {
-//    Image(systemName: "trash")
-//        .resizable()
-//        .scaledToFit()
-//        .bold()
-//        .padding(50 / 4)
-//        .frame(width: 150,height: 50)
-//        .background {
-//            RoundedRectangle(cornerRadius: 5)
-//                .fill(.ultraThickMaterial
-//                    .opacity(0.3))
-//                .overlay {
-//                    RoundedRectangle(cornerRadius: 5)
-//                        .stroke(
-//                            .ultraThickMaterial
-//                            .opacity(0.5),
-//                                lineWidth: 2)
-//                }
-//        }
-//}
 
+#if DEBUG
 #Preview {
     ZStack{
         Color.orange
         ConfirmationButtonGroupView(height: 60,
                                     isAcceptDisabled: false) {
-            
         } acceptAction: {
-            
         } content: {
             Color.gray
                 .frame(maxWidth: .infinity)
-            
+                .overlay{ Text("Hello Buttons") }
         }
         .padding(.horizontal)
     }
     .ignoresSafeArea()
-
-
 }
-
+#endif
 

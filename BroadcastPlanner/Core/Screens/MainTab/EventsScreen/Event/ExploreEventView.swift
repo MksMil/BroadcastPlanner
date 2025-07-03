@@ -8,7 +8,7 @@ struct ExploreEventView: View {
     
     @StateObject private var vm: BPCreateEditEventViewModel
     
-    @EnvironmentObject var eventRouter: EventTabRouter
+//    @EnvironmentObject var eventRouter: EventTabRouter
     @EnvironmentObject var mdm: DataManager
     
     let event: Broadcast
@@ -128,7 +128,7 @@ struct ExploreEventView: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button {
                         Task {
-                            eventRouter.routeStepBack()
+//                            eventRouter.routeStepBack()
                         }
                     } label: {
                         HStack{

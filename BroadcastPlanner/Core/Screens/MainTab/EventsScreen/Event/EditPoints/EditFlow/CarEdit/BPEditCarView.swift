@@ -187,7 +187,7 @@ struct BPEditCarView: View {
 
     @EnvironmentObject var settings: GlobalSettings
     @EnvironmentObject var mdm: DataManager
-    @EnvironmentObject var eventRouter: EventTabRouter
+//    @EnvironmentObject var eventRouter: EventTabRouter
 
     @StateObject var vm: BPEditCarViewModel
     let event: Broadcast

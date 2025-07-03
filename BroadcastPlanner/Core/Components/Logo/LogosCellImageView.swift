@@ -47,8 +47,10 @@ struct LogosCellImageView: View {
     }
 }
 
+#if DEBUG
 #Preview {
     LogosCellImageView(homeImage: Image(systemName: "plus"),
                        guestImage: Image(systemName: "plus"),
                        size: 100)
 }
+#endif

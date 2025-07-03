@@ -51,7 +51,6 @@
 		295943292C64EA8700C2B27C /* BPDateFormater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 295943282C64EA8700C2B27C /* BPDateFormater.swift */; };
 		295C871E2DD38997003B01B0 /* BroadcastStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 295C871D2DD38997003B01B0 /* BroadcastStatus.swift */; };
 		295C87202DD47B5B003B01B0 /* ExploreEventView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 295C871F2DD47B5B003B01B0 /* ExploreEventView.swift */; };
-		2963DDBF2C81B51C0030DAC6 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2963DDBE2C81B51C0030DAC6 /* RootView.swift */; };
 		2963DDC12C8758A10030DAC6 /* EventUsersGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2963DDC02C8758A10030DAC6 /* EventUsersGridView.swift */; };
 		2963DDC32C8848F00030DAC6 /* BPEditStadiumViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2963DDC22C8848F00030DAC6 /* BPEditStadiumViewModel.swift */; };
 		2967DF192B61109B003956FD /* UpdateEPView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2967DF182B61109B003956FD /* UpdateEPView.swift */; };
@@ -88,7 +87,6 @@
 		29E10F5A2C1AF8B300A35A4B /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 29E10F592C1AF8B300A35A4B /* FirebaseStorage */; };
 		29E10F642C21696B00A35A4B /* GlobalSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29E10F632C21696B00A35A4B /* GlobalSettings.swift */; };
 		29E10F662C2169C400A35A4B /* GlobalProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29E10F652C2169C400A35A4B /* GlobalProperties.swift */; };
-		29E8CD782C352E82002EB11A /* LogoImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29E8CD772C352E82002EB11A /* LogoImageView.swift */; };
 		29EBCDEE2B762C5A00696C25 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 29EBCDED2B762C5A00696C25 /* GoogleSignIn */; };
 		29EBCDF02B762C5A00696C25 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 29EBCDEF2B762C5A00696C25 /* GoogleSignInSwift */; };
 		29F42B5A2B88BBE70024B764 /* WelcomeFlowScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29F42B592B88BBE70024B764 /* WelcomeFlowScreen.swift */; };
@@ -146,7 +144,6 @@
 		295943282C64EA8700C2B27C /* BPDateFormater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPDateFormater.swift; sourceTree = "<group>"; };
 		295C871D2DD38997003B01B0 /* BroadcastStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BroadcastStatus.swift; sourceTree = "<group>"; };
 		295C871F2DD47B5B003B01B0 /* ExploreEventView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreEventView.swift; sourceTree = "<group>"; };
-		2963DDBE2C81B51C0030DAC6 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		2963DDC02C8758A10030DAC6 /* EventUsersGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventUsersGridView.swift; sourceTree = "<group>"; };
 		2963DDC22C8848F00030DAC6 /* BPEditStadiumViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPEditStadiumViewModel.swift; sourceTree = "<group>"; };
 		2967DF182B61109B003956FD /* UpdateEPView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateEPView.swift; sourceTree = "<group>"; };
@@ -184,7 +181,6 @@
 		29D1697F2B86188B00A70638 /* BPValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPValidator.swift; sourceTree = "<group>"; };
 		29E10F632C21696B00A35A4B /* GlobalSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalSettings.swift; sourceTree = "<group>"; };
 		29E10F652C2169C400A35A4B /* GlobalProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalProperties.swift; sourceTree = "<group>"; };
-		29E8CD772C352E82002EB11A /* LogoImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogoImageView.swift; sourceTree = "<group>"; };
 		29F42B592B88BBE70024B764 /* WelcomeFlowScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeFlowScreen.swift; sourceTree = "<group>"; };
 		29F7CF0F2CA14BA9009C303E /* Date+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Ext.swift"; sourceTree = "<group>"; };
 		29F7CF112CA15861009C303E /* View+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Ext.swift"; sourceTree = "<group>"; };
@@ -198,11 +194,11 @@
 		291EB4F12DC0AE1900FCDA75 /* NetworkTestScreen */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = NetworkTestScreen; sourceTree = "<group>"; };
 		292E4C5B2D0C1D8A0046CABA /* Cache */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Cache; sourceTree = "<group>"; };
 		292E4C622D0C3E9D0046CABA /* Logo */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Logo; sourceTree = "<group>"; };
+		292ED2592E16C41800800C1A /* RootView */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = RootView; sourceTree = "<group>"; };
 		293C7DEA2D53610300B62960 /* CarEdit */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = CarEdit; sourceTree = "<group>"; };
 		293C7DEB2D53610B00B62960 /* StadiumEdit */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = StadiumEdit; sourceTree = "<group>"; };
 		29476BE82DA553B0007DFA88 /* Cells */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Cells; sourceTree = "<group>"; };
 		29476C002DACE2A8007DFA88 /* Navigation */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Navigation; sourceTree = "<group>"; };
-		295C871A2DCDDE78003B01B0 /* EventList */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = EventList; sourceTree = "<group>"; };
 		295C87232DDB0D5A003B01B0 /* TabViewListGeneric */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = TabViewListGeneric; sourceTree = "<group>"; };
 		299397A52DFFFEA400E78B59 /* Transitions */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Transitions; sourceTree = "<group>"; };
 		299B455E2DE04934000D1F4B /* SelectablesWrappers */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = SelectablesWrappers; sourceTree = "<group>"; };
@@ -407,7 +403,6 @@
 			children = (
 				299B455E2DE04934000D1F4B /* SelectablesWrappers */,
 				291CDA532DDCB2CB00724F53 /* DividerWithText.swift */,
-				295C871A2DCDDE78003B01B0 /* EventList */,
 				29476C062DACE975007DFA88 /* SpecializationSection.swift */,
 				29476BE82DA553B0007DFA88 /* Cells */,
 				29CA68452DA40B1E00460EFE /* LocationCell.swift */,
@@ -423,7 +418,6 @@
 				291E72CE2BBEEBDD008092D7 /* BPSpecializationCellView.swift */,
 				29D169792B85D4F800A70638 /* HaptickEngine.swift */,
 				2994DE6D2C16F18D00DF9060 /* BPJoystick.swift */,
-				29E8CD772C352E82002EB11A /* LogoImageView.swift */,
 				2963DDC02C8758A10030DAC6 /* EventUsersGridView.swift */,
 				29CB0F632C98B24E003B30C4 /* CarUnitEnableCellView.swift */,
 				29CB0F652C9A9BDE003B30C4 /* CarUnitCellView.swift */,
@@ -634,10 +628,10 @@
 		29C041E42AC69976008B3E1F /* Screens */ = {
 			isa = PBXGroup;
 			children = (
+				292ED2592E16C41800800C1A /* RootView */,
 				2955C9712B4EE717003F9ADC /* MainTab */,
 				2955C9682B4E4157003F9ADC /* AuthenticationScreen */,
 				2916E6252C57C3930025DCC6 /* Home.swift */,
-				2963DDBE2C81B51C0030DAC6 /* RootView.swift */,
 			);
 			path = Screens;
 			sourceTree = "<group>";
@@ -739,11 +733,11 @@
 				291EB4F12DC0AE1900FCDA75 /* NetworkTestScreen */,
 				292E4C5B2D0C1D8A0046CABA /* Cache */,
 				292E4C622D0C3E9D0046CABA /* Logo */,
+				292ED2592E16C41800800C1A /* RootView */,
 				293C7DEA2D53610300B62960 /* CarEdit */,
 				293C7DEB2D53610B00B62960 /* StadiumEdit */,
 				29476BE82DA553B0007DFA88 /* Cells */,
 				29476C002DACE2A8007DFA88 /* Navigation */,
-				295C871A2DCDDE78003B01B0 /* EventList */,
 				295C87232DDB0D5A003B01B0 /* TabViewListGeneric */,
 				299397A52DFFFEA400E78B59 /* Transitions */,
 				299B455E2DE04934000D1F4B /* SelectablesWrappers */,
@@ -865,7 +859,6 @@
 				295943292C64EA8700C2B27C /* BPDateFormater.swift in Sources */,
 				2967DF1B2B639A90003956FD /* Error+Modifier.swift in Sources */,
 				2994DE672C157C9F00DF9060 /* BroadcastEditView.swift in Sources */,
-				2963DDBF2C81B51C0030DAC6 /* RootView.swift in Sources */,
 				29AE68762BE24F9A00DE8FAB /* Message.swift in Sources */,
 				29476C132DACF904007DFA88 /* HardwareType.swift in Sources */,
 				297507BE2C9426B400E58091 /* SaveEditControlPanelView.swift in Sources */,
@@ -884,7 +877,6 @@
 				2963DDC12C8758A10030DAC6 /* EventUsersGridView.swift in Sources */,
 				2916E62C2C58B83E0025DCC6 /* AnimatedStart.swift in Sources */,
 				291E72C92BBEC7B0008092D7 /* UserSpecialization.swift in Sources */,
-				29E8CD782C352E82002EB11A /* LogoImageView.swift in Sources */,
 				29476C112DACF8E7007DFA88 /* OpticType.swift in Sources */,
 				298932682AE24D7000BD93CA /* BPError.swift in Sources */,
 				29476C072DACE975007DFA88 /* SpecializationSection.swift in Sources */,

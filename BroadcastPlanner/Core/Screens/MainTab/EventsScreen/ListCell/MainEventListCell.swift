@@ -3,6 +3,7 @@ import Combine
 
 struct MainEventListCell: View {
     @EnvironmentObject var mdm : DataManager
+    @EnvironmentObject var appState: ApplicationState
     let broadcast: Broadcast
     
     @StateObject var vm: MainEventListCellViewModel
@@ -76,7 +77,7 @@ struct MainEventListCell: View {
         }
         .frame(height: rowHeight)
         .opacity(isExpired ? 0.3 : 1)
-        .onReceive(mdm.currentTime) { currentTime in
+        .onReceive(appState.currentTime) { currentTime in
             if currentTime >= broadcast.viewDate{
                 isExpired = true
             }
@@ -106,7 +107,7 @@ struct MainEventListCell: View {
 }
 
 struct RemainigTimveView: View {
-   
+    @EnvironmentObject var appState: ApplicationState
     @EnvironmentObject var mdm: DataManager
     let time: Date
     @State private var text: String
@@ -121,7 +122,7 @@ struct RemainigTimveView: View {
     var body: some View {
         Text(text)
             .font(.footnote)
-            .onReceive(mdm.currentTime) { currentTime in
+            .onReceive(appState.currentTime) { currentTime in
                 text = BPDateFormater.timeInterval(to: time,
                                                    currentTime: currentTime,
                 expiredString: "finished")

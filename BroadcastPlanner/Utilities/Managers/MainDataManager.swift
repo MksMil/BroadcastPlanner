@@ -10,11 +10,10 @@ class DataManager: ObservableObject {
     var mainContext: NSManagedObjectContext {
         persistentContainer.viewContext
     }
-    var currentTime:  PassthroughSubject = PassthroughSubject<Date,Never>()
-    var timer: Cancellable?
+
     
     var updatePublisher: PassthroughSubject = PassthroughSubject<(GlobalProperties.PublishChanges, [String]), Never>()
-    var cancellables: Set<AnyCancellable> = []
+//    var cancellables: Set<AnyCancellable> = []
     
     var currentId: String = ""
     var accessLevel: Int = 2
@@ -59,18 +58,6 @@ class DataManager: ObservableObject {
 //            self.updatePublisher.send(value)
 //        }
 //        .store(in: &cancellables)
-    }
-    
-    // MARK: - Timer
-    func startTimer() {
-        timer = Timer.publish(every: 1.0, on: .main, in: .common)
-            .autoconnect()
-            .sink { [weak self] _ in
-                self?.currentTime.send(.now)
-            }
-    }
-    func stopTimer(){
-        timer?.cancel()
     }
     
     func setMember(id: String){

@@ -6,7 +6,7 @@ struct BPEditStadiumView: View {
     @StateObject var vm: BPEditStadiumViewModel
 
     @EnvironmentObject var settings: GlobalSettings
-    @EnvironmentObject var eventRouter: EventTabRouter
+//    @EnvironmentObject var eventRouter: EventTabRouter
     @EnvironmentObject var mdm: DataManager
     
     let event: Broadcast
@@ -243,7 +243,7 @@ struct BPEditStadiumView: View {
         .confirmationDialog("", isPresented: $isConfirmDiscardChanges) {
             Button("Discard all changes and step back?",role: .destructive){
                 mdm.rollBackMoc()
-                eventRouter.routeStepBack()
+//                eventRouter.routeStepBack()
             }
         }
         .sheet(isPresented: $isEditPressed) {

@@ -108,10 +108,6 @@ struct MainEventsList: View {
         .onAppear{
             print("in on appear")
             selectedBroadcast = nil
-            mdm.startTimer()
-        }
-        .onDisappear{
-            mdm.stopTimer()
         }
         .onReceive(mdm.updatePublisher) { value in
             if value.0 == GlobalProperties.PublishChanges.broadcasts {

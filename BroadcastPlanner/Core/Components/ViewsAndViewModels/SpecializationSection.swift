@@ -4,6 +4,7 @@ struct SpecializationSection: View {
 
     @Binding var specialization: [String]
     @Binding var isEditSpecialization: Bool
+    
     var isEdit: Bool
 
     var body: some View {

@@ -7,6 +7,9 @@
     " Save " : {
 
     },
+    "-" : {
+
+    },
     "---" : {
 
     },
@@ -29,10 +32,19 @@
     "%lld" : {
 
     },
+    "+" : {
+
+    },
     "1" : {
 
     },
+    "1K" : {
+
+    },
     "10:30 AM" : {
+
+    },
+    "A" : {
 
     },
     "Accept" : {
@@ -77,19 +89,10 @@
     "Change Password" : {
 
     },
-    "change to 1" : {
-
-    },
-    "change to 2" : {
-
-    },
-    "change to 3" : {
+    "CHECK" : {
 
     },
     "Choose Venue" : {
-
-    },
-    "Club and Venue Edit" : {
 
     },
     "club name" : {
@@ -99,9 +102,6 @@
 
     },
     "contact info" : {
-
-    },
-    "Creation date: %@" : {
 
     },
     "Delete account" : {
@@ -125,12 +125,6 @@
     "Edit venue" : {
 
     },
-    "Email and Password" : {
-
-    },
-    "email: %@" : {
-
-    },
     "empty" : {
 
     },
@@ -146,10 +140,10 @@
     "Hello Error" : {
 
     },
-    "Hours" : {
+    "Hello, World!" : {
 
     },
-    "id: %@" : {
+    "Hours" : {
 
     },
     "Info" : {
@@ -185,9 +179,6 @@
     "Not Registered?   Sign Up!" : {
 
     },
-    "password: %@" : {
-
-    },
     "Permanently erase the Club in the trash?" : {
 
     },
@@ -198,9 +189,6 @@
 
     },
     "Press me" : {
-
-    },
-    "Private Info" : {
 
     },
     "Remove %@ template!" : {
@@ -261,6 +249,9 @@
 
     },
     "url" : {
+
+    },
+    "V" : {
 
     },
     "Welcome!\nselection: %lld" : {

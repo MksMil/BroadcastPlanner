@@ -82,7 +82,6 @@ struct LocationSelectionView: View {
     return BroadcastEditView(broadcast:localEvent)
         .environmentObject(SessionManager())
         .environmentObject(GlobalSettings())
-        .environmentObject(EventTabRouter())
         .environment(\.managedObjectContext, mdm.mainContext)
         .environmentObject(mdm)
     

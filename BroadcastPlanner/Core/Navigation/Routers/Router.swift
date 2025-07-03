@@ -39,27 +39,7 @@ enum RouterPath: Hashable{
 final class Router: ObservableObject {
     
     @Published var path: NavigationPath = NavigationPath()
-    
-    var acceptAction: ()->() = {}
-    var removeAction: ()->() = {}
-    var stepBackAction: ()->() = {}
-    
-    
-    //actionView control
-    var isAcceptButtonEnabledPublisher = PassthroughSubject<Bool,Never>()
-    var isRemoveButtonEnabledPublisher = PassthroughSubject<Bool,Never>()
-    
-    var isAcceptButtonVisiblePublisher = PassthroughSubject<Bool,Never>()
-    var isRemoveButtonVisiblePublisher = PassthroughSubject<Bool,Never>()
-    
-    var isMessengerActivePublisher = PassthroughSubject<Bool,Never>()
-    var unreadMessagesPublisher = PassthroughSubject<Int,Never>()
-    var unreadMessages: Int = 999 {
-        willSet{
-            unreadMessagesPublisher.send(newValue)
-        }
-    }
-    
+
     //routing
     var transition: AnyNavigationTransition = .fade(.out)
     var interactivity: AnyNavigationTransition.Interactivity = .disabled
@@ -68,29 +48,7 @@ final class Router: ObservableObject {
         guard path.count > 0 else { return }
         path.removeLast()
     }
-    
-    func makeAcceptButtonEnabled(_ enabled: Bool){
-        isAcceptButtonEnabledPublisher.send(enabled)
-    }
-    func makeRemoveButtonEnabled(_ enabled: Bool){
-        isRemoveButtonEnabledPublisher.send(enabled)
-    }
-    func makeAcceptButtonVisible(_ visible: Bool){
-        isAcceptButtonVisiblePublisher.send(visible)
-    }
-    func makeRemoveButtonVisible(_ visible: Bool){
-        isRemoveButtonVisiblePublisher.send(visible)
-    }
-    func makeMessengerActive(_ active: Bool){
-        isMessengerActivePublisher.send(active)
-    }
-    
-    func setUnreadMessages(num: Int){
-        guard num >= 0 else{ return }
-        unreadMessages = num
-    }
-    
-    
+
     // MARK: broadcastList
     func routeTo(path: RouterPath,
                  withTransition transition: AnyNavigationTransition = .fade(.out),
@@ -104,6 +62,15 @@ final class Router: ObservableObject {
         transition = .fade(.out)
         path.removeLast(path.count)
         routeTo(path: .authScreen)
+    }
+    
+    func routeFrom(from: RouterPath, to: RouterPath){
+        switch from {
+            case .ownerInfo, .settings:
+                self.path.removeLast()
+                self.path.append(to)
+            default: self.path.append(to)
+        }
     }
 }
 

@@ -234,24 +234,27 @@ struct BPJoystick: View {
 }
 
 #Preview {
-    BPJoystick {
-        print("up")
-    } downAction: {
-        print("down")
-    } leftAction: {
-        print("left")
-    } rightAction: {
-        print("right")
-    } rotationLeft: {
-        print("rotation left")
-    } rotationRight: {
-        print("rotation right")
-    } swap: {
-        print("swap")
-    } scaleUp: {
-        print("scaleUp")
-    } scaleDown: {
-        print("scaleDown")
+    ZStack{
+        Color.blue
+        BPJoystick {
+            print("up")
+        } downAction: {
+            print("down")
+        } leftAction: {
+            print("left")
+        } rightAction: {
+            print("right")
+        } rotationLeft: {
+            print("rotation left")
+        } rotationRight: {
+            print("rotation right")
+        } swap: {
+            print("swap")
+        } scaleUp: {
+            print("scaleUp")
+        } scaleDown: {
+            print("scaleDown")
+        }
     }
     
 }
