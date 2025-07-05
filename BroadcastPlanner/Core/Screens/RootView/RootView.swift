@@ -5,31 +5,26 @@ struct RootView: View {
     @EnvironmentObject var sessionManager: SessionManager
     @EnvironmentObject var appState: ApplicationState
     @EnvironmentObject var globalSettings: GlobalSettings
+    @EnvironmentObject var dataManager: DataManager
 
-    @EnvironmentObject var router: Router 
+    @EnvironmentObject var router: Router
     
-    let networkManager: NetworkManager
-    @StateObject var dataManager: DataManager
 
     @State var isStarted: Bool = false
 
     @State var status: Bool = false
     
-    
-    init() {
-        let manager = NetworkManager()
-        self.networkManager =  manager
-        self._dataManager = StateObject(
-            wrappedValue: DataManager(globalDataManager: manager)
-        )
-    }
     var body: some View {
+        
+//#if DEBUG
+//        let _ = Self._printChanges()
+//#endif
         ZStack{
             MainBackground()
             
             VStack(spacing: 5){
                 StatusView()
-                    .frame(height: 70)
+                    .offset(y: (isStarted && appState.state == .authorized) ? 0: -200)
                
                 NavigationStack(path: $router.path) {
                     AnimatedStart()
@@ -53,6 +48,8 @@ struct RootView: View {
                                     }
                                 case .createEdit(let broadcast):
                                     BroadcastEditView(broadcast: broadcast)
+                                case .stadPointsEdit(let broadcast):
+                                    BPEditStadiumView(broadcast: broadcast)
                                 default:
                                     Text("Hello Error")
                             }
@@ -100,14 +97,22 @@ struct RootView: View {
                     } label:{
                         Text("CHECK")
                     }
+                    Button{
+//                        appState.addNewNotification(note: StatusViewNotification.random())
+                        appState.setTitle(["Hello","How are you?","Goodbye!","Very very very long title here and we are ready for it!"].randomElement()!)
+                    } label: {
+                        Image(systemName: "plus")
+                    }
                 }
+                .offset(y: isStarted ? 0: 500)
+
             //-------------------------------------------------
                 ActionView()
                 .padding(.horizontal)
                 .frame(height: 60)
+                .offset(y: (isStarted && appState.state == .authorized) ? 0: 200)
                 }
         }
-
         .onAppear {
             Task {
                 await sessionManager.getUserSession()
@@ -117,28 +122,38 @@ struct RootView: View {
             if let user {
                 dataManager.setMember(id: user.id)
                 appState.state = .authorized
-                router.routeTo(path: .broadcastList)
             } else {
                 dataManager.clearData()
                 appState.state = .notAuthorized
-                router.routeTo(path: .authScreen)
             }
         }
+        .onReceive(appState.startPublisher, perform: { isStart in
+            if isStart{
+                if appState.state == .authorized{
+                    router.routeTo(path: .broadcastList)
+                    
+                } else {
+                    router.routeTo(path: .authScreen)
+                }
+                withAnimation(.spring(duration: 0.3, bounce: 0.3)){
+                    isStarted = true
+                }
+            }
+        })
         .onReceive(appState.$userOnlineStatus) { value in
             guard let id = sessionManager.sessionUser?.id else { return }
             switch value {
             case .online:
                 Task {
-                    await networkManager.goOnline(id: id)
+                    await dataManager.changeOnlineStatus(isOnline: true)
                 }
             case .offline:
                 Task {
-                    await networkManager.goOffline(id: id)
+                    await dataManager.changeOnlineStatus(isOnline: false)
                 }
             }
         }
-        .environmentObject(dataManager)
-        .environment(\.managedObjectContext, dataManager.mainContext)
+        
     }
 }
 
@@ -157,19 +172,23 @@ struct StatusView: View {
     @EnvironmentObject var dataManager: DataManager
     @EnvironmentObject var appState: ApplicationState
     
-    @State private var statusText: String = "Status Here"
-    
-    @State private var isBackwardEnabled: Bool = false
-    @State private var isBackwardVisible: Bool = false
-    
     @State var image = Image(systemName: "person")
+    
+    @State private var isOnline: Bool = false
     
     var body: some View {
         HStack{
             BackwardButton()
+                .frame(width: 50, height: 50)
             Spacer()
             /// element with app's status / errors / notifications etc.
-            Text(statusText)
+            VStack(spacing: 0){
+                //status view title here
+                TitleView()
+                NotificationView()
+                   
+            }
+            .frame(height: 50)
             ///
             Spacer()
             Menu {
@@ -228,7 +247,7 @@ struct StatusView: View {
                 .frame(width: 50, height: 50)
                 .clipShape(Circle())
                 .overlay {
-                    Circle().stroke(.white, lineWidth: 2)
+                    Circle().stroke(isOnline ? Color.green: Color.red, lineWidth: 2)
                 }
             }
 
@@ -244,12 +263,18 @@ struct StatusView: View {
                 updateImage()
             }
         }
+        
+        .onReceive(appState.networkStatusPublisher) { isOnline in
+            self.isOnline = isOnline
+        }
     }
     
     func updateImage(){
         if let image = ImagesManager.loadImage(imageSize: .smallImages, id: dataManager.currentId){
             withAnimation{
-                self.image = Image(uiImage: image)
+                withAnimation(.easeInOut(duration: 0.7)){
+                    self.image = Image(uiImage: image)
+                }
             }
         }
     }

@@ -147,7 +147,7 @@ struct PointInfoPanelView: View {
                 TabViewList(
                     source: availableUsers.compactMap{ user in
                         if user != vm.selectedUser{
-                            return user.isAvailableTo(broadcast: pointManager.event) ? user: nil
+                            return user.isAvailableTo(broadcast: pointManager.broadcast) ? user: nil
                         } else {
                             return user
                         }
@@ -201,12 +201,12 @@ struct PointInfoPanelView: View {
     }
 }
 
-#Preview {
-    
-    let mdm = DataManager(globalDataManager: NetworkManager())
-    mdm.setMember(id: "123")
-    let localEvent: Broadcast = mdm.mainContext.fetchOrCreateObject(withID: "id")
-    return BPEditStadiumView(event: localEvent)
-        .environmentObject(mdm)
-        .environment(\.managedObjectContext, mdm.mainContext)
-}
+//#Preview {
+//    
+//    let mdm = DataManager(networkManager: NetworkManager())
+//    mdm.setMember(id: "123")
+//    let localEvent: Broadcast = mdm.mainContext.fetchOrCreateObject(withID: "id")
+//    return BPEditStadiumView(event: localEvent)
+//        .environmentObject(mdm)
+//        .environment(\.managedObjectContext, mdm.mainContext)
+//}

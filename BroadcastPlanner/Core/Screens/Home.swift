@@ -8,10 +8,10 @@
 //
 //    @State private var selection: Int = 0
 //    
-//    init(globalDataManager: NetworkManager,
+//    init(networkManager: NetworkManager,
 //         userId: String) {
 //        self._mdm = StateObject(wrappedValue: DataManager(
-//                            globalDataManager: globalDataManager,
+//                            networkManager: networkManager,
 //                            userId: userId))
 //    }
 //    
@@ -55,7 +55,7 @@
 //}
 //
 //#Preview {
-//    Home(globalDataManager: NetworkManager(),
+//    Home(networkManager: NetworkManager(),
 //         userId: "123")
 //        .environmentObject(GlobalSettings())
 //        .environmentObject(SessionManager())

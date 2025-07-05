@@ -25,7 +25,7 @@ final class BPEditStadiumViewModel: ObservableObject {
     }
     var savePointAction: (()->())?
     
-    let event: Broadcast
+    let broadcast: Broadcast
     
     // MARK: - vm Properties for available render updates
     var users: [Member] = [] //saved
@@ -56,9 +56,9 @@ final class BPEditStadiumViewModel: ObservableObject {
 
     @Published var isTemplateRemovable: Bool = true
     
-    init(event: Broadcast){
-        self.event = event
-        self.localPoints = event.viewVenuePoints
+    init(broadcast: Broadcast){
+        self.broadcast = broadcast
+        self.localPoints = broadcast.viewVenuePoints
         self.filteredLocationPoints = localPoints
         self.renderPitchScene = PitchEditSpriteScene()
         renderPitchScene.pointDelegate = self

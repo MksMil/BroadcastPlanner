@@ -211,6 +211,7 @@ extension Broadcast : Identifiable {
 
 extension Broadcast: CoreDataUpdatable{
     func updateFromDTO(_ dto: BroadcastDTO,in context: NSManagedObjectContext) {
+       
         self.id = dto.id
         self.date = dto.date
         self.lastUpdated = dto.lastUpdated
@@ -256,16 +257,20 @@ extension Broadcast: CoreDataUpdatable{
             newObvan.addToBroadcasts(self)
             addToObvan(newObvan)
         }
-        //clean venue preview
-        if let venueSchemaPreview {
-            context.delete(venueSchemaPreview)
-        }
         //add new venue preview
         if let venuePreviewId = dto.venuePreviewId{
             let newPreview: LocalImage = context.fetchOrCreateObject(withID: venuePreviewId)
+            if let venueSchemaPreview, venueSchemaPreview.viewId != newPreview.viewId{
+                context.delete(venueSchemaPreview)
+            }
             newPreview.parentVenuePreview = self
             newPreview.type = GlobalProperties.ImageType.venuePreview.rawValue
             self.venueSchemaPreview = newPreview
+        } else {
+            //clean venue preview
+            if let venueSchemaPreview {
+                context.delete(venueSchemaPreview)
+            }
         }
         //clean obvan preview
         if let obvanPreview {
@@ -352,12 +357,12 @@ extension Broadcast: CoreDataUpdatable{
             }
         }
         
-        if let venueSchemaPreview {
+        if let venuePreview {
             if let oldPreview = self.venueSchemaPreview {
                 context.delete(oldPreview)
             }
-            venueSchemaPreview.parentVenuePreview = self
-            self.venueSchemaPreview = venueSchemaPreview
+            venuePreview.parentVenuePreview = self
+            self.venueSchemaPreview = venuePreview
         }
         if let obvanPreview {
             if let oldPreview = self.obvanPreview{

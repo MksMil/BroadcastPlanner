@@ -2,10 +2,11 @@ import PhotosUI
 import SwiftUI
 
 struct BPAccountInfoView: View {
-    @EnvironmentObject var mdm: DataManager
+    @EnvironmentObject var dataManager: DataManager
     @EnvironmentObject var router: Router
-    @StateObject var vm: PersonalScreenViewModel
+    @EnvironmentObject var appState: ApplicationState
     
+    @StateObject var vm: PersonalScreenViewModel
     @State private var isEdit: Bool = false
     @State private var isEditSpecialization: Bool = false
 
@@ -110,70 +111,39 @@ struct BPAccountInfoView: View {
                     Spacer()
                 }
             }
-            .navigationTitle(Text("My Info"))
             .navigationBarBackButtonHidden()
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Button {
-                        withAnimation {
-                            isEdit.toggle()
-                            if isEditSpecialization {
-                                isEditSpecialization.toggle()
-                            }
-                        }
-                        if !isEdit {
-                            Task{
-                                await mdm.updateUserData(firstName: vm.firstName,
-                                                         lastName: vm.lastName,
-                                                         email: vm.email,
-                                                         phoneNumber: vm.phoneNumber,
-                                                         address: vm.address,
-                                                         userSpecialization: vm.userSpecialization,
-                                                         inputImage: vm.inputImage)
-                            }
-                        }
-                    } label: {
-                        Text(isEdit ? "Save" : "Edit")
-                    }
-                    .frame(alignment: .center)
-                    .font(.headline)
-                    .foregroundStyle(.blue)
-                }
-            }
-//            .toolbarBackground(.visible, for: .navigationBar)
-//            .toolbarBackground(.white.opacity(0.4), for: .navigationBar)
             .onAppear{
-                mdm.globalAcceptAction = {
-//                    Task{
-//                        await mdm.updateUserData(firstName: vm.firstName,
-//                                                 lastName: vm.lastName,
-//                                                 email: vm.email,
-//                                                 phoneNumber: vm.phoneNumber,
-//                                                 address: vm.address,
-//                                                 userSpecialization: vm.userSpecialization,
-//                                                 inputImage: vm.inputImage)
-//                    }
-                    router.routeStepBack()
-
+                appState.applyAppConfiguration(StateCongiguration.OwnerInfoConfiguration)
+                appState.primaryAction = {
+                    if isEdit {
+                        appState.setIconToPrimaryButton(.edit)
+                        Task{
+                            await dataManager
+                                .updateUserData(
+                                    firstName: vm.firstName,
+                                    lastName: vm.lastName,
+                                    email: vm.email,
+                                    phoneNumber: vm.phoneNumber,
+                                    address: vm.address,
+                                    userSpecialization: vm.userSpecialization,
+                                    inputImage: vm.inputImage
+                                )
+                        }
+                        isEdit = false
+                        isEditSpecialization = false
+                    } else {
+                        appState.setIconToPrimaryButton(.accept)
+                        isEdit = true
+                        isEditSpecialization = true
+                    }
                 }
-                mdm.globalCancelAction = {
+                appState.secondaryAction = {}
+                appState.stepBackAction = {
+                    appState.setMenuState(state: .none)
                     router.routeStepBack()
                 }
-            }
-            .onDisappear {
-                mdm.globalAcceptAction = {}
-                mdm.globalCancelAction = {}
             }
         }
-//        .onReceive(mdm.updatePublisher, perform: { value in
-//            if value.0 == .members, value.1.contains(where: { $0 == mdm.currentId
-//            }){
-//                vm.updateData()
-//            }
-//        })
-        
-    
 }
 
 #Preview {
@@ -184,10 +154,3 @@ struct BPAccountInfoView: View {
         .environmentObject(Router())
 }
 
-
-//#Preview {
-//    let mdm = DataManager(globalDataManager: NetworkManager())
-//    return BPAccountInfoView(user: mdm.currentUserInMainContext)
-//        .environment(\.managedObjectContext, mdm.mainContext)
-//        .environmentObject(mdm)
-//}

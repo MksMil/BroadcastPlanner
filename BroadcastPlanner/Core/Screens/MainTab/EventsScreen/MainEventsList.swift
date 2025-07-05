@@ -5,7 +5,7 @@ import SwiftUI
 struct MainEventsList: View {
     @EnvironmentObject var mdm: DataManager
     @EnvironmentObject var router: Router
-
+    @EnvironmentObject var appState: ApplicationState
     //    @StateObject private var eventRouter = EventTabRouter()
 
     @FetchRequest<Broadcast>(sortDescriptors: [
@@ -106,7 +106,7 @@ struct MainEventsList: View {
             .navigationBarBackButtonHidden()
         }
         .onAppear{
-            print("in on appear")
+            appState.applyAppConfiguration(StateCongiguration.MainListConfiguration)
             selectedBroadcast = nil
         }
         .onReceive(mdm.updatePublisher) { value in

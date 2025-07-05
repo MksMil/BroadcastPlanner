@@ -49,12 +49,12 @@ struct BPEventFilterCaseTabView<T: Customfilter>: View  where T.RawValue: String
     }
  }
 
-#Preview {
-    let mdm = DataManager(globalDataManager: NetworkManager())
-    let localEvent: Broadcast = mdm.mainContext.fetchOrCreateObject(withID: "id")
-    
-   return BPEditStadiumView(event: localEvent)
-        .environmentObject(mdm)
-}
+//#Preview {
+//    let mdm = DataManager(networkManager: NetworkManager())
+//    let localEvent: Broadcast = mdm.mainContext.fetchOrCreateObject(withID: "id")
+//    
+//   return BPEditStadiumView(event: localEvent)
+//        .environmentObject(mdm)
+//}
 
 

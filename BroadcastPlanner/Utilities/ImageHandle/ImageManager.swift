@@ -163,6 +163,8 @@ enum ImagesManager {
         let pngFilepath   = directoryPath.appendingPathComponent("\(id).png")
         let jpegFilepath  = directoryPath.appendingPathComponent("\(id).jpeg")
         
+//        print(directoryPath)
+        
         if fileManager.fileExists(atPath: pngFilepath.path){
             if let image = UIImage(contentsOfFile: pngFilepath.path)?.copy() as? UIImage {
                 return image
@@ -191,7 +193,6 @@ enum ImagesManager {
         ).first!
 
         var success = true
-
         ImageSizes.allCases.forEach { size in
             let directory = documentDirectory.appendingPathComponent(size.rawValue)
             let pngURL = directory.appendingPathComponent("\(id).png")

@@ -12,11 +12,15 @@ struct BroadcastPlannerApp: App {
     @StateObject private var sessionManager: SessionManager = SessionManager()
     @StateObject private var globalSettings = GlobalSettings()
     @StateObject var router: Router = Router()
+    @StateObject var dataManager: DataManager = DataManager(globalDataManager: NetworkManager())
     
     var body: some Scene {
                 
         WindowGroup {
             RootView()
+                .onAppear{
+                    dataManager.networkManager.eventProgressHandler = appState
+                }
                 .onChange(of: scenePhase, perform: { phase in
                     if appState.state == .authorized{
                         switch phase {
@@ -38,6 +42,8 @@ struct BroadcastPlannerApp: App {
                 .environmentObject(globalSettings)
                 .environmentObject(appState)
                 .environmentObject(router)
+                .environmentObject(dataManager)
+                .environment(\.managedObjectContext, dataManager.mainContext)
         }
     }
 }

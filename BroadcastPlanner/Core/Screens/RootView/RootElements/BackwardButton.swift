@@ -9,7 +9,7 @@ struct BackwardButton: View {
     @State private var isBackwardVisible: Bool = false
     var body: some View {
         Button {
-            
+            appState.stepBackAction()
         } label: {
             Image(systemName: "chevron.backward.circle")
                 .font(.system(size: 50))

@@ -135,11 +135,11 @@ struct SaveEditControlPanelView: View {
 //#Preview {
 //    SaveEditControlPanelView(addAction: {}, deleteAction: {}, saveAction: {}, isEditAction: {}, isEdit: false)
 //}
-#Preview {
-    let mdm = DataManager(globalDataManager: NetworkManager())
-    let localEvent: Broadcast = mdm.mainContext.fetchOrCreateObject(withID: "id")
-    
-    return BPEditStadiumView(event: localEvent)
-        .environmentObject(mdm)
-        .environment(\.managedObjectContext, mdm.mainContext)
-}
+//#Preview {
+//    let mdm = DataManager(networkManager: NetworkManager())
+//    let localEvent: Broadcast = mdm.mainContext.fetchOrCreateObject(withID: "id")
+//    
+//    return BPEditStadiumView(event: localEvent)
+//        .environmentObject(mdm)
+//        .environment(\.managedObjectContext, mdm.mainContext)
+//}

@@ -22,7 +22,14 @@ final class NetworkManager: ObservableObject {
     private let logger: Logger
     let monitor: NWPathMonitor
     
+    private var networkStatus: Bool = false{
+        willSet{
+            eventProgressHandler?.updateNetworkStatus(isOnline: newValue)
+        }
+    }
+    
     weak var syncDelegate: UpdateDelegateProtocol?
+    weak var eventProgressHandler: EventsProgressHandler?
 
     init(dbService: Firestore = Firestore.firestore(),
          storage: Storage = Storage.storage()) {
@@ -33,6 +40,7 @@ final class NetworkManager: ObservableObject {
         self.monitor = NWPathMonitor()
         monitor.pathUpdateHandler = { path in
             self.logger.info("Network status: \(path.status == .satisfied ? "Connected" : "Disconnected")")
+            self.networkStatus = path.status == .satisfied
         }
         monitor.start(queue: .main)
         logger.info("Network manager initialized")
@@ -215,7 +223,7 @@ extension NetworkManager {
         ).setData([
             "id": id,
             "type": type.rawValue,
-            "lastUpdated": Date.now,
+            "lastUpdated": Date.now
         ])
     }
 

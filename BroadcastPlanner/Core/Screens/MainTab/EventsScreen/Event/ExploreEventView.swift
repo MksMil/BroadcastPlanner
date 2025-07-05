@@ -143,7 +143,7 @@ struct ExploreEventView: View {
 }
 
 //#Preview {
-//    Home(globalDataManager: NetworkManager(),
+//    Home(networkManager: NetworkManager(),
 //         userId: "123")
 //    .environmentObject(GlobalSettings())
 //    .environmentObject(SessionManager())

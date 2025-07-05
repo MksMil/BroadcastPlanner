@@ -133,6 +133,7 @@ extension LocalImage{
     
     func makeImageWithSize(size: ImageSizes,
                            type: GlobalProperties.ImageType) -> Image{
+        
         if let result = ImagesManager.loadImage(imageSize: size, id: viewId)?.copy() as? UIImage{
             return Image(uiImage: result)
         } else {
@@ -194,7 +195,6 @@ extension LocalImage: CoreDataUpdatable{
             self.lastUpdated = lastUpdated
         }
         if let uiimage {
-            print("upload")
             uploadImage(uiimage: uiimage)
         }
     }

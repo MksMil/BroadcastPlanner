@@ -195,7 +195,7 @@ public struct AnyContentViewSizePreferenceKey: PreferenceKey{
 }
 
 //#Preview {
-//    let mdm = DataManager(globalDataManager: NetworkManager())
+//    let mdm = DataManager(networkManager: NetworkManager())
 //    BPAccountInfoView(user:)
 //        .environment(\.managedObjectContext, mdm.mainContext)
 //        .environmentObject(mdm)

@@ -12,7 +12,7 @@ enum RouterPath: Hashable{
     //create new
     case createEdit(Broadcast)
     //...flow
-    case stadPointsEdit
+    case stadPointsEdit(Broadcast)
     case carPointsEdit(Bool)
     
     
@@ -71,6 +71,10 @@ final class Router: ObservableObject {
                 self.path.append(to)
             default: self.path.append(to)
         }
+    }
+    
+    func routeFromNotification(path: RouterPath){
+        
     }
 }
 
