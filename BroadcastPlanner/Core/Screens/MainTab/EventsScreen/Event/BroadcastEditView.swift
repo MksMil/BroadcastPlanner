@@ -144,9 +144,15 @@ struct BroadcastEditView: View {
 }
 
 #Preview {
-    RootView()
+    let dataManager = DataManager(globalDataManager: NetworkManager())
+    let appState = ApplicationState()
+    dataManager.networkManager.eventProgressHandler = appState
+    
+    return RootView()
         .environmentObject(GlobalSettings())
         .environmentObject(SessionManager())
-        .environmentObject(ApplicationState())
+        .environmentObject(appState)
         .environmentObject(Router())
+        .environmentObject(dataManager)
+        .environment(\.managedObjectContext, dataManager.mainContext)
 }

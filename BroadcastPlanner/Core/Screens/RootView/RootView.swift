@@ -159,11 +159,15 @@ struct RootView: View {
 
 #if DEBUG
 #Preview {
+    let dm = DataManager(globalDataManager: NetworkManager())
+    
     RootView()
         .environmentObject(GlobalSettings())
         .environmentObject(SessionManager())
         .environmentObject(ApplicationState())
         .environmentObject(Router())
+        .environmentObject(dm)
+        .environment(\.managedObjectContext, dm.mainContext)
 }
 #endif
 

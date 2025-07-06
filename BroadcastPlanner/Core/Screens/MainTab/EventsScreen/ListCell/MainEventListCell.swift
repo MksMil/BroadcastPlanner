@@ -21,59 +21,60 @@ struct MainEventListCell: View {
     
     var body: some View {
         ZStack{
-                Rectangle().fill(Color.white.opacity(status == .currentMemberParticipated ? 0.5: 0.3))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                    .overlay {
-                        HStack{
-                            VStack(spacing: 5){
-                                Text("\(vm.firstDate)")
-                                    .font(.caption2)
-                                Text("\(vm.secondDate)")
-                                RemainigTimveView(time: vm.date)
-                            }
-                            .frame(width: 100)
+            Rectangle()
+                .fill(Color.white.opacity(status == .currentMemberParticipated ? 0.5: 0.3))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .overlay {
+                    HStack{
+                        VStack(spacing: 5){
+                            Text("\(vm.firstDate)")
+                                .font(.caption2)
+                            Text("\(vm.secondDate)")
+                            RemainigTimveView(time: vm.date)
+                        }
+                        .frame(width: 100)
+                        .background{
+                            Color.randomColor()
+                        }
+                        
+                        Divider()
+                            .background(.white.opacity(0.4))
+                        
+                        VStack(spacing: 0){
+                            LogosCellImageView(homeImage: vm.homeImage,
+                                               guestImage: vm.guestImage, size: 45)
+                            .frame(height: 45)
                             .background{
                                 Color.randomColor()
                             }
                             
-                            Divider()
-                                .background(.white.opacity(0.4))
-                            
-                            VStack(spacing: 0){
-                                LogosCellImageView(homeImage: vm.homeImage,
-                                                   guestImage: vm.guestImage, size: 45)
-                                    .frame(height: 45)
-                                    .background{
-                                        Color.randomColor()
-                                    }
-
-                            }
-                            .padding(.vertical,2)
-                            
-                            Divider()
-                                .background(.white.opacity(0.4))
-
-                            VStack(alignment: .leading){
-                                Text(vm.title)
-                                    .font(.title3)
-                                    .lineLimit(1)
-                                    .minimumScaleFactor(0.35)
-                                Spacer()
-                                Text(vm.address)
-                                    .font(.caption)
-                                    .lineLimit(1)
-                                    .minimumScaleFactor(0.35)
-                            }
-                            .padding(.vertical,10)
+                        }
+                        .padding(.vertical,2)
+                        
+                        Divider()
+                            .background(.white.opacity(0.4))
+                        
+                        VStack(alignment: .leading){
+                            Text(vm.title)
+                                .font(.title3)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.35)
                             Spacer()
+                            Text(vm.address)
+                                .font(.caption)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.35)
                         }
-                        .overlay {
-                            RoundedRectangle(cornerRadius: 8)
-                                .strokeBorder(status == .currentMemberOwned ? .red.opacity(0.4):.white.opacity(0.4), lineWidth: 2)
-                        }
+                        .padding(.vertical,10)
+                        Spacer()
                     }
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 8)
+                            .strokeBorder(status == .currentMemberOwned ? .red.opacity(0.4):.white.opacity(0.4), lineWidth: 2)
+                    }
+                }
             
-            .foregroundStyle(Color.black)
+                .foregroundStyle(Color.black)
         }
         .frame(height: rowHeight)
         .opacity(isExpired ? 0.3 : 1)
@@ -99,12 +100,12 @@ struct MainEventListCell: View {
     
 }
 
-#Preview {
-    RootView()
-        .environmentObject(GlobalSettings())
-        .environmentObject(SessionManager())
-        .environmentObject(ApplicationState())
-}
+//#Preview {
+//    RootView()
+//        .environmentObject(GlobalSettings())
+//        .environmentObject(SessionManager())
+//        .environmentObject(ApplicationState())
+//}
 
 struct RemainigTimveView: View {
     @EnvironmentObject var appState: ApplicationState

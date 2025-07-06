@@ -3,10 +3,9 @@ import CoreData
 import SwiftUI
 
 struct MainEventsList: View {
-    @EnvironmentObject var mdm: DataManager
+    @EnvironmentObject var dataManager: DataManager
     @EnvironmentObject var router: Router
     @EnvironmentObject var appState: ApplicationState
-    //    @StateObject private var eventRouter = EventTabRouter()
 
     @FetchRequest<Broadcast>(sortDescriptors: [
         SortDescriptor(\.date, order: .forward)
@@ -16,9 +15,7 @@ struct MainEventsList: View {
     @State private var filter: FilterEventOwnerCases = FilterEventOwnerCases
         .notFiltered
     @State private var expired: Bool = true
-    @State private var title: String = "All Events"
-    
-    
+    @State private var opacity: Double = 1
 
     var body: some View {
         ZStack {
@@ -40,7 +37,7 @@ struct MainEventsList: View {
                             Spacer()
                             Divider()
                             Button {
-                                withAnimation(.easeIn(duration: 0.1)) {
+                                withAnimation(.easeIn(duration: 0.3)) {
                                     expired.toggle()
                                 }
                                 updateEvents()
@@ -66,26 +63,29 @@ struct MainEventsList: View {
                                     router.routeTo(path: .createEdit(broadcast),withTransition: .fade(.out))
                                 }
                                 .transition(
-                                    .move(edge: .top).combined(with: .opacity)
+                                    .move(edge: .top)
+                                    .combined(with: .opacity)
+                                    
                                 )
-                                .animation(
-                                    .easeIn(duration: 0.3),
-                                    value: filter
-                                )
-                                .animation(
-                                    .easeIn(duration: 0.3),
-                                    value: expired
-                                )
+                                .animation(.easeIn(duration: 0.3), value: filter)
                         }
                     }
+                    .frame(maxWidth: .infinity) // need to correct animation of changes of list!  (if (list empty & !maxWidth) - added 'scale' to transition animation of cell)
                 }
                 .padding(.horizontal, 8)
-                if mdm.accessLevel < 2 {
+                .opacity(opacity)
+
+                if dataManager.accessLevel < 2 {
                     Button {
+                            opacity = 0
                         Task{
-                            selectedBroadcast = try? await  mdm.createEventWithCurrentUserOwnerInContextType()
+                            selectedBroadcast = try? await  dataManager.createEventWithCurrentUserOwnerInContextType()
                             if let selectedBroadcast {
                                 router.routeTo(path: .createEdit(selectedBroadcast))
+                            } else {
+                                withAnimation(.easeOut(duration: 0.1)){
+                                    opacity = 1
+                                }
                             }
                         }
                     } label: {
@@ -107,9 +107,10 @@ struct MainEventsList: View {
         }
         .onAppear{
             appState.applyAppConfiguration(StateCongiguration.MainListConfiguration)
+            opacity = 1
             selectedBroadcast = nil
         }
-        .onReceive(mdm.updatePublisher) { value in
+        .onReceive(dataManager.updatePublisher) { value in
             if value.0 == GlobalProperties.PublishChanges.broadcasts {
                 print("broadcasts update received in EventList")
 //                updateEvents()
@@ -124,14 +125,11 @@ struct MainEventsList: View {
             corePredicate = NSPredicate(format: "id != %@", "")
             newTitle = "All Events"
         case .userOwned:
-            corePredicate = NSPredicate(format: "id != %@", "")  //NSPredicate(format: "owners CONTAINS %@",mdm.currentUserInMainContext)
+                corePredicate = NSPredicate(format: "ANY owners.id == %@",dataManager.currentId)
             newTitle = "My owned broadcasts"
         case .userPartisipation:
-            corePredicate = NSPredicate(format: "id != %@", "")
-            //NSPredicate(
-            //                format: "members CONTAINS %@",
-            //                argumentArray: [mdm.currentUser]
-            //            )
+                corePredicate = NSPredicate(format: "ANY owners.id == %@",dataManager.currentId)
+            
             newTitle = "My participation"
         }
         var predicateArray = [corePredicate]
@@ -143,7 +141,7 @@ struct MainEventsList: View {
             predicateArray.append(expiredPredicate)
         }
         withAnimation(.easeIn(duration: 0.3)) {
-            title = newTitle
+            appState.setTitle(newTitle)
             broadcasts.nsPredicate = NSCompoundPredicate(
                 andPredicateWithSubpredicates: predicateArray
             )
@@ -152,9 +150,15 @@ struct MainEventsList: View {
 }
 
 #Preview {
-    RootView()
+    let dataManager = DataManager(globalDataManager: NetworkManager())
+    let appState = ApplicationState()
+    dataManager.networkManager.eventProgressHandler = appState
+    
+    return RootView()
         .environmentObject(GlobalSettings())
         .environmentObject(SessionManager())
-        .environmentObject(ApplicationState())
+        .environmentObject(appState)
         .environmentObject(Router())
+        .environmentObject(dataManager)
+        .environment(\.managedObjectContext, dataManager.mainContext)
 }

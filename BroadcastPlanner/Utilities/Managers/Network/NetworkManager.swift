@@ -37,7 +37,7 @@ final class NetworkManager: ObservableObject {
         self.storage = storage
         self.storageRef = storage.reference()
         self.logger = LoggerFactory.logger(for: .network)
-        self.monitor = NWPathMonitor()
+        self.monitor = NWPathMonitor(requiredInterfaceType: .wifi)
         monitor.pathUpdateHandler = { path in
             self.logger.info("Network status: \(path.status == .satisfied ? "Connected" : "Disconnected")")
             self.networkStatus = path.status == .satisfied

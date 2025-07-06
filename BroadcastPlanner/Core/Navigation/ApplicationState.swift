@@ -252,6 +252,7 @@ class ApplicationState: ObservableObject{
     let networkStatusPublisher = PassthroughSubject<Bool,Never>()
 }
 
+// MARK: - Progress show
 protocol EventsProgressHandler: AnyObject{
     func startLoading()
     func stopLoading()
@@ -272,6 +273,7 @@ extension ApplicationState: EventsProgressHandler{
     
 }
 
+// MARK: - State configuration
 struct StateCongiguration {
     //primary button
     let isPrimaryButtonVisisble: Bool
@@ -288,7 +290,7 @@ struct StateCongiguration {
     let menuState: MenuState
     //title
     let title: String
-    
+    // MARK: static configurations
     static let MainListConfiguration : StateCongiguration = StateCongiguration(
         isPrimaryButtonVisisble: false,
         isPrimaryButtonEnable: false,
@@ -299,7 +301,7 @@ struct StateCongiguration {
         isBackButtonVisible: false,
         isBackButtonEnabled: false,
         menuState: .none,
-        title: "Broadcasts list"
+        title: "All Events"
     )
     static let OwnerInfoConfiguration: StateCongiguration = StateCongiguration(
         isPrimaryButtonVisisble: true,
