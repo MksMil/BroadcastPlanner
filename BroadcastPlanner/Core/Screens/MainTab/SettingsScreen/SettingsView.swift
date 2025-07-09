@@ -9,7 +9,7 @@ struct SettingsView: View {
     @EnvironmentObject var appState: ApplicationState
     @EnvironmentObject var sessionManager: SessionManager
     
-    @EnvironmentObject var mdm: DataManager
+    @EnvironmentObject var dataManager: DataManager
 
     @Environment(\.authorizationController) private var authorizationController
 
@@ -18,7 +18,7 @@ struct SettingsView: View {
             MainBackground()
             ScrollView{
                 Button {
-                    // settingsRouter.path.append(SettingsTabPath.updateEmail)
+                    router.routeTo(path: .updateEmail)
                 } label: {
                     Text("Change E-mail")
                         .frame(maxWidth: .infinity)
@@ -29,7 +29,7 @@ struct SettingsView: View {
                 }
                 
                 Button {
-                    //                                    settingsRouter.path.append(SettingsTabPath.updatePassword)
+                    router.routeTo(path: .updatePassword)
                 } label: {
                     Text("Change Password")
                         .frame(maxWidth: .infinity)
@@ -84,6 +84,7 @@ struct SettingsView: View {
                 //add club
                 Button {
                     //                                settingsRouter.path.append(SettingsTabPath.clubSheet)
+                    router.routeTo(path: .clubSheet)
                 } label: {
                     Text("Add Club")
                         .frame(maxWidth: .infinity)
@@ -135,7 +136,7 @@ struct SettingsView: View {
                             try await sessionManager.deleteUser()
                             appState.state = .notAuthorized
                             appState.userOnlineStatus = .offline
-                            mdm.clearData()
+                            dataManager.clearData()
                             router.routeToAuth()
                         } catch {
 #if DEBUG
@@ -156,7 +157,6 @@ struct SettingsView: View {
         }
         .navigationBarBackButtonHidden()
         .onAppear{
-            appState.applyAppConfiguration(StateCongiguration.SettingsConfiguration)
             appState.primaryAction = {
             }
             appState.secondaryAction = {}
@@ -168,12 +168,18 @@ struct SettingsView: View {
     }
 }
 
-
+#if DEBUG
 #Preview {
-    RootView()
+    let dm = DataManager(globalDataManager: NetworkManager())
+    let appState = ApplicationState()
+    dm.networkManager.eventProgressHandler = appState
+    return RootView()
         .environmentObject(GlobalSettings())
         .environmentObject(SessionManager())
-        .environmentObject(ApplicationState())
+        .environmentObject(appState)
         .environmentObject(Router())
+        .environmentObject(dm)
+        .environment(\.managedObjectContext, dm.mainContext)
 }
+#endif
 

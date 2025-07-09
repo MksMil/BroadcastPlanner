@@ -1,145 +1,146 @@
 import SwiftUI
 
 struct ClubSheetView: View {
-    @EnvironmentObject var mdm: DataManager
-    @StateObject var vm: ClubSheetViewModel
-    @Namespace var clubNS
-    //    @State private var isEdit: Bool = false
+    @EnvironmentObject var dataManager: DataManager
+    @EnvironmentObject var router: Router
+    @EnvironmentObject var appState: ApplicationState
 
-    let editMode: Bool
-
-    let cancelAction: () -> Void
-    let acceptAction: (Club) -> Void
-    let addEditAction: (Club) -> Void
-
+    @StateObject var vm: ClubSheetViewModel = ClubSheetViewModel()
+    @State private var isEdit: Bool = false
+    @State private var isRemoveClubDialog: Bool = false
+    @State private var visual = 0.0
+    
+    
     @FetchRequest<Club>(sortDescriptors: [], animation: .easeInOut)
     var clubs
-
-    init(
-        editMode: Bool = false,
-        cancelAction: @escaping () -> Void = {},
-        acceptAction: @escaping (Club) -> Void = { _ in },
-        addEditAction: @escaping (Club) -> Void
-    ) {
-        self.editMode = editMode
-        self.cancelAction = cancelAction
-        self.acceptAction = acceptAction
-        self.addEditAction = addEditAction
-        self._vm = StateObject(wrappedValue: ClubSheetViewModel())
-    }
 
     var body: some View {
 
         ZStack {
             MainBackground()
-            VStack(spacing: 20) {
-                //header group
-                ConfirmationButtonGroupView(
-                    height: 50,
-                    isAcceptDisabled: vm.isAcceptDissabled
-                ) {
-                    cancelAction()
-                } acceptAction: {
-                    //accept club to selected point
-                    guard let selectedClub = vm.selectedClub else { return }
-                    acceptAction(selectedClub)
-                } content: {
-                    Text(
-                        editMode
-                            ? (vm.isAcceptDissabled ? "Add" : "Edit")
-                            : (vm.selectedClub == nil
-                                ? "Choose Club" : vm.buttonTitle)
-                    )
-                    .lineLimit(2)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .font(.title3)
-                    .background {
-                        RoundedRectangle(cornerRadius: 5)
-                            .fill(.white.opacity(0.4))
-                            .overlay {
-                                RoundedRectangle(cornerRadius: 5)
-                                    .stroke(
-                                        Color.black.opacity(
-                                            vm.selectedClub == nil ? 0.5 : 1),
-                                        lineWidth: 1)
-                            }
-                    }
-                    .onTapGesture {
-//                        if editMode {
-//                            addEditAction(vm.selectedClub ?? mdm.createClub())
-//                        }
-                    }
-                }
-                .padding(.horizontal)
-                .padding(.top, 10)
-                .font(.title3)
-                ScrollView {
-                    VStack {
-                        SmartLayout(hSpacing: 5, vSpacing: 5) {
-                            ForEach(clubs) { club in
-                                ClubSheetCellView(club: club)
-                                    .matchedGeometryEffect(
-                                        id: club.id,
-                                        in: clubNS,
-                                        isSource: true
-                                    )
-                                    .onTapGesture {
-                                        withAnimation {
-                                            if vm.selectedClub == club {
-                                                //                                            isEdit = false
-                                                vm.selectedClub = nil
-                                            } else {
-                                                //                                            isEdit = true
-                                                vm.selectedClub = club
-                                            }
-                                        }
+            SmartLayout(hSpacing: 5, vSpacing: 5) {
+                    ForEach(clubs) { club in
+                        ClubSheetCellView(image: club.viewImageMediumLogo,
+                                          title: club.viewTitle)
+                        .scaleEffect(vm.selectedClub == club ? 1.05 : 1)
+                        .opacity(vm.selectedClub == club ? 1 : 0.8)
+                            .onTapGesture {
+                                withAnimation {
+                                    if vm.selectedClub == club {
+                                        //isEdit = false
+                                        
+                                        vm.selectedClub = nil
+                                        appState.setIconToPrimaryButton(.plus)
+                                        appState.makeSecondaryButtonEnabled(
+                                            false
+                                        )
+                                    } else {
+                                        //isEdit = true
+                                        vm.selectedClub = club
+                                        appState.setIconToPrimaryButton(.edit)
+                                        appState.makeSecondaryButtonEnabled(
+                                            true
+                                        )
                                     }
-                            }
-                            .overlay {
-                                if let selectedClub = vm.selectedClub {
-                                    RoundedRectangle(cornerRadius: 5)
-                                        .stroke(.blue, lineWidth: 2)
-                                        .matchedGeometryEffect(
-                                            id: selectedClub.id,
-                                            in: clubNS,
-                                            isSource: false)
                                 }
                             }
-                        }
-
                     }
-                    .padding(.horizontal, 15)
-                    .scrollIndicators(.hidden)
-                    .scrollContentBackground(.hidden)
                 }
+            .opacity(visual)
+            .frame(maxWidth: .infinity,maxHeight: .infinity,alignment: .top)
+                .padding(.horizontal, 15)
+                .padding(.vertical, 15)
                 .onTapGesture {
                     withAnimation {
                         vm.selectedClub = nil
+                        appState.setIconToPrimaryButton(.plus)
+                        appState.makeSecondaryButtonEnabled(false)
                     }
                 }
             }
+        .onAppear {
+            visual = 1
+            appState.primaryAction = {
+                visual = 0
+                var clubToRoute: Club!
+                if let club = vm.selectedClub {
+                    clubToRoute = club
+                } else {
+                    dataManager.mainContext.performAndWait {
+                        clubToRoute = dataManager.mainContext.fetchOrCreateObject(
+                            withID: UUID().uuidString
+                    )
+                        print(clubToRoute.viewId)
+                    }
+                }
+                router.routeTo(path: .addEditClub(clubToRoute))
+            }
+            appState.secondaryAction = {
+                isRemoveClubDialog = true
+            }
+            appState.stepBackAction = {
+                router.routeStepBack()
+            }
         }
-//        .onReceive(
-//            mdm.localDataManager.updatePublisher,
-//            perform: { value in
-//                if value.0 == .clubs {
-//                    if value.1.isEmpty {
-//                        vm.selectedClub = nil
-//                    } else {
-//                        vm.selectedClub?.objectWillChange.send()
-//                    }
-//                }
-//            }
-//        )
+        //        .onReceive(
+        //            dataManager.localDataManager.updatePublisher,
+        //            perform: { value in
+        //                if value.0 == .clubs {
+        //                    if value.1.isEmpty {
+        //                        vm.selectedClub = nil
+        //                    } else {
+        //                        vm.selectedClub?.objectWillChange.send()
+        //                    }
+        //                }
+        //            }
+        //        )
         .navigationBarBackButtonHidden()
+        .confirmationDialog(
+            Text("Permanently erase the Club in the trash?"),
+            isPresented: $isRemoveClubDialog
+        ) {
+            Button("Remove Club", role: .destructive) {
+                // Handle empty trash action.
+                if let club = vm.selectedClub {
+                    vm.selectedClub = nil
+                    let id = club.viewId
+                    
+                    let imageId: String? = club.imageLogo?.viewId
+                    
+                    dataManager.mainContext.performAndWait{
+                        dataManager.mainContext.delete(club)
+                        try? dataManager.saveContext(
+                            publish: GlobalProperties.PublishChanges.clubs,
+                            id: []
+                        )
+                    }
+                    appState.setIconToPrimaryButton(.plus)
+                    appState.makeSecondaryButtonEnabled(false)
+                    //remove from network image & club
+                    Task{
+                        if let imageId{
+                            await dataManager.networkManager.removeImage(localImageId: imageId)
+                        }
+                        await dataManager.networkManager.removeDataOfType(GlobalProperties.Path.clubs, withId: id)
+                    }
+                    
+                }
+            }
+        }
     }
 }
 
-//#Preview {
-//    ClubSheetView(
-//        editMode: true,
-//        cancelAction: {},
-//        acceptAction: { _ in },
-//        addEditAction: { _ in })
-//    //    .environment(\.managedObjectContext, DataManager.shared.moc)
-//}
+#if DEBUG
+    #Preview {
+        let dm = DataManager(globalDataManager: NetworkManager())
+        let appState = ApplicationState()
+        dm.networkManager.eventProgressHandler = appState
+        return RootView()
+            .environmentObject(GlobalSettings())
+            .environmentObject(SessionManager())
+            .environmentObject(appState)
+            .environmentObject(Router())
+            .environmentObject(dm)
+            .environment(\.managedObjectContext, dm.mainContext)
+    }
+#endif

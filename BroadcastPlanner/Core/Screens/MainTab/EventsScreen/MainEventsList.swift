@@ -106,7 +106,7 @@ struct MainEventsList: View {
             .navigationBarBackButtonHidden()
         }
         .onAppear{
-            appState.applyAppConfiguration(StateCongiguration.MainListConfiguration)
+//            appState.applyAppConfiguration(StateCongiguration.MainListConfiguration)
             opacity = 1
             selectedBroadcast = nil
         }
@@ -128,7 +128,7 @@ struct MainEventsList: View {
                 corePredicate = NSPredicate(format: "ANY owners.id == %@",dataManager.currentId)
             newTitle = "My owned broadcasts"
         case .userPartisipation:
-                corePredicate = NSPredicate(format: "ANY owners.id == %@",dataManager.currentId)
+                corePredicate = NSPredicate(format: /*" SUBQUERY(venuePoints, $point, ANY $point.members.id == %@).@count > 0 OR SUBQUERY(crews, $crew, $crew.member.id == %@).@count > 0"*/ "allMemberIds CONTAINS %@",dataManager.currentId)
             
             newTitle = "My participation"
         }
@@ -149,16 +149,17 @@ struct MainEventsList: View {
     }
 }
 
+#if DEBUG
 #Preview {
-    let dataManager = DataManager(globalDataManager: NetworkManager())
+    let dm = DataManager(globalDataManager: NetworkManager())
     let appState = ApplicationState()
-    dataManager.networkManager.eventProgressHandler = appState
-    
+    dm.networkManager.eventProgressHandler = appState
     return RootView()
         .environmentObject(GlobalSettings())
         .environmentObject(SessionManager())
         .environmentObject(appState)
         .environmentObject(Router())
-        .environmentObject(dataManager)
-        .environment(\.managedObjectContext, dataManager.mainContext)
+        .environmentObject(dm)
+        .environment(\.managedObjectContext, dm.mainContext)
 }
+#endif

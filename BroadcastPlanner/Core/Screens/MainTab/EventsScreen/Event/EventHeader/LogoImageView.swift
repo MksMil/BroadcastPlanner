@@ -55,14 +55,7 @@ struct LogoImageView: View {
         .sheet(
             isPresented: $vm.isSheetPresented,
             content: {
-                ClubSheetView(cancelAction: {
-                    cancelAction()
-                    vm.isSheetPresented.toggle()
-                }, acceptAction: { club in
-                    vm.updatewithClub(club: club)
-                    accessAction(club)
-                    vm.isSheetPresented.toggle()
-                }, addEditAction: {_ in })
+                ClubSheetView()
 //                .padding()
 //                .presentationBackground(.white.opacity(0.4))
                 .presentationContentInteraction(.scrolls)

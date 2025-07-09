@@ -9,19 +9,17 @@ final class AddEditClubViewModel: ObservableObject{
                       let data = try? await item.loadTransferable(type: Data.self),
                       let image = UIImage(data: data)
                 else { return }
-                self.uiimage = image
                 await MainActor.run {
+                    self.uiimage = image
                     withAnimation{
                         self.showedImage = Image(uiImage: image)
                     }
                 }
-                
             }
         }
     }
-    @Published var showedImage: Image
+   @Published var showedImage: Image
     var uiimage: UIImage?
-    let club: Club
     
     @Published var title: String
     @Published var urlString: String
@@ -30,7 +28,6 @@ final class AddEditClubViewModel: ObservableObject{
     @Published var location: Venue?
     
     init(club: Club){
-        self.club = club
         self.title = club.viewTitle
         self.contacts = club.viewContacts
         self.urlString = club.viewUrl
@@ -41,78 +38,44 @@ final class AddEditClubViewModel: ObservableObject{
     }
     
     func update(){
-        self.location = club.homeVenue
+//        self.location = club.homeVenue
     }
 }
 
 
 struct AddEditClubView: View {
+    @EnvironmentObject var appState: ApplicationState
+    @EnvironmentObject var router: Router
+    @EnvironmentObject var dataManager: DataManager
     
     @StateObject var vm: AddEditClubViewModel
-    @State private var isRemoveClubDialog: Bool = false
     
     let club: Club
     
-    let acceptAction: (String, UIImage?,String,String, Venue?)->Void
-    let cancelAction: ()->Void
-    let removeAction: ()->Void
-    
-    let defineLocation: ()->Void
-    
-    init(club: Club,
-         acceptAction: @escaping (String, UIImage?, String, String, Venue?) -> Void,
-         cancelAction: @escaping () -> Void,
-         removeAction: @escaping () -> Void,
-         defineLocation: @escaping () -> Void) {
+    init(club: Club) {
         self._vm = StateObject(wrappedValue: AddEditClubViewModel(club: club))
         self.club = club
-        self.acceptAction = acceptAction
-        self.cancelAction = cancelAction
-        self.removeAction = removeAction
-        self.defineLocation = defineLocation
     }
     
     var body: some View {
         ZStack{
             MainBackground()
             VStack(spacing: 15){
-                ConfirmationButtonGroupView(isAcceptDisabled: false) {
-                    cancelAction()
-                } acceptAction: {
-                    acceptAction(vm.title, vm.uiimage, vm.contacts,vm.urlString,vm.location)
-                } content: {
-                    Image(systemName: "trash.square")
-                        .resizable()
-                        .scaledToFit()
-                        .onTapGesture {
-                            isRemoveClubDialog = true
-                        }
-                        .foregroundStyle(.black, .white)
-                        .fontWeight(.light)
-                }
-                .padding(.horizontal)
-                .padding(.top, 10)
-                
-                PhotosPicker(selection: $vm.selectedPhoto,
-                             matching: .images,
-                             photoLibrary: .shared()) {
+                Spacer()
+                PhotosPicker(selection: $vm.selectedPhoto) {
                     vm.showedImage
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 150,height: 150)
-                        .padding(15)
+                        .frame(width: 100, height: 100)
+                        .padding(5)
                         .clipShape(Circle())
+                        .padding(5)
                         .background{
-                            Circle()
-                                .fill(.ultraThinMaterial)
-                        }
-                        .overlay {
-                            Circle()
-                                .stroke(.white,
-                                        lineWidth: 3)
+                            Circle().fill(Color.white)
                         }
                 }
-                //club name -> title
+                DividerWithText(text: "information")
+                                //club name -> title
                 Section{
                     TextField("club name", text: $vm.title)
                         .font(.title)
@@ -133,7 +96,7 @@ struct AddEditClubView: View {
                     //Venue
                     
                     Button {
-                        defineLocation()
+//                        defineLocation()
                     } label: {
                         if let location = vm.location{
                             LocationCell(title: location.viewTitle,
@@ -148,8 +111,7 @@ struct AddEditClubView: View {
                                     RoundedRectangle(cornerRadius: 5)
                                         .fill(.bar)
                                         .overlay {
-                                            RoundedRectangle(cornerRadius: 5).stroke(.gray,
-                                                                                     lineWidth: 1)
+                                            RoundedRectangle(cornerRadius: 5).stroke(.gray,lineWidth: 1)
                                         }
                                 }
                         }
@@ -157,27 +119,70 @@ struct AddEditClubView: View {
                 }
                 .padding(.horizontal)
                 Spacer()
+                Spacer()
             }
         }
         .navigationBarBackButtonHidden()
         .task{
             vm.update()
         }
-        //venue remove confirmation dialog
-        .confirmationDialog(
-            Text("Permanently erase the Club in the trash?"),
-            isPresented: $isRemoveClubDialog
-        ) {
-            Button("Remove Club", role: .destructive) {
-                // Handle empty trash action.
-                    removeAction()
+        .onAppear{
+            appState.primaryAction = {
+                dataManager.mainContext.performAndWait {
+                    if let uiimage = vm.uiimage{
+                        let uiimageDTO = ImageDTO(id: UUID().uuidString,
+                                                  type: GlobalProperties.ImageType.club.rawValue)
+                        let image: LocalImage = dataManager.mainContext.makeObjectFromDTO(uiimageDTO)
+                        image.uploadImage(uiimage: uiimage)
+                        club.imageLogo = image
+                        image.parentClub = club
+                        Task{
+                            await dataManager
+                                .networkManager
+                                .saveImageToGlobalStorage(id: image.viewId,
+                                                          uiimage: uiimage,
+                                                          type: GlobalProperties.ImageType.club)
+                        }
+                    }
+                    club.updateValues(
+                    title: vm.title,
+                    contacts: vm.contacts,
+                    urlString: vm.urlString,
+                    venue: nil,
+                    in: dataManager.mainContext
+                )
+                    try? dataManager.mainContext.save()
+                    Task{
+                      await dataManager.networkManager.saveData(club.dto,
+                                                            withId: club.viewId,
+                                                            withType: GlobalProperties.Path.clubs)
+                    }
+                }
+                router.routeStepBack()
+            }
+            appState.secondaryAction = {
+                
+            }
+            appState.stepBackAction = {
+                router.routeStepBack()
             }
         }
+        
+
     }
 }
 
-//#Preview {
-//    AddEditClubView(club: LocalClub(context: DataManager.preview.moc),
-//                    acceptAction: {_,_,_,_,_ in }, cancelAction: {},
-//                    removeAction: {},defineLocation: {})
-//}
+#if DEBUG
+#Preview {
+    let dm = DataManager(globalDataManager: NetworkManager())
+    let appState = ApplicationState()
+    dm.networkManager.eventProgressHandler = appState
+    return RootView()
+        .environmentObject(GlobalSettings())
+        .environmentObject(SessionManager())
+        .environmentObject(appState)
+        .environmentObject(Router())
+        .environmentObject(dm)
+        .environment(\.managedObjectContext, dm.mainContext)
+}
+#endif

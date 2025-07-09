@@ -51,7 +51,8 @@ struct BroadcastEditView: View {
                 //header: time, date, teams, venue
                 VStack{
                     ZStack{
-                        LocationSelectionView(location: vm.location, offset: logoSize) {
+                        LocationSelectionView(location: vm.location,
+                                              offset: logoSize) {
                             
                         } acceptAction: { newLocation in
                             vm.location = newLocation
@@ -111,7 +112,7 @@ struct BroadcastEditView: View {
             }
         }
         .onAppear{
-            appState.applyAppConfiguration(StateCongiguration.BroadcastEditViewConfiguration)
+            
             appState.primaryAction = {
                 do{
                     broadcast.updateValues(date: vm.eventDate,
@@ -143,16 +144,17 @@ struct BroadcastEditView: View {
     }
 }
 
+#if DEBUG
 #Preview {
-    let dataManager = DataManager(globalDataManager: NetworkManager())
+    let dm = DataManager(globalDataManager: NetworkManager())
     let appState = ApplicationState()
-    dataManager.networkManager.eventProgressHandler = appState
-    
+    dm.networkManager.eventProgressHandler = appState
     return RootView()
         .environmentObject(GlobalSettings())
         .environmentObject(SessionManager())
         .environmentObject(appState)
         .environmentObject(Router())
-        .environmentObject(dataManager)
-        .environment(\.managedObjectContext, dataManager.mainContext)
+        .environmentObject(dm)
+        .environment(\.managedObjectContext, dm.mainContext)
 }
+#endif

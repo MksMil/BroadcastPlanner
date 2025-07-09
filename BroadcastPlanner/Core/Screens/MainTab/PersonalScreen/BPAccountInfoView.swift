@@ -113,7 +113,6 @@ struct BPAccountInfoView: View {
             }
             .navigationBarBackButtonHidden()
             .onAppear{
-                appState.applyAppConfiguration(StateCongiguration.OwnerInfoConfiguration)
                 appState.primaryAction = {
                     if isEdit {
                         appState.setIconToPrimaryButton(.edit)
@@ -146,11 +145,18 @@ struct BPAccountInfoView: View {
         }
 }
 
+#if DEBUG
 #Preview {
-    RootView()
+    let dm = DataManager(globalDataManager: NetworkManager())
+    let appState = ApplicationState()
+    dm.networkManager.eventProgressHandler = appState
+    return RootView()
         .environmentObject(GlobalSettings())
         .environmentObject(SessionManager())
-        .environmentObject(ApplicationState())
+        .environmentObject(appState)
         .environmentObject(Router())
+        .environmentObject(dm)
+        .environment(\.managedObjectContext, dm.mainContext)
 }
+#endif
 

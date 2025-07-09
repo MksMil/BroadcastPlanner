@@ -11,6 +11,7 @@ enum UserOnlineStatus {
 
 enum ButtonIcon: String{
     case accept = "checkmark"
+    case plus = "plus"
     case remove = "trash"
     case edit = "pencil"
     case cancel = "xmark"
@@ -28,9 +29,9 @@ class ApplicationState: ObservableObject{
     @Published var state: AppState = .notAuthorized
     @Published var userOnlineStatus: UserOnlineStatus = .offline
     
-    var primaryAction: ()->() = {}
-    var secondaryAction: ()->() = {}
-    var stepBackAction: ()->() = {}
+    @MainActor var primaryAction: ()->() = {}
+    @MainActor var secondaryAction: ()->() = {}
+    @MainActor var stepBackAction: ()->() = {}
     
     // MARK: init
     init(){
@@ -42,36 +43,32 @@ class ApplicationState: ObservableObject{
         stopTimer()
     }
     // MARK: - start app
-    var isStartAnimationFinished: Bool = false {
-        willSet{
-            startPublisher.send(newValue)
-        }
+    let isStartAnimationFinishedPublisher = CurrentValueSubject<Bool,Never>(false)
+    func animationFinished(_ finished: Bool = true){
+        isStartAnimationFinishedPublisher.value = finished
     }
-    
-    let startPublisher = PassthroughSubject<Bool,Never>()
     
     // MARK: - Title
-    var title: String = "Hello" {
-        willSet{
-            titlePublisher.send(newValue)
-        }
-    }
-    let titlePublisher = PassthroughSubject<String, Never>()
+    
+    let titlePublisher = CurrentValueSubject<String, Never>("Hello")
     
     func setTitle(_ newTitle: String){
-        if title != newTitle{
-            title = newTitle
+        if titlePublisher.value != newTitle{
+            titlePublisher.value = newTitle
         }
     }
     
     // MARK: - MainNotifications
-    let notificationPublisher = PassthroughSubject<StatusViewNotification,Never>()
+    let notificationPublisher = CurrentValueSubject<StatusViewNotification,Never>(StatusViewNotification(id: UUID(),
+                                                                                                         text: "Hello",
+                                                                                                         textColor: Color.primary,
+                                                                                                         cycle: .once))
     func addNewNotification(note: StatusViewNotification){
-        notificationPublisher.send(note)
+        notificationPublisher.value = note
     }
     
     // MARK: - Timer
-    var currentTime:  PassthroughSubject = PassthroughSubject<Date,Never>()
+    let currentTime:  PassthroughSubject = PassthroughSubject<Date,Never>()
     var timer: Cancellable?
     
     func startTimer() {
@@ -86,105 +83,60 @@ class ApplicationState: ObservableObject{
     }
     
     //MARK: - Primary action button
-    var isPrimaryButtonEnable: Bool = false {
-        willSet{
-            isPrimaryButtonEnabledPublisher.send(newValue)
-        }
-    }
-    var isPrimaryButtonVisible: Bool = false {
-        willSet{
-            isPrimaryButtonVisiblePublisher.send(newValue)
-        }
-    }
-    var primaryIcon: ButtonIcon = .accept {
-        willSet{
-            primaryIconPublisher.send(newValue)
-        }
-    }
-    let isPrimaryButtonEnabledPublisher = PassthroughSubject<Bool,Never>()
-    let isPrimaryButtonVisiblePublisher = PassthroughSubject<Bool,Never>()
-    let primaryIconPublisher = PassthroughSubject<ButtonIcon,Never>()
+
+    let isPrimaryButtonEnabledPublisher = CurrentValueSubject<Bool,Never>(false)
+    let isPrimaryButtonVisiblePublisher = CurrentValueSubject<Bool,Never>(false)
+    let primaryIconPublisher = CurrentValueSubject<ButtonIcon,Never>(.accept)
     func makePrimaryButtonEnabled(_ enabled: Bool){
-        isPrimaryButtonEnable = enabled
+        isPrimaryButtonEnabledPublisher.value = enabled
     }
     func makePrimaryButtonVisible(_ visible: Bool){
-        isPrimaryButtonVisible = visible
+        isPrimaryButtonVisiblePublisher.value = visible
     }
     func setIconToPrimaryButton(_ icon: ButtonIcon){
-        primaryIcon = icon
+        primaryIconPublisher.value = icon
     }
     
     // MARK: - Secondary action button
-    var secondaryIcon: ButtonIcon = .remove {
-        willSet{
-            secondaryIconPublisher.send(newValue)
-        }
-    }
-    var isSecondaryButtonEnabled: Bool = false {
-        willSet{
-            isSecondaryButtonEnabledPublisher.send(newValue)
-        }
-    }
-    var isSecondaryButtonVisible: Bool = false {
-        willSet{
-            isSecondaryButtonVisiblePublisher.send(newValue)
-        }
-    }
-    var isSecondaryButtonEnabledPublisher = PassthroughSubject<Bool,Never>()
-    var isSecondaryButtonVisiblePublisher = PassthroughSubject<Bool,Never>()
-    var secondaryIconPublisher = PassthroughSubject<ButtonIcon,Never>()
+   
+    let isSecondaryButtonEnabledPublisher = CurrentValueSubject<Bool,Never>(false)
+    let isSecondaryButtonVisiblePublisher = CurrentValueSubject<Bool,Never>(false)
+    let secondaryIconPublisher = CurrentValueSubject<ButtonIcon,Never>(.cancel)
     func makeSecondaryButtonEnabled(_ enabled: Bool){
-        isSecondaryButtonEnabled = enabled
+        isSecondaryButtonEnabledPublisher.value = enabled
     }
     func makeSecondaryButtonVisible(_ visible: Bool){
-        isSecondaryButtonVisible = visible
+        isSecondaryButtonVisiblePublisher.value = visible
     }
     func setIconToSecondaryButton(_ icon: ButtonIcon){
-        secondaryIcon = icon
+        secondaryIconPublisher.value = icon
     }
 
     
     // MARK: - Back button
-    var isBackwardButtonVisible: Bool = false {
-        willSet{
-            isBackwardButtonVisiblePublisher.send(newValue)
-        }
-    }
-    var isBackwardButtonEnabled: Bool = false{
-        willSet{
-            isBacwardButtonEnabledPublisher.send(newValue)
-        }
-    }
-    var isBacwardButtonEnabledPublisher = PassthroughSubject<Bool,Never>()
-    var isBackwardButtonVisiblePublisher = PassthroughSubject<Bool,Never>()
+
+    let isBacwardButtonEnabledPublisher = CurrentValueSubject<Bool,Never>(false)
+    let isBackwardButtonVisiblePublisher = CurrentValueSubject<Bool,Never>(false)
     func makeBackwardButtonEnabled(_ enabled: Bool){
-        isBackwardButtonEnabled = enabled
+        isBacwardButtonEnabledPublisher.value = enabled
     }
     func makeBackwardButtonVisible(_ visible: Bool){
-        isBackwardButtonVisible = visible
+        isBackwardButtonVisiblePublisher.value = visible
     }
     
     // MARK: - Tab and unread messages counter
-    var unreadMessages: Int = 0 {
-        willSet{
-            unreadMessagesPublisher.send(newValue)
-        }
-    }
-    var isMessangerActive: Bool = false {
-        willSet{
-            isMessengerActivePublisher.send(newValue)
-        }
-    }
-    var isMessengerActivePublisher = PassthroughSubject<Bool,Never>()
-    var unreadMessagesPublisher = PassthroughSubject<Int,Never>()
+    
+   
+    let isMessengerActivePublisher = CurrentValueSubject<Bool, Never>(false)
+    let unreadMessagesPublisher = CurrentValueSubject<Int,Never>(0)
     func makeMessengerActive(_ active: Bool){
-        isMessangerActive = active
+        isMessengerActivePublisher.value = active
     }
     func setUnreadMessages(num: Int){
         guard num >= 0 else{ return }
-        unreadMessages = num
+        unreadMessagesPublisher.value = num
     }
-    // MARK: Menu state
+    // MARK: Menu state  - enables of elements in status menu
     var menuState: MenuState = .none
     func setMenuState(state: MenuState){
         menuState = state
@@ -227,19 +179,19 @@ class ApplicationState: ObservableObject{
     }
     
     func applyAppConfiguration(_ conf: StateCongiguration){
-        isPrimaryButtonEnable = conf.isPrimaryButtonEnable
-        isPrimaryButtonVisible = conf.isPrimaryButtonVisisble
-        primaryIcon = conf.primaryButtonIcon
+        isPrimaryButtonEnabledPublisher.value = conf.isPrimaryButtonEnable
+        isPrimaryButtonVisiblePublisher.value = conf.isPrimaryButtonVisisble
+        primaryIconPublisher.value = conf.primaryButtonIcon
         
-        isSecondaryButtonEnabled = conf.isSecondaryButtonEnabled
-        isSecondaryButtonVisible = conf.isSecondaryButtonVisible
-        secondaryIcon = conf.secondaryButtonIcon
+        isSecondaryButtonEnabledPublisher.value = conf.isSecondaryButtonEnabled
+        isSecondaryButtonVisiblePublisher.value = conf.isSecondaryButtonVisible
+        secondaryIconPublisher.value = conf.secondaryButtonIcon
         
-        isBackwardButtonEnabled = conf.isBackButtonEnabled
-        isBackwardButtonVisible = conf.isBackButtonVisible
+        isBacwardButtonEnabledPublisher.value = conf.isBackButtonEnabled
+        isBackwardButtonVisiblePublisher.value = conf.isBackButtonVisible
         
         menuState = conf.menuState
-        title = conf.title
+        titlePublisher.value = conf.title
     }
     
     // MARK: - NetworkStatus
@@ -352,6 +304,45 @@ struct StateCongiguration {
         isBackButtonEnabled: true,
         menuState: .none,
         title: "Edit schema"
+    )
+    
+    static let ClubSheetConfiguration: StateCongiguration = StateCongiguration(
+        isPrimaryButtonVisisble: true,
+        isPrimaryButtonEnable: true,
+        primaryButtonIcon: .plus,
+        isSecondaryButtonVisible: true,
+        isSecondaryButtonEnabled: false,
+        secondaryButtonIcon: .remove,
+        isBackButtonVisible: true,
+        isBackButtonEnabled: true,
+        menuState: .settings,
+        title: "Edit Club"
+    )
+    
+    static let AddEditClubConfiguration: StateCongiguration = StateCongiguration(
+        isPrimaryButtonVisisble: true,
+        isPrimaryButtonEnable: true,
+        primaryButtonIcon: .accept,
+        isSecondaryButtonVisible: false,
+        isSecondaryButtonEnabled: false,
+        secondaryButtonIcon: .remove,
+        isBackButtonVisible: true,
+        isBackButtonEnabled: true,
+        menuState: .settings,
+        title: "Edit Club"
+    )
+    
+    static let AddEditVenueConfiguration: StateCongiguration = StateCongiguration(
+        isPrimaryButtonVisisble: true,
+        isPrimaryButtonEnable: true,
+        primaryButtonIcon: .accept,
+        isSecondaryButtonVisible: true,
+        isSecondaryButtonEnabled: true,
+        secondaryButtonIcon: .remove,
+        isBackButtonVisible: true,
+        isBackButtonEnabled: true,
+        menuState: .settings,
+        title: "Edit Venue"
     )
 }
 

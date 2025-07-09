@@ -1,45 +1,22 @@
 import SwiftUI
-import Combine
-
-final class ClubSheetCellViewModel: ObservableObject{
-    
-    let club: Club
-    
-    @Published var title: String
-    @Published var image: Image
-    
-    
-    init(club: Club) {
-        self.club = club
-        self.title = club.viewTitle
-        self.image = club.viewImageMediumLogo
-    }
-    func update(){
-        self.title = club.viewTitle
-        self.image = club.viewImageMediumLogo
-    }
-    
-}
 
 struct ClubSheetCellView: View {
-    @EnvironmentObject var mdm: DataManager
-    @StateObject private var vm: ClubSheetCellViewModel
-    let club: Club
     
-    init(club: Club) {
-        self.club = club
-        self._vm = StateObject(wrappedValue: ClubSheetCellViewModel(club: club))
-    }
+//    let club: Club
+    let image: Image
+    let title: String
+    
+    @State var isSelected = false
     
     var body: some View {
         VStack{
-            vm.image
+            image
                 .resizable()
                 .scaledToFit()
                 .padding(5)
                 .frame(width: 70, height: 70)
             Spacer(minLength: 5)
-            Text(vm.title.prefix(3).uppercased())
+            Text(title.prefix(3).uppercased())
                 .font(.subheadline)
                 .padding(.bottom,5)
             
@@ -53,15 +30,7 @@ struct ClubSheetCellView: View {
                     RoundedRectangle(cornerRadius: 5)
                         .stroke(Color.gray.opacity(0.3), lineWidth: 2)
                 }
-                
         }
-//        .onReceive(mdm.localDataManager.updatePublisher) { value in
-//            if value.0 == .clubs, let  id = value.1.first{
-//                if id == club.viewId{
-//                    vm.update()
-//                }
-//            }
-//        }
     }
 }
 
@@ -72,13 +41,6 @@ struct ClubSheetCellView: View {
 //        .environmentObject(ApplicationState())
 //        .environment(\.managedObjectContext, DataManager.shared.moc)
 //}
-#Preview {
-    ClubSheetView(
-        cancelAction: {},
-        acceptAction: {_ in },
-        addEditAction: {_ in })
-//    .environment(\.managedObjectContext, DataManager.shared.moc)
-}
 
 
 //#Preview {

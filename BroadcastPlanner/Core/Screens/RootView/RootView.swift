@@ -32,12 +32,53 @@ struct RootView: View {
                             switch path {
                                 case .broadcastList:
                                     MainEventsList()
+                                        .onAppear{
+                                            appState.applyAppConfiguration(StateCongiguration.MainListConfiguration)
+                                        }
                                 case .authScreen:
                                     AuthenticationScreen()
                                 case .ownerInfo:
                                     BPAccountInfoView(user: dataManager.fetchOwner())
+                                        .onAppear{
+                                            appState.applyAppConfiguration(StateCongiguration.OwnerInfoConfiguration)
+                                        }
                                 case .settings:
                                     SettingsView()
+                                        .onAppear{
+                                            appState.applyAppConfiguration(StateCongiguration.SettingsConfiguration)
+                                        }
+                                case .updateEmail:
+                                    UpdateEPView(currentValue: sessionManager.email,
+                                                 updEP: UpdatedEP.email) {
+                                        router.routeStepBack()
+                                    } updateAction: { newEmail in
+                                        Task{
+                                            await sessionManager.updateEmailOrPassword(newValue: newEmail,
+                                                                                       type: UpdatedEP.email)
+                                        }
+                                        router.routeStepBack()
+                                    }
+                                case .updatePassword:
+                                    UpdateEPView(currentValue: sessionManager.password,
+                                                 updEP: UpdatedEP.password) {
+                                        router.routeStepBack()
+                                    } updateAction: { newPass in
+                                        Task{
+                                            await sessionManager.updateEmailOrPassword(newValue: newPass,
+                                                                                       type: UpdatedEP.password)
+                                        }
+                                        router.routeStepBack()
+                                    }
+                                case .clubSheet:
+                                    ClubSheetView()
+                                    .onAppear{
+                                        appState.applyAppConfiguration(StateCongiguration.ClubSheetConfiguration)
+                                    }
+                                case .addEditClub(let club):
+                                    AddEditClubView(club: club) 
+                                    .onAppear {
+                                        appState.applyAppConfiguration(StateCongiguration.AddEditClubConfiguration)
+                                    }
                                 case .locationSheet(let club):
                                     LocationSheetView(club: club) {
                                         
@@ -48,6 +89,9 @@ struct RootView: View {
                                     }
                                 case .createEdit(let broadcast):
                                     BroadcastEditView(broadcast: broadcast)
+                                        .onAppear{
+                                            appState.applyAppConfiguration(StateCongiguration.BroadcastEditViewConfiguration)
+                                        }
                                 case .stadPointsEdit(let broadcast):
                                     BPEditStadiumView(broadcast: broadcast)
                                 default:
@@ -78,12 +122,12 @@ struct RootView: View {
                         Text("A")
                     }
                     Button{
-                        appState.setUnreadMessages(num: appState.unreadMessages + 1)
+                        appState.setUnreadMessages(num: appState.unreadMessagesPublisher.value + 1)
                     } label:{
                         Text("+")
                     }
                     Button{
-                        appState.setUnreadMessages(num: appState.unreadMessages - 1)
+                        appState.setUnreadMessages(num: appState.unreadMessagesPublisher.value - 1)
                     } label:{
                         Text("-")
                     }
@@ -119,15 +163,16 @@ struct RootView: View {
             }
         }
         .onReceive(sessionManager.$sessionUser) { user in
-            if let user {
-                dataManager.setMember(id: user.id)
-                appState.state = .authorized
-            } else {
-                dataManager.clearData()
-                appState.state = .notAuthorized
-            }
+                if let user{
+                    dataManager.setMember(id: user.id)
+                    appState.state = .authorized
+                } else {
+                    dataManager.clearData()
+                    appState.state = .notAuthorized
+                }
         }
-        .onReceive(appState.startPublisher, perform: { isStart in
+        .onReceive(appState.isStartAnimationFinishedPublisher, perform: { isStart in
+            print(isStart)
             if isStart{
                 if appState.state == .authorized{
                     router.routeTo(path: .broadcastList)
@@ -141,7 +186,7 @@ struct RootView: View {
             }
         })
         .onReceive(appState.$userOnlineStatus) { value in
-            guard let id = sessionManager.sessionUser?.id else { return }
+            guard let _ = sessionManager.sessionUser else { return }
             switch value {
             case .online:
                 Task {
@@ -160,11 +205,12 @@ struct RootView: View {
 #if DEBUG
 #Preview {
     let dm = DataManager(globalDataManager: NetworkManager())
-    
-    RootView()
+    let appState = ApplicationState()
+    dm.networkManager.eventProgressHandler = appState
+    return RootView()
         .environmentObject(GlobalSettings())
         .environmentObject(SessionManager())
-        .environmentObject(ApplicationState())
+        .environmentObject(appState)
         .environmentObject(Router())
         .environmentObject(dm)
         .environment(\.managedObjectContext, dm.mainContext)
@@ -217,6 +263,7 @@ struct StatusView: View {
                     Label("Info", systemImage: "person")
                 }
                 .disabled(appState.menuState == .info)
+                
                 //Settings
                 Button {
                     if appState.menuState == .info{
@@ -238,6 +285,7 @@ struct StatusView: View {
                     Label("Settings", systemImage: "gear")
                 }
                 .disabled(appState.menuState == .settings)
+                
                 //LogOut
                 Button {
                     print("log out")

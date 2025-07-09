@@ -24,7 +24,7 @@ extension Broadcast {
     @NSManaged public var venue: Venue?
     @NSManaged public var venuePoints: NSSet?
     @NSManaged public var venueSchemaPreview: LocalImage?
-
+    @NSManaged public var allMemberIds: [String]?
 }
 
 // MARK: Generated accessors for crews
@@ -172,6 +172,10 @@ extension Broadcast : Identifiable {
     }
     var viewLastUpdated: Date{
         lastUpdated ?? .now
+    }
+    
+    var viewAllMembersIds: [String]{
+        allMemberIds ?? []
     }
     
     var dto: BroadcastDTO  {
@@ -441,6 +445,42 @@ extension Broadcast{
             cleanVenuePoints()
             unlinkOwners()
         }
+    }
+}
+// MARK: - AllMembersIds Update
+extension Broadcast {
+    func updateAllMemberIds(context: NSManagedObjectContext) {
+        // Получаем все points и secondPoints как Set<Point>
+        let points = self.venuePoints as? Set<VenuePoint> ?? []
+        let crews = self.crews as? Set<Crew> ?? []
+        
+        // Собираем все идентификаторы из points.members и secondPoints.members
+        let allMemberIds = (points.reduce([], { result, point in
+            let members = point.viewMembers
+            let ids = members.compactMap{$0.id}
+            return result + ids
+            
+        }) + crews.compactMap { ($0.member?.id as? String)})
+            .uniqued() // Удаляем дубликаты
+            .sorted() // Опционально: сортируем для предсказуемого порядка
+        
+        // Устанавливаем allMemberIds
+        self.allMemberIds = allMemberIds
+        
+        // Сохраняем изменения
+        do {
+            try context.save()
+        } catch {
+            print("Failed to save context: \(error)")
+        }
+    }
+}
+
+// Расширение для удаления дубликатов из Sequence
+extension Sequence where Element: Hashable {
+    func uniqued() -> [Element] {
+        var seen = Set<Element>()
+        return filter { seen.insert($0).inserted }
     }
 }
 

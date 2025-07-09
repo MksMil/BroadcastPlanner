@@ -8,9 +8,12 @@ enum RouterPath: Hashable{
     //!authenticated
     case authScreen
     //authenticated
+    //flow
+    
     case broadcastList
     //create new
     case createEdit(Broadcast)
+    
     //...flow
     case stadPointsEdit(Broadcast)
     case carPointsEdit(Bool)
@@ -45,8 +48,12 @@ final class Router: ObservableObject {
     var interactivity: AnyNavigationTransition.Interactivity = .disabled
     
     func routeStepBack(){
-        guard path.count > 0 else { return }
+        guard path.count > 0 else {
+            print("some error \(path.count)")
+            return }
+        print("in router \(path.count)")
         path.removeLast()
+        print("in router last removed\(path.count)")
     }
 
     // MARK: broadcastList

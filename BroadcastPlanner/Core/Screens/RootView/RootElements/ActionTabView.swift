@@ -71,8 +71,8 @@ struct ActionTabView: View {
         .frame(height: height)
         .frame(maxWidth: .infinity,alignment: .center)
         .onAppear{
-            if appState.unreadMessages > 0{
-                unreadMessages = appState.unreadMessages
+            if appState.unreadMessagesPublisher.value > 0{
+                unreadMessages = appState.unreadMessagesPublisher.value
             }
         }
         .onReceive(appState.isMessengerActivePublisher) { active in
@@ -89,3 +89,18 @@ struct ActionTabView: View {
         }
     }
 }
+
+#if DEBUG
+#Preview {
+    let dm = DataManager(globalDataManager: NetworkManager())
+    let appState = ApplicationState()
+    dm.networkManager.eventProgressHandler = appState
+    return RootView()
+        .environmentObject(GlobalSettings())
+        .environmentObject(SessionManager())
+        .environmentObject(appState)
+        .environmentObject(Router())
+        .environmentObject(dm)
+        .environment(\.managedObjectContext, dm.mainContext)
+}
+#endif

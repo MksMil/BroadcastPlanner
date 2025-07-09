@@ -21,7 +21,7 @@ struct AnimatedStart: View {
                         .linear(duration: 1)
                         .repeatForever()) { animate.toggle() }
                     DispatchQueue.main.asyncAfter(deadline: .now() + 3){
-                        appState.isStartAnimationFinished = true
+                        appState.animationFinished()
                     }
                 }
         }

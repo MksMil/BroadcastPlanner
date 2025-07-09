@@ -287,18 +287,17 @@ struct BPEditStadiumView: View {
     }
 }
 
-//#Preview {
-//    let mdm = DataManager(networkManager: NetworkManager())
-//    mdm.setMember(id: "123")
-//    let localEvent: Broadcast = mdm.mainContext.fetchOrCreateObject(withID: "id")
-//   return
-//    TabView{
-//        
-//        BPEditStadiumView(event: localEvent)
-//            .environmentObject(mdm)
-//            .environment(\.managedObjectContext, mdm.mainContext)
-//            .tabItem { Label("Hello", systemImage: "calendar") }
-//            .tag(0)
-//            .padding(.bottom,1)
-//    }
-//}
+#if DEBUG
+#Preview {
+    let dm = DataManager(globalDataManager: NetworkManager())
+    let appState = ApplicationState()
+    dm.networkManager.eventProgressHandler = appState
+    return RootView()
+        .environmentObject(GlobalSettings())
+        .environmentObject(SessionManager())
+        .environmentObject(appState)
+        .environmentObject(Router())
+        .environmentObject(dm)
+        .environment(\.managedObjectContext, dm.mainContext)
+}
+#endif
