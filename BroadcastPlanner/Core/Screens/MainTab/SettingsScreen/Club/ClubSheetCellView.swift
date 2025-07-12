@@ -6,7 +6,7 @@ struct ClubSheetCellView: View {
     let image: Image
     let title: String
     
-    @State var isSelected = false
+    let isSelected : Bool
     
     var body: some View {
         VStack{
@@ -31,6 +31,8 @@ struct ClubSheetCellView: View {
                         .stroke(Color.gray.opacity(0.3), lineWidth: 2)
                 }
         }
+        .scaleEffect(isSelected ? 1.05: 1)
+        .opacity(isSelected ? 1 : 0.65)
     }
 }
 

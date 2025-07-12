@@ -140,7 +140,7 @@ extension LocalImage{
             switch viewType {
                 case .member:
                     return Image(systemName: "person")
-                case .venueTemplate:
+                case .broadcastSchema:
                     return Image(systemName: "compass.drawing")
                 case .club:
                     return Image(systemName: "rhombus")

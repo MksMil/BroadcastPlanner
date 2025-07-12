@@ -15,7 +15,11 @@ class DataManager: ObservableObject {
     var updatePublisher: PassthroughSubject = PassthroughSubject<(GlobalProperties.PublishChanges, [String]), Never>()
 //    var cancellables: Set<AnyCancellable> = []
     
-    var currentId: String = ""
+    var currentId: String = ""{
+        willSet{
+            updatePublisher.send((GlobalProperties.PublishChanges.images, [newValue])) //update profile image in status view
+        }
+    }
     var accessLevel: Int = 2
     var currentUserID: NSManagedObjectID = NSManagedObjectID()
     
@@ -809,26 +813,48 @@ extension DataManager {
 //
 //}
 //
-//// MARK: - Image managment
+// MARK: - Image managment
 //extension DataManager {
 //    @MainActor
-//    func createNewLocalImagesWith(uiimages: [UIImage],
-//                                  andType type: GlobalProperties.ImageType,
-//                                  linkToLocation location: Venue? = nil) {
-//        var localImages: [LocalImage] = []
-//        for uiimage in uiimages {
-//            let id = UUID().uuidString
-//            localImages.append(
-//            localDataManager
-//                .createOrUpdateLocalImageWithId(
-//                    id,
-//                    withImage: uiimage,
-//                    andType: type,
-//                    inContext: .main
-//                )
-//            )
-//        }
-//        //link images to venue
+    func createNewLocalImagesWith(uiimages: [UIImage],
+                                  andType type: GlobalProperties.ImageType,
+                                  linkToLocation location: Venue? = nil) {
+        mainContext.performAndWait {
+            if type == .venue {
+                for uiimage in uiimages {
+                    let id = UUID().uuidString
+                    let image: LocalImage = mainContext.fetchOrCreateObject(withID: id)
+                    image.updateValues(type: type.rawValue,
+                                       lastUpdated: .now,
+                                       uiimage: uiimage,
+                                       in: mainContext)
+                    if let location {
+                        location.addToImages(image)
+                        image.parentVenueImage = location
+                    }
+                    Task{
+                        await networkManager.saveImageToGlobalStorage(id: id, uiimage: uiimage, type: GlobalProperties.ImageType.venue)
+                    }
+                }
+            } else if type == .broadcastSchema, let uiimage = uiimages.first{
+                let id = UUID().uuidString
+                let image: LocalImage = mainContext.fetchOrCreateObject(withID: id)
+                image.updateValues(type: type.rawValue,
+                                   lastUpdated: .now,
+                                   uiimage: uiimage,
+                                   in: mainContext)
+//                if let location {
+//                    location.broadcastSchema = image
+//                    image.addToParentVenueSchema(location)
+//                }
+                Task{
+                    await networkManager.saveImageToGlobalStorage(id: id, uiimage: uiimage, type: GlobalProperties.ImageType.broadcastSchema)
+                }
+            }
+        }
+        try? mainContext.save()
+    }
+        //link images to venue
 //        if let location{
 //            localDataManager.linkImages(localImages, toLocalLocation: location, inContext: .main)
 //        }
@@ -837,8 +863,8 @@ extension DataManager {
 //                publish: .images,
 //                id: []
 //            )
-//        
-//    }
+        
+    
 //    @MainActor
 //    func removeImage(selectedImage: LocalImage?) {
 //        if let localImageToRemove = selectedImage {

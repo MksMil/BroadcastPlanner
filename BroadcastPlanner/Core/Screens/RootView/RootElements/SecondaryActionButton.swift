@@ -8,9 +8,12 @@ struct SecondaryActionButton: View {
     @State private var isSecondaryEnabled: Bool = false
     @State private var isSecondaryVisible: Bool = false
     @State private var secondaryIconName: String = "trash"
+    @State private var isDis: Bool = false
     var body: some View {
         Button {
+            isDis = true
             appState.secondaryAction()
+            makeEnabled()
         } label: {
             Image(systemName: secondaryIconName)
                 .resizable()
@@ -31,6 +34,7 @@ struct SecondaryActionButton: View {
         }
         .offset(x: isSecondaryVisible ? 0:-100)
         .disabled(!isSecondaryEnabled)
+        .disabled(isDis)
         .onReceive(appState.isSecondaryButtonEnabledPublisher) { isEnabled in
             if isSecondaryEnabled != isEnabled{
                 withAnimation{
@@ -59,4 +63,13 @@ struct SecondaryActionButton: View {
             }
         }
     }
+    private func makeEnabled(){
+        Task{
+            try? await Task.sleep(nanoseconds: 500_000_000)
+            withAnimation{
+                isDis = false
+            }
+        }
+    }
+
 }

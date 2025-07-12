@@ -202,7 +202,7 @@ extension NetworkManager {
         from image: UIImage,
         type: GlobalProperties.ImageType
     ) -> Data? {
-        if type == .club || type == .venueTemplate {
+        if type == .club || type == .broadcastSchema {
             return image.pngData()
         } else {
             return image.jpegData(compressionQuality: 1)

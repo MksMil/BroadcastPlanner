@@ -2,84 +2,70 @@ import PhotosUI
 import SwiftUI
 import UIKit
 
-struct AddEditLocationView: View {
+struct AddEditVenueView: View {
     let buttonSize: Double = 30
     let location: Venue
 
-    let acceptAction: (String,String,[UIImage],LocalImage?) -> Void
-    let cancelAction: () -> Void
-    let removeAction: () -> Void
-
-    @StateObject var vm: AddEditLocationViewModel
-    @EnvironmentObject var mdm: DataManager
+    @StateObject var vm: AddEditVenueViewModel
+    @EnvironmentObject var dataManager: DataManager
 
     @State private var isRemoveBackgroundDialog: Bool = false
-    @State private var isRemoveLocationDialog: Bool = false
     @State private var isRemoveEventTemplate: Bool = false
 
     @FetchRequest<LocalImage>(sortDescriptors: [SortDescriptor(\.lastUpdated, order: .forward)],
-                              predicate: NSPredicate(format: "type == %@", GlobalProperties.ImageType.venueTemplate.rawValue)) var eventTemplates
-    
-//    @FetchRequest<LocalImage>(sortDescriptors: [SortDescriptor(\.lastUpdated, order: .forward)]) var locationImages
+                              predicate: NSPredicate(format: "type == %@", GlobalProperties.ImageType.broadcastSchema.rawValue)) var eventTemplates
+
  
-    init(
-        location: Venue,
-        acceptAction: @escaping (String,String,[UIImage],LocalImage?) -> Void,
-        cancelAction: @escaping () -> Void,
-        removeAction: @escaping () -> Void
-    ) {
+    init(location: Venue) {
         self.location = location
         self._vm = StateObject(
-            wrappedValue: AddEditLocationViewModel(location: location))
-        self.cancelAction = cancelAction
-        self.acceptAction = acceptAction
-        self.removeAction = removeAction
-        
+            wrappedValue: AddEditVenueViewModel(location: location))
+ 
     }
 
     var body: some View {
         ZStack{
             MainBackground()
             VStack(spacing: 0) {
-                ConfirmationButtonGroupView(
-                    isAcceptDisabled: false,
-                    cancelAction: {
-                        //unlink and remove images
-                        cancelAction()
-                    },
-                    acceptAction: {
-                        Task {
-                            //update venue with data
-//                            acceptAction(vm.title,vm.address,vm.newImages,vm.locationBackground)
-                        }
-                    },
-                    content: {
-                        Button {
-                            isRemoveLocationDialog = true
-                        } label: {
-                            Image(systemName: "trash")
-                                .resizable()
-                                .scaledToFit()
-                                .bold()
-                                .padding(50 / 4)
-                                .frame(width: 150,height: 50)
-                                .background {
-                                    RoundedRectangle(cornerRadius: 5)
-                                        .fill(.ultraThickMaterial
-                                            .opacity(0.3))
-                                        .overlay {
-                                            RoundedRectangle(cornerRadius: 5)
-                                                .stroke(
-                                                    .ultraThickMaterial
-                                                    .opacity(0.5),
-                                                        lineWidth: 2)
-                                        }
-                                }
-                        }
-                    }
-                )
-                .padding(.top, 10)
-                .padding(.horizontal)
+//                ConfirmationButtonGroupView(
+//                    isAcceptDisabled: false,
+//                    cancelAction: {
+//                        //unlink and remove images
+//                        cancelAction()
+//                    },
+//                    acceptAction: {
+//                        Task {
+//                            //update venue with data
+////                            acceptAction(vm.title,vm.address,vm.newImages,vm.locationBackground)
+//                        }
+//                    },
+//                    content: {
+//                        Button {
+////                            isRemoveLocationDialog = true
+//                        } label: {
+//                            Image(systemName: "trash")
+//                                .resizable()
+//                                .scaledToFit()
+//                                .bold()
+//                                .padding(50 / 4)
+//                                .frame(width: 150,height: 50)
+//                                .background {
+//                                    RoundedRectangle(cornerRadius: 5)
+//                                        .fill(.ultraThickMaterial
+//                                            .opacity(0.3))
+//                                        .overlay {
+//                                            RoundedRectangle(cornerRadius: 5)
+//                                                .stroke(
+//                                                    .ultraThickMaterial
+//                                                    .opacity(0.5),
+//                                                        lineWidth: 2)
+//                                        }
+//                                }
+//                        }
+//                    }
+//                )
+//                .padding(.top, 10)
+//                .padding(.horizontal)
                 
                 ScrollView {
                     // TODO: Make component for title and textfield
@@ -99,7 +85,7 @@ struct AddEditLocationView: View {
                         .textFieldStyle(.roundedBorder)
                         .autocorrectionDisabled(true)
                    
-                    DividerWithText(text: "Venue images")
+                    DividerWithText(text: "Add Venue images")
                     
                     //venue photos collection
                     TabViewList(source: location.viewLocalImages.sorted{$0.viewLastUpdated < $1.viewLastUpdated}, pageCount: 3, spacing: 5) { localImage in
@@ -111,9 +97,7 @@ struct AddEditLocationView: View {
                                 .resizable()
                         }
                     }
-//                    .padding()
                     .frame(height: 120)
-//                    .border(.red, width: 2)
 
                     HStack{
                         Spacer()
@@ -170,7 +154,7 @@ struct AddEditLocationView: View {
                         Spacer()
                     }
                     //broadcast broadcastSchema representation
-                    DividerWithText(text: "select broadcast plan broadcastSchema")
+                    DividerWithText(text: "select schema for Venue")
                     
                     TabViewList(source: eventTemplates.map{$0},
                                 selectedItem: vm.selectedEventTemplate,
@@ -237,7 +221,7 @@ struct AddEditLocationView: View {
                         }
                         Spacer()
                         Button {
-                            //ling venueTemplate to venue
+                            //link broadcastSchema to venue
 //                            if let template = vm.selectedEventTemplate{
 //                                mdm.linkEventTemplate(template, toLocation: location)
 //                            }
@@ -305,32 +289,21 @@ struct AddEditLocationView: View {
                     }
                 }
                 //venue remove confirmation dialog
-                .confirmationDialog(
-                    Text("Permanently erase the Venue in the trash?"),
-                    isPresented: $isRemoveLocationDialog
-                ) {
-                    Button("Remove Venue", role: .destructive) {
-                        // Handle empty trash action.
-//                        Task{
-//                           await mdm.removeLocation(location)
-//                            removeAction()
-//                        }
-                    }
-                }
+                
             }
         }
         .navigationBarBackButtonHidden()
-//        .onReceive(vm.$eventBackgroundUIImage) { uiimage in
-//            guard let uiimage else { return }
-//            mdm.createNewLocalImagesWith(uiimages: [uiimage], andType: .venueTemplate)
-//        }
-//        .onReceive(vm.$locationUiimages) { images in
-//            if !images.isEmpty{
-//                mdm.createNewLocalImagesWith(uiimages: images, andType: GlobalProperties.ImageType.venue,
-//                                             linkToLocation: location)
-//                vm.locationUiimages = []
-//            }
-//        }
+        .onReceive(vm.$eventBackgroundUIImage) { uiimage in
+            guard let uiimage else { return }
+            dataManager.createNewLocalImagesWith(uiimages: [uiimage], andType: .broadcastSchema)
+        }
+        .onReceive(vm.$locationUiimages) { images in
+            if !images.isEmpty{
+                dataManager.createNewLocalImagesWith(uiimages: images, andType: GlobalProperties.ImageType.venue,
+                                             linkToLocation: location)
+                vm.locationUiimages = []
+            }
+        }
         
         .environmentObject(vm)
     }
@@ -338,16 +311,10 @@ struct AddEditLocationView: View {
 
 #Preview {
     let mdm = DataManager(globalDataManager: NetworkManager())
-    let dto = VenueDTO(id: "id", lastUpdated: Date.now, title: "Title", address: "address", imagesIds: [], venueSchemaId: nil)
+    let dto = VenueDTO(id: "id", lastUpdated: Date.now, title: "Avangard", address: "Krivii Rih", imagesIds: [], venueSchemaId: nil)
     let location = mdm.mainContext.makeObjectFromDTO(dto)
     
-   return AddEditLocationView(location: location) { _, _, _, _ in
-        
-    } cancelAction: {
-        
-    } removeAction: {
-        
-    }
+   return AddEditVenueView(location: location)
     .environmentObject(mdm)
     .environment(\.managedObjectContext, mdm.mainContext)
 

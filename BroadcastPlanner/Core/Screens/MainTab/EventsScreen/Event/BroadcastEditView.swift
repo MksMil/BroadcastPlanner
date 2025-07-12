@@ -100,8 +100,8 @@ struct BroadcastEditView: View {
                 .padding(.horizontal)
                 Spacer()
             }
+            .transitionWithOpacity()
         }
-        
         .navigationBarBackButtonHidden()
         .confirmationDialog("", isPresented: $isRemoveConfirm) {
             Button("Delete Broadcast", role: .destructive){

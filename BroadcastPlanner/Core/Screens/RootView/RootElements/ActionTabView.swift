@@ -11,6 +11,7 @@ struct ActionTabView: View {
         HStack(spacing: 1){
             Button{
                 appState.makeMessengerActive(false)
+                router.changeToList()
             } label:{
                 Image(systemName: "calendar")
                     .resizable()
@@ -30,6 +31,7 @@ struct ActionTabView: View {
             
             Button{
                 appState.makeMessengerActive(true)
+                router.changeToMessanger()
             } label: {
                 Image(systemName: "ellipsis.message")
                     .resizable()

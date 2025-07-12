@@ -7,9 +7,6 @@
     " Save " : {
 
     },
-    "-" : {
-
-    },
     "---" : {
 
     },
@@ -32,9 +29,6 @@
     "%lld" : {
 
     },
-    "+" : {
-
-    },
     "1" : {
 
     },
@@ -42,9 +36,6 @@
 
     },
     "10:30 AM" : {
-
-    },
-    "A" : {
 
     },
     "Accept" : {
@@ -60,9 +51,6 @@
 
     },
     "Add new template" : {
-
-    },
-    "Add venue" : {
 
     },
     "Add Venue" : {
@@ -89,19 +77,7 @@
     "Change Password" : {
 
     },
-    "CHECK" : {
-
-    },
-    "Choose Venue" : {
-
-    },
-    "club name" : {
-
-    },
     "Confirm" : {
-
-    },
-    "contact info" : {
 
     },
     "Delete account" : {
@@ -117,12 +93,6 @@
 
     },
     "Done" : {
-
-    },
-    "Edit" : {
-
-    },
-    "Edit venue" : {
 
     },
     "empty" : {
@@ -182,6 +152,9 @@
     "Permanently erase the Venue in the trash?" : {
 
     },
+    "phone number" : {
+
+    },
     "Press me" : {
 
     },
@@ -239,13 +212,13 @@
     "template title" : {
 
     },
+    "title" : {
+
+    },
     "Update %@" : {
 
     },
     "url" : {
-
-    },
-    "V" : {
 
     },
     "Welcome!\nselection: %lld" : {

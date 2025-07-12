@@ -15,6 +15,7 @@ struct BPMessengerView: View {
         GetMessageItemView(message: "sdsdasdassdadsadsadsadasdasdsadsadsadasdasdasdasdsadasdasdasddasdasdsadsadsadasdasdsadsdasdasdsadasdsadasdasdsadasdsadasdsadasdsadasdasdasdsadsadasdsadasdasdasdasdasdasd",
                            currentUserMessage: true)]
     
+    
     var body: some View {
         ZStack{
             MainBackground()
@@ -29,14 +30,29 @@ struct BPMessengerView: View {
                 TF()
                     .background(.clear)
             }
+            .transitionWithOpacity()
         }
+        .navigationBarBackButtonHidden()
     }
 }
 
+#if DEBUG
+//#Preview {
+//    BPMessengerView()
+//}
 #Preview {
-    BPMessengerView()
+    let dm = DataManager(globalDataManager: NetworkManager())
+    let appState = ApplicationState()
+    dm.networkManager.eventProgressHandler = appState
+    return RootView()
+        .environmentObject(GlobalSettings())
+        .environmentObject(SessionManager())
+        .environmentObject(appState)
+        .environmentObject(Router())
+        .environmentObject(dm)
+        .environment(\.managedObjectContext, dm.mainContext)
 }
-
+#endif
 // MARK: - Get message
 struct GetMessageItemView: View {
     

@@ -339,7 +339,7 @@
 //    func test_createOrUpdateLocalImageWithImageDTO_createsLocalImage() {
 //        let image = UIImage(systemName: "photo")!
 //        let id = UUID().uuidString
-//        let type: GlobalProperties.ImageType = .venueTemplate
+//        let type: GlobalProperties.ImageType = .broadcastSchema
 //        let dto = ImageDTO(id: id, type: type.rawValue, lastUpdated: .now)
 //        let localImage = sut.createOrUpdateLocalImageWithImageData(
 //            imageDTO: dto,

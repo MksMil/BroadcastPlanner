@@ -50,7 +50,7 @@ class ApplicationState: ObservableObject{
     
     // MARK: - Title
     
-    let titlePublisher = CurrentValueSubject<String, Never>("Hello")
+    let titlePublisher = CurrentValueSubject<String, Never>("")
     
     func setTitle(_ newTitle: String){
         if titlePublisher.value != newTitle{
@@ -59,10 +59,7 @@ class ApplicationState: ObservableObject{
     }
     
     // MARK: - MainNotifications
-    let notificationPublisher = CurrentValueSubject<StatusViewNotification,Never>(StatusViewNotification(id: UUID(),
-                                                                                                         text: "Hello",
-                                                                                                         textColor: Color.primary,
-                                                                                                         cycle: .once))
+    let notificationPublisher = CurrentValueSubject<StatusViewNotification,Never>(StatusViewNotification(id: UUID(), text: "Hello",textColor: Color.primary,cycle: .once))
     func addNewNotification(note: StatusViewNotification){
         notificationPublisher.value = note
     }
@@ -137,45 +134,9 @@ class ApplicationState: ObservableObject{
         unreadMessagesPublisher.value = num
     }
     // MARK: Menu state  - enables of elements in status menu
-    var menuState: MenuState = .none
+    var menuStatePublisher = CurrentValueSubject<MenuState,Never>(.none)
     func setMenuState(state: MenuState){
-        menuState = state
-    }
-
-    //main
-    func setAppUIState(isBackwardEnabled: Bool = false,
-                       isBackwardVisible: Bool = false,
-                       isPrimaryEnabled: Bool = false,
-                       isPrimaryVisible: Bool = false,
-                       primaryIcon: ButtonIcon = .accept,
-                       isSecondaryEnabled: Bool = false,
-                       isSecondaryVisible: Bool = false,
-                       secondaryIcon: ButtonIcon = .remove){
-        
-        makePrimaryButtonEnabled(isPrimaryEnabled)
-        makePrimaryButtonVisible(isPrimaryVisible)
-        setIconToPrimaryButton(primaryIcon)
-
-        makeSecondaryButtonEnabled(isSecondaryEnabled)
-        makeSecondaryButtonVisible(isSecondaryVisible)
-        setIconToSecondaryButton(secondaryIcon)
-        
-        makeBackwardButtonEnabled(isBackwardEnabled)
-        makeBackwardButtonVisible(isBackwardVisible)
-    }
-    
-    @MainActor
-    func setDefaultUIState(){
-        setAppUIState(isBackwardEnabled: false,
-                      isBackwardVisible: false,
-                      isPrimaryEnabled: false,
-                      isPrimaryVisible: false,
-                      primaryIcon: .accept,
-                      isSecondaryEnabled: false,
-                      isSecondaryVisible: false,
-                      secondaryIcon: .remove)
-        
-        menuState = .none
+        menuStatePublisher.value = state
     }
     
     func applyAppConfiguration(_ conf: StateCongiguration){
@@ -190,7 +151,7 @@ class ApplicationState: ObservableObject{
         isBacwardButtonEnabledPublisher.value = conf.isBackButtonEnabled
         isBackwardButtonVisiblePublisher.value = conf.isBackButtonVisible
         
-        menuState = conf.menuState
+        menuStatePublisher.value = conf.menuState
         titlePublisher.value = conf.title
     }
     
@@ -225,6 +186,49 @@ extension ApplicationState: EventsProgressHandler{
     
 }
 
+// MARK: - Path handler
+extension ApplicationState{
+    func switchStateByPath(_ path: RouterPath){
+        switch path {
+            case .animatedStart:
+                applyAppConfiguration(StateCongiguration.AllDissabledConfiguration)
+//            case .authScreen:
+//                <#code#>
+            case .broadcastList:
+                applyAppConfiguration(StateCongiguration.MainListConfiguration)
+            case .createEdit(_):
+                applyAppConfiguration(StateCongiguration.BroadcastEditViewConfiguration)
+            case .stadPointsEdit(_):
+                applyAppConfiguration(StateCongiguration.StadPointsEditViewConfiguration)
+//            case .carPointsEdit(let bool):
+//                <#code#>
+            case .ownerInfo:
+                applyAppConfiguration(StateCongiguration.OwnerInfoConfiguration)
+//            case .memberView:
+//                <#code#>
+            case .settings:
+                applyAppConfiguration(StateCongiguration.SettingsConfiguration)
+//            case .updateEmail:
+//            
+//            case .updatePassword:
+//                
+            case .clubSheet:
+                applyAppConfiguration(StateCongiguration.ClubSheetConfiguration)
+//            case .locationSheet(let club):
+//                <#code#>
+            case .addEditClub(_):
+                applyAppConfiguration(StateCongiguration.AddEditClubConfiguration)
+//            case .addEditLocation(let venue):
+//                <#code#>
+//            case .addEditObvan:
+//                <#code#>
+            case .messenger:
+                applyAppConfiguration(StateCongiguration.MessengerConfiguration)
+            default: applyAppConfiguration(StateCongiguration.AllDissabledConfiguration)
+        }
+    }
+}
+
 // MARK: - State configuration
 struct StateCongiguration {
     //primary button
@@ -242,7 +246,36 @@ struct StateCongiguration {
     let menuState: MenuState
     //title
     let title: String
-    // MARK: static configurations
+}
+// MARK: static configurations
+extension StateCongiguration{
+    
+    static let MessengerConfiguration : StateCongiguration = StateCongiguration(
+        isPrimaryButtonVisisble: false,
+        isPrimaryButtonEnable: false,
+        primaryButtonIcon: .accept,
+        isSecondaryButtonVisible: false,
+        isSecondaryButtonEnabled: false,
+        secondaryButtonIcon: .cancel,
+        isBackButtonVisible: false,
+        isBackButtonEnabled: false,
+        menuState: .none,
+        title: "Messenger"
+    )
+    
+    static let AllDissabledConfiguration : StateCongiguration = StateCongiguration(
+        isPrimaryButtonVisisble: false,
+        isPrimaryButtonEnable: false,
+        primaryButtonIcon: .accept,
+        isSecondaryButtonVisible: false,
+        isSecondaryButtonEnabled: false,
+        secondaryButtonIcon: .cancel,
+        isBackButtonVisible: false,
+        isBackButtonEnabled: false,
+        menuState: .none,
+        title: ""
+    )
+    
     static let MainListConfiguration : StateCongiguration = StateCongiguration(
         isPrimaryButtonVisisble: false,
         isPrimaryButtonEnable: false,
@@ -315,8 +348,8 @@ struct StateCongiguration {
         secondaryButtonIcon: .remove,
         isBackButtonVisible: true,
         isBackButtonEnabled: true,
-        menuState: .settings,
-        title: "Edit Club"
+        menuState: .none,
+        title: "Add/Edit Club"
     )
     
     static let AddEditClubConfiguration: StateCongiguration = StateCongiguration(
@@ -328,10 +361,23 @@ struct StateCongiguration {
         secondaryButtonIcon: .remove,
         isBackButtonVisible: true,
         isBackButtonEnabled: true,
-        menuState: .settings,
+        menuState: .none,
         title: "Edit Club"
     )
     
+    static let VenueSheetConfiguration: StateCongiguration = StateCongiguration(
+        isPrimaryButtonVisisble: true,
+        isPrimaryButtonEnable: true,
+        primaryButtonIcon: .plus,
+        isSecondaryButtonVisible: true,
+        isSecondaryButtonEnabled: false,
+        secondaryButtonIcon: .remove,
+        isBackButtonVisible: true,
+        isBackButtonEnabled: true,
+        menuState: .none,
+        title: "Add/Edit Venue"
+    )
+
     static let AddEditVenueConfiguration: StateCongiguration = StateCongiguration(
         isPrimaryButtonVisisble: true,
         isPrimaryButtonEnable: true,
@@ -341,9 +387,10 @@ struct StateCongiguration {
         secondaryButtonIcon: .remove,
         isBackButtonVisible: true,
         isBackButtonEnabled: true,
-        menuState: .settings,
+        menuState: .none,
         title: "Edit Venue"
     )
+    
 }
 
 

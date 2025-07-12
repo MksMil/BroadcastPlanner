@@ -7,15 +7,19 @@ struct BackwardButton: View {
     
     @State private var isBackwardEnabled: Bool = false
     @State private var isBackwardVisible: Bool = false
+    @State private var isDis: Bool = false
     var body: some View {
         Button {
+            isDis = true
             appState.stepBackAction()
+            makeEnabled()
         } label: {
             Image(systemName: "chevron.backward.circle")
                 .font(.system(size: 50))
         }
         .offset(x: isBackwardVisible ? 0:-100)
         .disabled(!isBackwardEnabled)
+        .disabled(isDis)
         .onReceive(appState.isBacwardButtonEnabledPublisher) { enable in
             withAnimation {
                 if isBackwardEnabled != enable{
@@ -31,4 +35,13 @@ struct BackwardButton: View {
             }
         }
     }
+    private func makeEnabled(){
+        Task{
+            try? await Task.sleep(nanoseconds: 500_000_000)
+            withAnimation{
+                isDis = false
+            }
+        }
+    }
+
 }

@@ -110,6 +110,7 @@ struct BPAccountInfoView: View {
                         .padding(.horizontal, 20)
                     Spacer()
                 }
+                .transitionWithOpacity()
             }
             .navigationBarBackButtonHidden()
             .onAppear{

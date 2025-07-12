@@ -83,7 +83,6 @@ struct SettingsView: View {
                 
                 //add club
                 Button {
-                    //                                settingsRouter.path.append(SettingsTabPath.clubSheet)
                     router.routeTo(path: .clubSheet)
                 } label: {
                     Text("Add Club")
@@ -95,6 +94,7 @@ struct SettingsView: View {
                 }
                 //add venue
                 Button {
+                    
                     //                                settingsRouter.path.append(SettingsTabPath.locationSheet(nil))
                 }label: {
                     Text("Add Venue")
@@ -154,6 +154,7 @@ struct SettingsView: View {
                 }
             }
             .scrollContentBackground(.hidden)
+            .transitionWithOpacity()
         }
         .navigationBarBackButtonHidden()
         .onAppear{

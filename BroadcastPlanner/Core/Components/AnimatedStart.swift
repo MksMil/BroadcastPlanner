@@ -2,7 +2,6 @@ import SwiftUI
 
 struct AnimatedStart: View {
     @EnvironmentObject var appState: ApplicationState
-    
     @State private var animate: Bool = false
     var body: some View {
         ZStack{
@@ -24,11 +23,13 @@ struct AnimatedStart: View {
                         appState.animationFinished()
                     }
                 }
+                .transitionWithOpacity()
         }
+        .navigationBarBackButtonHidden()
         .ignoresSafeArea()
     }
 }
 
-#Preview {
-    AnimatedStart()
-}
+//#Preview {
+//    AnimatedStart()
+//}

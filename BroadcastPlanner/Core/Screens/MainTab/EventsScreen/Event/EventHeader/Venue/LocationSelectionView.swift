@@ -59,17 +59,18 @@ struct LocationSelectionView: View {
             .disabled(!editable)
         }
         .sheet(isPresented: $vm.isLocationSheetPresented) {
-            LocationSheetView(isEditMode: false, club: nil) {
-                cancelAction()
-                vm.isLocationSheetPresented.toggle()
-            } saveAction: { newLocation in
-                guard let newLocation else { return }
-                vm.update(newLocation: newLocation)
-                acceptAction(newLocation)
-                vm.isLocationSheetPresented.toggle()
-            } addEditAction: { location in
-                
-            }
+            VenueListView()
+//            {
+//                cancelAction()
+//                vm.isLocationSheetPresented.toggle()
+//            } saveAction: { newLocation in
+//                guard let newLocation else { return }
+//                vm.update(newLocation: newLocation)
+//                acceptAction(newLocation)
+//                vm.isLocationSheetPresented.toggle()
+//            } addEditAction: { location in
+//                
+//            }
         }
     }
 }

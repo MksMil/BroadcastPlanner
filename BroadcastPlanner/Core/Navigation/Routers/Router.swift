@@ -1,6 +1,6 @@
 import SwiftUI
 import Combine
-import SwiftUINavigationTransitions
+
 
 enum RouterPath: Hashable{
     //app open
@@ -23,7 +23,6 @@ enum RouterPath: Hashable{
     
     //session member progile
     case ownerInfo
-    
     //case existing member explore view
     case memberView
     
@@ -32,10 +31,12 @@ enum RouterPath: Hashable{
     case updateEmail
     case updatePassword
     case clubSheet
-    case locationSheet(Club?)
+    case locationSheet
     case addEditClub(Club)
-    case addEditLocation(Venue)
+    case addEditVenue(Venue)
     case addEditObvan
+    
+    case messenger
 }
 
 @MainActor
@@ -43,45 +44,78 @@ final class Router: ObservableObject {
     
     @Published var path: NavigationPath = NavigationPath()
 
-    //routing
-    var transition: AnyNavigationTransition = .fade(.out)
-    var interactivity: AnyNavigationTransition.Interactivity = .disabled
+    //appState control
+    var listFlow: [RouterPath] = [.broadcastList]
+    var messengerFlow: [RouterPath] = [.messenger]
+    
+    var activeFlow: [RouterPath] = []
+    
+    let pathPubisher = CurrentValueSubject<RouterPath,Never>(.animatedStart)
+    
+    ///routing
+    func executeLastPathFromActiveFlow(){
+        if let last = activeFlow.last {
+            if path.count > 0{
+                path.removeLast()
+            }
+            path.append(last)
+            publishState()
+        }
+    }
     
     func routeStepBack(){
-        guard path.count > 0 else {
-            print("some error \(path.count)")
-            return }
-        print("in router \(path.count)")
-        path.removeLast()
-        print("in router last removed\(path.count)")
-    }
-
-    // MARK: broadcastList
-    func routeTo(path: RouterPath,
-                 withTransition transition: AnyNavigationTransition = .fade(.out),
-                 andInteractivity interactivity: AnyNavigationTransition.Interactivity = .disabled){
-
-                self.path.append(path)
-                self.transition = transition
-                self.interactivity = interactivity
-    }
-    func routeToAuth(){
-        transition = .fade(.out)
-        path.removeLast(path.count)
-        routeTo(path: .authScreen)
+        guard activeFlow.count > 1 else { return }
+        activeFlow.removeLast()
+        executeLastPathFromActiveFlow()
     }
     
+    func routeTo(path: RouterPath){
+        activeFlow.append(path)
+        executeLastPathFromActiveFlow()
+    }
+    func routeToAuth(){ //settings/delete account
+        path.removeLast(path.count)
+        messengerFlow = [.messenger]
+        listFlow = [.broadcastList]
+        activeFlow.removeAll()
+        activeFlow.append(.authScreen)
+        executeLastPathFromActiveFlow()
+        
+    }
+
     func routeFrom(from: RouterPath, to: RouterPath){
-        switch from {
-            case .ownerInfo, .settings:
-                self.path.removeLast()
-                self.path.append(to)
-            default: self.path.append(to)
+        switch (from,to) {
+            case (.ownerInfo, .settings),
+                (.settings, .ownerInfo):
+                activeFlow.removeLast()
+                activeFlow.append(to)
+                
+            default:
+                activeFlow.append(to)
         }
+        executeLastPathFromActiveFlow()
     }
     
     func routeFromNotification(path: RouterPath){
         
+    }
+    
+    func changeToMessanger(){
+        listFlow = activeFlow
+        activeFlow = messengerFlow
+        
+        executeLastPathFromActiveFlow()
+    }
+    func changeToList(){
+        messengerFlow = activeFlow
+        activeFlow = listFlow
+        executeLastPathFromActiveFlow()
+    }
+    
+    func publishState(){
+        if let last = activeFlow.last{
+            pathPubisher.value = last
+        }
     }
 }
 

@@ -227,7 +227,7 @@ struct BPEditStadiumView: View {
                 }
             }
             .padding(.horizontal)
-            
+            .transitionWithOpacity()
         }
         .onAppear{
             appState.applyAppConfiguration(StateCongiguration.StadPointsEditViewConfiguration)

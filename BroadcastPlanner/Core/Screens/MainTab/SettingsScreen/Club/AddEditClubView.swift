@@ -62,6 +62,7 @@ struct AddEditClubView: View {
             MainBackground()
             VStack(spacing: 15){
                 Spacer()
+                DividerWithText(text: "choose logo")
                 PhotosPicker(selection: $vm.selectedPhoto) {
                     vm.showedImage
                         .resizable()
@@ -74,53 +75,63 @@ struct AddEditClubView: View {
                             Circle().fill(Color.white)
                         }
                 }
-                DividerWithText(text: "information")
                                 //club name -> title
                 Section{
-                    TextField("club name", text: $vm.title)
-                        .font(.title)
+                    DividerWithText(text: "club title")
+                    TextField("title", text: $vm.title)
+                        .font(.largeTitle)
+                        .keyboardType(.alphabet)
+                        .autocorrectionDisabled()
+                        .minimumScaleFactor(0.3)
                         .textFieldStyle(.roundedBorder)
                     
+                    DividerWithText(text: "contacts phone")
                     //contacts
-                    TextField("contact info", text: $vm.contacts,axis: .vertical)
-                        .lineLimit(3)
-                        .font(.headline)
+                    TextField("phone number", text: $vm.contacts)
+                        .minimumScaleFactor(0.5)
+                        .keyboardType(.phonePad)
+                        .autocorrectionDisabled()
+                        .font(.title2)
                         .textFieldStyle(.roundedBorder)
                     
                     //url
+                    DividerWithText(text: "club link")
                     TextField("url", text: $vm.urlString)
-                        .font(.headline)
+                        .font(.title2)
+                        .keyboardType(.URL)
+                        .autocorrectionDisabled()
                         .textFieldStyle(.roundedBorder)
                     
                     
                     //Venue
-                    
-                    Button {
-//                        defineLocation()
-                    } label: {
-                        if let location = vm.location{
-                            LocationCell(title: location.viewTitle,
-                                         address: location.viewAddress)
-                        } else {
-                            Text(vm.location?.viewTitle ?? "Add Venue" )
-                                .font(.headline)
-                                .padding(.horizontal,8)
-                                .padding(.vertical,4)
-                                .frame(maxWidth: .infinity)
-                                .background {
-                                    RoundedRectangle(cornerRadius: 5)
-                                        .fill(.bar)
-                                        .overlay {
-                                            RoundedRectangle(cornerRadius: 5).stroke(.gray,lineWidth: 1)
-                                        }
-                                }
-                        }
-                    }
+//                    DividerWithText(text: "home location")
+//                    Button {
+////                        defineLocation()
+//                    } label: {
+//                        if let location = vm.location{
+//                            LocationCell(title: location.viewTitle,
+//                                         address: location.viewAddress)
+//                        } else {
+//                            Text(vm.location?.viewTitle ?? "Add Venue" )
+//                                .font(.title)
+//                                .padding(.horizontal,8)
+//                                .padding(.vertical,4)
+//                                .frame(maxWidth: .infinity)
+//                                .background {
+//                                    RoundedRectangle(cornerRadius: 5)
+//                                        .fill(.bar)
+//                                        .overlay {
+//                                            RoundedRectangle(cornerRadius: 5).stroke(.gray,lineWidth: 1)
+//                                        }
+//                                }
+//                        }
+//                    }
                 }
                 .padding(.horizontal)
                 Spacer()
                 Spacer()
             }
+            .transitionWithOpacity()
         }
         .navigationBarBackButtonHidden()
         .task{
@@ -128,6 +139,7 @@ struct AddEditClubView: View {
         }
         .onAppear{
             appState.primaryAction = {
+                appState.makePrimaryButtonEnabled(false)
                 dataManager.mainContext.performAndWait {
                     if let uiimage = vm.uiimage{
                         let uiimageDTO = ImageDTO(id: UUID().uuidString,
@@ -145,17 +157,17 @@ struct AddEditClubView: View {
                         }
                     }
                     club.updateValues(
-                    title: vm.title,
-                    contacts: vm.contacts,
-                    urlString: vm.urlString,
-                    venue: nil,
-                    in: dataManager.mainContext
-                )
+                        title: vm.title,
+                        contacts: vm.contacts,
+                        urlString: vm.urlString,
+                        venue: nil,
+                        in: dataManager.mainContext
+                    )
                     try? dataManager.mainContext.save()
                     Task{
-                      await dataManager.networkManager.saveData(club.dto,
-                                                            withId: club.viewId,
-                                                            withType: GlobalProperties.Path.clubs)
+                        await dataManager.networkManager.saveData(club.dto,
+                                                                  withId: club.viewId,
+                                                                  withType: GlobalProperties.Path.clubs)
                     }
                 }
                 router.routeStepBack()
@@ -164,6 +176,8 @@ struct AddEditClubView: View {
                 
             }
             appState.stepBackAction = {
+                dataManager.mainContext.rollback()
+//                try? dataManager.mainContext.save()
                 router.routeStepBack()
             }
         }
@@ -176,13 +190,14 @@ struct AddEditClubView: View {
 #Preview {
     let dm = DataManager(globalDataManager: NetworkManager())
     let appState = ApplicationState()
-    dm.networkManager.eventProgressHandler = appState
-    return RootView()
-        .environmentObject(GlobalSettings())
-        .environmentObject(SessionManager())
+//    dm.networkManager.eventProgressHandler = appState
+    let club = Club(context: dm.mainContext)
+    return AddEditClubView(club: club)//RootView()
+//        .environmentObject(GlobalSettings())
+//        .environmentObject(SessionManager())
         .environmentObject(appState)
         .environmentObject(Router())
         .environmentObject(dm)
-        .environment(\.managedObjectContext, dm.mainContext)
+//        .environment(\.managedObjectContext, dm.mainContext)
 }
 #endif

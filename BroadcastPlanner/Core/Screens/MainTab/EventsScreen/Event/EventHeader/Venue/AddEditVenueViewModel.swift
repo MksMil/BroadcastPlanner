@@ -3,7 +3,7 @@ import UIKit
 import PhotosUI
 import Combine
 
-final class AddEditLocationViewModel: ObservableObject{
+final class AddEditVenueViewModel: ObservableObject{
     
     @Published var title: String = ""
     @Published var address: String = ""
@@ -44,7 +44,6 @@ final class AddEditLocationViewModel: ObservableObject{
                     }
                     await MainActor.run {
                         self.locationPhotoItems = []
-                        
                     }
                 }
             }

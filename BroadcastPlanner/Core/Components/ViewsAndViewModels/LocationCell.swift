@@ -4,12 +4,8 @@ struct LocationCell: View {
     
     let title: String
     let address: String
-    
-    init(title: String, address: String) {
-        self.title = title
-        self.address = address
-    }
-    
+    let isSelected : Bool
+
     var body: some View {
         HStack{
             VStack(alignment: .leading, spacing: 2){
@@ -28,9 +24,11 @@ struct LocationCell: View {
         .background {
             RoundedRectangle(cornerRadius: 5).fill(.ultraThinMaterial)
         }
+        .scaleEffect(isSelected ? 1.05: 1)
+        .opacity(isSelected ? 1 : 0.65)
     }
 }
 
 #Preview {
-    LocationCell(title: "DONBASS - ARENA", address: "Donetsk")
+    LocationCell(title: "DONBASS - ARENA", address: "Donetsk",isSelected: true)
 }

@@ -60,7 +60,7 @@ struct MainEventsList: View {
                                 .id(broadcast.viewId)
                                 .onTapGesture {
                                     selectedBroadcast = broadcast
-                                    router.routeTo(path: .createEdit(broadcast),withTransition: .fade(.out))
+                                    router.routeTo(path: .createEdit(broadcast))
                                 }
                                 .transition(
                                     .move(edge: .top)
@@ -104,10 +104,10 @@ struct MainEventsList: View {
                 }
             }
             .navigationBarBackButtonHidden()
+            .transitionWithOpacity()
+           
         }
         .onAppear{
-//            appState.applyAppConfiguration(StateCongiguration.MainListConfiguration)
-            opacity = 1
             selectedBroadcast = nil
         }
         .onReceive(dataManager.updatePublisher) { value in

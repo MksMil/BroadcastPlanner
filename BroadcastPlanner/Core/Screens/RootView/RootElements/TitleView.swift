@@ -13,9 +13,7 @@ struct TitleView: View {
             .lineLimit(1)
             .minimumScaleFactor(0.3)
             .onReceive(appState.titlePublisher) { newTitle in
-//                withAnimation(.easeOut(duration: 0.1)){
                     title = newTitle
-//                }
             }
             .frame(height: 30)
     }
@@ -29,8 +27,4 @@ struct TitleView: View {
         .environmentObject(ApplicationState())
         .environmentObject(Router())
 }
-//#Preview {
-//    TitleView()
-//        .environmentObject(ApplicationState())
-//}
 #endif

@@ -1,6 +1,8 @@
 import Combine
 import SwiftUI
 
+
+
 struct RootView: View {
     @EnvironmentObject var sessionManager: SessionManager
     @EnvironmentObject var appState: ApplicationState
@@ -21,144 +23,127 @@ struct RootView: View {
 //#endif
         ZStack{
             MainBackground()
-            
-            VStack(spacing: 5){
                 StatusView()
                     .offset(y: (isStarted && appState.state == .authorized) ? 0: -200)
+                    .frame(maxHeight: .infinity,alignment: .top)
                
-                NavigationStack(path: $router.path) {
-                    AnimatedStart()
-                        .navigationDestination(for: RouterPath.self) { path in
-                            switch path {
-                                case .broadcastList:
-                                    MainEventsList()
-                                        .onAppear{
-                                            appState.applyAppConfiguration(StateCongiguration.MainListConfiguration)
-                                        }
-                                case .authScreen:
-                                    AuthenticationScreen()
-                                case .ownerInfo:
-                                    BPAccountInfoView(user: dataManager.fetchOwner())
-                                        .onAppear{
-                                            appState.applyAppConfiguration(StateCongiguration.OwnerInfoConfiguration)
-                                        }
-                                case .settings:
-                                    SettingsView()
-                                        .onAppear{
-                                            appState.applyAppConfiguration(StateCongiguration.SettingsConfiguration)
-                                        }
-                                case .updateEmail:
-                                    UpdateEPView(currentValue: sessionManager.email,
-                                                 updEP: UpdatedEP.email) {
-                                        router.routeStepBack()
-                                    } updateAction: { newEmail in
-                                        Task{
-                                            await sessionManager.updateEmailOrPassword(newValue: newEmail,
-                                                                                       type: UpdatedEP.email)
-                                        }
-                                        router.routeStepBack()
+            NavigationStack(path: $router.path) {
+                MainBackground()
+                    .navigationDestination(for: RouterPath.self) { path in
+                        switch path {
+                            case .animatedStart:
+                                AnimatedStart()
+                            case .broadcastList:
+                                MainEventsList()
+                            case .authScreen:
+                                AuthenticationScreen()
+                            case .ownerInfo:
+                                BPAccountInfoView(user: dataManager.fetchOwner())
+                            case .settings:
+                                SettingsView()
+                            case .updateEmail:
+                                UpdateEPView(currentValue: sessionManager.email,
+                                             updEP: UpdatedEP.email) {
+                                    router.routeStepBack()
+                                } updateAction: { newEmail in
+                                    Task{
+                                        await sessionManager.updateEmailOrPassword(newValue: newEmail,
+                                                                                   type: UpdatedEP.email)
                                     }
-                                case .updatePassword:
-                                    UpdateEPView(currentValue: sessionManager.password,
-                                                 updEP: UpdatedEP.password) {
-                                        router.routeStepBack()
-                                    } updateAction: { newPass in
-                                        Task{
-                                            await sessionManager.updateEmailOrPassword(newValue: newPass,
-                                                                                       type: UpdatedEP.password)
-                                        }
-                                        router.routeStepBack()
+                                    router.routeStepBack()
+                                }
+                            case .updatePassword:
+                                UpdateEPView(currentValue: sessionManager.password,
+                                             updEP: UpdatedEP.password) {
+                                    router.routeStepBack()
+                                } updateAction: { newPass in
+                                    Task{
+                                        await sessionManager.updateEmailOrPassword(newValue: newPass,
+                                                                                   type: UpdatedEP.password)
                                     }
-                                case .clubSheet:
-                                    ClubSheetView()
-                                    .onAppear{
-                                        appState.applyAppConfiguration(StateCongiguration.ClubSheetConfiguration)
-                                    }
-                                case .addEditClub(let club):
-                                    AddEditClubView(club: club) 
-                                    .onAppear {
-                                        appState.applyAppConfiguration(StateCongiguration.AddEditClubConfiguration)
-                                    }
-                                case .locationSheet(let club):
-                                    LocationSheetView(club: club) {
-                                        
-                                    } saveAction: { venue in
-                                        
-                                    } addEditAction: { venue in
-                                        
-                                    }
-                                case .createEdit(let broadcast):
-                                    BroadcastEditView(broadcast: broadcast)
-                                        .onAppear{
-                                            appState.applyAppConfiguration(StateCongiguration.BroadcastEditViewConfiguration)
-                                        }
-                                case .stadPointsEdit(let broadcast):
-                                    BPEditStadiumView(broadcast: broadcast)
-                                default:
-                                    Text("Hello Error")
-                            }
+                                    router.routeStepBack()
+                                }
+                            case .clubSheet:
+                                ClubCollectionView()
+                            case .addEditClub(let club):
+                                AddEditClubView(club: club) 
+                            case .locationSheet:
+                                VenueListView()
+                            case .addEditVenue(let venue):
+                                AddEditVenueView(location: venue)
+                            case .createEdit(let broadcast):
+                                BroadcastEditView(broadcast: broadcast)
+                            case .stadPointsEdit(let broadcast):
+                                BPEditStadiumView(broadcast: broadcast)
+                            case .messenger:
+                                BPMessengerView()
+                            default:
+                                Text("Hello Error")
                         }
-                }
-                .navigationTransition(router.transition,
-                                      interactivity: router.interactivity)
+                    }
+            }
+            .padding(.vertical,65)
 
             //------------Test settings and action controls----
-                HStack {
-                    Button{
-                        status.toggle()
-                        appState.makePrimaryButtonVisible(status)
-                        appState.makeSecondaryButtonVisible(status)
-                        appState.makeBackwardButtonVisible(status)
-                    } label:{
-                        Text("V")
-                    }
-                    Button{
-                        status.toggle()
-                        appState.makePrimaryButtonEnabled(status)
-                        appState.makeSecondaryButtonEnabled(status)
-                        appState.makeBackwardButtonEnabled(status)
-                       
-                    } label:{
-                        Text("A")
-                    }
-                    Button{
-                        appState.setUnreadMessages(num: appState.unreadMessagesPublisher.value + 1)
-                    } label:{
-                        Text("+")
-                    }
-                    Button{
-                        appState.setUnreadMessages(num: appState.unreadMessagesPublisher.value - 1)
-                    } label:{
-                        Text("-")
-                    }
-                    Button{
-                        appState.setIconToPrimaryButton(.edit)
-                    } label:{
-                        Text("Edit")
-                    }
-                    Button{
-                        appState.setIconToPrimaryButton(.accept)
-                    } label:{
-                        Text("CHECK")
-                    }
-                    Button{
-//                        appState.addNewNotification(note: StatusViewNotification.random())
-                        appState.setTitle(["Hello","How are you?","Goodbye!","Very very very long title here and we are ready for it!"].randomElement()!)
-                    } label: {
-                        Image(systemName: "plus")
-                    }
-                }
-                .offset(y: isStarted ? 0: 500)
+//                HStack {
+//                    Button{
+//                        status.toggle()
+//                        appState.makePrimaryButtonVisible(status)
+//                        appState.makeSecondaryButtonVisible(status)
+//                        appState.makeBackwardButtonVisible(status)
+//                    } label:{
+//                        Text("V")
+//                    }
+//                    Button{
+//                        status.toggle()
+//                        appState.makePrimaryButtonEnabled(status)
+//                        appState.makeSecondaryButtonEnabled(status)
+//                        appState.makeBackwardButtonEnabled(status)
+//                       
+//                    } label:{
+//                        Text("A")
+//                    }
+//                    Button{
+//                        appState.setUnreadMessages(num: appState.unreadMessagesPublisher.value + 1)
+//                    } label:{
+//                        Text("+")
+//                    }
+//                    Button{
+//                        appState.setUnreadMessages(num: appState.unreadMessagesPublisher.value - 1)
+//                    } label:{
+//                        Text("-")
+//                    }
+//                    Button{
+//                        appState.setIconToPrimaryButton(.edit)
+//                    } label:{
+//                        Text("Edit")
+//                    }
+//                    Button{
+//                        appState.setIconToPrimaryButton(.accept)
+//                    } label:{
+//                        Text("CHECK")
+//                    }
+//                    Button{
+////                        appState.addNewNotification(note: StatusViewNotification.random())
+//                        appState.setTitle(["Hello","How are you?","Goodbye!","Very very very long title here and we are ready for it!"].randomElement()!)
+//                    } label: {
+//                        Image(systemName: "plus")
+//                    }
+//                }
+//                .offset(y: isStarted ? 0: 500)
 
             //-------------------------------------------------
                 ActionView()
                 .padding(.horizontal)
                 .frame(height: 60)
                 .offset(y: (isStarted && appState.state == .authorized) ? 0: 200)
-                }
+                .frame(maxHeight: .infinity,alignment: .bottom)
         }
-        .onAppear {
-            Task {
+        .onAppear(perform: {
+            router.routeTo(path: .animatedStart)
+        })
+        .task{
+            if sessionManager.sessionUser == nil{
                 await sessionManager.getUserSession()
             }
         }
@@ -172,15 +157,13 @@ struct RootView: View {
                 }
         }
         .onReceive(appState.isStartAnimationFinishedPublisher, perform: { isStart in
-            print(isStart)
             if isStart{
                 if appState.state == .authorized{
                     router.routeTo(path: .broadcastList)
-                    
                 } else {
                     router.routeTo(path: .authScreen)
                 }
-                withAnimation(.spring(duration: 0.3, bounce: 0.3)){
+                withAnimation(.spring(duration: 0.7, bounce: 0.2)){
                     isStarted = true
                 }
             }
@@ -198,7 +181,10 @@ struct RootView: View {
                 }
             }
         }
-        
+        .onReceive(router.pathPubisher) { path in
+            print("path received: \(path)")
+            appState.switchStateByPath(path)
+        }
     }
 }
 
@@ -217,120 +203,7 @@ struct RootView: View {
 }
 #endif
 
-struct StatusView: View {
-    @EnvironmentObject var router: Router
-    @EnvironmentObject var dataManager: DataManager
-    @EnvironmentObject var appState: ApplicationState
-    
-    @State var image = Image(systemName: "person")
-    
-    @State private var isOnline: Bool = false
-    
-    var body: some View {
-        HStack{
-            BackwardButton()
-                .frame(width: 50, height: 50)
-            Spacer()
-            /// element with app's status / errors / notifications etc.
-            VStack(spacing: 0){
-                //status view title here
-                TitleView()
-                NotificationView()
-                   
-            }
-            .frame(height: 50)
-            ///
-            Spacer()
-            Menu {
-                //Owner Info
-                Button {
-                    if appState.menuState == .settings{
-                        router.routeFrom(from: .settings,
-                                         to: .ownerInfo)
-                    } else {
-                        router.routeTo(path: .ownerInfo)
-                    }
-                    appState.setMenuState(state: .info)
-                    appState.setAppUIState(isBackwardEnabled: true,
-                                           isBackwardVisible: true,
-                                           isPrimaryEnabled: true,
-                                           isPrimaryVisible: true,
-                                           primaryIcon: .edit,
-                                           isSecondaryEnabled: false,
-                                           isSecondaryVisible: false,
-                                           secondaryIcon: .cancel)
-                } label: {
-                    Label("Info", systemImage: "person")
-                }
-                .disabled(appState.menuState == .info)
-                
-                //Settings
-                Button {
-                    if appState.menuState == .info{
-                        router.routeFrom(from: .ownerInfo,
-                                         to: .settings)
-                    } else {
-                        router.routeTo(path: .settings)
-                    }
-                    appState.setMenuState(state: .settings)
-                    appState.setAppUIState(isBackwardEnabled: true,
-                                           isBackwardVisible: true,
-                                           isPrimaryEnabled: false,
-                                           isPrimaryVisible: false,
-                                           primaryIcon: .accept,
-                                           isSecondaryEnabled: false,
-                                           isSecondaryVisible: false,
-                                           secondaryIcon: .cancel)
-                } label: {
-                    Label("Settings", systemImage: "gear")
-                }
-                .disabled(appState.menuState == .settings)
-                
-                //LogOut
-                Button {
-                    print("log out")
-                } label: {
-                    Label("Log out", systemImage: "rectangle.portrait.and.arrow.right")
-                }
 
-            } label: {
-            image
-                .resizable()
-                .frame(width: 50, height: 50)
-                .clipShape(Circle())
-                .overlay {
-                    Circle().stroke(isOnline ? Color.green: Color.red, lineWidth: 2)
-                }
-            }
-
-                            
-        }
-        .padding(.horizontal)
-        .task{
-            updateImage()
-        }
-        
-        .onReceive(dataManager.updatePublisher) { value in
-            if value.0 == .images, value.1.contains(dataManager.currentId){
-                updateImage()
-            }
-        }
-        
-        .onReceive(appState.networkStatusPublisher) { isOnline in
-            self.isOnline = isOnline
-        }
-    }
-    
-    func updateImage(){
-        if let image = ImagesManager.loadImage(imageSize: .smallImages, id: dataManager.currentId){
-            withAnimation{
-                withAnimation(.easeInOut(duration: 0.7)){
-                    self.image = Image(uiImage: image)
-                }
-            }
-        }
-    }
-}
 
 
 

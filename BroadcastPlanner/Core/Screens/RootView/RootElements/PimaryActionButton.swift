@@ -9,10 +9,13 @@ struct PimaryActionButton: View {
     @State private var isPrimaryEnabled: Bool = false
     @State private var isPrimaryVisible: Bool = false
     @State private var primaryIconName: String = "checkmark"
+    @State private var isDis: Bool = false
     
     var body: some View {
         Button{
+            isDis = true
             appState.primaryAction()
+            makeEnabled()
         } label: {
             Image(systemName: primaryIconName)
                 .resizable()
@@ -34,6 +37,7 @@ struct PimaryActionButton: View {
         }
         .offset(x: isPrimaryVisible ? 0:100)
         .disabled(!isPrimaryEnabled)
+        .disabled(isDis)
         .onReceive(appState.isPrimaryButtonEnabledPublisher) { isEnabled in
             if isPrimaryEnabled != isEnabled{
                 withAnimation{
@@ -59,6 +63,14 @@ struct PimaryActionButton: View {
                 if primaryIconName != icon.rawValue{
                     primaryIconName = icon.rawValue
                 }
+            }
+        }
+    }
+    private func makeEnabled(){
+        Task{
+            try? await Task.sleep(nanoseconds: 500_000_000)
+            withAnimation{
+                isDis = false
             }
         }
     }

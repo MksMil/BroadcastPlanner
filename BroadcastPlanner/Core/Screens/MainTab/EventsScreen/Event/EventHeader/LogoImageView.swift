@@ -55,7 +55,7 @@ struct LogoImageView: View {
         .sheet(
             isPresented: $vm.isSheetPresented,
             content: {
-                ClubSheetView()
+                ClubCollectionView()
 //                .padding()
 //                .presentationBackground(.white.opacity(0.4))
                 .presentationContentInteraction(.scrolls)
