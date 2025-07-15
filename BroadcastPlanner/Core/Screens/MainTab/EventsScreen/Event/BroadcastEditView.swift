@@ -107,7 +107,7 @@ struct BroadcastEditView: View {
             Button("Delete Broadcast", role: .destructive){
                 Task{
                    await dataManager.removeBroadcast(broadcast)
-                    router.routeStepBack()
+                    router.stepBack()
                 }
             }
         }
@@ -131,14 +131,14 @@ struct BroadcastEditView: View {
                 Task{
                     await dataManager.updateBroadcast(broadcast)
                 }
-                router.routeStepBack()
+                router.stepBack()
             }
             appState.secondaryAction = {
                 isRemoveConfirm = true
             }
             appState.stepBackAction = {
                 dataManager.rollBackMoc()
-                router.routeStepBack()
+                router.stepBack()
             }
         }
     }

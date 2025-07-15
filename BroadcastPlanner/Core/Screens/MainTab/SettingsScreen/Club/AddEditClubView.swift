@@ -170,7 +170,7 @@ struct AddEditClubView: View {
                                                                   withType: GlobalProperties.Path.clubs)
                     }
                 }
-                router.routeStepBack()
+                router.stepBack()
             }
             appState.secondaryAction = {
                 
@@ -178,7 +178,7 @@ struct AddEditClubView: View {
             appState.stepBackAction = {
                 dataManager.mainContext.rollback()
 //                try? dataManager.mainContext.save()
-                router.routeStepBack()
+                router.stepBack()
             }
         }
         

@@ -81,7 +81,7 @@ struct ClubCollectionView: View {
                 isRemoveClubDialog = true
             }
             appState.stepBackAction = {
-                router.routeStepBack()
+                router.stepBack()
             }
         }
         .navigationBarBackButtonHidden()

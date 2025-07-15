@@ -130,7 +130,14 @@ extension Venue: CoreDataUpdatable{
         self.title = dto.title
         self.lastUpdated = dto.lastUpdated
         
-        cleanImages(in: context)
+
+        _ = viewLocalImages.map{
+            if !dto.imagesIds.contains($0.viewId){
+                removeFromImages($0)
+                context.delete($0)
+            }
+        }
+        
         for id in dto.imagesIds {
             let image: LocalImage = context.fetchOrCreateObject(withID: id)
             self.addToImages(image)
@@ -170,16 +177,21 @@ extension Venue: CoreDataUpdatable{
             newBroadcastSchema.addToParentVenueSchema(self)
             broadcastSchema = newBroadcastSchema
         }
-        
+  
         if let images {
-            cleanImages(in: context)
+            _ = viewLocalImages.map{
+                if !images.contains($0){
+                    removeFromImages($0)
+                    context.delete($0)
+                }
+            }
             images.forEach{
                 addToImages($0)
                 $0.parentVenueImage = self
             }
         }
     }
-
+    
     func cleanImages(in context: NSManagedObjectContext){
         viewLocalImages.forEach{
             removeFromImages($0)

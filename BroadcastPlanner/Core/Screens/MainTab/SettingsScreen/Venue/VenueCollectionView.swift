@@ -1,13 +1,13 @@
 import Combine
 import SwiftUI
 
-struct VenueListView: View {
+struct VenueCollectionView: View {
     @EnvironmentObject var dataManager: DataManager
     @EnvironmentObject var appState: ApplicationState
     @EnvironmentObject var router: Router
 
     @State private var selectedVenue: Venue?
-    @State private var isRemoveLocationDialog: Bool = false
+    @State private var isRemoveVenueDialog: Bool = false
     
     @FetchRequest<Venue>(sortDescriptors: [SortDescriptor(\.address)])
     var venues
@@ -17,7 +17,7 @@ struct VenueListView: View {
             MainBackground()
             ScrollView {
                 ForEach(venues) { venue in
-                    LocationCell(
+                    VenueCell(
                         title: venue.viewTitle,
                         address: venue.viewAddress,
                         isSelected: selectedVenue == venue
@@ -26,8 +26,12 @@ struct VenueListView: View {
                         withAnimation {
                             if selectedVenue == venue {
                                 selectedVenue = nil
+                                appState.setIconToPrimaryButton(.plus)
+                                appState.makeSecondaryButtonEnabled(false)
                             } else {
                                 selectedVenue = venue
+                                appState.setIconToPrimaryButton(.edit)
+                                appState.makeSecondaryButtonEnabled(true)
                             }
                         }
                     }
@@ -53,22 +57,36 @@ struct VenueListView: View {
                     router.routeTo(path: .addEditVenue(venueToRoute))
                 }
                 appState.secondaryAction = {
-//                    isRemoveClubDialog = true
+                    isRemoveVenueDialog = true
+                    appState.makeSecondaryButtonEnabled(false)
+                    appState.setIconToPrimaryButton(.plus)
                 }
                 appState.stepBackAction = {
-                    router.routeStepBack()
+                    //moc.rollback()?
+                    router.stepBack()
                 }
             }
             .confirmationDialog(
                 Text("Permanently erase the Venue in the trash?"),
-                isPresented: $isRemoveLocationDialog
+                isPresented: $isRemoveVenueDialog
             ) {
                 Button("Remove Venue", role: .destructive) {
                     // Handle empty trash action.
-//                        Task{
-//                           await mdm.removeLocation(location)
-//                            removeAction()
-//                        }
+                    if let selectedVenue {
+                        // TODO: rework to perform in background with ObjectID
+                        let idToRemove = selectedVenue.viewId
+                        let objectIdToRemove = selectedVenue.objectID
+                        let imagesIdToRemove = selectedVenue.viewLocalImages.map{$0.viewId}
+                        self.selectedVenue = nil
+
+                        
+                        dataManager.removeObjectWithId(id: objectIdToRemove)
+                            //network removing
+                            Task{
+                                await dataManager.networkManager.removeDataOfType(GlobalProperties.Path.venues, withId: idToRemove)
+                            }
+                            dataManager.removeImages(ids: imagesIdToRemove)
+                    }
                 }
             }
         }

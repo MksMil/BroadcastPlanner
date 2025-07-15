@@ -4,68 +4,38 @@ import UIKit
 
 struct AddEditVenueView: View {
     let buttonSize: Double = 30
-    let location: Venue
+    let venue: Venue
 
     @StateObject var vm: AddEditVenueViewModel
     @EnvironmentObject var dataManager: DataManager
+    @EnvironmentObject var appState: ApplicationState
+    @EnvironmentObject var router: Router
 
     @State private var isRemoveBackgroundDialog: Bool = false
     @State private var isRemoveEventTemplate: Bool = false
 
-    @FetchRequest<LocalImage>(sortDescriptors: [SortDescriptor(\.lastUpdated, order: .forward)],
-                              predicate: NSPredicate(format: "type == %@", GlobalProperties.ImageType.broadcastSchema.rawValue)) var eventTemplates
+    @FetchRequest<LocalImage>(
+        sortDescriptors: [SortDescriptor(
+            \.lastUpdated,
+             order: .forward
+        )],
+        predicate: NSPredicate(
+            format: "type == %@",
+            GlobalProperties.ImageType.broadcastSchema.rawValue
+        )
+    ) var eventTemplates
 
  
-    init(location: Venue) {
-        self.location = location
+    init(venue: Venue) {
+        self.venue = venue
         self._vm = StateObject(
-            wrappedValue: AddEditVenueViewModel(location: location))
- 
+            wrappedValue: AddEditVenueViewModel(venue: venue))
     }
 
     var body: some View {
         ZStack{
             MainBackground()
             VStack(spacing: 0) {
-//                ConfirmationButtonGroupView(
-//                    isAcceptDisabled: false,
-//                    cancelAction: {
-//                        //unlink and remove images
-//                        cancelAction()
-//                    },
-//                    acceptAction: {
-//                        Task {
-//                            //update venue with data
-////                            acceptAction(vm.title,vm.address,vm.newImages,vm.locationBackground)
-//                        }
-//                    },
-//                    content: {
-//                        Button {
-////                            isRemoveLocationDialog = true
-//                        } label: {
-//                            Image(systemName: "trash")
-//                                .resizable()
-//                                .scaledToFit()
-//                                .bold()
-//                                .padding(50 / 4)
-//                                .frame(width: 150,height: 50)
-//                                .background {
-//                                    RoundedRectangle(cornerRadius: 5)
-//                                        .fill(.ultraThickMaterial
-//                                            .opacity(0.3))
-//                                        .overlay {
-//                                            RoundedRectangle(cornerRadius: 5)
-//                                                .stroke(
-//                                                    .ultraThickMaterial
-//                                                    .opacity(0.5),
-//                                                        lineWidth: 2)
-//                                        }
-//                                }
-//                        }
-//                    }
-//                )
-//                .padding(.top, 10)
-//                .padding(.horizontal)
                 
                 ScrollView {
                     // TODO: Make component for title and textfield
@@ -88,7 +58,7 @@ struct AddEditVenueView: View {
                     DividerWithText(text: "Add Venue images")
                     
                     //venue photos collection
-                    TabViewList(source: location.viewLocalImages.sorted{$0.viewLastUpdated < $1.viewLastUpdated}, pageCount: 3, spacing: 5) { localImage in
+                    TabViewList(source: venue.viewLocalImages.sorted{$0.viewLastUpdated < $1.viewLastUpdated}, pageCount: 3, spacing: 5) { localImage in
                         vm.backgroundSelected(localImage)
                     } content: { localImage in
                         SelectableLocationCellWithContent(val: localImage, publishType: LocationEditPublishType.background) {
@@ -124,7 +94,6 @@ struct AddEditVenueView: View {
                                         }
                                 }
                                 .opacity(vm.backgroundImageToRemove == nil ? 0.4: 1)
-                            
                         }
                         .disabled(vm.backgroundImageToRemove == nil)
                         
@@ -137,7 +106,8 @@ struct AddEditVenueView: View {
                                 .scaledToFit()
                                 .bold()
                                 .padding(buttonSize / 4)
-                                .frame(width: buttonSize,height: buttonSize)
+                                .frame(width: buttonSize,
+                                       height: buttonSize)
                                 .background {
                                     RoundedRectangle(cornerRadius: 5)
                                         .fill(.ultraThickMaterial
@@ -220,43 +190,42 @@ struct AddEditVenueView: View {
                                     }
                         }
                         Spacer()
-                        Button {
-                            //link broadcastSchema to venue
-//                            if let template = vm.selectedEventTemplate{
-//                                mdm.linkEventTemplate(template, toLocation: location)
-//                            }
-                        } label: {
-                            Image(systemName: "checkmark")
-                                .resizable()
-                                .scaledToFit()
-                                .bold()
-                                .padding(buttonSize / 4)
-                                .frame(width: buttonSize,height: buttonSize)
-                                .background {
-                                    RoundedRectangle(cornerRadius: 5)
-                                        .fill(.ultraThickMaterial
-                                            .opacity(0.3))
-                                        .overlay {
-                                            RoundedRectangle(cornerRadius: 5)
-                                                .stroke(
-                                                    .ultraThickMaterial
-                                                    .opacity(0.5),
-                                                        lineWidth: 2)
-                                        }
-                                }
-                                .opacity(vm.selectedEventTemplate == nil ? 0.4:1)
-                        }
-                        .disabled(vm.selectedEventTemplate == nil)
-                        Spacer()
+//                        Button {
+//                            //link broadcastSchema to venue
+////                            if let template = vm.selectedEventTemplate{
+////                                mdm.linkEventTemplate(template, toLocation: venue)
+////                            }
+//                        } label: {
+//                            Image(systemName: "checkmark")
+//                                .resizable()
+//                                .scaledToFit()
+//                                .bold()
+//                                .padding(buttonSize / 4)
+//                                .frame(width: buttonSize,height: buttonSize)
+//                                .background {
+//                                    RoundedRectangle(cornerRadius: 5)
+//                                        .fill(.ultraThickMaterial
+//                                            .opacity(0.3))
+//                                        .overlay {
+//                                            RoundedRectangle(cornerRadius: 5)
+//                                                .stroke(
+//                                                    .ultraThickMaterial
+//                                                    .opacity(0.5),
+//                                                        lineWidth: 2)
+//                                        }
+//                                }
+//                                .opacity(vm.selectedEventTemplate == nil ? 0.4:1)
+//                        }
+//                        .disabled(vm.selectedEventTemplate == nil)
+//                        Spacer()
                     }
                     Button("Status"){
-                        print(location)
+                        print(venue)
                     }
                     Spacer(minLength: 50)
                 }
                 .padding()
                 .scrollDismissesKeyboard(.immediately)
-                
                 
                 //broadcastSchema photo remove confirmation dialog
                 .confirmationDialog(
@@ -265,12 +234,11 @@ struct AddEditVenueView: View {
                 ) {
                     Button("Remove Photo", role: .destructive) {
                         // Handle empty trash action.
-//                        withAnimation {
-//                            if let localImageToRemove = vm.backgroundImageToRemove {
-//                                mdm.removeImage(selectedImage: localImageToRemove)
-//                            }
-//                        }
-                        
+                        withAnimation {
+                            if let localImageToRemove = vm.backgroundImageToRemove{
+                                dataManager.removeImageInMainContext(localImageToRemove, fromVenue: venue)
+                            }
+                        }
                     }
                 }
                 //broadcast template remove confirmation dialog
@@ -280,31 +248,51 @@ struct AddEditVenueView: View {
                 ) {
                     Button("Remove Photo", role: .destructive) {
                         // Handle empty trash action.
-//                        withAnimation {
-//                            if let localImageToRemove = vm.selectedEventTemplate {
-//                                mdm.removeImage(selectedImage: localImageToRemove)
-//                            }
-//                        }
-                        
+                        withAnimation {
+                            if let localImageToRemove = vm.selectedEventTemplate {
+                                dataManager.removeImage( localImageToRemove)
+                            }
+                        }
                     }
                 }
-                //venue remove confirmation dialog
-                
             }
         }
         .navigationBarBackButtonHidden()
         .onReceive(vm.$eventBackgroundUIImage) { uiimage in
             guard let uiimage else { return }
-            dataManager.createNewLocalImagesWith(uiimages: [uiimage], andType: .broadcastSchema)
+            dataManager.saveImageInBackground(uiimage: uiimage, type: GlobalProperties.ImageType.broadcastSchema)
         }
         .onReceive(vm.$locationUiimages) { images in
             if !images.isEmpty{
-                dataManager.createNewLocalImagesWith(uiimages: images, andType: GlobalProperties.ImageType.venue,
-                                             linkToLocation: location)
+                dataManager.createNewLocalImagesWith(
+                    uiimages: images,
+                    andType: GlobalProperties.ImageType.venue,
+                    linkToLocation: venue
+                )
                 vm.locationUiimages = []
             }
         }
-        
+        .onAppear{
+            appState.primaryAction = {
+                //save venue, some validation?
+                
+                    dataManager.saveVenue(
+                        venue: venue,
+                        title: vm.title,
+                        address: vm.address,
+                        schemaId: vm.selectedEventTemplate?.objectID
+                    )
+                router.stepBack()
+                
+            }
+            appState.secondaryAction = {
+                
+            }
+            appState.stepBackAction = {
+                dataManager.mainContext.rollback()
+                router.stepBack()
+            }
+        }
         .environmentObject(vm)
     }
 }
@@ -314,7 +302,7 @@ struct AddEditVenueView: View {
     let dto = VenueDTO(id: "id", lastUpdated: Date.now, title: "Avangard", address: "Krivii Rih", imagesIds: [], venueSchemaId: nil)
     let location = mdm.mainContext.makeObjectFromDTO(dto)
     
-   return AddEditVenueView(location: location)
+   return AddEditVenueView(venue: location)
     .environmentObject(mdm)
     .environment(\.managedObjectContext, mdm.mainContext)
 

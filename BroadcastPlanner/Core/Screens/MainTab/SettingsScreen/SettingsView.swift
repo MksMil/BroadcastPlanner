@@ -83,7 +83,7 @@ struct SettingsView: View {
                 
                 //add club
                 Button {
-                    router.routeTo(path: .clubSheet)
+                    router.routeTo(path: .clubCollection)
                 } label: {
                     Text("Add Club")
                         .frame(maxWidth: .infinity)
@@ -94,8 +94,7 @@ struct SettingsView: View {
                 }
                 //add venue
                 Button {
-                    
-                    //                                settingsRouter.path.append(SettingsTabPath.locationSheet(nil))
+                    router.routeTo(path: RouterPath.venueCollection)
                 }label: {
                     Text("Add Venue")
                         .frame(maxWidth: .infinity)
@@ -163,7 +162,7 @@ struct SettingsView: View {
             appState.secondaryAction = {}
             appState.stepBackAction = {
                 appState.setMenuState(state: .none)
-                router.routeStepBack()
+                router.stepBack()
             }
         }
     }

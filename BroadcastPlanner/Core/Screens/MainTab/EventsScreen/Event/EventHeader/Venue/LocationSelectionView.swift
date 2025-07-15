@@ -59,7 +59,7 @@ struct LocationSelectionView: View {
             .disabled(!editable)
         }
         .sheet(isPresented: $vm.isLocationSheetPresented) {
-            VenueListView()
+            VenueCollectionView()
 //            {
 //                cancelAction()
 //                vm.isLocationSheetPresented.toggle()

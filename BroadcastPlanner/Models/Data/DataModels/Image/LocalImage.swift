@@ -166,8 +166,9 @@ extension LocalImage{
     }
     func uploadImage(uiimage: UIImage){
         if !viewId.isEmpty{
-            let _ = ImagesManager.saveResizedImages(image: uiimage, id: viewId, type: viewType)
-        } 
+            ImagesManager.saveResizedImages(image: uiimage, id: viewId, type: viewType)
+            print("saved id: \(viewId)")
+        }
     }
     func removeImageDataFromDevice(){
         if !viewId.isEmpty{

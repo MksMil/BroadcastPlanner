@@ -229,7 +229,7 @@ extension NetworkManager {
 
     func removeImage(localImageId: String) async {
         guard !localImageId.isEmpty else { return }
-
+            //with taskGroup?
         do {
             try await getFirestoreDocumentRef(
                 type: .images,

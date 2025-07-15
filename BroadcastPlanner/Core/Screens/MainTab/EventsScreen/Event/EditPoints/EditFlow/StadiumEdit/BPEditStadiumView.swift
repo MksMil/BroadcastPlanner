@@ -242,7 +242,7 @@ struct BPEditStadiumView: View {
                     await dataManager.assignSnapshot(vm.makeSceneScreenshot(), toEvent: broadcast)
                     
                     try? dataManager.saveContext(publish: .broadcasts, id: [broadcast.viewId])
-                    router.routeStepBack()
+                    router.stepBack()
                 }
             }
             appState.secondaryAction = {
@@ -250,7 +250,7 @@ struct BPEditStadiumView: View {
             }
             appState.stepBackAction = {
 //                dataManager.mainContext.rollback()
-                router.routeStepBack()
+                router.stepBack()
             }
             
         }
@@ -270,7 +270,7 @@ struct BPEditStadiumView: View {
         .confirmationDialog("", isPresented: $isConfirmDiscardChanges) {
             Button("Discard all changes and step back?",role: .destructive){
                 dataManager.rollBackMoc()
-                router.routeStepBack()
+                router.stepBack()
             }
         }
         .sheet(isPresented: $isEditPressed) {

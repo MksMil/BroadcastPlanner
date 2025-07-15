@@ -8,6 +8,7 @@ final class AddEditVenueViewModel: ObservableObject{
     @Published var title: String = ""
     @Published var address: String = ""
 
+    //create venue background images
     @Published var locationPhotoItems: [PhotosPickerItem] = []
     @Published var locationUiimages: [UIImage] = []
     
@@ -21,11 +22,11 @@ final class AddEditVenueViewModel: ObservableObject{
 
     //to link to venue
     @Published var selectedEventTemplate: LocalImage?
+    
     var tempImages: [UIImage] = []
     var cancellables: Set<AnyCancellable> = []
     
     //bg
-   
     func makePublisher(){
         $locationPhotoItems.sink { [weak self] newValue in
             guard let self else { return }
@@ -41,8 +42,6 @@ final class AddEditVenueViewModel: ObservableObject{
                     await MainActor.run {
                         self.locationUiimages = self.tempImages
                         self.tempImages = []
-                    }
-                    await MainActor.run {
                         self.locationPhotoItems = []
                     }
                 }
@@ -70,10 +69,10 @@ final class AddEditVenueViewModel: ObservableObject{
         .store(in: &cancellables)
     }
     
-    init(location: Venue){
-        self.title = location.viewTitle
-        self.address = location.viewAddress
-        if let locationBackground = location.broadcastSchema{
+    init(venue: Venue){
+        self.title = venue.viewTitle
+        self.address = venue.viewAddress
+        if let locationBackground = venue.broadcastSchema{
             self.selectedEventTemplate = locationBackground
         }
         makePublisher()

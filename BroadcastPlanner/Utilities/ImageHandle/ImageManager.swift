@@ -96,6 +96,7 @@ enum ImagesManager {
             let dir = createCustomDirectory(
                 folderName: "\(size.rawValue)"
             )
+//            print(dir)
              _ = saveImageToDirectory(
                 image: resizingResult[size],
                 directory: dir,

@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct LocationCell: View {
+struct VenueCell: View {
     
     let title: String
     let address: String
@@ -30,5 +30,5 @@ struct LocationCell: View {
 }
 
 #Preview {
-    LocationCell(title: "DONBASS - ARENA", address: "Donetsk",isSelected: true)
+    VenueCell(title: "DONBASS - ARENA", address: "Donetsk",isSelected: true)
 }

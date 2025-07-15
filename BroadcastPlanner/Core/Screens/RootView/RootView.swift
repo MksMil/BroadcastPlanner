@@ -41,40 +41,45 @@ struct RootView: View {
                                 BPAccountInfoView(user: dataManager.fetchOwner())
                             case .settings:
                                 SettingsView()
+                                // email/pass update
                             case .updateEmail:
                                 UpdateEPView(currentValue: sessionManager.email,
                                              updEP: UpdatedEP.email) {
-                                    router.routeStepBack()
+                                    router.stepBack()
                                 } updateAction: { newEmail in
                                     Task{
                                         await sessionManager.updateEmailOrPassword(newValue: newEmail,
                                                                                    type: UpdatedEP.email)
                                     }
-                                    router.routeStepBack()
+                                    router.stepBack()
                                 }
                             case .updatePassword:
                                 UpdateEPView(currentValue: sessionManager.password,
                                              updEP: UpdatedEP.password) {
-                                    router.routeStepBack()
+                                    router.stepBack()
                                 } updateAction: { newPass in
                                     Task{
                                         await sessionManager.updateEmailOrPassword(newValue: newPass,
                                                                                    type: UpdatedEP.password)
                                     }
-                                    router.routeStepBack()
+                                    router.stepBack()
                                 }
-                            case .clubSheet:
+                                //club managment
+                            case .clubCollection:
                                 ClubCollectionView()
                             case .addEditClub(let club):
                                 AddEditClubView(club: club) 
-                            case .locationSheet:
-                                VenueListView()
+                            //venue managmaent
+                            case .venueCollection:
+                                VenueCollectionView()
                             case .addEditVenue(let venue):
-                                AddEditVenueView(location: venue)
+                                AddEditVenueView(venue: venue)
+                                //broadcast managment
                             case .createEdit(let broadcast):
                                 BroadcastEditView(broadcast: broadcast)
                             case .stadPointsEdit(let broadcast):
                                 BPEditStadiumView(broadcast: broadcast)
+                                //messenger
                             case .messenger:
                                 BPMessengerView()
                             default:
@@ -182,7 +187,7 @@ struct RootView: View {
             }
         }
         .onReceive(router.pathPubisher) { path in
-            print("path received: \(path)")
+//            print("path received: \(path)")
             appState.switchStateByPath(path)
         }
     }

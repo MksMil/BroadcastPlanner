@@ -140,7 +140,7 @@ struct BPAccountInfoView: View {
                 appState.secondaryAction = {}
                 appState.stepBackAction = {
                     appState.setMenuState(state: .none)
-                    router.routeStepBack()
+                    router.stepBack()
                 }
             }
         }

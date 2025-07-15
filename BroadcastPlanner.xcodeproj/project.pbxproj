@@ -77,7 +77,7 @@
 		29C37D3F2E20FFE200CBA6A4 /* OpacityViewTransitionModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C37D3E2E20FFE200CBA6A4 /* OpacityViewTransitionModifier.swift */; };
 		29C8F9472CC24FD000A7D5D2 /* UserInfoTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C8F9462CC24FD000A7D5D2 /* UserInfoTextField.swift */; };
 		29CA68442DA4034300460EFE /* LocationPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29CA68432DA4034300460EFE /* LocationPreview.swift */; };
-		29CA68462DA40B1E00460EFE /* LocationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29CA68452DA40B1E00460EFE /* LocationCell.swift */; };
+		29CA68462DA40B1E00460EFE /* VenueCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29CA68452DA40B1E00460EFE /* VenueCell.swift */; };
 		29CB0F642C98B24E003B30C4 /* CarUnitEnableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29CB0F632C98B24E003B30C4 /* CarUnitEnableCellView.swift */; };
 		29CB0F662C9A9BDE003B30C4 /* CarUnitCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29CB0F652C9A9BDE003B30C4 /* CarUnitCellView.swift */; };
 		29CCF2EC2C807FE000BCEF34 /* SessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29CCF2EB2C807FE000BCEF34 /* SessionManager.swift */; };
@@ -174,7 +174,7 @@
 		29C37D3E2E20FFE200CBA6A4 /* OpacityViewTransitionModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpacityViewTransitionModifier.swift; sourceTree = "<group>"; };
 		29C8F9462CC24FD000A7D5D2 /* UserInfoTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfoTextField.swift; sourceTree = "<group>"; };
 		29CA68432DA4034300460EFE /* LocationPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationPreview.swift; sourceTree = "<group>"; };
-		29CA68452DA40B1E00460EFE /* LocationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationCell.swift; sourceTree = "<group>"; };
+		29CA68452DA40B1E00460EFE /* VenueCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VenueCell.swift; sourceTree = "<group>"; };
 		29CB0F632C98B24E003B30C4 /* CarUnitEnableCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarUnitEnableCellView.swift; sourceTree = "<group>"; };
 		29CB0F652C9A9BDE003B30C4 /* CarUnitCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarUnitCellView.swift; sourceTree = "<group>"; };
 		29CCF2EB2C807FE000BCEF34 /* SessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionManager.swift; sourceTree = "<group>"; };
@@ -407,7 +407,7 @@
 				291CDA532DDCB2CB00724F53 /* DividerWithText.swift */,
 				29476C062DACE975007DFA88 /* SpecializationSection.swift */,
 				29476BE82DA553B0007DFA88 /* Cells */,
-				29CA68452DA40B1E00460EFE /* LocationCell.swift */,
+				29CA68452DA40B1E00460EFE /* VenueCell.swift */,
 				29CA68432DA4034300460EFE /* LocationPreview.swift */,
 				29D8D3B02CEDE589000E4F72 /* Buttons */,
 				29F7CF132CA158FA009C303E /* DateViews */,
@@ -899,7 +899,7 @@
 				29F42B5A2B88BBE70024B764 /* WelcomeFlowScreen.swift in Sources */,
 				2955C9792B50FDEF003F9ADC /* SignUpView.swift in Sources */,
 				2916E60B2C4E85400025DCC6 /* BPEditEventControlPanel.swift in Sources */,
-				29CA68462DA40B1E00460EFE /* LocationCell.swift in Sources */,
+				29CA68462DA40B1E00460EFE /* VenueCell.swift in Sources */,
 				29C37D3F2E20FFE200CBA6A4 /* OpacityViewTransitionModifier.swift in Sources */,
 				2955C96D2B4ECB05003F9ADC /* BPTextFieldWithIcon.swift in Sources */,
 				29418D922C6CCDAE007CC6F3 /* FiltersEnums.swift in Sources */,

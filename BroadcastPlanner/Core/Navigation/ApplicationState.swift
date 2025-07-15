@@ -212,8 +212,8 @@ extension ApplicationState{
 //            
 //            case .updatePassword:
 //                
-            case .clubSheet:
-                applyAppConfiguration(StateCongiguration.ClubSheetConfiguration)
+            case .clubCollection:
+                applyAppConfiguration(StateCongiguration.ClubCollectionConfiguration)
 //            case .locationSheet(let club):
 //                <#code#>
             case .addEditClub(_):
@@ -222,6 +222,10 @@ extension ApplicationState{
 //                <#code#>
 //            case .addEditObvan:
 //                <#code#>
+            case .venueCollection:
+                applyAppConfiguration(StateCongiguration.VenueCollectionConfiguration)
+            case .addEditVenue(_):
+                applyAppConfiguration(StateCongiguration.AddEditVenueConfiguration)
             case .messenger:
                 applyAppConfiguration(StateCongiguration.MessengerConfiguration)
             default: applyAppConfiguration(StateCongiguration.AllDissabledConfiguration)
@@ -339,7 +343,7 @@ extension StateCongiguration{
         title: "Edit schema"
     )
     
-    static let ClubSheetConfiguration: StateCongiguration = StateCongiguration(
+    static let ClubCollectionConfiguration: StateCongiguration = StateCongiguration(
         isPrimaryButtonVisisble: true,
         isPrimaryButtonEnable: true,
         primaryButtonIcon: .plus,
@@ -365,7 +369,7 @@ extension StateCongiguration{
         title: "Edit Club"
     )
     
-    static let VenueSheetConfiguration: StateCongiguration = StateCongiguration(
+    static let VenueCollectionConfiguration: StateCongiguration = StateCongiguration(
         isPrimaryButtonVisisble: true,
         isPrimaryButtonEnable: true,
         primaryButtonIcon: .plus,
@@ -382,8 +386,8 @@ extension StateCongiguration{
         isPrimaryButtonVisisble: true,
         isPrimaryButtonEnable: true,
         primaryButtonIcon: .accept,
-        isSecondaryButtonVisible: true,
-        isSecondaryButtonEnabled: true,
+        isSecondaryButtonVisible: false,
+        isSecondaryButtonEnabled: false,
         secondaryButtonIcon: .remove,
         isBackButtonVisible: true,
         isBackButtonEnabled: true,

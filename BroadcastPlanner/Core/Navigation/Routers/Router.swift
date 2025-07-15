@@ -30,8 +30,9 @@ enum RouterPath: Hashable{
     //settings
     case updateEmail
     case updatePassword
-    case clubSheet
-    case locationSheet
+    case clubCollection
+    case venueCollection
+    
     case addEditClub(Club)
     case addEditVenue(Venue)
     case addEditObvan
@@ -63,7 +64,7 @@ final class Router: ObservableObject {
         }
     }
     
-    func routeStepBack(){
+    func stepBack(){
         guard activeFlow.count > 1 else { return }
         activeFlow.removeLast()
         executeLastPathFromActiveFlow()
