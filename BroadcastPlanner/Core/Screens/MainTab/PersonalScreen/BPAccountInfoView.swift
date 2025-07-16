@@ -10,7 +10,10 @@ struct BPAccountInfoView: View {
     @State private var isEdit: Bool = false
     @State private var isEditSpecialization: Bool = false
 
+    let user: Member
+    
     init(user: Member) {
+        self.user = user
         self._vm = StateObject(wrappedValue: PersonalScreenViewModel(localUser: user))
     }
 
@@ -117,8 +120,7 @@ struct BPAccountInfoView: View {
                 appState.primaryAction = {
                     if isEdit {
                         appState.setIconToPrimaryButton(.edit)
-                        Task{
-                            await dataManager
+                         dataManager
                                 .updateUserData(
                                     firstName: vm.firstName,
                                     lastName: vm.lastName,
@@ -128,7 +130,6 @@ struct BPAccountInfoView: View {
                                     userSpecialization: vm.userSpecialization,
                                     inputImage: vm.inputImage
                                 )
-                        }
                         isEdit = false
                         isEditSpecialization = false
                     } else {

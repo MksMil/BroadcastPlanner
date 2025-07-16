@@ -13,7 +13,9 @@ struct AddEditVenueView: View {
 
     @State private var isRemoveBackgroundDialog: Bool = false
     @State private var isRemoveEventTemplate: Bool = false
-
+    
+    @State private var bgImages: [LocalImage] = []
+    
     @FetchRequest<LocalImage>(
         sortDescriptors: [SortDescriptor(
             \.lastUpdated,
@@ -41,14 +43,14 @@ struct AddEditVenueView: View {
                     // TODO: Make component for title and textfield
                     DividerWithText(text: "Title")
                     
-                    TextField("enter title", text: $vm.title)
+                    TextField("title", text: $vm.title)
                         .padding(.horizontal)
                         .textFieldStyle(.roundedBorder)
                         .autocorrectionDisabled()
                     
                     DividerWithText(text: "address")
                     
-                    TextField("enter address", text: $vm.address,axis: .vertical)
+                    TextField("address", text: $vm.address,axis: .vertical)
                         .lineLimit(2, reservesSpace: true)
                         .minimumScaleFactor(0.5)
                         .padding(.horizontal)
@@ -58,7 +60,7 @@ struct AddEditVenueView: View {
                     DividerWithText(text: "Add Venue images")
                     
                     //venue photos collection
-                    TabViewList(source: venue.viewLocalImages.sorted{$0.viewLastUpdated < $1.viewLastUpdated}, pageCount: 3, spacing: 5) { localImage in
+                    TabViewList(source: bgImages, pageCount: 3, spacing: 5) { localImage in
                         vm.backgroundSelected(localImage)
                     } content: { localImage in
                         SelectableLocationCellWithContent(val: localImage, publishType: LocationEditPublishType.background) {
@@ -236,7 +238,9 @@ struct AddEditVenueView: View {
                         // Handle empty trash action.
                         withAnimation {
                             if let localImageToRemove = vm.backgroundImageToRemove{
-                                dataManager.removeImageInMainContext(localImageToRemove, fromVenue: venue)
+                                bgImages.removeAll { $0 == localImageToRemove
+                                }
+//                                dataManager.removeImage(localImageToRemove,fromGlobal: venue.viewLocalImages.contains(localImageToRemove))
                             }
                         }
                     }
@@ -250,12 +254,13 @@ struct AddEditVenueView: View {
                         // Handle empty trash action.
                         withAnimation {
                             if let localImageToRemove = vm.selectedEventTemplate {
-                                dataManager.removeImage( localImageToRemove)
+                                dataManager.removeImage(localImageToRemove)
                             }
                         }
                     }
                 }
             }
+            .transitionWithOpacity()
         }
         .navigationBarBackButtonHidden()
         .onReceive(vm.$eventBackgroundUIImage) { uiimage in
@@ -264,29 +269,28 @@ struct AddEditVenueView: View {
         }
         .onReceive(vm.$locationUiimages) { images in
             if !images.isEmpty{
-                dataManager.createNewLocalImagesWith(
+                bgImages.append(contentsOf:  dataManager.createNewLocalImagesWith(
                     uiimages: images,
                     andType: GlobalProperties.ImageType.venue,
                     linkToLocation: venue
-                )
+                ))
                 vm.locationUiimages = []
             }
         }
         .onAppear{
+            bgImages = venue.viewLocalImages
             appState.primaryAction = {
                 //save venue, some validation?
-                
                     dataManager.saveVenue(
                         venue: venue,
                         title: vm.title,
                         address: vm.address,
-                        schemaId: vm.selectedEventTemplate?.objectID
+                        schema: vm.selectedEventTemplate,
+                        images: bgImages
                     )
                 router.stepBack()
-                
             }
             appState.secondaryAction = {
-                
             }
             appState.stepBackAction = {
                 dataManager.mainContext.rollback()

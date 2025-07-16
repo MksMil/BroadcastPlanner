@@ -230,9 +230,9 @@ extension Member: CoreDataUpdatable{
             self.email = email
         }
         if let image {
-            if let oldImage = self.image{
-                cleanImage(image: oldImage, in: context)
-            }
+//            if let oldImage = self.image{
+//                cleanImage(image: oldImage, in: context)
+//            }
             image.parentMember = self
             self.image = image
         }

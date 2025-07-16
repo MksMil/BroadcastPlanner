@@ -142,27 +142,37 @@ struct AddEditClubView: View {
                 appState.makePrimaryButtonEnabled(false)
                 dataManager.mainContext.performAndWait {
                     if let uiimage = vm.uiimage{
-                        let uiimageDTO = ImageDTO(id: UUID().uuidString,
-                                                  type: GlobalProperties.ImageType.club.rawValue)
-                        let image: LocalImage = dataManager.mainContext.makeObjectFromDTO(uiimageDTO)
-                        image.uploadImage(uiimage: uiimage)
-                        club.imageLogo = image
-                        image.parentClub = club
-                        Task{
-                            await dataManager
-                                .networkManager
-                                .saveImageToGlobalStorage(id: image.viewId,
-                                                          uiimage: uiimage,
-                                                          type: GlobalProperties.ImageType.club)
+                        if let image = club.imageLogo {
+                            image.uploadImage(
+                                    uiimage: uiimage
+                                )
+                            dataManager.updateImageWithId(club.viewId, type: GlobalProperties.ImageType.club, andUIImage: uiimage)
+                        } else {
+                            let uiimageDTO = ImageDTO(id: club.viewId,
+                                                      type: GlobalProperties.ImageType.club.rawValue)
+                            let image: LocalImage = dataManager.mainContext.makeObjectFromDTO(uiimageDTO)
+                            image.uploadImage(uiimage: uiimage)
+                            
+                            club.updateValues(
+                                title: vm.title,
+                                contacts: vm.contacts,
+                                urlString: vm.urlString,
+                                image: image,
+                                in: dataManager.mainContext
+                            )
+                            Task{
+                                await dataManager.networkManager.saveImageToGlobalStorage(id: club.viewId, uiimage: uiimage, type: GlobalProperties.ImageType.club)
+                            }
                         }
-                    }
-                    club.updateValues(
-                        title: vm.title,
-                        contacts: vm.contacts,
-                        urlString: vm.urlString,
-                        venue: nil,
-                        in: dataManager.mainContext
-                    )
+                        
+                    } else {
+                        club.updateValues(
+                            title: vm.title,
+                            contacts: vm.contacts,
+                            urlString: vm.urlString,
+                            in: dataManager.mainContext
+                        )
+                        }
                     try? dataManager.mainContext.save()
                     Task{
                         await dataManager.networkManager.saveData(club.dto,

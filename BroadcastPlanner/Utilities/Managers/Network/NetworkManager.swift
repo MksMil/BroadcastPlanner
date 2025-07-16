@@ -198,6 +198,33 @@ extension NetworkManager {
         }
     }
 
+    func updateImageData(
+        id: String,
+        type: GlobalProperties.ImageType,
+        uiimage: UIImage
+    ){
+        if !id.isEmpty {
+            if let data = prepareImageData(
+                from: uiimage,
+                type: type
+            ){
+                Task{
+                    do{
+                        try await uploadImageData(
+                            id: id,
+                            data: data
+                        )
+                    }catch{
+                        print(
+                            "error when upload image of type: \(type.rawValue)"
+                        )
+                    }
+                }
+            }
+            
+        }
+    }
+    
     private func prepareImageData(
         from image: UIImage,
         type: GlobalProperties.ImageType
@@ -209,7 +236,7 @@ extension NetworkManager {
         }
     }
 
-    private func uploadImageData(id: String, data: Data) async throws {
+   private func uploadImageData(id: String, data: Data) async throws {
         _ = try await getImageStorageRef(id: id).putDataAsync(data)
     }
 
