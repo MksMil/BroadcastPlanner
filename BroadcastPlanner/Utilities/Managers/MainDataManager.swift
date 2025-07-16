@@ -834,12 +834,12 @@ extension DataManager{
     ){
         let idsToRemove = venue.viewLocalImages.compactMap{ venueImage in
             images.contains{image in
-                image.viewId == venueImage.viewId
+                image == venueImage
             } ? nil:(venueImage.viewId,venueImage.objectID)
         }
         let dataToSave = images.compactMap { image in
             venue.viewLocalImages.contains{ venueImage in
-                venueImage.viewId == image.viewId
+                venueImage == image
             } ? (image.viewId,image.makeUIImage()):nil
         }
         
