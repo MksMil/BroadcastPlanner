@@ -4,6 +4,7 @@ protocol CoreDataRepresentable: Codable{
     associatedtype Entity: NSManagedObject & CoreDataUpdatable where Entity.DTO == Self
     var primaryKeyPredicate: NSPredicate { get }
     var id: String {get set}
+    var lastUpdated: Date {get set}
 }
 
 protocol CoreDataUpdatable {
@@ -19,10 +20,8 @@ extension CoreDataRepresentable where Self == Entity.DTO {
             fetchRequest.fetchLimit = 1
             
             let object: Entity = (try? context.fetch(fetchRequest).first) ?? Entity(context: context)
-            object.updateFromDTO(self, in: context)
+            
             return object
-        
-        
     }
     func remove(in context: NSManagedObjectContext){
         context.performAndWait{

@@ -8,6 +8,7 @@ struct CrewDTO: Codable, Identifiable,CoreDataRepresentable {
     var primaryKeyPredicate: NSPredicate {
         NSPredicate(format: "id == %@", id as CVarArg)
     }
+    var lastUpdated: Date = .now
     var id: String
     var position: String
     var coordinateX: Double

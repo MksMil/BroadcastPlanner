@@ -240,7 +240,6 @@ struct AddEditVenueView: View {
                             if let localImageToRemove = vm.backgroundImageToRemove{
                                 bgImages.removeAll { $0 == localImageToRemove
                                 }
-//                                dataManager.removeImage(localImageToRemove,fromGlobal: venue.viewLocalImages.contains(localImageToRemove))
                             }
                         }
                     }

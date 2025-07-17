@@ -5,7 +5,7 @@ struct SoundDTO: Codable, Identifiable,CoreDataRepresentable {
     var primaryKeyPredicate: NSPredicate {
         NSPredicate(format: "id == %@", id as CVarArg)
     }
- 
+    var lastUpdated: Date = .now
     var id: String
     var windDefence: WindDefence = .none
     var placeType: PlaceType = .none

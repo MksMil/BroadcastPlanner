@@ -60,7 +60,7 @@ final class NetworkManager: ObservableObject {
     func startToObserveChanges() {
         guard !isObserving else { return }
         isObserving = true
-
+        print("start observing")
         makeSnapshotListener(
             forType: GlobalProperties.Path.members,
             of: MemberDTO.self
@@ -197,34 +197,7 @@ extension NetworkManager {
             return false
         }
     }
-
-    func updateImageData(
-        id: String,
-        type: GlobalProperties.ImageType,
-        uiimage: UIImage
-    ){
-        if !id.isEmpty {
-            if let data = prepareImageData(
-                from: uiimage,
-                type: type
-            ){
-                Task{
-                    do{
-                        try await uploadImageData(
-                            id: id,
-                            data: data
-                        )
-                    }catch{
-                        print(
-                            "error when upload image of type: \(type.rawValue)"
-                        )
-                    }
-                }
-            }
-            
-        }
-    }
-    
+  
     private func prepareImageData(
         from image: UIImage,
         type: GlobalProperties.ImageType

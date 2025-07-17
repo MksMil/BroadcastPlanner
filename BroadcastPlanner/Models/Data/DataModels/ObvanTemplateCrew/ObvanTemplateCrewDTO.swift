@@ -6,6 +6,7 @@ struct ObvanTemplateCrewDTO: Identifiable, Codable,CoreDataRepresentable {
     var primaryKeyPredicate: NSPredicate {
         NSPredicate(format: "id == %@", id as CVarArg)
     }
+    var lastUpdated: Date = .now
     var id: String
     var coordinateX: Double
     var coordinateY: Double

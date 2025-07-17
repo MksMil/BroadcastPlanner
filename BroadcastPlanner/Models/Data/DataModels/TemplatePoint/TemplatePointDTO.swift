@@ -7,7 +7,7 @@ struct TemplatePointDTO: Identifiable, Codable,CoreDataRepresentable {
         NSPredicate(format: "id == %@", id as CVarArg)
     }
     var id: String
-    
+    var lastUpdated: Date = .now
     var coordinateX: Double
     var coordinateY: Double
     var rotation: Double

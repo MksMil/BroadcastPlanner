@@ -47,9 +47,7 @@ class DataManager: ObservableObject {
         NSMergeByPropertyObjectTrumpMergePolicy
         persistentContainer.viewContext.automaticallyMergesChangesFromParent =
         true
-//        self.mainContext = persistentContainer.viewContext
-        
-        
+ 
         self.networkManager = globalDataManager
         self.networkManager.syncDelegate = self
         Task{
@@ -81,11 +79,26 @@ extension DataManager: UpdateDelegateProtocol {
     func updateWithDTO<DTO: CoreDataRepresentable>(_ dto: DTO){
         let backgroundContext = persistentContainer.newBackgroundContext()
         backgroundContext.performAndWait {
-           _ = dto.updateOrCreate(in: backgroundContext)
+            let object = dto.updateOrCreate(in: backgroundContext)
+            if let image = object as? LocalImage {
+                if dto.lastUpdated != image.lastUpdated{
+                    let id = image.viewId
+                    let type = image.viewType
+                    Task{
+                        let result = await networkManager.loadImage(from: id)
+                        switch result {
+                            case .success(let uiimage):
+                                ImagesManager.saveResizedImages(image: uiimage, id: id, type: type)
+                            case .failure(let failure):
+                                print("error loading image: \(failure.localizedDescription)")
+                        }
+                   }
+                }
+            }
+            object.updateFromDTO(dto, in: backgroundContext)
             try? backgroundContext.save()
         }
     }
-    
     
     func removeWithDTO<DTO: CoreDataRepresentable>(_ dto: DTO){
         let backgroundContext = persistentContainer.newBackgroundContext()
@@ -110,11 +123,25 @@ extension DataManager: UpdateDelegateProtocol {
     func createOrUpdate<DTO: CoreDataRepresentable>(dtos: [DTO],in context: NSManagedObjectContext) {
         for dto in dtos {
             let object: DTO.Entity = context.fetchOrCreateObject(withID: dto.id)
+            if let image = object as? LocalImage {
+                if dto.lastUpdated != image.viewLastUpdated{
+                    let id = image.viewId
+                    let type = image.viewType
+                    Task{
+                        let result = await networkManager.loadImage(from: id)
+                        switch result {
+                            case .success(let uiimage):
+                                ImagesManager.saveResizedImages(image: uiimage, id: id, type: type)
+                            case .failure(let failure):
+                                print("sync image data error: \(failure.localizedDescription)")
+                        }
+                    }
+                }
+            }
             object.updateFromDTO(dto, in: context)
         }
-        
     }
-
+    
        /// Удаляет объекты Core Data, которых нет среди DTO.id
     func removeMissing<DTO: CoreDataRepresentable>(dtos: [DTO],in context: NSManagedObjectContext) {
         let ids = dtos.map { $0.id }
@@ -164,8 +191,8 @@ extension DataManager {
             if let image = currentUserInMainContext.image{
                 image.uploadImage(uiimage: inputImage)
                 Task{
-                    networkManager.updateImageData(id: currentId, type: GlobalProperties.ImageType.member, uiimage: inputImage)
-                }
+                   await networkManager.saveImageToGlobalStorage(id: currentId, uiimage: inputImage, type: GlobalProperties.ImageType.member)
+                    }
             } else {
                 localImage = self.mainContext.fetchOrCreateObject(withID: self.currentId)
                 localImage?.updateValues(type: GlobalProperties.ImageType.member.rawValue,
@@ -973,23 +1000,11 @@ extension DataManager {
             }
         }
     }
-//    @MainActor
-//    func removeImageInMainContext(_ image: LocalImage,fromVenue: Venue){
-//        let idToRemove = image.viewId
-//        let dto = fromVenue.dto
-//        let venueId = fromVenue.viewId
-//        mainContext.performAndWait {
-//            mainContext.delete(image)
-//        }
-//    }
     
     func updateImageWithId(_ id: String, type: GlobalProperties.ImageType, andUIImage uiimage: UIImage){
-        networkManager
-            .updateImageData(
-                id: id,
-                type: type,
-                uiimage: uiimage
-            )
+        Task{
+            await networkManager.saveImageToGlobalStorage(id: id, uiimage: uiimage, type: type)
+        }
     }
     
     @MainActor
