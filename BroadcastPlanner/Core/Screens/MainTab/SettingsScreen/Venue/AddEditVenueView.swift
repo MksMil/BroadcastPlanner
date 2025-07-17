@@ -192,35 +192,8 @@ struct AddEditVenueView: View {
                                     }
                         }
                         Spacer()
-//                        Button {
-//                            //link broadcastSchema to venue
-////                            if let template = vm.selectedEventTemplate{
-////                                mdm.linkEventTemplate(template, toLocation: venue)
-////                            }
-//                        } label: {
-//                            Image(systemName: "checkmark")
-//                                .resizable()
-//                                .scaledToFit()
-//                                .bold()
-//                                .padding(buttonSize / 4)
-//                                .frame(width: buttonSize,height: buttonSize)
-//                                .background {
-//                                    RoundedRectangle(cornerRadius: 5)
-//                                        .fill(.ultraThickMaterial
-//                                            .opacity(0.3))
-//                                        .overlay {
-//                                            RoundedRectangle(cornerRadius: 5)
-//                                                .stroke(
-//                                                    .ultraThickMaterial
-//                                                    .opacity(0.5),
-//                                                        lineWidth: 2)
-//                                        }
-//                                }
-//                                .opacity(vm.selectedEventTemplate == nil ? 0.4:1)
-//                        }
-//                        .disabled(vm.selectedEventTemplate == nil)
-//                        Spacer()
                     }
+                    
                     Button("Status"){
                         print(venue)
                     }
@@ -253,7 +226,7 @@ struct AddEditVenueView: View {
                         // Handle empty trash action.
                         withAnimation {
                             if let localImageToRemove = vm.selectedEventTemplate {
-                                dataManager.removeImage(localImageToRemove)
+                                dataManager.removeImage(localImageToRemove, fromGlobal: true)
                             }
                         }
                     }

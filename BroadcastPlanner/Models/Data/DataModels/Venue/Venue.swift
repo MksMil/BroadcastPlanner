@@ -176,6 +176,12 @@ extension Venue: CoreDataUpdatable{
             }
             newBroadcastSchema.addToParentVenueSchema(self)
             broadcastSchema = newBroadcastSchema
+        } else {
+            if let broadcastSchema{
+                broadcastSchema.removeFromParentVenueSchema(self)
+                self.broadcastSchema = nil
+            }
+            
         }
   
         if let images {

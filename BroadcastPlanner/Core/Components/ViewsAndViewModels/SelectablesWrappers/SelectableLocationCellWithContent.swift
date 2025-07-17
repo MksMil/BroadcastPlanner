@@ -25,6 +25,11 @@ struct SelectableLocationCellWithContent<V: View, T: Equatable>: View {
                     }
                 }
             }
+            .onAppear {
+                if let value = vm.selectedEventTemplate as? T, value == val{
+                    selectController.setSelect(true, tapped: false)
+                }
+            }
     }
 }
 

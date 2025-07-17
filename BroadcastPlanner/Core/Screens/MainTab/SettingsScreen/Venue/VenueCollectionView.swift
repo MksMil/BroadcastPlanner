@@ -16,28 +16,30 @@ struct VenueCollectionView: View {
         ZStack {
             MainBackground()
             ScrollView {
-                ForEach(venues) { venue in
-                    VenueCell(
-                        title: venue.viewTitle,
-                        address: venue.viewAddress,
-                        isSelected: selectedVenue == venue
-                    )
-                    .onTapGesture {
-                        withAnimation {
-                            if selectedVenue == venue {
-                                selectedVenue = nil
-                                appState.setIconToPrimaryButton(.plus)
-                                appState.makeSecondaryButtonEnabled(false)
-                            } else {
-                                selectedVenue = venue
-                                appState.setIconToPrimaryButton(.edit)
-                                appState.makeSecondaryButtonEnabled(true)
+                VStack(spacing:0){
+                    ForEach(venues) { venue in
+                        VenueCell(
+                            title: venue.viewTitle,
+                            address: venue.viewAddress,
+                            isSelected: selectedVenue == venue
+                        )
+                        .onTapGesture {
+                            withAnimation {
+                                if selectedVenue == venue {
+                                    selectedVenue = nil
+                                    appState.setIconToPrimaryButton(.plus)
+                                    appState.makeSecondaryButtonEnabled(false)
+                                } else {
+                                    selectedVenue = venue
+                                    appState.setIconToPrimaryButton(.edit)
+                                    appState.makeSecondaryButtonEnabled(true)
+                                }
                             }
                         }
                     }
                 }
-                
             }
+            .padding(.horizontal)
             .scrollContentBackground(.hidden)
             .transitionWithOpacity()
             .onAppear {

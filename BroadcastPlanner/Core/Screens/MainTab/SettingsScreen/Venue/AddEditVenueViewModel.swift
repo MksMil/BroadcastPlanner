@@ -72,10 +72,11 @@ final class AddEditVenueViewModel: ObservableObject{
     init(venue: Venue){
         self.title = venue.viewTitle
         self.address = venue.viewAddress
-        if let locationBackground = venue.broadcastSchema{
-            self.selectedEventTemplate = locationBackground
-        }
+        self.selectedEventTemplate = venue.broadcastSchema
         makePublisher()
+//        if let locationBackground = venue.broadcastSchema{
+//            eventTemplateSelected(locationBackground)
+//        }
     }
     
     func eventTemplateSelected(_ localImage: LocalImage){

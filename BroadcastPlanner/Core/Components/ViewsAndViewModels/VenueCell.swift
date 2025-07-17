@@ -24,6 +24,8 @@ struct VenueCell: View {
         .background {
             RoundedRectangle(cornerRadius: 5).fill(.ultraThinMaterial)
         }
+        .padding(.horizontal)
+        .padding(.vertical,5)
         .scaleEffect(isSelected ? 1.05: 1)
         .opacity(isSelected ? 1 : 0.65)
     }
