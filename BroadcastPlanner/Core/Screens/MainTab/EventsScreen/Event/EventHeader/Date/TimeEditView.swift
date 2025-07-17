@@ -31,7 +31,7 @@ struct TimeEditView: View {
             .padding(.top,20)
             .foregroundStyle(.black)
             Text("Hours")
-                .foregroundStyle(.gray)
+                .foregroundStyle(.black)
             ScrollViewReader{ proxy in
                 ScrollView(.horizontal){
                     HStack{
@@ -74,7 +74,7 @@ struct TimeEditView: View {
             }
             
             Text("Minutes")
-                .foregroundStyle(.gray)
+                .foregroundStyle(.black)
             HStack {
                 ForEach([0,15,30,45],id: \.self) { num in
                     VStack {

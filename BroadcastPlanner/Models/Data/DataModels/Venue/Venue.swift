@@ -180,8 +180,7 @@ extension Venue: CoreDataUpdatable{
             if let broadcastSchema{
                 broadcastSchema.removeFromParentVenueSchema(self)
                 self.broadcastSchema = nil
-            }
-            
+            }            
         }
   
         if let images {

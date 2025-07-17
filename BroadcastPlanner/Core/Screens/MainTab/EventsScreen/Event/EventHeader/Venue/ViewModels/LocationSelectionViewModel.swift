@@ -25,7 +25,9 @@ final class LocationSelectionViewModel: ObservableObject{
         self.images = location?.viewImages ?? []
         updateImages(newImages: images)
     }
-
+    deinit{
+        stop()
+    }
     func start(){
         counter = 0
         configurePublisher()
@@ -44,6 +46,7 @@ final class LocationSelectionViewModel: ObservableObject{
             .sink { [weak self] _ in
                 guard let self, self.maxCount != 0 else { return }
                 self.updateCounter()
+                print(counter)
                 self.image = self.images[counter]
             }
             .store(in: &cancellables)

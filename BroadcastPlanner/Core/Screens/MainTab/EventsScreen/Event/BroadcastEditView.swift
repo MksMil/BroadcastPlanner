@@ -2,7 +2,6 @@ import Combine
 import SpriteKit
 import SwiftUI
 
-
 final class BPCreateEditEventViewModel: ObservableObject{
     var homeClub: Club?
     var guestClub: Club?

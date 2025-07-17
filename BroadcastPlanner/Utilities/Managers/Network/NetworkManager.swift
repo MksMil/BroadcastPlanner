@@ -60,7 +60,6 @@ final class NetworkManager: ObservableObject {
     func startToObserveChanges() {
         guard !isObserving else { return }
         isObserving = true
-        print("start observing")
         makeSnapshotListener(
             forType: GlobalProperties.Path.members,
             of: MemberDTO.self

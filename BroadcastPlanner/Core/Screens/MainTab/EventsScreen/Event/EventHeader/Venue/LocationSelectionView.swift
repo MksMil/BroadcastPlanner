@@ -27,9 +27,6 @@ struct LocationSelectionView: View {
     var body: some View {
         ZStack{
             HeaderBackgroundTimelineView(image: vm.image)
-                .onDisappear{
-                    vm.stop()
-                }
             
             VStack(spacing: 5) {
                 // venue title
@@ -58,19 +55,17 @@ struct LocationSelectionView: View {
             .padding(.top,offset + 10)
             .disabled(!editable)
         }
+        .onDisappear(perform: {
+            
+        })
         .sheet(isPresented: $vm.isLocationSheetPresented) {
-            VenueCollectionView()
-//            {
-//                cancelAction()
-//                vm.isLocationSheetPresented.toggle()
-//            } saveAction: { newLocation in
-//                guard let newLocation else { return }
-//                vm.update(newLocation: newLocation)
-//                acceptAction(newLocation)
-//                vm.isLocationSheetPresented.toggle()
-//            } addEditAction: { location in
-//                
-//            }
+            VenueSelectionSheetView(selectedVenue: vm.location){ venue in
+                if let venue {
+                    vm.update(newLocation: venue)
+                    acceptAction(venue)
+                    vm.isLocationSheetPresented = false
+                }
+            }
         }
     }
 }

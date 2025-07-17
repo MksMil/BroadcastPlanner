@@ -3,8 +3,11 @@ import SwiftUI
 final class LogoImageViewModel: ObservableObject{
     @Published var image : Image
     @Published var isSheetPresented: Bool = false
+    var selectedClub: Club?
+    
     init(club: Club?) {
         if let club = club{
+            self.selectedClub = club
             self.image = club.viewImageMediumLogo
         } else {
             self.image = Image(systemName: "plus")
@@ -55,7 +58,14 @@ struct LogoImageView: View {
         .sheet(
             isPresented: $vm.isSheetPresented,
             content: {
-                ClubCollectionView()
+                ClubSelectionSheetView(selectedClub: vm.selectedClub, acceptAction: { newClub in
+                    vm.selectedClub = newClub
+                    if let newClub{
+                        vm.updatewithClub(club: newClub)
+                        accessAction(newClub)
+                    }
+                    vm.isSheetPresented = false
+                })
 //                .padding()
 //                .presentationBackground(.white.opacity(0.4))
                 .presentationContentInteraction(.scrolls)
