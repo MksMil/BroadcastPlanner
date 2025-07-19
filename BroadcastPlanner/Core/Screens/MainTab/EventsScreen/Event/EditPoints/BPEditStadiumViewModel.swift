@@ -61,6 +61,10 @@ final class BPEditStadiumViewModel: ObservableObject {
         self.localPoints = broadcast.viewVenuePoints
         self.filteredLocationPoints = localPoints
         self.renderPitchScene = PitchEditSpriteScene()
+        
+        print("localPoints : \(localPoints.count)")
+        print("filteredPoint : \(filteredLocationPoints.count)")
+        print("broadcast: \(broadcast)")
         renderPitchScene.pointDelegate = self
         renderPitchScene.points = localPoints
     }
@@ -317,6 +321,8 @@ extension BPEditStadiumViewModel: BPSKViewDelegate {
     
     func deselectPoint(){
         if selectedEventPoint != nil {
+            //save point
+            savePointAction?()
             self.selectedEventPoint = nil
         }
         isEdit = false

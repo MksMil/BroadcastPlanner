@@ -27,77 +27,39 @@ struct BPEditStadiumView: View {
             MainBackground()
             
             VStack(spacing: 0) {
-//                //filter section
-                ConfirmationButtonGroupView(height: 50, isAcceptDisabled: false)
-                {
-                    isConfirmDiscardChanges = true                
-                } acceptAction: {
-                    vm.resetScale()
-                    vm.selectedEventPoint = nil
-                    vm.renderPitchScene.deselect()
-                    vm.isEdit = false
-//                    dataManager.updateEvent(broadcast, withPoints: vm.localPoints)
-//                    Task{
-//                        await dataManager.assignSnapshot(vm.makeSceneScreenshot(), toEvent: broadcast)
-//                        await dataManager.saveContextAsync(type: .main, publish: .broadcasts, id: [broadcast.viewId])
-//                        eventRouter.routeStepBack()
-//                    }
-                } content: {
-                    Text("\(broadcast.viewTitle)")
-                        .font(.title)
-                            .bold()
-                            .minimumScaleFactor(0.1)
-                            .padding(50 / 4)
-                            .frame(height: 50)
-                            .frame(maxWidth: .infinity)
-                            .background {
-                                RoundedRectangle(cornerRadius: 5)
-                                    .fill(.ultraThickMaterial
-                                        .opacity(0.3))
-                                    .overlay {
-                                        RoundedRectangle(cornerRadius: 5)
-                                            .stroke(
-                                                .ultraThickMaterial
-                                                .opacity(0.5),
-                                                    lineWidth: 2)
-                                    }
-                            }
-                            .onTapGesture {
-                                // TODO: Select / Edit venue flow
-                                print("edit broadcast venue")
-                                
-                            }
-                    
-                }
                 //template group
                 TemplateGroup(templates: templates) { templateToShow in
                     withAnimation {
-//                        dataManager.cleanLocalPoints(broadcast.viewVenuePoints, inEvent: broadcast)
-//                        let points =  dataManager.makeLocalPointsFromTemplate(templateToShow)
-//                        dataManager.loadTemplatePoints(points, toEvent: broadcast)
-//                        vm.loadTemplate(points)
-//                        vm.selectedTemplate = templateToShow
+                        broadcast.cleanVenuePoints()
+                        Task{
+                           let points = await dataManager.makeLocalPointsFromTemplate(templateToShow)
+                            await dataManager.loadTemplatePoints(templateToShow.viewTemplatePoints, toBroadcast: broadcast)
+                            vm.loadTemplate(points)
+                            vm.selectedTemplate = templateToShow
+                            
+                        }
                     }
-                    
                 } addAction: { name in
-//                    Task{
-//                        await dataManager.saveTemplateFromSchema(localPoints: vm.localPoints, withName: name)
-//                    }
+                    Task{
+                        await dataManager.saveTemplateFromSchema(localPoints: vm.localPoints, withName: name)
+                    }
                 } removeAction: {
-//                    dataManager.cleanLocalPoints(broadcast.viewVenuePoints, inEvent: broadcast)
-//                    withAnimation{
-//                        if let templateToRemove = vm.selectedTemplate{
-//                            Task{
-//                                vm.setEmptyTemplate()
-//                                await dataManager.removeLocalTemplate(templateToRemove)
-//                            }
-//                        }
-//                    }
+                    Task{
+                       await dataManager.cleanLocalPoints(broadcast.viewVenuePoints, inEvent: broadcast)
+                    }
+                    withAnimation{
+                        if let templateToRemove = vm.selectedTemplate{
+                                vm.setEmptyTemplate()
+                                dataManager.removeLocalTemplate(templateToRemove)
+                        }
+                    }
                 } setEmptyTemplateAction: {
-//                    dataManager.cleanLocalPoints(broadcast.viewVenuePoints, inEvent: broadcast)
-//                    withAnimation{
-//                        vm.setEmptyTemplate()
-//                    }
+                    Task{
+                       await dataManager.cleanLocalPoints(broadcast.viewVenuePoints, inEvent: broadcast)
+                    }
+                    withAnimation{
+                        vm.setEmptyTemplate()
+                    }
                 }
                 .padding(.vertical, 15)
                 
@@ -110,9 +72,10 @@ struct BPEditStadiumView: View {
                 .aspectRatio(1.5, contentMode: .fit)
                 .frame(maxWidth: .infinity)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
-                
-//
-                
+                .onAppear {
+                    vm.loadScene()
+                }
+
                 GeometryReader{ geo in
                     let cellWidth = ((geo.size.width * 3 / 5 - 30) / 5).rounded()
                     //control panel
@@ -121,40 +84,32 @@ struct BPEditStadiumView: View {
                             Spacer()
                             BPEventFilterCaseTabView(selectedTab: $vm.stadiumFilter){}
                             Spacer()
-//                            Divider()
-                            //                    Spacer()
+
                             SaveEditControlPanelView(
                                 addAction: {
                                     //dataManager: 'addPoint to broadcast' & delegete it to scene
-//                                    let newPoint = dataManager.newPointInEvent(broadcast,withNumber: vm.numberForNewPoint())
-//                                    vm.addPoint(point: newPoint)
+                                    let newPoint = dataManager.newPointInEvent(broadcast,withNumber: vm.numberForNewPoint())
+                                    vm.addPoint(point: newPoint)
+                                    isEditPressed = true
                                 },
                                 deleteAction: {
-//                                    if let pointToDelete = vm.selectedEventPoint{
-//                                        vm.deletePoint()
-//                                        dataManager.deletePoint(pointToDelete,
-//                                                        inEvent: broadcast)
-//                                    }
+                                    if let pointToDelete = vm.selectedEventPoint{
+                                        vm.deletePoint()
+                                        dataManager.deletePoint(pointToDelete,
+                                                        inEvent: broadcast)
+                                    }
                                 },
                                 saveAction: {
-//                                    if let point = vm.selectedEventPoint{
-//                                        dataManager.updatePoint(point,
-//                                                        x: vm.coordinateX,
-//                                                        y: vm.coordinateY,
-//                                                        rotation: vm.rotation,
-//                                                        scaleFactor: vm.scaleFactor)
-//                                        vm.save()
-//                                    }
+                                    if let point = vm.selectedEventPoint{
+                                        point.updateValues( x: vm.coordinateX, y: vm.coordinateY, rotation: Double(vm.rotation), scaleFactor: vm.scaleFactor, in: dataManager.mainContext)
+                                       
+                                        vm.save()
+                                    }
                                 },
                                 editAction: {
-//                                    if let point = vm.selectedEventPoint{
-//                                        print("edit point")
-//                                        //present edit sheet
-//                                    }
                                     isEditPressed = true
                                 }
                             )
-//                            .padding(.leading)
                             .frame(width: geo.size.width * 2 / 5)
                         }
                         .frame(height: 40)
@@ -191,12 +146,7 @@ struct BPEditStadiumView: View {
                                 }
                             }
                             .frame(width: geo.size.width * 3 / 5)
-//                            .border(Color.red)
                             VStack{
-//                                EventPointInfoPanelView()
-//                                
-//                                
-//                                Spacer()
 
                                 BPEditEventControlPanel(
                                     scaleUpAction: { vm.scaleUp() },
@@ -231,33 +181,31 @@ struct BPEditStadiumView: View {
         }
         .onAppear{
             appState.applyAppConfiguration(StateCongiguration.StadPointsEditViewConfiguration)
+            appState.setTitle("\(broadcast.venue?.viewTitle ?? "") \( BPDateFormater.format(date: broadcast.viewDate))")
             appState.primaryAction = {
                 vm.resetScale()
                 vm.selectedEventPoint = nil
                 vm.renderPitchScene.deselect()
                 vm.isEdit = false
-                
-                broadcast.updateValues(venuePoints: vm.localPoints,in: dataManager.mainContext)
+
                 Task{
-                    await dataManager.assignSnapshot(vm.makeSceneScreenshot(), toEvent: broadcast)
+                    await dataManager.assignSnapshot(vm.makeSceneScreenshot(), toBroadcast: broadcast)
                     
                     try? dataManager.saveContext(publish: .broadcasts, id: [broadcast.viewId])
                     router.stepBack()
                 }
             }
             appState.secondaryAction = {
-                isConfirmDiscardChanges = true
+                //edit selected car
             }
             appState.stepBackAction = {
-//                dataManager.mainContext.rollback()
-                router.stepBack()
+                isConfirmDiscardChanges = true
             }
             
         }
         .task{
             vm.savePointAction = {
                 if let point = vm.selectedEventPoint{
-                    
                     point.updateValues(x: vm.coordinateX,
                                        y:vm.coordinateY,
                                        rotation: Double(vm.rotation),
@@ -265,6 +213,7 @@ struct BPEditStadiumView: View {
                                        in: dataManager.mainContext)
                 }
             }
+            
         }
         .navigationBarBackButtonHidden()
         .confirmationDialog("", isPresented: $isConfirmDiscardChanges) {
@@ -277,7 +226,7 @@ struct BPEditStadiumView: View {
             if let point = vm.selectedEventPoint{
                 PointInfoPanelView(point: point){ pointNum, pointUser, pointOptic,pointPlace,pointWD,pointLight in
                     print("save venuePoint")
-//                    dataManager.updatePoint(point, withNumber: pointNum, user: pointUser, optic: pointOptic, placeType: pointPlace, windDefence: pointWD, lightType: pointLight)
+                    dataManager.updatePoint(point, withNumber: pointNum, user: pointUser, optic: pointOptic, placeType: pointPlace, windDefence: pointWD, lightType: pointLight)
                     vm.updatePoint(point)
                 }
                     .presentationBackground(Color.mainBackground)

@@ -121,6 +121,19 @@ extension TemplatePoint : Identifiable {
 // MARK: - Update
 extension TemplatePoint: CoreDataUpdatable{
     
+    func fromVenuePoint(_ venuePoint: VenuePoint){
+        number = venuePoint.number
+        coordinateX = venuePoint.coordinateX
+        coordinateY = venuePoint.coordinateY
+        scaleFactor = venuePoint.scaleFactor
+        rotation = venuePoint.rotation
+        task = venuePoint.task
+        pointDescription = venuePoint.pointDescription
+        cameras = venuePoint.viewCameras.map{$0.viewOptic.rawValue}.joined(separator: ",")
+        sounds = venuePoint.viewSounds.map{$0.viewPlaceType.rawValue}.joined(separator: ",")
+        lights = venuePoint.viewLights.map{$0.viewLightType.rawValue}.joined(separator: ",")
+    }
+    
     //bg work
     func updateFromDTO(_ dto: TemplatePointDTO, in context: NSManagedObjectContext) {
         self.id = dto.id

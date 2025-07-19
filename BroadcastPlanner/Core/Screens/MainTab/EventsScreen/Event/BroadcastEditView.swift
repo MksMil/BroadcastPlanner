@@ -95,6 +95,9 @@ struct BroadcastEditView: View {
                         .onTapGesture {
                             router.routeTo(path: .stadPointsEdit(broadcast))
                         }
+                    broadcast.viewObvanPreview
+                        .resizable()
+                        .scaledToFit()
                 }
                 .padding(.horizontal)
                 Spacer()
@@ -137,6 +140,7 @@ struct BroadcastEditView: View {
             }
             appState.stepBackAction = {
                 dataManager.rollBackMoc()
+                try? dataManager.mainContext.save()
                 router.stepBack()
             }
         }

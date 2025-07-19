@@ -24,7 +24,6 @@ extension Broadcast {
     @NSManaged public var venue: Venue?
     @NSManaged public var venuePoints: NSSet?
     @NSManaged public var venueSchemaPreview: LocalImage?
-    @NSManaged public var allMemberIds: [String]?
 }
 
 // MARK: Generated accessors for crews
@@ -103,20 +102,6 @@ extension Broadcast : Identifiable {
         date ?? Date()
     }
 
-    var viewMembers: [Member] {
-        var result: [Member] = []
-        viewCrews.forEach {
-            if let member = $0.member{
-                result.append(member)
-            }
-        }
-        viewVenuePoints.forEach{
-            if !$0.viewMembers.isEmpty{
-                result += $0.viewMembers
-            }
-        }
-        return result
-    }
     var viewOwners: [Member] {
         owners?.allObjects.compactMap{$0 as? Member} ?? []
     }
@@ -174,10 +159,6 @@ extension Broadcast : Identifiable {
         lastUpdated ?? .now
     }
     
-    var viewAllMembersIds: [String]{
-        allMemberIds ?? []
-    }
-    
     var dto: BroadcastDTO  {
         var broadcast = BroadcastDTO(id: viewId,
                                      date: viewDate,
@@ -211,8 +192,24 @@ extension Broadcast : Identifiable {
         }
         return .none
     }
+    
+    var viewMembers: [Member] {
+        var result: [Member] = []
+        viewCrews.forEach {
+            if let member = $0.member{
+                result.append(member)
+            }
+        }
+        viewVenuePoints.forEach{
+            if !$0.viewMembers.isEmpty{
+                result += $0.viewMembers
+            }
+        }
+        return result.uniqued()
+    }
 }
 
+// MARK: - Update
 extension Broadcast: CoreDataUpdatable{
     func updateFromDTO(_ dto: BroadcastDTO,in context: NSManagedObjectContext) {
        
@@ -447,40 +444,7 @@ extension Broadcast{
         }
     }
 }
-// MARK: - AllMembersIds Update
-extension Broadcast {
-    func updateAllMemberIds(context: NSManagedObjectContext) {
-        // Получаем все points и secondPoints как Set<Point>
-        let points = self.venuePoints as? Set<VenuePoint> ?? []
-        let crews = self.crews as? Set<Crew> ?? []
-        
-        // Собираем все идентификаторы из points.members и secondPoints.members
-        let allMemberIds = (points.reduce([], { result, point in
-            let members = point.viewMembers
-            let ids = members.compactMap{$0.id}
-            return result + ids
-            
-        }) + crews.compactMap { ($0.member?.id as? String)})
-            .uniqued() // Удаляем дубликаты
-            .sorted() // Опционально: сортируем для предсказуемого порядка
-        
-        // Устанавливаем allMemberIds
-        self.allMemberIds = allMemberIds
-        
-        // Сохраняем изменения
-        do {
-            try context.save()
-        } catch {
-            print("Failed to save context: \(error)")
-        }
-    }
-}
 
-// Расширение для удаления дубликатов из Sequence
-extension Sequence where Element: Hashable {
-    func uniqued() -> [Element] {
-        var seen = Set<Element>()
-        return filter { seen.insert($0).inserted }
-    }
-}
+
+
 

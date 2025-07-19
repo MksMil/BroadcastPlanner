@@ -87,6 +87,7 @@
 		29E10F5A2C1AF8B300A35A4B /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 29E10F592C1AF8B300A35A4B /* FirebaseStorage */; };
 		29E10F642C21696B00A35A4B /* GlobalSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29E10F632C21696B00A35A4B /* GlobalSettings.swift */; };
 		29E10F662C2169C400A35A4B /* GlobalProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29E10F652C2169C400A35A4B /* GlobalProperties.swift */; };
+		29E5B83C2E2B7CCB00CDAF8E /* Sequence+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29E5B83B2E2B7CCB00CDAF8E /* Sequence+Ext.swift */; };
 		29EBCDEE2B762C5A00696C25 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 29EBCDED2B762C5A00696C25 /* GoogleSignIn */; };
 		29EBCDF02B762C5A00696C25 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 29EBCDEF2B762C5A00696C25 /* GoogleSignInSwift */; };
 		29F42B5A2B88BBE70024B764 /* WelcomeFlowScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29F42B592B88BBE70024B764 /* WelcomeFlowScreen.swift */; };
@@ -183,6 +184,7 @@
 		29D1697F2B86188B00A70638 /* BPValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPValidator.swift; sourceTree = "<group>"; };
 		29E10F632C21696B00A35A4B /* GlobalSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalSettings.swift; sourceTree = "<group>"; };
 		29E10F652C2169C400A35A4B /* GlobalProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalProperties.swift; sourceTree = "<group>"; };
+		29E5B83B2E2B7CCB00CDAF8E /* Sequence+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sequence+Ext.swift"; sourceTree = "<group>"; };
 		29F42B592B88BBE70024B764 /* WelcomeFlowScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeFlowScreen.swift; sourceTree = "<group>"; };
 		29F7CF0F2CA14BA9009C303E /* Date+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Ext.swift"; sourceTree = "<group>"; };
 		29F7CF112CA15861009C303E /* View+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Ext.swift"; sourceTree = "<group>"; };
@@ -650,6 +652,7 @@
 				299190282C8A064400D2CDDC /* String+Ext.swift */,
 				29F7CF0F2CA14BA9009C303E /* Date+Ext.swift */,
 				29F7CF112CA15861009C303E /* View+Ext.swift */,
+				29E5B83B2E2B7CCB00CDAF8E /* Sequence+Ext.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -912,6 +915,7 @@
 				29C041C02AC556CE008B3E1F /* BroadcastPlannerApp.swift in Sources */,
 				291E72C32BBE859F008092D7 /* BPMessengerView.swift in Sources */,
 				29476C1B2DACFC5B007DFA88 /* PlaceType.swift in Sources */,
+				29E5B83C2E2B7CCB00CDAF8E /* Sequence+Ext.swift in Sources */,
 				2994DE6E2C16F18E00DF9060 /* BPJoystick.swift in Sources */,
 				299D43A52D365A49007EEEFE /* EventPointInfoPanelView.swift in Sources */,
 				290056C62C37DF6400CBA472 /* BPUserDataListCellView.swift in Sources */,

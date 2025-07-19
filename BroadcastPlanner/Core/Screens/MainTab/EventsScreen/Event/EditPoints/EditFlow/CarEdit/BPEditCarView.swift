@@ -186,7 +186,7 @@ extension BPEditCarViewModel{
 struct BPEditCarView: View {
 
     @EnvironmentObject var settings: GlobalSettings
-    @EnvironmentObject var mdm: DataManager
+    @EnvironmentObject var dataManager: DataManager
 //    @EnvironmentObject var eventRouter: EventTabRouter
 
     @StateObject var vm: BPEditCarViewModel
@@ -264,7 +264,7 @@ struct BPEditCarView: View {
 //                HStack(alignment: .top){
 //                    StaffPanelView(event: event,
 //                                   addUnitAction: { user,specialization,hardware in
-//                        let unit = mdm.createUnitWithUser(user, andSpecialization: specialization, andHardware: hardware, inEvent: event)
+//                        let unit = dataManager.createUnitWithUser(user, andSpecialization: specialization, andHardware: hardware, inEvent: event)
 ////                        let id = crew.viewId
 //                        var image = UIImage(systemName: "person")
 //                        if let uiimage = user.image?.makeUIImage(){
@@ -272,7 +272,7 @@ struct BPEditCarView: View {
 //                        }
 //                        vm.addUnit(unit: unit, image: image )
 //                    }, removeUnitAction: { unitToRemove in
-//                        mdm.removeUnit(unitToRemove)
+//                        dataManager.removeUnit(unitToRemove)
 //                    }, editUnitAction: {
 //                        
 //                    })

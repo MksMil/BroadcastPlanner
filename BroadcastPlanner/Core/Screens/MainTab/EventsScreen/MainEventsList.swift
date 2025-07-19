@@ -128,7 +128,7 @@ struct MainEventsList: View {
                 corePredicate = NSPredicate(format: "ANY owners.id == %@",dataManager.currentId)
             newTitle = "My owned broadcasts"
         case .userPartisipation:
-                corePredicate = NSPredicate(format: /*" SUBQUERY(venuePoints, $point, ANY $point.members.id == %@).@count > 0 OR SUBQUERY(crews, $crew, $crew.member.id == %@).@count > 0"*/ "allMemberIds CONTAINS %@",dataManager.currentId)
+                corePredicate = NSPredicate(format: " SUBQUERY(venuePoints, $point, ANY $point.members.id == %@).@count > 0 OR SUBQUERY(crews, $crew, $crew.member.id == %@).@count > 0" ,dataManager.currentId)
             
             newTitle = "My participation"
         }

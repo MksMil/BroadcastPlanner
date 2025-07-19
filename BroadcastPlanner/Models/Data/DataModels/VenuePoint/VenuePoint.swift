@@ -367,3 +367,54 @@ extension VenuePoint: CoreDataUpdatable{
     }
 
 }
+
+// MARK: - update from TemplatePoint
+extension VenuePoint {
+    
+    func fromTemplaPoint(_ templatePoint: TemplatePoint, context: NSManagedObjectContext){
+        context.performAndWait{
+            number = templatePoint.number
+            coordinateX = templatePoint.coordinateX
+            coordinateY = templatePoint.coordinateY
+            rotation = templatePoint.rotation
+            scaleFactor = templatePoint.scaleFactor
+            pointDescription = templatePoint.pointDescription
+            task = templatePoint.task
+            
+            templatePoint.cameraDTOs.forEach{
+                let camera: Camera = context.fetchOrCreateObject(withID: UUID().uuidString)
+                camera.updateFromDTO($0, in: context)
+                addToCameras(camera)
+            }
+            
+            templatePoint.soundDTOs.forEach{
+                let sound: Sound = context.fetchOrCreateObject(withID: UUID().uuidString)
+                sound.updateFromDTO($0, in: context)
+                addToSounds(sound)
+            }
+            
+            templatePoint.lightDTOs.forEach{
+                let light: Light = context.fetchOrCreateObject(withID: UUID().uuidString)
+                light.updateFromDTO($0, in: context)
+                addToLights(light)
+            }
+        }
+    }
+    
+}
+
+//@NSManaged public var id: String? -
+//@NSManaged public var number: Int16 +
+//@NSManaged public var coordinateX: Float +
+//@NSManaged public var coordinateY: Float +
+//@NSManaged public var rotation: Int16 +
+//@NSManaged public var scaleFactor: Float +
+//@NSManaged public var pointDescription: String? +
+//@NSManaged public var task: String? +
+//@NSManaged public var image: LocalImage?
+//@NSManaged public var imageString: String? //what am i want ???
+//@NSManaged public var cameras: NSSet?
+//@NSManaged public var broadcast: Broadcast?
+//@NSManaged public var lights: NSSet?
+//@NSManaged public var sounds: NSSet?
+//@NSManaged public var members: NSSet?

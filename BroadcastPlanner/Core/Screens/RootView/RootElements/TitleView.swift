@@ -10,12 +10,14 @@ struct TitleView: View {
     var body: some View {
         Text(title)
             .font(.title)
+            .bold()
             .lineLimit(1)
             .minimumScaleFactor(0.3)
             .onReceive(appState.titlePublisher) { newTitle in
                     title = newTitle
             }
             .frame(height: 30)
+            .padding(.horizontal,8)
     }
 }
 
