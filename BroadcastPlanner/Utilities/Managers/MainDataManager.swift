@@ -17,7 +17,9 @@ class DataManager: ObservableObject {
     
     var currentId: String = ""{
         willSet{
-            updatePublisher.send((GlobalProperties.PublishChanges.images, [newValue])) //update profile image in status view
+            if !newValue.isEmpty{
+                updatePublisher.send((GlobalProperties.PublishChanges.images, [newValue])) //update profile image in status view
+            }
         }
     }
     var accessLevel: Int = 2
@@ -80,7 +82,7 @@ extension DataManager: UpdateDelegateProtocol {
     func updateWithDTO<DTO: CoreDataRepresentable>(_ dto: DTO){
         let backgroundContext = persistentContainer.newBackgroundContext()
         backgroundContext.performAndWait {
-            let object = dto.updateOrCreate(in: backgroundContext)
+            let object = dto.create(in: backgroundContext)
             if let image = object as? LocalImage {
                 if dto.lastUpdated != image.lastUpdated{
                     let id = image.viewId
@@ -296,7 +298,7 @@ extension DataManager {
                 }
             }
             
-            if let obvanPreview = broadcast.obvanPreview{
+            for obvanPreview in broadcast.viewObvanPreviews{
                 await networkManager.saveData(obvanPreview.dto,
                                               withId: obvanPreview.viewId,
                                               withType: GlobalProperties.Path.images)
@@ -317,12 +319,13 @@ extension DataManager {
             )
             await networkManager.removeImage(localImageId: previewId)
         }
-        if let previewObvanId = broadcast.obvanPreview?.viewId{
+        for previewObvan in broadcast.viewObvanPreviews{
+            
             await networkManager.removeDataOfType(
                 GlobalProperties.Path.images,
-                withId: previewObvanId
+                withId: previewObvan.viewId
             )
-            await networkManager.removeImage(localImageId: previewObvanId)
+            await networkManager.removeImage(localImageId: previewObvan.viewId)
         }
         mainContext.delete(broadcast)
         try? saveContext(publish: .broadcasts, id: [])
@@ -362,7 +365,7 @@ extension DataManager {
     
         }
         
-        @MainActor func updatePoint(_ point: VenuePoint?, withNumber number: Int, user: Member?, optic: OpticType, placeType: PlaceType, windDefence: WindDefence, lightType: LightType){
+        @MainActor func updatePoint(_ point: VenuePoint?, withNumber number: Int, user: Member?, optic: String, placeType: String, windDefence: String, lightType: String){
             guard let point else { return }
     
             mainContext.performAndWait {
@@ -384,7 +387,7 @@ extension DataManager {
                 for cam in point.viewCameras {
                     point.removeFromCameras(cam)
                 }
-                if optic != .none{
+                if optic != "Empty"{
                     let cameraDTO = CameraDTO(id: UUID().uuidString, optic: optic)
                     let camera: Camera = mainContext.makeObjectFromDTO(cameraDTO)
                     point.addToCameras(camera)
@@ -394,7 +397,7 @@ extension DataManager {
                     point.removeFromSounds(sound)
                 }
     
-                if  placeType != .none{
+                if  placeType != "Empte"{
                     let soundDto = SoundDTO(id: UUID().uuidString,windDefence: windDefence,placeType: placeType)
                     let sound: Sound = mainContext.makeObjectFromDTO(soundDto)
                     point.addToSounds(sound)
@@ -404,7 +407,7 @@ extension DataManager {
                     for light in point.viewLights {
                         point.removeFromLights(light)
                     }
-                if lightType != .none{
+                if lightType != "Empty"{
                     let lightDto = LightDTO(id: UUID().uuidString, lightType: lightType)
                     let light: Light = mainContext.makeObjectFromDTO(lightDto)
                     point.addToLights(light)

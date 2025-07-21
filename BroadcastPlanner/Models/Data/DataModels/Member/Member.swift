@@ -108,15 +108,10 @@ extension Member : Identifiable {
         }
     }
     //make an array of UserSpecialization values from String value (with "," strategy)
-    var viewSpecialization: [UserSpecialization] {
-        var array = [UserSpecialization]()
+    var viewSpecialization: [String] {
+        var array = [String]()
         if let specializations{
-            let results = specializations.split(separator: ",")
-            for result in results {
-                if let value = UserSpecialization(rawValue: String(result)){
-                    array.append(value)
-                }
-            }
+            array = specializations.split(separator: ",").map{String($0)}
         }
         return array
     }
@@ -170,7 +165,7 @@ extension Member : Identifiable {
         member.email = viewEmail
         member.phoneNumber = viewPhoneNumber
         member.homeAddress = viewAddress
-        member.specialization = viewSpecialization.map{ $0.rawValue}
+        member.specialization = viewSpecialization
         member.isOnline = true
         if let date = creationDate{
             member.creationDate = date
@@ -209,7 +204,7 @@ extension Member: CoreDataUpdatable{
                       image: LocalImage? = nil,
                       accessLevel: Int? = nil,
                       isOnline: Bool? = nil,
-                      lastUpdated: Date? = nil,
+                      lastUpdated: Date = .now,
                       creationDate: Date? = nil,
                       leaveDate: Date? = nil,
                       specializations:String? = nil,
@@ -242,9 +237,9 @@ extension Member: CoreDataUpdatable{
         if let isOnline {
             self.isOnline = isOnline
         }
-        if let lastUpdated {
-            self.lastUpdated = lastUpdated
-        }
+
+        self.lastUpdated = lastUpdated
+        
         if let creationDate {
             self.creationDate = creationDate
         }

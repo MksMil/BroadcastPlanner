@@ -24,8 +24,8 @@ extension Camera : Identifiable {
         id ?? ""
     }
     
-    var viewOptic: OpticType{
-        OpticType(rawValue: optic ?? "none") ?? OpticType.none
+    var viewOptic: String{
+        optic ?? "Empty"
     }
     
     var dto: CameraDTO {
@@ -37,13 +37,13 @@ extension Camera : Identifiable {
 extension Camera: CoreDataUpdatable{
     func updateFromDTO(_ dto: CameraDTO,in context: NSManagedObjectContext) {
         self.id = dto.id
-        self.optic = dto.optic.rawValue
+        self.optic = dto.optic
     }
     
-    func updateValues(optic: OpticType? = nil,
+    func updateValues(optic: String? = nil,
                       point: VenuePoint? = nil){
         if let optic {
-            self.optic = optic.rawValue
+            self.optic = optic
         }
         if let point {
             if let oldPoint = self.point{

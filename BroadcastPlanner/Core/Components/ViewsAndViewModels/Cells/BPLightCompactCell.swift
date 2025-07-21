@@ -19,7 +19,7 @@ struct BPLightCompactCell: View {
             Divider()
                 .padding(.vertical,3)
             
-            Text(light.viewLightType.rawValue)
+            Text(light.viewLightType)
                 .font(.system(size: 14))
                 .lineLimit(1)
                 .minimumScaleFactor(0.2)

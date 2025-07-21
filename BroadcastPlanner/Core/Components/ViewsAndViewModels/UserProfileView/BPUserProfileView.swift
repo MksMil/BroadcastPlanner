@@ -2,7 +2,7 @@ import SwiftUI
 //import SDWebImageSwiftUI
 
 struct BPUserProfileView: View {
-    
+    @EnvironmentObject var settings: GlobalSettings
     let user: Member
     
     var body: some View {
@@ -113,8 +113,8 @@ struct BPUserProfileView: View {
 //        }
         VStack {
             AnyContentView(
-                sourceContent: UserSpecialization.allCases.map { $0.rawValue },
-                selectedContent: .constant(user.viewSpecialization.map {$0.rawValue}),
+                sourceContent: settings.userSpecialization,
+                selectedContent: .constant(user.viewSpecialization),
                 isEdit: .constant(false)
             ) {
                 RoundedRectangle(cornerRadius: 10.0).fill(.white.opacity(0.4))

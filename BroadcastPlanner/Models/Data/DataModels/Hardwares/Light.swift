@@ -23,8 +23,8 @@ extension Light : Identifiable {
         id ?? ""
     }
     
-    var viewLightType: LightType{
-        LightType(rawValue: lightType ?? "---") ?? LightType.none
+    var viewLightType: String{
+        lightType ?? "Empty"
     }
     
     var dto: LightDTO{
@@ -36,13 +36,13 @@ extension Light : Identifiable {
 extension Light: CoreDataUpdatable{
     func updateFromDTO(_ dto: LightDTO,in context: NSManagedObjectContext) {
         self.id = dto.id
-        self.lightType = dto.lightType.rawValue
+        self.lightType = dto.lightType
     }
     
-    func updateValues(lightType: LightType? = nil,
+    func updateValues(lightType: String? = nil,
                       point: VenuePoint? = nil){
         if let lightType{
-            self.lightType = lightType.rawValue
+            self.lightType = lightType
         }
         if let point {
             if let oldPoint = self.point{

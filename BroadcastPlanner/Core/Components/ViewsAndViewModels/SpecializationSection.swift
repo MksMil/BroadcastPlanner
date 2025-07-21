@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct SpecializationSection: View {
-
+    @EnvironmentObject var settings: GlobalSettings
     @Binding var specialization: [String]
     @Binding var isEditSpecialization: Bool
     
@@ -10,7 +10,7 @@ struct SpecializationSection: View {
     var body: some View {
         VStack {
             AnyContentView(
-                sourceContent: UserSpecialization.allCases.map { $0.rawValue },
+                sourceContent: settings.userSpecialization,
                 selectedContent: $specialization,
                 isEdit: $isEditSpecialization
             ) {

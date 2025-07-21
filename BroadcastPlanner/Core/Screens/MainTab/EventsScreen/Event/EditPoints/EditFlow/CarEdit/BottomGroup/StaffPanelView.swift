@@ -8,14 +8,14 @@ struct StaffPanelView: View {
         users.filter{$0.isAvailableTo(broadcast: event)}
     }
         
-    let addUnitAction: (Member, UserSpecialization, HardwareType?)->()
+    let addUnitAction: (Member, String, String?)->()
     let removeUnitAction: (Crew)->()
     let editUnitAction: ()->()
     
     @State private var isAddUnit: Bool = false
     
     init(event: Broadcast,
-         addUnitAction: @escaping (Member, UserSpecialization, HardwareType?) -> Void,
+         addUnitAction: @escaping (Member, String, String?) -> Void,
          removeUnitAction: @escaping (Crew) -> Void,
          editUnitAction: @escaping () -> Void) {
         self.event = event
@@ -92,7 +92,7 @@ struct StaffPanelCellView: View {
                         .minimumScaleFactor(0.6)
                 }
                     
-                Text(unit.viewPosition.rawValue)
+                Text(unit.viewPosition)
                     .font(.system(size: 11))
                     .minimumScaleFactor(0.6)
             }

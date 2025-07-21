@@ -19,7 +19,7 @@ extension Broadcast {
     @NSManaged public var guestClub: Club?
     @NSManaged public var homeClub: Club?
     @NSManaged public var obvan: NSSet?
-    @NSManaged public var obvanPreview: LocalImage?
+    @NSManaged public var obvanPreview: NSSet?
     @NSManaged public var owners: NSSet?
     @NSManaged public var venue: Venue?
     @NSManaged public var venuePoints: NSSet?
@@ -57,6 +57,23 @@ extension Broadcast {
 
     @objc(removeObvan:)
     @NSManaged public func removeFromObvan(_ values: NSSet)
+
+}
+
+// MARK: Generated accessors for obvanPreview
+extension Broadcast {
+
+    @objc(addObvanPreviewObject:)
+    @NSManaged public func addToObvanPreview(_ value: LocalImage)
+
+    @objc(removeObvanPreviewObject:)
+    @NSManaged public func removeFromObvanPreview(_ value: LocalImage)
+
+    @objc(addObvanPreview:)
+    @NSManaged public func addToObvanPreview(_ values: NSSet)
+
+    @objc(removeObvanPreview:)
+    @NSManaged public func removeFromObvanPreview(_ values: NSSet)
 
 }
 
@@ -152,8 +169,8 @@ extension Broadcast : Identifiable {
         venueSchemaPreview?.originImage ?? Image(systemName: "sportscourt")
     }
     
-    var viewObvanPreview: Image {
-        obvanPreview?.originImage ?? Image(systemName: "truck.box")
+    var viewObvanPreviews: [LocalImage] {
+        obvanPreview?.allObjects as? [LocalImage] ?? []
     }
     var viewLastUpdated: Date{
         lastUpdated ?? .now
@@ -170,7 +187,7 @@ extension Broadcast : Identifiable {
                                      homeClubId: homeClub?.id,
                                      guestClubId: guestClub?.id,
                                      venuePreviewId: venueSchemaPreview?.id,
-                                     obvanPreviewId: obvanPreview?.id)
+                                     obvanPreviewId: viewObvanPreviews.map{$0.viewId})
         broadcast.ownersIds = viewOwners.map({$0.viewId})
         return broadcast
     }
@@ -271,19 +288,25 @@ extension Broadcast: CoreDataUpdatable{
             //clean venue preview
             if let venueSchemaPreview {
                 context.delete(venueSchemaPreview)
+                self.venueSchemaPreview = nil
             }
         }
-        //clean obvan preview
-        if let obvanPreview {
-            context.delete(obvanPreview)
+
+        //add new obvan previews
+        _ = viewObvanPreviews.map{
+            if !dto.obvanPreviewId.contains($0.viewId){
+                removeFromObvanPreview($0)
+                context.delete($0)
+            }
         }
-        //add new obvan previw
-        if let obvanPreviewId = dto.obvanPreviewId{
-            let newPreview: LocalImage = context.fetchOrCreateObject(withID: obvanPreviewId)
-            newPreview.type = GlobalProperties.ImageType.obvanPreview.rawValue
-            newPreview.parentObvanPreview = self
-            self.obvanPreview = newPreview
+        
+        for id in dto.obvanPreviewId{
+            let image: LocalImage = context.fetchOrCreateObject(withID: id)
+            image.type = GlobalProperties.ImageType.obvanPreview.rawValue
+            self.addToObvanPreview(image)
+            image.parentObvanPreview = self
         }
+            
         //unlink owners
        unlinkOwners()
         //add new owners
@@ -311,13 +334,13 @@ extension Broadcast: CoreDataUpdatable{
     }
     
     func updateValues(date: Date? = nil,
-                      lastUpdated: Date? = nil,
+                      lastUpdated: Date = .now,
                       homeClub: Club? = nil,
                       guestClub: Club? = nil,
                       venue: Venue? = nil,
                       obvans: [Obvan]? = nil,
                       venuePreview: LocalImage? = nil,
-                      obvanPreview: LocalImage? = nil,
+                      obvanPreview: [LocalImage]? = nil,
                       owners: [Member]? = nil,
                       venuePoints:[VenuePoint]? = nil,
                       crews: [Crew]? = nil,
@@ -325,9 +348,9 @@ extension Broadcast: CoreDataUpdatable{
         if let date {
             self.date = date
         }
-        if let lastUpdated {
-            self.lastUpdated = lastUpdated
-        }
+        
+        self.lastUpdated = lastUpdated
+        
         if let homeClub {
             if let oldClub = self.homeClub{
                 oldClub.removeFromHomeBroadcasts(self)
@@ -365,13 +388,21 @@ extension Broadcast: CoreDataUpdatable{
             venuePreview.parentVenuePreview = self
             self.venueSchemaPreview = venuePreview
         }
+
+        //add new obvan previews, and remove not existings
         if let obvanPreview {
-            if let oldPreview = self.obvanPreview{
-                context.delete(oldPreview)
+            _ = viewObvanPreviews.map{
+                if !obvanPreview.contains($0){
+                    removeFromObvanPreview($0)
+                    context.delete($0)
+                }
             }
-            obvanPreview.parentObvanPreview = self
-            self.obvanPreview = obvanPreview
+            obvanPreview.forEach {
+                addToObvanPreview($0)
+                $0.parentObvanPreview = self
+            }
         }
+        
         if let owners{
             unlinkOwners()
             owners.forEach{
@@ -415,6 +446,14 @@ extension Broadcast: CoreDataUpdatable{
             context.delete(crew)
         }
     }
+    func cleanObvanPreviews(){
+        guard let context = self.managedObjectContext else { return }
+
+        viewObvanPreviews.forEach{ obvanPreview in
+            removeFromObvanPreview(obvanPreview)
+            context.delete(obvanPreview)
+        }
+    }
     
     func unlinkOwners(){
         viewOwners.forEach {
@@ -433,10 +472,7 @@ extension Broadcast{
                 self.venueSchemaPreview = nil
                 context.delete(venueSchemaPreview)
             }
-            if let obvanPreview {
-                self.obvanPreview = nil
-                context.delete(obvanPreview)
-            }
+            cleanObvanPreviews()
             unlinkObvans()
             cleanCrews()
             cleanVenuePoints()

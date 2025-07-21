@@ -1,8 +1,6 @@
 import Combine
 import SwiftUI
 
-
-
 struct RootView: View {
     @EnvironmentObject var sessionManager: SessionManager
     @EnvironmentObject var appState: ApplicationState

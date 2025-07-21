@@ -68,14 +68,13 @@ extension Template: CoreDataUpdatable{
         }
     }
     func updateValues(name: String? = nil,
-                      lastUpdated: Date? = nil,
+                      lastUpdated: Date = .now,
                       templatePoints:[TemplatePoint]? = nil,
                       in context: NSManagedObjectContext){
         if let name{ self.name = name }
         
-        if let lastUpdated {
-            self.lastUpdated = lastUpdated
-        }
+        self.lastUpdated = lastUpdated
+        
         cleanTemplatePoints(in: context)
         if let templatePoints {
             templatePoints.forEach{

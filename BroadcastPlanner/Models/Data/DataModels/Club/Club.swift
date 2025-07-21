@@ -153,10 +153,13 @@ extension Club: CoreDataUpdatable{
                       urlString: String? = nil,
                       image: LocalImage? = nil,
                       venue: Venue? = nil,
+                      lastUpdated: Date = .now,
                       in context: NSManagedObjectContext){
         if let title {
             self.title = title
         }
+        
+        self.lastUpdated = lastUpdated
         
         if let contacts {
             self.contacts = contacts

@@ -186,15 +186,14 @@ extension LocalImage: CoreDataUpdatable{
     }
     
     func updateValues(type: String? = nil,
-                      lastUpdated: Date? = nil,
+                      lastUpdated: Date? = .now,
                       uiimage: UIImage? = nil,
                       in context: NSManagedObjectContext){
         if let type {
             self.type = type
         }
-        if let lastUpdated {
-            self.lastUpdated = lastUpdated
-        }
+        self.lastUpdated = lastUpdated
+        
         if let uiimage {
             uploadImage(uiimage: uiimage)
         }

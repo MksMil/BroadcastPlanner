@@ -97,8 +97,8 @@ extension StateCongiguration{
         isSecondaryButtonVisible: true,
         isSecondaryButtonEnabled: true,
         secondaryButtonIcon: .remove,
-        isBackButtonVisible: true,
-        isBackButtonEnabled: true,
+        isBackButtonVisible: false,
+        isBackButtonEnabled: false,
         menuState: .none,
         title: "Edit Broadcast"
     )
@@ -110,8 +110,8 @@ extension StateCongiguration{
         isSecondaryButtonVisible: true,
         isSecondaryButtonEnabled: true,
         secondaryButtonIcon: .obvan,
-        isBackButtonVisible: true,
-        isBackButtonEnabled: true,
+        isBackButtonVisible: false,
+        isBackButtonEnabled: false,
         menuState: .none,
         title: "Edit schema"
     )

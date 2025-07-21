@@ -27,10 +27,10 @@ struct BroadcastDTO: Identifiable, Codable,CoreDataRepresentable {
     var guestClubId: String?
     
     var venuePreviewId: String?
-    var obvanPreviewId: String?
+    var obvanPreviewId: [String]
    
     // MARK: - Initialization
-    init( id: String = UUID().uuidString, date: Date = Date(),lastUpdated: Date = .now ,obvanId: [String] = [], venuePoints: [VenuePointDTO] = [], crews: [CrewDTO] = [], venueID: String?, homeClubId: String?, guestClubId: String?,venuePreviewId: String?,obvanPreviewId: String? ) {
+    init( id: String = UUID().uuidString, date: Date = Date(),lastUpdated: Date = .now ,obvanId: [String] = [], venuePoints: [VenuePointDTO] = [], crews: [CrewDTO] = [], venueID: String?, homeClubId: String?, guestClubId: String?,venuePreviewId: String?,obvanPreviewId: [String] ) {
         self.id = id
         self.date = date
         self.lastUpdated = lastUpdated

@@ -19,7 +19,7 @@ struct BPCameraCompactCell: View {
             Divider()
                 .padding(.vertical,3)
             
-            Text(camera.viewOptic.rawValue)
+            Text(camera.viewOptic)
                 .font(.system(size: 14))
                 .lineLimit(2)
                 .minimumScaleFactor(0.2)

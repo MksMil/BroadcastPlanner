@@ -24,8 +24,8 @@ extension Hardware : Identifiable {
         id ?? ""
     }
     
-    var viewType: HardwareType{
-        HardwareType(rawValue: type ?? "") ?? HardwareType.none
+    var viewType: String{
+         type ?? "Empty"
     }
     var viewChannels: [String] {
         channels?.split(separator: ",") as? [String] ?? [String]()
@@ -41,15 +41,15 @@ extension Hardware : Identifiable {
 extension Hardware: CoreDataUpdatable{
     func updateFromDTO(_ dto: HardwareDTO,in context: NSManagedObjectContext) {
         self.id = dto.id
-        self.type = dto.envType.rawValue
+        self.type = dto.envType
         self.channels = dto.chanels.joined(separator: ", ")
     }
     
-    func updateValues(type: HardwareType? = nil,
+    func updateValues(type: String? = nil,
                       channels: [String]? = nil,
                       crew: Crew? = nil){
         if let type {
-            self.type = type.rawValue
+            self.type = type
         }
         if let channels {
             self.channels = channels.joined(separator: ", ")

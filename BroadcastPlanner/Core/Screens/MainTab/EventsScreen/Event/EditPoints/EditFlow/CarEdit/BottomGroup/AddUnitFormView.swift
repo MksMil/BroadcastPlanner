@@ -5,14 +5,16 @@ final class AddUnitFormViewModel: ObservableObject{
 }
 
 struct AddUnitFormView: View {
+    @EnvironmentObject var settings: GlobalSettings
+    
     @StateObject private var vm: AddUnitFormViewModel = AddUnitFormViewModel()
     
     let availableUsers: [Member]
     let cancelAction: ()->()
-    let addAction: (UserSpecialization, Member,HardwareType?)->()
+    let addAction: (String, Member,String?)->()
     
-    @State private var selectedSpecialization: UserSpecialization?
-    @State private var selectedHardware: HardwareType?
+    @State private var selectedSpecialization: String?
+    @State private var selectedHardware: String?
 //    @State private var selectedUser: Member?
     
     @State private var isShowInfo: Bool = false
@@ -41,8 +43,8 @@ struct AddUnitFormView: View {
                 .frame(maxWidth: .infinity)
             
             SmartLayout(hSpacing: 15, vSpacing: 15){
-                ForEach(UserSpecialization.obvanSpecialization){ specialization in
-                    AddUnitFormCell(text: specialization.rawValue,
+                ForEach(settings.userSpecialization,id: \.self){ specialization in
+                    AddUnitFormCell(text: specialization,
                                     state: stateForCell(spec: specialization))
                         .onTapGesture {
                             withAnimation{
@@ -51,7 +53,7 @@ struct AddUnitFormView: View {
                                     selectedHardware = nil
                                 } else {
                                     selectedSpecialization = specialization
-                                    if specialization != .replayOperator {
+                                    if specialization != "Replay operator" {
                                         selectedHardware = nil
                                     }
                                 }
@@ -60,14 +62,14 @@ struct AddUnitFormView: View {
                 }
             }
             if let selectedSpecialization,
-               selectedSpecialization == .replayOperator{
+               selectedSpecialization == "Replay operator"{
                 VStack{
                     Text("Replay Hardware")
                         .font(.title3)
                         .foregroundStyle(.white)
                     SmartLayout(hSpacing: 5, vSpacing: 5){
-                        ForEach(HardwareType.withoutEmpty){ replay in
-                            Text(replay.rawValue)
+                        ForEach(settings.hardwareType, id:\.self){ replay in
+                            Text(replay)
                                 .font(.callout)
                                 .foregroundStyle(.black)
                                 .padding(5)
@@ -137,7 +139,7 @@ struct AddUnitFormView: View {
         }
 
     }
-    func stateForCell(spec: UserSpecialization)->AddUnitFormCell.AddUnitFormState{
+    func stateForCell(spec: String)->AddUnitFormCell.AddUnitFormState{
         if let selectedSpecialization {
             return selectedSpecialization == spec ? .selected:.unselected
         } else {

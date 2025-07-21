@@ -121,7 +121,7 @@ extension Obvan: CoreDataUpdatable{
     
     func updateWithValue(name: String? = nil,
                          broadcaster: String? = nil,
-                         lastUpdated: Date? = nil,
+                         lastUpdated: Date = .now,
                          obvanSchema: LocalImage? = nil,
                          templateCrews: [ObvanTemplateCrew]? = nil,
                          in context: NSManagedObjectContext){
@@ -133,9 +133,8 @@ extension Obvan: CoreDataUpdatable{
             self.broadcaster = broadcaster
         }
         
-        if let lastUpdated {
-            self.lastUpdated = lastUpdated
-        }
+        self.lastUpdated = lastUpdated
+
         //old image continue to exist
         if let obvanSchema{
             if let image {
@@ -153,6 +152,7 @@ extension Obvan: CoreDataUpdatable{
                 $0.parentObvan = self
             }
         }
+        viewBroadcasts.forEach{ $0.lastUpdated = .now }
     }
     
     func cleanTemplateCrews(){

@@ -14,7 +14,7 @@ protocol CoreDataUpdatable {
 }
 extension CoreDataRepresentable where Self == Entity.DTO {
     @discardableResult
-    func updateOrCreate(in context: NSManagedObjectContext) -> Entity {
+    func create(in context: NSManagedObjectContext) -> Entity {
             let fetchRequest = NSFetchRequest<Entity>(entityName: String(describing: Entity.self))
             fetchRequest.predicate = primaryKeyPredicate
             fetchRequest.fetchLimit = 1
@@ -37,7 +37,7 @@ extension CoreDataRepresentable where Self == Entity.DTO {
 }
 
 extension NSManagedObjectContext {
-    //for bg only
+
     func makeObjectFromDTO<DTO: CoreDataRepresentable>(_ dto: DTO)-> DTO.Entity where DTO.Entity.DTO == DTO{
         self.performAndWait {
             
@@ -53,7 +53,6 @@ extension NSManagedObjectContext {
         }
     }
     
-    //can be used on main
     func makeObjectFromDTOAsync<T: CoreDataRepresentable>(dto: T) async throws -> T.Entity where T.Entity.DTO == T {
         try await withCheckedThrowingContinuation { continuation in
             self.perform {

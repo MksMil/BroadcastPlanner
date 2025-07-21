@@ -62,12 +62,10 @@ extension TemplatePoint : Identifiable {
     var cameraDTOs: [CameraDTO] {
         var array = [CameraDTO]()
         if let cameras {
-          let results = cameras.split(separator: ",")
+            let results = cameras.split(separator: ",").map{String($0)}
             for result in results {
-                if let optic = OpticType(rawValue: String(result)){
-                    array.append(CameraDTO(id: UUID().uuidString,
-                                        optic: optic))
-                }
+                array.append(CameraDTO(id: UUID().uuidString,
+                                       optic: result))
             }
         }
         return array
@@ -76,11 +74,9 @@ extension TemplatePoint : Identifiable {
     var soundDTOs: [SoundDTO] {
         var array = [SoundDTO]()
         if let sounds {
-            let results = sounds.split(separator: ",")
+            let results = sounds.split(separator: ",").map{String($0)}
             for result in results {
-                if let placeType = PlaceType(rawValue: String(result)){
-                    array.append(SoundDTO(id: UUID().uuidString,placeType: placeType))
-                }
+                array.append(SoundDTO(id: UUID().uuidString,placeType: result))
             }
         }
         return array
@@ -89,12 +85,10 @@ extension TemplatePoint : Identifiable {
     var lightDTOs: [LightDTO] {
         var array = [LightDTO]()
         if let lights {
-            let results = lights.split(separator: ",")
+            let results = lights.split(separator: ",").map{String($0)}
             for result in results {
-                if let lightType = LightType(rawValue: String(result)){
-                    array.append(LightDTO(id: UUID().uuidString,
-                                       lightType: lightType))
-                }
+                array.append(LightDTO(id: UUID().uuidString,
+                                      lightType: result))
             }
         }
         return array
@@ -129,9 +123,9 @@ extension TemplatePoint: CoreDataUpdatable{
         rotation = venuePoint.rotation
         task = venuePoint.task
         pointDescription = venuePoint.pointDescription
-        cameras = venuePoint.viewCameras.map{$0.viewOptic.rawValue}.joined(separator: ",")
-        sounds = venuePoint.viewSounds.map{$0.viewPlaceType.rawValue}.joined(separator: ",")
-        lights = venuePoint.viewLights.map{$0.viewLightType.rawValue}.joined(separator: ",")
+        cameras = venuePoint.viewCameras.map{$0.viewOptic}.joined(separator: ",")
+        sounds = venuePoint.viewSounds.map{$0.viewPlaceType}.joined(separator: ",")
+        lights = venuePoint.viewLights.map{$0.viewLightType}.joined(separator: ",")
     }
     
     //bg work
@@ -144,9 +138,9 @@ extension TemplatePoint: CoreDataUpdatable{
         self.rotation = Int16(dto.rotation)
         self.task = dto.task
         self.pointDescription = dto.pointDescription
-        self.cameras = dto.cameras.map{$0.optic.rawValue}.joined(separator: ",")
-        self.sounds = dto.sounds.map{$0.placeType.rawValue}.joined(separator: ",")
-        self.lights = dto.lights.map{$0.lightType.rawValue}.joined(separator: ",")
+        self.cameras = dto.cameras.map{$0.optic}.joined(separator: ",")
+        self.sounds = dto.sounds.map{$0.placeType}.joined(separator: ",")
+        self.lights = dto.lights.map{$0.lightType}.joined(separator: ",")
     }
     
     func updateValues(number: Int? = nil,
@@ -184,14 +178,15 @@ extension TemplatePoint: CoreDataUpdatable{
         }
         
         if let cameras {
-            self.cameras = cameras.map{$0.viewOptic.rawValue}.joined(separator: ",")
+            self.cameras = cameras.map{$0.viewOptic}.joined(separator: ",")
         }
         if let sounds {
-            self.sounds = sounds.map{$0.viewPlaceType.rawValue}.joined(separator: ",")
+            self.sounds = sounds.map{$0.viewPlaceType}.joined(separator: ",")
         }
         if let lights {
-            self.lights = lights.map{$0.viewLightType.rawValue}.joined(separator: ",")
+            self.lights = lights.map{$0.viewLightType}.joined(separator: ",")
         }
+        parentTemplate?.lastUpdated = .now
     }
 }
 

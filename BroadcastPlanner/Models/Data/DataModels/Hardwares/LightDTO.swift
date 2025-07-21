@@ -7,5 +7,5 @@ struct LightDTO: Codable, Identifiable,CoreDataRepresentable {
     }
     var lastUpdated: Date = .now
     var id: String
-    var lightType: LightType = .none
+    var lightType: String = "Empty"
 }

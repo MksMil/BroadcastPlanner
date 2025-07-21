@@ -7,13 +7,13 @@ final class PointInfoPanelViewModel: ObservableObject {
             print("now number \(number)")
         }
     }
-    var selectedCameraOptic: OpticType = .none
-    var selectedSoundPlaceType: PlaceType = .none
-    var selectedSoundWindDefence: WindDefence = .none
-    var selectedLight: LightType = .none
+    var selectedCameraOptic: String = "Empty"
+    var selectedSoundPlaceType: String = "Empty"
+    var selectedSoundWindDefence: String = "Empty"
+    var selectedLight: String = "Empty"
     var selectedUser: Member?
 
-    var position: CameraPosition = .pitchSideHalfWay
+    var position: String = "Unknown"
 
     var publisher: PassthroughSubject = PassthroughSubject<(PointEditPublishType, Any), Never>()
 
@@ -53,7 +53,7 @@ final class PointInfoPanelViewModel: ObservableObject {
         }
         number = point.viewNumber
 
-        if let camPos = CameraPosition(rawValue: point.viewDescription) {
+        if let camPos = point.pointDescription {
             position = camPos
         }
     }

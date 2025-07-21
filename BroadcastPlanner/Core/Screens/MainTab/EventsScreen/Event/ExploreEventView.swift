@@ -105,13 +105,13 @@ struct ExploreEventView: View {
                         .onTapGesture {
                             
                         }
-                    event.viewObvanPreview
-                        .resizable()
-                        .scaledToFit()
-                        .scaleEffect(0.5)
-//                        .rotationEffect(Angle(degrees: -90))
-                        .onTapGesture {
-                        }
+//                    event.viewObvanPreview
+//                        .resizable()
+//                        .scaledToFit()
+//                        .scaleEffect(0.5)
+////                        .rotationEffect(Angle(degrees: -90))
+//                        .onTapGesture {
+//                        }
                 }
                 .padding(.horizontal)
 //                .border(.red, width: 2)

@@ -19,12 +19,12 @@ struct BPSoundCompactCell: View {
                 .padding(.vertical,3)
             
             VStack{
-                Text(sound.viewPlaceType.rawValue)
+                Text(sound.viewPlaceType)
                     .font(.system(size: 14))
                     .lineLimit(1)
                     .minimumScaleFactor(0.2)
                     .padding(.horizontal,5)
-                Text(sound.viewWindDefence.rawValue)
+                Text(sound.viewWindDefence)
                     .font(.system(size: 11))
                     .lineLimit(1)
                     .minimumScaleFactor(0.2)

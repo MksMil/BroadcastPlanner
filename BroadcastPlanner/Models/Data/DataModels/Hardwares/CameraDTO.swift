@@ -10,7 +10,7 @@ struct CameraDTO: Codable,
     }
     
     var id: String
-    var optic: OpticType = .none
+    var optic: String = "Empty"
     var lastUpdated: Date = .now
 }
 

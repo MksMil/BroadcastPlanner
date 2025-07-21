@@ -7,7 +7,7 @@ struct HardwareDTO: Codable, Identifiable,CoreDataRepresentable {
     }
     
     var id: String
-    var envType: HardwareType = .none
+    var envType: String = "Empty"
     var chanels: [String] = []
     var lastUpdated: Date = .now
 }

@@ -8,7 +8,7 @@
         <relationship name="guestClub" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Club" inverseName="guestBroadcasts" inverseEntity="Club"/>
         <relationship name="homeClub" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Club" inverseName="homeBroadcasts" inverseEntity="Club"/>
         <relationship name="obvan" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Obvan" inverseName="broadcasts" inverseEntity="Obvan"/>
-        <relationship name="obvanPreview" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocalImage" inverseName="parentObvanPreview" inverseEntity="LocalImage"/>
+        <relationship name="obvanPreview" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LocalImage" inverseName="parentObvanPreview" inverseEntity="LocalImage"/>
         <relationship name="owners" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Member" inverseName="ownedBroadcasts" inverseEntity="Member"/>
         <relationship name="venue" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Venue" inverseName="broadcasts" inverseEntity="Venue"/>
         <relationship name="venuePoints" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="VenuePoint" inverseName="broadcast" inverseEntity="VenuePoint"/>

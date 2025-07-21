@@ -2,30 +2,30 @@ import Combine
 import SpriteKit
 import SwiftUI
 
-final class BPCreateEditEventViewModel: ObservableObject{
-    var homeClub: Club?
-    var guestClub: Club?
-    var eventDate: Date
-    var location: Venue?
-    
-    init(event: Broadcast){
-        if let club = event.homeClub{
-            homeClub = club
-        }
-        if let club = event.guestClub{
-            guestClub = club
-        }
-        if let location = event.venue{
-            self.location = location
-        }
-        self.eventDate = event.date ?? Date()
-    }
-}
+//final class BPCreateEditEventViewModel: ObservableObject{
+//    var homeClub: Club?
+//    var guestClub: Club?
+//    var eventDate: Date
+//    var location: Venue?
+//    
+//    init(event: Broadcast){
+//        if let club = event.homeClub{
+//            homeClub = club
+//        }
+//        if let club = event.guestClub{
+//            guestClub = club
+//        }
+//        if let location = event.venue{
+//            self.location = location
+//        }
+//        self.eventDate = event.date ?? Date()
+//    }
+//}
 
 struct BroadcastEditView: View {
     let logoSize: Double = 90
     
-    @StateObject private var vm: BPCreateEditEventViewModel
+//    @StateObject private var vm: BPCreateEditEventViewModel
     
     @EnvironmentObject var appState: ApplicationState
     @EnvironmentObject var router: Router
@@ -35,10 +35,10 @@ struct BroadcastEditView: View {
 
     @State private var isRemoveConfirm: Bool = false
      
-    init(broadcast: Broadcast) {
-        self._vm = StateObject(wrappedValue: BPCreateEditEventViewModel(event: broadcast))
-        self.broadcast = broadcast
-    }
+//    init(broadcast: Broadcast) {
+////        self._vm = StateObject(wrappedValue: BPCreateEditEventViewModel(event: broadcast))
+//        self.broadcast = broadcast
+//    }
 
     var body: some View {
 
@@ -50,11 +50,12 @@ struct BroadcastEditView: View {
                 //header: time, date, teams, venue
                 VStack{
                     ZStack{
-                        LocationSelectionView(location: vm.location,
+                        LocationSelectionView(location: broadcast.venue,
                                               offset: logoSize) {
                             
-                        } acceptAction: { newLocation in
-                            vm.location = newLocation
+                        } acceptAction: { newVenue in
+//                            vm.location = newLocation
+                            broadcast.venue = newVenue
                         }
                        VStack(spacing: 5){
                             //team logos section
@@ -64,19 +65,22 @@ struct BroadcastEditView: View {
                                               logoSize: logoSize,
                                               cancelAction: {},
                                               accessAction: { club in
-                                    vm.homeClub = club
+//                                    vm.homeClub = club
+                                    broadcast.homeClub = club
                                 })
                                 //broadcast date section
-                                TimeAndDateSelectionView(date: vm.eventDate,
+                                TimeAndDateSelectionView(date: broadcast.viewDate,
                                                          logoSize: logoSize) {newDate in
-                                    vm.eventDate = newDate
+//                                    vm.eventDate = newDate
+                                    broadcast.date = newDate
                                 }
                                 //guest team logo/selection action
                                 LogoImageView(club: broadcast.guestClub,
                                               logoSize: logoSize,
                                               cancelAction: {},
                                               accessAction: { club in
-                                    vm.guestClub = club
+//                                    vm.guestClub = club
+                                    broadcast.guestClub = club
                                 })
                             }
                             .padding(.top)
@@ -93,11 +97,12 @@ struct BroadcastEditView: View {
                         .resizable()
                         .scaledToFit()
                         .onTapGesture {
+                            
                             router.routeTo(path: .stadPointsEdit(broadcast))
                         }
-                    broadcast.viewObvanPreview
-                        .resizable()
-                        .scaledToFit()
+//                    broadcast.viewObvanPreview
+//                        .resizable()
+//                        .scaledToFit()
                 }
                 .padding(.horizontal)
                 Spacer()
@@ -117,12 +122,12 @@ struct BroadcastEditView: View {
             
             appState.primaryAction = {
                 do{
-                    broadcast.updateValues(date: vm.eventDate,
-                                           lastUpdated: Date.now,
-                                           homeClub: vm.homeClub,
-                                           guestClub: vm.guestClub,
-                                           venue: vm.location,
-                                           in: dataManager.mainContext)
+//                    broadcast.updateValues(date: vm.eventDate,
+//                                           lastUpdated: Date.now,
+//                                           homeClub: vm.homeClub,
+//                                           guestClub: vm.guestClub,
+//                                           venue: vm.location,
+//                                           in: dataManager.mainContext)
                     try dataManager.saveContext(publish: .broadcasts,
                                                id: [broadcast.viewId])
                 } catch{
@@ -139,9 +144,7 @@ struct BroadcastEditView: View {
                 isRemoveConfirm = true
             }
             appState.stepBackAction = {
-                dataManager.rollBackMoc()
-                try? dataManager.mainContext.save()
-                router.stepBack()
+               
             }
         }
     }

@@ -24,12 +24,12 @@ extension Sound : Identifiable {
         id ?? ""
     }
     
-    var viewPlaceType: PlaceType{
-        PlaceType(rawValue: placeType ?? "---") ?? PlaceType.none
+    var viewPlaceType: String{
+        placeType ?? "Empty"
     }
     
-    var viewWindDefence: WindDefence {
-        WindDefence(rawValue: windDefence ?? "---") ?? WindDefence.none
+    var viewWindDefence: String {
+        windDefence ?? "Empty"
     }
     
     var dto: SoundDTO{
@@ -42,18 +42,18 @@ extension Sound : Identifiable {
 extension Sound: CoreDataUpdatable{
     func updateFromDTO(_ dto: SoundDTO, in context: NSManagedObjectContext) {
         self.id = dto.id
-        self.placeType = dto.placeType.rawValue
-        self.windDefence = dto.windDefence.rawValue
+        self.placeType = dto.placeType
+        self.windDefence = dto.windDefence
     }
     
-    func updateValues(placeType: PlaceType? = nil,
-                      windDefence: WindDefence? = nil,
+    func updateValues(placeType: String? = nil,
+                      windDefence: String? = nil,
                       point: VenuePoint? = nil){
         if let placeType {
-            self.placeType = placeType.rawValue
+            self.placeType = placeType
         }
         if let windDefence {
-            self.windDefence = windDefence.rawValue
+            self.windDefence = windDefence
         }
         if let point {
             if let oldPoint = self.point{

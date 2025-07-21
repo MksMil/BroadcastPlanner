@@ -20,17 +20,17 @@ struct SelectablePointEditCellWithContent<V: View, T: Equatable>: View {
                     selectController.setSelect(val == selectedValue,tapped: true){
                         switch publishType {
                             case .optic:
-                                vm.selectedCameraOptic = .none
-                                vm.publisher.send((PointEditPublishType.optic, OpticType.none))
+                                vm.selectedCameraOptic = "Empty"
+                                vm.publisher.send((PointEditPublishType.optic, "Empty"))
                             case .windDefence:
-                                vm.selectedSoundWindDefence = .none
-                                vm.publisher.send((PointEditPublishType.windDefence, WindDefence.none))
+                                vm.selectedSoundWindDefence = "Empty"
+                                vm.publisher.send((PointEditPublishType.windDefence, "Empty"))
                             case .placeType:
-                                vm.selectedSoundPlaceType = .none
-                                vm.publisher.send((PointEditPublishType.placeType, PlaceType.none))
+                                vm.selectedSoundPlaceType = "Empty"
+                                vm.publisher.send((PointEditPublishType.placeType, "Empty"))
                             case .light:
-                                vm.selectedLight = .none
-                                vm.publisher.send((PointEditPublishType.light, LightType.none))
+                                vm.selectedLight = "Empty"
+                                vm.publisher.send((PointEditPublishType.light, "Empty"))
                             default: return
                         }
                     }
@@ -48,20 +48,20 @@ struct SelectablePointEditCellWithContent<V: View, T: Equatable>: View {
                             selectController.setSelect(true,tapped: false)
                         }
                     case .optic:
-                        if vm.selectedCameraOptic == val as? OpticType{
+                        if vm.selectedCameraOptic == val as? String{
                             selectController.setSelect(true,tapped: false)
                         }
                         
                     case .windDefence:
-                        if vm.selectedSoundWindDefence == val as? WindDefence{
+                        if vm.selectedSoundWindDefence == val as? String{
                             selectController.setSelect(true,tapped: false)
                         }
                     case .placeType:
-                        if vm.selectedSoundPlaceType == val as? PlaceType{
+                        if vm.selectedSoundPlaceType == val as? String{
                             selectController.setSelect(true,tapped: false)
                         }
                     case .light:
-                        if vm.selectedLight == val as? LightType{
+                        if vm.selectedLight == val as? String{
                             selectController.setSelect(true,tapped: false)
                         }
                 }

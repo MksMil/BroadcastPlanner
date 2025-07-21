@@ -46,7 +46,6 @@ final class LocationSelectionViewModel: ObservableObject{
             .sink { [weak self] _ in
                 guard let self, self.maxCount != 0 else { return }
                 self.updateCounter()
-                print(counter)
                 self.image = self.images[counter]
             }
             .store(in: &cancellables)

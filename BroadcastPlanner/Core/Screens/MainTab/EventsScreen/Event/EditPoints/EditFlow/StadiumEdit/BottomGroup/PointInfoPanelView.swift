@@ -2,14 +2,14 @@ import Combine
 import SwiftUI
 
 struct PointInfoPanelView: View {
-
+    @EnvironmentObject var settings: GlobalSettings
     @EnvironmentObject var pointManager: BPEditStadiumViewModel
     @Environment(\.dismiss) var dismiss
 
     @StateObject var vm: PointInfoPanelViewModel
     @FetchRequest<Member>(sortDescriptors: [SortDescriptor(\.lastName, order: .forward)]) var availableUsers
-    let saveAction: (Int,Member?,OpticType,PlaceType,WindDefence,LightType)->()
-    init(point: VenuePoint, saveAction: @escaping (Int,Member?,OpticType,PlaceType,WindDefence,LightType)->()) {
+    let saveAction: (_  num:Int,_ member:Member?,_ opticType:String,_ placeType: String,_ windDefence: String,_ lightType: String)->()
+    init(point: VenuePoint, saveAction: @escaping (Int,Member?,String,String,String,String)->()) {
         self._vm = StateObject(
             wrappedValue: PointInfoPanelViewModel(point: point)
         )
@@ -44,12 +44,12 @@ struct PointInfoPanelView: View {
                     .padding(.vertical,5)
                 
                 TabViewList(
-                    source: OpticType.allCases,
+                    source: settings.opticType,
                     selectedItem: vm.selectedCameraOptic,
                     pageCount: 6,
                     spacing: 5
                 ) { optic in
-                    vm.selectedCameraOptic = vm.selectedCameraOptic == optic ? .none: optic
+                    vm.selectedCameraOptic = vm.selectedCameraOptic == optic ? "Empty": optic
                     vm.publisher.send(
                         (PointEditPublishType.optic, optic)
                     )
@@ -58,7 +58,7 @@ struct PointInfoPanelView: View {
                         val: optic,
                         publishType: PointEditPublishType.optic
                     ) {
-                        PointEditTextCellView(text: optic.rawValue)
+                        PointEditTextCellView(text: optic)
                     }
                 }
                 .frame(height: 75)
@@ -67,12 +67,12 @@ struct PointInfoPanelView: View {
                     .padding(.bottom,5)
                 
                 TabViewList(
-                    source: PlaceType.allCases,
+                    source: settings.soundPlaceType,
                     selectedItem: vm.selectedSoundPlaceType,
                     pageCount: 6,
                     spacing: 5
                 ) { place in
-                    vm.selectedSoundPlaceType = vm.selectedSoundPlaceType == place ? .none: place
+                    vm.selectedSoundPlaceType = vm.selectedSoundPlaceType == place ? "Empty": place
                     vm.publisher.send(
                         (PointEditPublishType.placeType, place)
                     )
@@ -81,19 +81,19 @@ struct PointInfoPanelView: View {
                         val: place,
                         publishType: PointEditPublishType.placeType
                     ) {
-                        PointEditTextCellView(text: place.rawValue)
+                        PointEditTextCellView(text: place)
                     }
                 }
                 .frame(height: 75)
                 .padding(.bottom,5)
                 
                 TabViewList(
-                    source: WindDefence.allCases,
+                    source: settings.windDefenceType,
                     selectedItem: vm.selectedSoundWindDefence,
                     pageCount: 6,
                     spacing: 5
                 ) { defence in
-                    vm.selectedSoundWindDefence = vm.selectedSoundWindDefence == defence ? .none: defence
+                    vm.selectedSoundWindDefence = vm.selectedSoundWindDefence == defence ? "Empty": defence
                     vm.publisher.send(
                         (PointEditPublishType.windDefence, defence)
                     )
@@ -102,7 +102,7 @@ struct PointInfoPanelView: View {
                         val: defence,
                         publishType: PointEditPublishType.windDefence
                     ) {
-                        PointEditTextCellView(text: defence.rawValue)
+                        PointEditTextCellView(text: defence)
                     }
                 }
                 .frame(height: 75)
@@ -111,12 +111,12 @@ struct PointInfoPanelView: View {
                     .padding(.bottom,5)
                 
                 TabViewList(
-                    source: LightType.allCases,
+                    source: settings.lightType,
                     selectedItem: vm.selectedLight,
                     pageCount: 6,
                     spacing: 5
                 ) { light in
-                    vm.selectedLight = vm.selectedLight == light ? .none: light
+                    vm.selectedLight = vm.selectedLight == light ? "Empty": light
                     vm.publisher.send(
                         (PointEditPublishType.light, light)
                     )
@@ -125,20 +125,19 @@ struct PointInfoPanelView: View {
                         val: light,
                         publishType: PointEditPublishType.light
                     ) {
-                        PointEditTextCellView(text: light.rawValue)
+                        PointEditTextCellView(text: light)
                     }
                 }
                 .frame(height: 75)
                 //            Divider()
-                //            TabViewList(source: CameraPosition.allCases,
+                //            TabViewList(source: settings.cameraPosition,
                 //                        pageCount: 5, spacing: 5) { position in
-                //                print("position tapped")
                 //                vm.position = position
                 //                vm.publisher.send((GlobalProperties.PublishChanges.cameras, position))
                 //            } content: { position in
                 //                SelectablePointEditCellWithContent(val: position,
                 //                                                   publishType: .cameras) {
-                //                    PointEditTextCellView(text: position.rawValue)
+                //                    PointEditTextCellView(text: position)
                 //                }
                 //            }
                 //            .frame(height: 50)
@@ -182,7 +181,7 @@ struct PointInfoPanelView: View {
                     }
                     Spacer()
                     Button(" Save "){
-                        print("Save tapped: num:\(vm.number), member: \(vm.selectedUser?.viewCompactName ?? "no member"), optic: \(vm.selectedCameraOptic.rawValue), sound: \(vm.selectedSoundPlaceType.rawValue) / \(vm.selectedSoundWindDefence.rawValue), light: \(vm.selectedLight.rawValue)")
+                        print("Save tapped: num:\(vm.number), member: \(vm.selectedUser?.viewCompactName ?? "no member"), optic: \(vm.selectedCameraOptic), sound: \(vm.selectedSoundPlaceType) / \(vm.selectedSoundWindDefence), light: \(vm.selectedLight)")
                         saveAction(vm.number,vm.selectedUser,vm.selectedCameraOptic,vm.selectedSoundPlaceType,vm.selectedSoundWindDefence,vm.selectedLight)
                         //save venuePoint invoked here
                         dismiss()

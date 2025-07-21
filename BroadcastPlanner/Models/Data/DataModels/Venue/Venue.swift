@@ -157,7 +157,7 @@ extension Venue: CoreDataUpdatable{
     
     func updateValues(title: String? = nil,
                       address: String? = nil,
-                      lastUpdated: Date? = nil,
+                      lastUpdated: Date = .now,
                       newBroadcastSchema: LocalImage? = nil,
                       images: [LocalImage]? = nil,
                       in context: NSManagedObjectContext){
@@ -167,9 +167,9 @@ extension Venue: CoreDataUpdatable{
         if let address {
             self.address = address
         }
-        if let lastUpdated {
-            self.lastUpdated = lastUpdated
-        }
+        
+        self.lastUpdated = lastUpdated
+        
         if let newBroadcastSchema{
             if let broadcastSchema{
                 broadcastSchema.removeFromParentVenueSchema(self)
@@ -195,6 +195,7 @@ extension Venue: CoreDataUpdatable{
                 $0.parentVenueImage = self
             }
         }
+        viewBrodcasts.forEach{$0.lastUpdated = .now}
     }
     
     func cleanImages(in context: NSManagedObjectContext){

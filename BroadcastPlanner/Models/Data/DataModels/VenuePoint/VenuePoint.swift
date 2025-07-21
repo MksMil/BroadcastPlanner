@@ -319,6 +319,7 @@ extension VenuePoint: CoreDataUpdatable{
                 oldBroadcast.removeFromVenuePoints(self)
             }
             self.broadcast = broadcast
+            self.broadcast?.lastUpdated = .now
         }
     }
     

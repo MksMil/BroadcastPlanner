@@ -41,10 +41,7 @@ final class PersonalScreenViewModel: ObservableObject {
         self.email = localUser.viewEmail
         self.phoneNumber = localUser.viewPhoneNumber
         self.address = localUser.viewAddress
-        self.userSpecialization = localUser.viewSpecialization.map {
-            $0.rawValue
-        }
-        print("init vm")
+        self.userSpecialization = localUser.viewSpecialization
         self.showedImage = localUser.viewImage
     }
     @MainActor
@@ -54,9 +51,7 @@ final class PersonalScreenViewModel: ObservableObject {
         self.email = localUser.viewEmail
         self.phoneNumber = localUser.viewPhoneNumber
         self.address = localUser.viewAddress
-        self.userSpecialization = localUser.viewSpecialization.map {
-            $0.rawValue
-        }
+        self.userSpecialization = localUser.viewSpecialization
         self.showedImage = localUser.viewImage
     }
 }

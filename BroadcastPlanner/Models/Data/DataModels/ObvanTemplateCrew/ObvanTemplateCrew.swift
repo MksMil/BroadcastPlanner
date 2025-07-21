@@ -37,8 +37,8 @@ extension ObvanTemplateCrew : Identifiable {
     var viewScaleFactor: Double{
         Double(scaleFactor)
     }
-    var viewPosition: UserSpecialization{
-        UserSpecialization(rawValue: position ?? "") ?? UserSpecialization.producer
+    var viewPosition: String{
+        position ?? "Empty"
     }
     var dto: ObvanTemplateCrewDTO {
         ObvanTemplateCrewDTO(id: viewId,
@@ -46,7 +46,7 @@ extension ObvanTemplateCrew : Identifiable {
                              coordinateY: viewY,
                              rotation: viewRotation,
                              scaleFactor: viewScaleFactor,
-                             position: viewPosition.rawValue,
+                             position: viewPosition,
                              isRequired: isRequired)
     }
 }
@@ -90,6 +90,7 @@ extension ObvanTemplateCrew: CoreDataUpdatable{
         if let isRequired {
             self.isRequired = isRequired
         }
+        parentObvan?.lastUpdated = .now
     }
 }
 // MARK: - Remove

@@ -41,8 +41,8 @@ extension Crew : Identifiable {
     var viewScaleFactor: Double{
         Double(scaleFactor)
     }
-    var viewPosition: UserSpecialization{
-        UserSpecialization(rawValue: position ?? "") ?? UserSpecialization.producer
+    var viewPosition: String{
+        position ?? "Empty"
     }
     var viewMemberId: String {
         member?.viewId ?? ""
@@ -60,7 +60,7 @@ extension Crew : Identifiable {
     }
     var dto: CrewDTO{
         CrewDTO(id: viewId,
-                position: viewPosition.rawValue,
+                position: viewPosition,
                 coordinateX: viewX,
                 coordinateY: viewY,
                 rotation: viewRotation,
@@ -158,6 +158,9 @@ extension Crew: CoreDataUpdatable{
             self.broadcast = broadcast
             self.broadcast?.addToCrews(self)
         }
+        
+        self.broadcast?.lastUpdated = .now
+        
         
         if let obvanId {
             self.obvanId = obvanId
