@@ -1,40 +1,46 @@
 import SwiftUI
 import SpriteKit
 
-enum SceneState{
-    case idle, touchingNewPoint, touchingSelectedPoint, movedPoint, movingCam
-}
-class PitchEditSpriteScene: SKScene{
-    
-    enum NodeZone: String{
-        case main, rightUp, rightDown, leftUp, leftDown
-    }
-    
+class ObvanEditSpriteScene: SKScene{
+//    enum NodeZone: String{
+//        case main, rightUp, rightDown, leftUp, leftDown
+//    }
     enum NodeType: String {
         case camera = "_spriteCamera"
         case sound = "_spriteSound"
         case light = "_spriteLight"
         case background  = "_background"
         case number = "_spriteNumber"
+        case crew = "_person" //?
     }
     
-    //sprite temp names ... -> in settings to global control
-    let camSpriteName = "cam2"
-    let soundSpriteName = "mic1"
-    let lightSpriteName = "light2"
-    let varSpriteName = "var"
-    let poleCamSpriteName = "poleCam1"
-    
-    
-    //venuePoint and cam movement control
+    //crew and cam movement control
     var sceneState: SceneState = .idle
-    
     //delegate
-    weak var pointDelegate: BPSKViewDelegate?
+    weak var crewDelegate: BPSKViewDelegate?
     
-    //crud and selectPoint actions
-    
-    //for test
+    var backImage: UIImage? {
+        willSet{
+            backGroundNode.removeFromParent()
+            if let image = newValue{
+                let texture = SKTexture(image: image)
+                backGroundNode = SKSpriteNode(texture: texture)
+                backGroundNode.name = NodeType.background.rawValue
+                backGroundNode.position = CGPoint(x: size.width / 2,
+                                                  y: size.height / 2)
+                backGroundNode.scale(to: size)
+                addChild(backGroundNode)
+                
+            } else {
+                backGroundNode = SKSpriteNode(imageNamed: "empty_obvan")
+                backGroundNode.name = NodeType.background.rawValue
+                backGroundNode.position = CGPoint(x: size.width / 2,
+                                                  y: size.height / 2)
+                backGroundNode.scale(to: size)
+                addChild(backGroundNode)
+            }
+        }
+    }
     var moveStep: Double = 1
     var step: Double = 10
     var angle: Double = .pi / 8
@@ -42,21 +48,21 @@ class PitchEditSpriteScene: SKScene{
     
     //
     let cameraNode = SKCameraNode()
-    var backGroundNode = SKSpriteNode(imageNamed: "football_stadium")
+    var backGroundNode = SKSpriteNode(imageNamed: "empty_obvan")
     
     //camera control for move and zoom
     var lastPanLocation: CGPoint?
     
     //data source
-    var points: [VenuePoint] = []
+    var crews: [Crew] = []
     
     //control
-    var selectedPointNode: SKNode?
+    var selectedCrewNode: SKNode?
     var editedNode: SKNode?
     var bgNode: SKShapeNode?
-    var selectedPointNodeRotation = CGFloat.zero
+    var selectedCrewNodeRotation = CGFloat.zero
     
-    var pointNodes: [SKShapeNode] = []
+    var crewNodes: [SKShapeNode] = []
     
     //helper properties
     var centerPoint: CGPoint {
@@ -93,139 +99,44 @@ class PitchEditSpriteScene: SKScene{
         view.addGestureRecognizer(pinchGesture)
     }
     
-    func setupPoints(){
-        for point in points {
-            addPoint(point: point,select: false)
+    func setupCrews(){
+        for crew in crews {
+            addCrew(crew,select: false)
         }
     }
     
-    func configurePointNode(node: SKShapeNode,
-                            point: VenuePoint)
+    func configureCrewNode(node: SKShapeNode,
+                            crew: Crew)
     {
-        node.name = point.viewId
+        node.name = crew.viewId
         node.zPosition = 1
-        if point.viewX == 0 && point.viewY == 0{
+        if crew.viewX == 0 && crew.viewY == 0{
             node.position = CGPoint(x: size.width / 2,
                                     y: size.height / 2)
         } else {
-            node.position = CGPoint(x:  size.width * point.viewX,
-                                    y:  size.height * point.viewY)
+            node.position = CGPoint(x:  size.width * crew.viewX,
+                                    y:  size.height * crew.viewY)
         }
-        assignTexturesInNode(node, withPoint: point)
+        assignTexturesInNode(node, withCrew: crew)
         
-        if point.viewScaleFactor != 0 {
-            setScale(point.viewScaleFactor, toNode: node)
+        if crew.viewScaleFactor != 0 {
+            setScale(crew.viewScaleFactor, toNode: node)
         }
     }
     
-    func assignTexturesInNode(_ node: SKShapeNode, withPoint point: VenuePoint){
-        var rotation = CGFloat.zero
-        if node == selectedPointNode {
-            rotation = selectedPointNodeRotation
-        } else {
-            rotation = point.viewRotation.radians
-        }
-        if !point.viewCameras.isEmpty{
-            
-            addSpriteWithName(camSpriteName,
-                              andType: .camera,
-                              toNode: node,
-                              toZone: .main,
-                              rotation: rotation)
-            if !point.viewSounds.isEmpty{
-                addSpriteWithName(soundSpriteName,
-                                  andType: .sound,
-                                  toNode: node,
-                                  toZone: .rightDown,
-                                  rotation: rotation)
-            }
-            if !point.viewLights.isEmpty{
-                addSpriteWithName(lightSpriteName,
-                                  andType: .light,
-                                  toNode: node,
-                                  toZone: .rightUp,
-                                  rotation: rotation)
-            }
-        } else if !point.viewSounds.isEmpty {
-            addSpriteWithName(soundSpriteName,
-                              andType: .sound,
-                              toNode: node,
-                              toZone: .main,
-                              rotation: rotation)
-        } else if !point.viewLights.isEmpty{
-            addSpriteWithName(lightSpriteName,
-                              andType: .light,
-                              toNode: node,
-                              toZone: .main,
-                              rotation: rotation)
-        }
+    func assignTexturesInNode(_ node: SKShapeNode, withCrew crew: Crew){
+       
+        
     }
     
-    func updateSpritesWithPoint(point: VenuePoint){
+    func updateSpritesWithCrew(_ crew: Crew){
         //only with selectedNode we can change textures
-        if let selectedPointNode = selectedPointNode as? SKShapeNode {
-            selectedPointNode.removeAllChildren()
-            assignTexturesInNode(selectedPointNode, withPoint: point)
-        }
-    }
-
-    func addNameToSpriteNode(_ node: SKSpriteNode, withZone zone: NodeZone){
-        if let parentName = node.parent?.name{
-            node.name = parentName + zone.rawValue
+        if let selectedCrewNode = selectedCrewNode as? SKShapeNode {
+            selectedCrewNode.removeAllChildren()
+            assignTexturesInNode(selectedCrewNode, withCrew: crew)
         }
     }
     
-    func addSpriteWithName(_ name: String,andType type: NodeType,toNode node: SKShapeNode ,toZone zone: NodeZone, rotation: CGFloat){
-        
-        let texture = SKTexture(imageNamed: name)
-        
-        var resultNode: SKSpriteNode
-        
-        let newSize = zone == .main ? CGSize(width: 2 * step, height: 2 * step) : CGSize(width: step, height: step)
-        
-        if let tempNode = node.childNode(withName: type.rawValue) as? SKSpriteNode{
-            resultNode = tempNode
-        } else {
-            resultNode = SKSpriteNode(texture: texture,
-                                      size: newSize)
-        }
-        
-        resultNode.zPosition = 2
-        if zone == .main{
-            resultNode.zRotation = rotation
-        }
-        resultNode.isUserInteractionEnabled = false
-        
-        node.addChild(resultNode)
-        var nodePosition = CGPoint.zero
-        
-        switch zone {
-            case .main:
-                nodePosition = CGPoint(x: 0,
-                                       y: 0)
-                node.userData?[NodeZone.main] = true
-            case .rightUp:
-                nodePosition = CGPoint(x: node.bounds.maxX - 2 * step / 3,
-                                       y: node.bounds.maxY - 2 * step / 3)
-                node.userData?[NodeZone.rightUp] = true
-            case .rightDown:
-                nodePosition = CGPoint(x: node.bounds.maxX - 2 * step / 3,
-                                       y: node.bounds.minY + 2 * step / 3)
-                node.userData?[NodeZone.rightDown] = true
-            case .leftUp:
-                nodePosition = CGPoint(x: node.bounds.minX + 2 * step / 3,
-                                       y: node.bounds.maxY - 2 * step / 3)
-                node.userData?[NodeZone.leftUp] = true
-            case .leftDown:
-                nodePosition = CGPoint(x: node.bounds.minX + 2 * step / 3,
-                                       y: node.bounds.minY + 2 * step / 3)
-                node.userData?[NodeZone.leftDown] = true
-        }
-        
-        resultNode.position = nodePosition
-        
-        addNameToSpriteNode(resultNode, withZone: zone)
-    }
     
     func textureFromSFSymbol(named symbolName: String, pointSize: CGFloat = 10, weight: UIImage.SymbolWeight = .regular) -> SKTexture? {
             let config = UIImage.SymbolConfiguration(pointSize: pointSize, weight: weight)
@@ -235,15 +146,14 @@ class PitchEditSpriteScene: SKScene{
             return nil
         }
     
-    func setupBackground(){
-        backGroundNode = SKSpriteNode(imageNamed:"stadium")
-        backGroundNode.name = NodeType.background.rawValue
-        backGroundNode.position = CGPoint(x: size.width / 2,
-                                          y: size.height / 2)
-        backGroundNode.scale(to: size)
-        addChild(backGroundNode)
-        
-    }
+//    func setupBackground(){
+//        backGroundNode = SKSpriteNode(imageNamed:"stadium")
+//        backGroundNode.name = NodeType.background.rawValue
+//        backGroundNode.position = CGPoint(x: size.width / 2,
+//                                          y: size.height / 2)
+//        backGroundNode.scale(to: size)
+//        addChild(backGroundNode)
+//    }
     
     func setupCamera(){
         addChild(cameraNode)
@@ -253,19 +163,19 @@ class PitchEditSpriteScene: SKScene{
         resetScale()
     }
     func updateData(){
-        if let selectedPointNode{
+        if let selectedCrewNode{
             var angle: Double = 0
-            angle = (Angle(radians: selectedPointNodeRotation).degrees.truncatingRemainder(dividingBy: 360)).rounded()
-            pointDelegate?.updatePoint(x: selectedPointNode.position.x / size.width,
-                                       y: selectedPointNode.position.y / size.height,
-                                       rotation: angle,//in degrees
-                                       scaleFactor: selectedPointNode.xScale)
+            angle = (Angle(radians: selectedCrewNodeRotation).degrees.truncatingRemainder(dividingBy: 360)).rounded()
+            crewDelegate?.updatePoint(x: selectedCrewNode.position.x / size.width,
+                                       y: selectedCrewNode.position.y / size.height,
+                                       rotation: angle,
+                                       scaleFactor: selectedCrewNode.xScale)
         }
     }
 }
 
 // MARK: - Selection
-extension PitchEditSpriteScene{
+extension ObvanEditSpriteScene{
     
     func addSelectionAnimationToNode(node: SKShapeNode){
         node.strokeColor = .blue
@@ -282,59 +192,56 @@ extension PitchEditSpriteScene{
 }
 
 // MARK: - BPPlanDelegateProtocol
-extension PitchEditSpriteScene{
+extension ObvanEditSpriteScene{
     
-    func addPoint(point: VenuePoint, select: Bool){
-        let pointNode = SKShapeNode(
-            rectOf: CGSize(width: 4 * step,
-                            height:  4 * step),
-            cornerRadius: 5)
-        pointNode.strokeColor = .clear
-        pointNode.name = point.viewId
+    func addCrew(_ crew: Crew, select: Bool){
+        let crewNode = SKShapeNode(
+            circleOfRadius: step * 2)
+        crewNode.strokeColor = .clear
+        crewNode.name = crew.viewId
         
-        configurePointNode(node: pointNode,
-                           point: point)
-        pointNodes.append(pointNode)
-        self.addChild(pointNode)
-        selectedPointNodeRotation = CGFloat.zero
+        configureCrewNode(node: crewNode,
+                           crew: crew)
+        crewNodes.append(crewNode)
+        self.addChild(crewNode)
+        selectedCrewNodeRotation = CGFloat.zero
         if select {
-            self.select(point: point)
+            self.select(crew: crew)
         }
     }
     
     func updateScene(){
         removeAllChildren()
         setupCamera()
-        setupBackground()
-        setupPoints()
+//        setupBackground()
+        setupCrews()
     }
     func updateCameraWithNewNode(){
-        if let selectedPointNode {
-            camFollowToSelectedNodePosition(selectedPointNode.position)
+        if let selectedCrewNode {
+            camFollowToSelectedNodePosition(selectedCrewNode.position)
         }
     }
     
     func selectNode(_ node: SKNode?){
         if let node = node as? SKShapeNode,let name = node.name{
-            selectedPointNode = node
-            editedNode = selectedPointNode
-            if let name = node.name{
-                selectedPointNodeRotation = points.first(where: {$0.viewId == name})?.viewRotation.radians ?? 0
-            }
-            pointDelegate?.selectPointWithId(name)
+            selectedCrewNode = node
+            editedNode = selectedCrewNode
+//            if let name = node.name{
+//                selectedCrewNodeRotation = crews.first(where: {$0.viewId == name})?.viewRotation.radians ?? 0
+//            }
+            crewDelegate?.selectPointWithId(name)
             addSelectionAnimationToNode(node: node)
         }
     }
     
-    func select(point: VenuePoint){
-        if let selectedPointNode = selectedPointNode as? SKShapeNode{
-            removeSelectionAnimationFromNode(node: selectedPointNode)
+    func select(crew: Crew){
+        if let selectedCrewNode = selectedCrewNode as? SKShapeNode{
+            removeSelectionAnimationFromNode(node: selectedCrewNode)
         }
-        if let node = childNode(withName: point.viewId) as? SKShapeNode{
+        if let node = childNode(withName: crew.viewId) as? SKShapeNode{
             //selection animation
-            selectedPointNode = node
-            editedNode = selectedPointNode
-            selectedPointNodeRotation = point.viewRotation.radians
+            selectedCrewNode = node
+            editedNode = selectedCrewNode
             addSelectionAnimationToNode(node: node)
             camFollowToSelectedNodePosition(node.position)
         } else {
@@ -346,31 +253,31 @@ extension PitchEditSpriteScene{
 
     //'publish' variant?
     func deselect(){
-        if let node = selectedPointNode as? SKShapeNode{
+        if let node = selectedCrewNode as? SKShapeNode{
             removeSelectionAnimationFromNode(node: node)
         }
-        pointDelegate?.deselectPoint()
+        crewDelegate?.deselectPoint()
         editedNode = nil
-        selectedPointNode = nil
+        selectedCrewNode = nil
     }
     
-    func removeSelectedPoint(){
-        if let selectedPointNode,
-           selectedPointNode.isNotNodeWithName(NodeType.background.rawValue){
-            pointNodes.removeAll(where: {$0.name == selectedPointNode.name})
-            selectedPointNode.removeFromParent()
+    func removeSelectedCrew(){
+        if let selectedCrewNode,
+           selectedCrewNode.isNotNodeWithName(NodeType.background.rawValue){
+            crewNodes.removeAll(where: {$0.name == selectedCrewNode.name})
+            selectedCrewNode.removeFromParent()
             editedNode = nil
-            self.selectedPointNode = nil
+            self.selectedCrewNode = nil
         }
     }
  
-    func saveSelectedPoint(){
+    func saveSelectedCrew(){
         deselect()
     }
 }
 
 // MARK: - Scene constraints (cam + nodes moving constraints)
-extension PitchEditSpriteScene{
+extension ObvanEditSpriteScene{
     // diff - for the scale animation operation, not used for cam movement
     func maxVertCam(diff: Double) -> Double {
         self.size.height * (1 - (cameraNode.xScale + diff) / 2)
@@ -427,7 +334,7 @@ extension PitchEditSpriteScene{
 }
 
 // MARK: - Touches
-extension PitchEditSpriteScene{
+extension ObvanEditSpriteScene{
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
         guard let touch = touches.first else { return }
@@ -435,17 +342,11 @@ extension PitchEditSpriteScene{
         
         //removing moving gap
         var node = atPoint(location)
-        
-        //if sprite touched define shapenode to selected node
-        if let name = node.name,
-           name.hasSuffix(NodeZone.main.rawValue) || name.hasSuffix(NodeZone.rightUp.rawValue) || name.hasSuffix(NodeZone.rightDown.rawValue),
-           let newNode = node.parent{
-            node = newNode
-        }
+
 
         let innerLocation = touch.location(in: node)
         
-        if let selectedNode = selectedPointNode, selectedNode.name == node.name{
+        if let selectedNode = selectedCrewNode, selectedNode.name == node.name{
             //current selected node
             deltaXinTouch = innerLocation.x
             deltaYinTouch = innerLocation.y
@@ -459,18 +360,18 @@ extension PitchEditSpriteScene{
                 deltaXinTouch = innerLocation.x
                 deltaYinTouch = innerLocation.y
             } else {
-                //broadcastSchema selected
+                //background selected
                 sceneState = .idle
                 lastPanLocation = touch.location(in: view)
             }
-            //selected venuePoint animation start
+            //selected crew animation start
         }
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesMoved(touches, with: event)
         guard let touch = touches.first else { return }
-        if sceneState == .touchingNewPoint || sceneState == .movedPoint || sceneState == .touchingSelectedPoint, let selectedPointNode = selectedPointNode as? SKShapeNode{
+        if sceneState == .touchingNewPoint || sceneState == .movedPoint || sceneState == .touchingSelectedPoint, let selectedPointNode = selectedCrewNode as? SKShapeNode{
             let location = touch.location(in: self)
             let deltaPoint = CGPoint(x: location.x - deltaXinTouch * selectedPointNode.xScale,
                                      y: location.y - deltaYinTouch * selectedPointNode.xScale)
@@ -478,7 +379,7 @@ extension PitchEditSpriteScene{
             let optimalLocation = optimalPositionForNode(selectedPointNode,
                                                          location: deltaPoint)
             
-            self.selectedPointNode?.position = optimalLocation
+            self.selectedCrewNode?.position = optimalLocation
             smoothPositionForCam(nodePosition: optimalLocation)
             sceneState = .movedPoint
         } else {
@@ -506,13 +407,13 @@ extension PitchEditSpriteScene{
         super.touchesEnded(touches, with: event)
         if sceneState == .movedPoint || sceneState == .touchingNewPoint{
             updateData()
-            pointDelegate?.saveAction()
+            crewDelegate?.saveAction()
         } else if sceneState == .touchingSelectedPoint{
             deselect()
         } else if sceneState == .movingCam{
             //movingcam
             if let editedNode{
-                self.selectedPointNode = editedNode
+                self.selectedCrewNode = editedNode
             }
         } else {
             deselect()
@@ -528,11 +429,11 @@ extension PitchEditSpriteScene{
 }
 
 // MARK: - Move selected venuePoint node
-extension PitchEditSpriteScene{
+extension ObvanEditSpriteScene{
     func moveUP(){
-        guard let selectedPointNode else { return }
-        let newPoint = CGPoint(x: selectedPointNode.position.x, y: selectedPointNode.position.y + moveStep)
-        selectedPointNode.run(SKAction.move(to: optimalPositionForNode(selectedPointNode, location: newPoint), duration: 0.05))
+        guard let selectedCrewNode else { return }
+        let newPoint = CGPoint(x: selectedCrewNode.position.x, y: selectedCrewNode.position.y + moveStep)
+        selectedCrewNode.run(SKAction.move(to: optimalPositionForNode(selectedCrewNode, location: newPoint), duration: 0.05))
         let diff = newPoint.y - cameraNode.position.y
         if diff > camYscaleMoveFactor {
             let camNewPoint = CGPoint(x:newPoint.x  ,y: newPoint.y - camYscaleMoveFactor)
@@ -542,9 +443,9 @@ extension PitchEditSpriteScene{
     }
     
     func moveDown(){
-        guard let selectedPointNode else { return }
-        let newPoint = CGPoint(x: selectedPointNode.position.x, y: selectedPointNode.position.y - moveStep)
-        selectedPointNode.run(SKAction.move(to: optimalPositionForNode(selectedPointNode, location: newPoint), duration: 0.05))
+        guard let selectedCrewNode else { return }
+        let newPoint = CGPoint(x: selectedCrewNode.position.x, y: selectedCrewNode.position.y - moveStep)
+        selectedCrewNode.run(SKAction.move(to: optimalPositionForNode(selectedCrewNode, location: newPoint), duration: 0.05))
         let diff = cameraNode.position.y - newPoint.y
         if diff > camYscaleMoveFactor {
             let camNewPoint = CGPoint(x:newPoint.x  ,y: newPoint.y + camYscaleMoveFactor)
@@ -555,9 +456,9 @@ extension PitchEditSpriteScene{
     }
     
     func moveLeft(){
-        guard let selectedPointNode else { return }
-        let newPoint = CGPoint(x: selectedPointNode.position.x - moveStep, y: selectedPointNode.position.y)
-        selectedPointNode.run(SKAction.move(to: optimalPositionForNode(selectedPointNode, location: newPoint), duration: 0.05))
+        guard let selectedCrewNode else { return }
+        let newPoint = CGPoint(x: selectedCrewNode.position.x - moveStep, y: selectedCrewNode.position.y)
+        selectedCrewNode.run(SKAction.move(to: optimalPositionForNode(selectedCrewNode, location: newPoint), duration: 0.05))
         let diff = cameraNode.position.x - newPoint.x
         if diff > camXscaleMoveFactor {
             let camNewPoint = CGPoint(x:newPoint.x + camXscaleMoveFactor,y: newPoint.y)
@@ -567,84 +468,82 @@ extension PitchEditSpriteScene{
     }
     
     func moveRight(){
-        guard let selectedPointNode else { return }
-        let newPoint = CGPoint(x: selectedPointNode.position.x + moveStep, y: selectedPointNode.position.y)
-        selectedPointNode.run(SKAction.move(to: optimalPositionForNode(selectedPointNode, location: newPoint), duration: 0.05))
+        guard let selectedCrewNode else { return }
+        let newPoint = CGPoint(x: selectedCrewNode.position.x + moveStep, y: selectedCrewNode.position.y)
+        selectedCrewNode.run(SKAction.move(to: optimalPositionForNode(selectedCrewNode, location: newPoint), duration: 0.05))
         let diff = newPoint.x - cameraNode.position.x
         if diff > camXscaleMoveFactor {
             let camNewPoint = CGPoint(x:newPoint.x - camXscaleMoveFactor,y: newPoint.y)
             camFollowToSelectedNodePosition(camNewPoint)
         }
-
         updateData()
     }
-    
 }
 
 // MARK: - Rotate and swap direction camera sprite node
-extension PitchEditSpriteScene{
+extension ObvanEditSpriteScene{
     func rotateClockwiseSelectedPointCameraNode(){
-        if let selectedPointNode,
-           selectedPointNode.isNotNodeWithName(NodeType.background.rawValue),
-           let name = selectedPointNode.name,
-           let node = selectedPointNode.childNode(withName: name + NodeZone.main.rawValue){
+        if let selectedCrewNode,
+           selectedCrewNode.isNotNodeWithName(NodeType.background.rawValue),
+           let name = selectedCrewNode.name,
+           let node = selectedCrewNode.childNode(withName: name){
             node.run(SKAction.rotate(byAngle: angle, duration: animationDuration))
-            selectedPointNodeRotation += angle
+            selectedCrewNodeRotation += angle
             updateData()
         }
     }
     
     func rotateCounterClockwiseSelectedPointCameraNode(){
-        if let selectedPointNode,
-           selectedPointNode.isNotNodeWithName(NodeType.background.rawValue),
-           let name = selectedPointNode.name,
-           let node = selectedPointNode.childNode(withName: name + NodeZone.main.rawValue){
+        if let selectedCrewNode,
+           selectedCrewNode.isNotNodeWithName(NodeType.background.rawValue),
+           let name = selectedCrewNode.name,
+           let node = selectedCrewNode.childNode(withName: name){
             node.run(SKAction.rotate(byAngle: -angle, duration: animationDuration))
-            selectedPointNodeRotation -= angle
+            selectedCrewNodeRotation -= angle
             updateData()
         }
     }
     
     func swapSelectedPointCameraNode(){
-        if let selectedPointNode,
-           selectedPointNode.isNotNodeWithName(NodeType.background.rawValue),
-           let name = selectedPointNode.name,
-           let node = selectedPointNode.childNode(withName: name + NodeZone.main.rawValue){
+        if let selectedCrewNode,
+           selectedCrewNode.isNotNodeWithName(NodeType.background.rawValue),
+           let name = selectedCrewNode.name,
+           let node = selectedCrewNode.childNode(withName: name){
             let newScale = node.xScale * (-1)
             node.run(SKAction.scaleX(to: newScale, duration: animationDuration / 2))
             updateData()
         }
     }
-    
 }
-// MARK: - Scaling selected venuePoint node
-extension PitchEditSpriteScene{
+
+// MARK: - Scaling selected crew node
+extension ObvanEditSpriteScene{
     func scaleUpSelectedPoint(){
-        if let selectedPointNode, selectedPointNode.isNotNodeWithName(NodeType.background.rawValue) {
-            let xValue = Double(round(10 * selectedPointNode.xScale) / 10)
-            let yValue = Double(round(10 * selectedPointNode.yScale) / 10)
+        if let selectedCrewNode, selectedCrewNode.isNotNodeWithName(NodeType.background.rawValue) {
+            let xValue = Double(round(10 * selectedCrewNode.xScale) / 10)
+            let yValue = Double(round(10 * selectedCrewNode.yScale) / 10)
            
             if xValue < 0{
                 if xValue > -4{
                     let newXScale = xValue - 0.1
                     let newYScale = yValue + 0.1
                     
-                    let tempSize = CGSize(width: selectedPointNode.frame.width * (1 + xValue - newXScale), height: selectedPointNode.frame.height * (1 + yValue - newYScale))
+                    let tempSize = CGSize(width: selectedCrewNode.frame.width * (1 + xValue - newXScale), height: selectedCrewNode.frame.height * (1 + yValue - newYScale))
                     
-                    let newPosition = optimalPositionForSize(tempSize, location: selectedPointNode.position)
+                    let newPosition = optimalPositionForSize(tempSize, location: selectedCrewNode.position)
 
-                    selectedPointNode.run(SKAction.group([SKAction.scaleX(to: newXScale, y: newYScale, duration: animationDuration),SKAction.move(to: newPosition, duration: animationDuration)]))
+                    selectedCrewNode.run(SKAction.group([SKAction.scaleX(to: newXScale, y: newYScale, duration: animationDuration),SKAction.move(to: newPosition, duration: animationDuration)]))
                 }
             } else {
                 if xValue < 4{
                     let newXScale = xValue + 0.1
                     let newYScale = yValue + 0.1
                     
-                    let tempSize = CGSize(width: (selectedPointNode.frame.width * (1 - xValue + newXScale)).rounded(), height: (selectedPointNode.frame.height * (1 - yValue + newYScale)).rounded())
+                    let tempSize = CGSize(width: (selectedCrewNode.frame.width * (1 - xValue + newXScale)).rounded(), height: (selectedCrewNode.frame.height * (1 - yValue + newYScale)).rounded())
                     
-                    let newPosition = optimalPositionForSize(tempSize, location: selectedPointNode.position)
+                    let newPosition = optimalPositionForSize(tempSize, location: selectedCrewNode.position)
 
-                    selectedPointNode.run(SKAction.group([SKAction.scaleX(to: newXScale, y: newYScale, duration: animationDuration),SKAction.move(to: newPosition, duration: animationDuration)]))
+                    selectedCrewNode.run(SKAction.group([SKAction.scaleX(to: newXScale, y: newYScale, duration: animationDuration),SKAction.move(to: newPosition, duration: animationDuration)]))
                 }
             }
             updateData()
@@ -652,20 +551,20 @@ extension PitchEditSpriteScene{
     }
     
     func scaleDownSelectedPoint(){
-        if let selectedPointNode, selectedPointNode.isNotNodeWithName(NodeType.background.rawValue) {
-            let xValue = Double(round(10 * selectedPointNode.xScale) / 10)
-            let yValue = Double(round(10 * selectedPointNode.yScale) / 10)
+        if let selectedCrewNode, selectedCrewNode.isNotNodeWithName(NodeType.background.rawValue) {
+            let xValue = Double(round(10 * selectedCrewNode.xScale) / 10)
+            let yValue = Double(round(10 * selectedCrewNode.yScale) / 10)
             if xValue < 0{
                 if xValue < -0.5{
                     let newXScale = xValue + 0.1
                     let newYScale = yValue - 0.1
-                    selectedPointNode.run(SKAction.scaleX(to: newXScale, y: newYScale, duration: animationDuration))
+                    selectedCrewNode.run(SKAction.scaleX(to: newXScale, y: newYScale, duration: animationDuration))
                 }
             } else {
                 if xValue > 0.5{
                     let newXScale = xValue - 0.1
                     let newYScale = yValue - 0.1
-                    selectedPointNode.run(SKAction.scaleX(to: newXScale, y: newYScale, duration: animationDuration))
+                    selectedCrewNode.run(SKAction.scaleX(to: newXScale, y: newYScale, duration: animationDuration))
                 }
             }
             updateData()
@@ -677,17 +576,18 @@ extension PitchEditSpriteScene{
         node.yScale = scaleFactor
     }
 }
+
     // MARK: - Cam scale control
-extension PitchEditSpriteScene{
+extension ObvanEditSpriteScene{
     //cam scale
     func scaleUp(){
         if self.cameraNode.xScale > 0.1{
             let newScale = cameraNode.xScale - 0.1
             var action: SKAction = SKAction()
-            if let selectedPointNode,
-               selectedPointNode.isNotNodeWithName(NodeType.background.rawValue) {
+            if let selectedCrewNode,
+               selectedCrewNode.isNotNodeWithName(NodeType.background.rawValue) {
                 //different variant for scaling center?
-                let position =  optimalCamPosition(newLocation: selectedPointNode.position)
+                let position =  optimalCamPosition(newLocation: selectedCrewNode.position)
                 action = SKAction.group([SKAction.move(to: position, duration: animationDuration),SKAction.scale(to: newScale, duration: animationDuration)])
             } else {
                 action = SKAction.scale(to: newScale, duration: animationDuration)
@@ -718,10 +618,10 @@ extension PitchEditSpriteScene{
     
     func scaleCameraTo(_ scaleFactor: Double){
         var action: SKAction = SKAction()
-        if let selectedPointNode,
-           selectedPointNode.isNotNodeWithName(NodeType.background.rawValue) {
+        if let selectedCrewNode,
+           selectedCrewNode.isNotNodeWithName(NodeType.background.rawValue) {
             //different variant for scaling center?
-            let position =  optimalCamPosition(newLocation: selectedPointNode.position)
+            let position =  optimalCamPosition(newLocation: selectedCrewNode.position)
             action = SKAction.group([SKAction.move(to: position, duration: animationDuration),SKAction.scale(to: scaleFactor, duration: animationDuration)])
         } else {
             action = SKAction.scale(to: scaleFactor, duration: animationDuration)
@@ -730,31 +630,15 @@ extension PitchEditSpriteScene{
     }
 }
 // MARK: - Camera following to selected Node
-extension PitchEditSpriteScene{
+extension ObvanEditSpriteScene{
     func camFollowToSelectedNodePosition(_ newPosition: CGPoint){
-        if let selectedPointNode,
-           selectedPointNode.isNotNodeWithName(NodeType.background.rawValue)/*, cameraNode.action(forKey: "camMove") == nil */{
+        if let selectedCrewNode,
+           selectedCrewNode.isNotNodeWithName(NodeType.background.rawValue){
             //different variant for scaling center?
             let position =  optimalCamPosition(newLocation: newPosition)
             let action = SKAction.move(to: position, duration: animationDuration)
-            cameraNode.run(action)//,withKey: "camMove")
+            cameraNode.run(action)
             
         }
     }
 }
-
-extension SKNode{
-    func isNotNodeWithName(_ name: String)->Bool{
-        return self.name != name
-    }
-}
-
-
-//#Preview {
-//    let mdm = DataManager(networkManager: NetworkManager())
-//    mdm.setMember(id: "123")
-//    let localEvent: Broadcast = mdm.mainContext.fetchOrCreateObject(withID: "id")
-//    return BPEditStadiumView(event: localEvent)
-//        .environmentObject(mdm)
-//        .environment(\.managedObjectContext, mdm.mainContext)
-//}

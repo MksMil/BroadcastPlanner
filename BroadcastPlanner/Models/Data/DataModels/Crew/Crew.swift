@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUICore
 import CoreData
 
 public class Crew: NSManagedObject {
@@ -35,8 +36,8 @@ extension Crew : Identifiable {
     var viewY: Double{
         Double(coordinateY)
     }
-    var viewRotation: Double {
-        Double(rotation)
+    var viewRotation: Angle{
+        Angle(degrees: Double(rotation))
     }
     var viewScaleFactor: Double{
         Double(scaleFactor)
@@ -63,7 +64,7 @@ extension Crew : Identifiable {
                 position: viewPosition,
                 coordinateX: viewX,
                 coordinateY: viewY,
-                rotation: viewRotation,
+                rotation: viewRotation.radians,
                 scaleFactor: viewScaleFactor,
                 task: viewTask,
                 memberId: viewMemberId,

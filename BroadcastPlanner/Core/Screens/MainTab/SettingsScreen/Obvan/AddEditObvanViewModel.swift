@@ -25,4 +25,6 @@ class AddEditObvanViewModel: ObservableObject{
         }
 
     }
+    
+    let obvanScene = SKScene()
 }
