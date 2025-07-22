@@ -20,6 +20,7 @@ struct BroadcastPlannerApp: App {
             RootView()
                 .onAppear{
                     dataManager.networkManager.eventProgressHandler = appState
+                    dataManager.networkManager.globalSettingsDelegate = globalSettings
                 }
                 .onChange(of: scenePhase, perform: { phase in
                     if appState.state == .authorized{

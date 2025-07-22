@@ -110,8 +110,8 @@ extension StateCongiguration{
         isSecondaryButtonVisible: true,
         isSecondaryButtonEnabled: true,
         secondaryButtonIcon: .obvan,
-        isBackButtonVisible: false,
-        isBackButtonEnabled: false,
+        isBackButtonVisible: true,
+        isBackButtonEnabled: true,
         menuState: .none,
         title: "Edit schema"
     )

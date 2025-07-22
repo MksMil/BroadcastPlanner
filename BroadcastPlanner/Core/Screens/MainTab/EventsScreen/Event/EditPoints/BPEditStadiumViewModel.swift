@@ -46,10 +46,7 @@ final class BPEditStadiumViewModel: ObservableObject {
     @Published var filteredLocationPoints: [VenuePoint] = []
     
     var renderPitchScene: PitchEditSpriteScene
-//  
-//    var camNumbers: [Int] = []
-//    var soundNumbers: [Int] = []
-//    var lightNumbers: [Int] = []
+
     //templates control
     
     var selectedTemplate: Template?
@@ -61,10 +58,7 @@ final class BPEditStadiumViewModel: ObservableObject {
         self.localPoints = broadcast.viewVenuePoints
         self.filteredLocationPoints = localPoints
         self.renderPitchScene = PitchEditSpriteScene()
-        
-        print("localPoints : \(localPoints.count)")
-        print("filteredPoint : \(filteredLocationPoints.count)")
-        print("broadcast: \(broadcast)")
+
         renderPitchScene.pointDelegate = self
         renderPitchScene.points = localPoints
     }

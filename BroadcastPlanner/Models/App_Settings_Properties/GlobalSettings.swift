@@ -1,109 +1,69 @@
 import Foundation
+import Combine
 
-//globals settings for UI and all pointlocation and crew templates
-
-class GlobalSettings: ObservableObject,Codable {
-    
-    //MARK: - Member
-    var userSpecialization: [String] = [
-        
+class GlobalSettings: ObservableObject, Codable {
+    // MARK: - Properties
+    @Published var userSpecialization: [String] = [
         "Producer",
         "Floor manager",
-        
         "Main director",
         "Director",
-        
         "Main cameramen",
         "Cameramen",
-        
         "Replay director",
         "Replay operator",
-        
         "Main sound director",
         "Sound director",
-        
         "Graphics operator",
         "Unknown"
     ]
     
-    //MARK: - Camera
-    //MARK: Position
-    var cameraPosition: [String] = [
+    @Published var cameraPosition: [String] = [
         "Unknown",
         "Main Match Camera Wide Angle",
         "Main Close Up",
-        
-        //central pitch
         "Pitch Central Ring",
-        
-        //left goal
         "Left Behind Goal",
-
-        //right goal
         "Right Behind Goal",
-
-        //reverce
         "Reverse Central lower tier",
-
-        //high behindGoal RHS
         "Right High behind goal",
-        
-        //offsides
         "left offside",
         "right offside",
-        
-        ///Extended cams
-        //left hand side cameras
-       "Left Behind Goal Mirror",
+        "Left Behind Goal Mirror",
         "Left PoleCam",
-         "Goal LHS left",
-         "Goal LHS right",
-         "Left High behind goal",
-        
-        //right hand side cameras
+        "Goal LHS left",
+        "Goal LHS right",
+        "Left High behind goal",
         "Right Behind Goal Mirror",
         "Right PoleCam",
         "Goal RHS left",
         "Goal RHS right",
-        
-        //reverses
-         "Reverse Central upper tier",
+        "Reverse Central upper tier",
         "Second Reverse Central upper tier",
         "Second Reverse Central lower tier",
-        
         "left pitch",
         "right pitch",
-        
-        //stedicams
         "Stedicam Left Side",
         "Stedicam Right Side",
         "Reverse stedicam Left Side",
         "Reverse stedicam Right Side",
-
-        //beauty shots
         "Upper left Beauty Shot",
         "Upper right Beauty Shot",
         "Lower left Beauty Shot",
         "Lower right Beauty Shot",
         "Helicopter",
         "Drone",
-        
-        //goal line cam
         "Left goal line",
         "Right goal line",
-        
-        //spider cam
         "Spider cam",
-        
-        //support
         "Team arrivals",
         "Flash interview",
         "Dressing room",
         "Press conference",
         "Tunell cam"
     ]
-    //MARK: Optic
-    var opticType: [String] = [
+    
+    @Published var opticType: [String] = [
         "Empty",
         "x14",
         "x22",
@@ -113,41 +73,37 @@ class GlobalSettings: ObservableObject,Codable {
         "x76",
         "x86",
         "x95",
-         "pole cam",
-          "spider",
-         "drone",
-         "helicopter",
-         "Black Hawk",
+        "pole cam",
+        "spider",
+        "drone",
+        "helicopter",
+        "Black Hawk",
         "Archer 2",
         "Unknown"
     ]
     
-    
-    //MARK: - Sound
-    var soundPlaceType: [String] = [
+    @Published var soundPlaceType: [String] = [
         "Empty",
         "On Camera",
         "Low Tripod",
-         "Super Low Tripod",
-         "High Tripod",
-         "Super High Tripod",
+        "Super Low Tripod",
+        "High Tripod",
+        "Super High Tripod",
         "Unknown"
     ]
     
-    var windDefenceType: [String] = [
+    @Published var windDefenceType: [String] = [
         "Empty",
         "Dog",
         "Unknown"
     ]
     
-    //MARK: - Light
-    var lightType: [String] = [
+    @Published var lightType: [String] = [
         "Empty",
-        "Unknown",
+        "Unknown"
     ]
     
-    //MARK: - Hardware
-    var hardwareType: [String] = [
+    @Published var hardwareType: [String] = [
         "Empty",
         "EVS",
         "K2-DYNO",
@@ -156,11 +112,118 @@ class GlobalSettings: ObservableObject,Codable {
         "V-MIX",
         "Unknown"
     ]
-    // MARK: - Initialization
-    init() {
-        
+    
+    // MARK: - Codable
+    enum CodingKeys: String, CodingKey {
+        case userSpecialization
+        case cameraPosition
+        case opticType
+        case soundPlaceType
+        case windDefenceType
+        case lightType
+        case hardwareType
     }
     
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(userSpecialization, forKey: .userSpecialization)
+        try container.encode(cameraPosition, forKey: .cameraPosition)
+        try container.encode(opticType, forKey: .opticType)
+        try container.encode(soundPlaceType, forKey: .soundPlaceType)
+        try container.encode(windDefenceType, forKey: .windDefenceType)
+        try container.encode(lightType, forKey: .lightType)
+        try container.encode(hardwareType, forKey: .hardwareType)
+    }
     
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        userSpecialization = try container.decode([String].self, forKey: .userSpecialization)
+        cameraPosition = try container.decode([String].self, forKey: .cameraPosition)
+        opticType = try container.decode([String].self, forKey: .opticType)
+        soundPlaceType = try container.decode([String].self, forKey: .soundPlaceType)
+        windDefenceType = try container.decode([String].self, forKey: .windDefenceType)
+        lightType = try container.decode([String].self, forKey: .lightType)
+        hardwareType = try container.decode([String].self, forKey: .hardwareType)
+    }
     
+    // MARK: - Initialization
+    init() {
+        loadFromUserDefaults()
+    }
+    
+    // MARK: - UserDefaults Methods
+    private static let userDefaultsKey = "GlobalSettings"
+    
+    func saveToUserDefaults() {
+        let encoder = JSONEncoder()
+        do {
+            let data = try encoder.encode(self)
+            UserDefaults.standard.set(data, forKey: GlobalSettings.userDefaultsKey)
+        } catch {
+            print("Failed to save GlobalSettings to UserDefaults: \(error)")
+        }
+    }
+    
+    func loadFromUserDefaults() {
+        guard let data = UserDefaults.standard.data(forKey: GlobalSettings.userDefaultsKey) else {
+            // Если данных нет, сохраняем текущие значения как начальные
+            saveToUserDefaults()
+            return
+        }
+        
+        let decoder = JSONDecoder()
+        do {
+            let loadedSettings = try decoder.decode(GlobalSettings.self, from: data)
+            self.userSpecialization = loadedSettings.userSpecialization
+            self.cameraPosition = loadedSettings.cameraPosition
+            self.opticType = loadedSettings.opticType
+            self.soundPlaceType = loadedSettings.soundPlaceType
+            self.windDefenceType = loadedSettings.windDefenceType
+            self.lightType = loadedSettings.lightType
+            self.hardwareType = loadedSettings.hardwareType
+        } catch {
+            print("Failed to load GlobalSettings from UserDefaults: \(error)")
+            // Сохраняем текущие значения в случае ошибки
+            saveToUserDefaults()
+        }
+    }
+    
+    // MARK: - Auto-Save Setup
+    private var cancellables = Set<AnyCancellable>()
+    
+    private func setupAutoSave() {
+        Publishers.MergeMany(
+            $userSpecialization,
+            $cameraPosition,
+            $opticType,
+            $soundPlaceType,
+            $windDefenceType,
+            $lightType,
+            $hardwareType
+        )
+        .debounce(for: .seconds(1), scheduler: DispatchQueue.main)
+        .sink { [weak self] _ in
+            self?.saveToUserDefaults()
+            //TODO: updated notification?
+        }
+        .store(in: &cancellables)
+    }
 }
+
+// MARK: - GlobalSettingsDelegate
+extension GlobalSettings: GlobalSettingsDelegate {
+     func updateGlobalSettingsArray(name: String, values: [String]) {
+         switch name {
+         case "userSpecialization": self.userSpecialization = values
+         case "cameraPosition": self.cameraPosition = values
+         case "opticType": self.opticType = values
+         case "soundPlaceType": self.soundPlaceType = values
+         case "windDefenceType": self.windDefenceType = values
+         case "lightType": self.lightType = values
+         case "hardwareType": self.hardwareType = values
+         default: break
+         }
+         saveToUserDefaults()
+     }
+}
+

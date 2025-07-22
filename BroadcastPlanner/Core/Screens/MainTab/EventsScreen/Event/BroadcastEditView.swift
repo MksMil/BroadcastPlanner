@@ -2,31 +2,9 @@ import Combine
 import SpriteKit
 import SwiftUI
 
-//final class BPCreateEditEventViewModel: ObservableObject{
-//    var homeClub: Club?
-//    var guestClub: Club?
-//    var eventDate: Date
-//    var location: Venue?
-//    
-//    init(event: Broadcast){
-//        if let club = event.homeClub{
-//            homeClub = club
-//        }
-//        if let club = event.guestClub{
-//            guestClub = club
-//        }
-//        if let location = event.venue{
-//            self.location = location
-//        }
-//        self.eventDate = event.date ?? Date()
-//    }
-//}
-
 struct BroadcastEditView: View {
     let logoSize: Double = 90
-    
-//    @StateObject private var vm: BPCreateEditEventViewModel
-    
+        
     @EnvironmentObject var appState: ApplicationState
     @EnvironmentObject var router: Router
     @EnvironmentObject var dataManager: DataManager
@@ -34,11 +12,6 @@ struct BroadcastEditView: View {
     let broadcast: Broadcast
 
     @State private var isRemoveConfirm: Bool = false
-     
-//    init(broadcast: Broadcast) {
-////        self._vm = StateObject(wrappedValue: BPCreateEditEventViewModel(event: broadcast))
-//        self.broadcast = broadcast
-//    }
 
     var body: some View {
 
@@ -54,7 +27,6 @@ struct BroadcastEditView: View {
                                               offset: logoSize) {
                             
                         } acceptAction: { newVenue in
-//                            vm.location = newLocation
                             broadcast.venue = newVenue
                         }
                        VStack(spacing: 5){
@@ -65,13 +37,11 @@ struct BroadcastEditView: View {
                                               logoSize: logoSize,
                                               cancelAction: {},
                                               accessAction: { club in
-//                                    vm.homeClub = club
                                     broadcast.homeClub = club
                                 })
                                 //broadcast date section
                                 TimeAndDateSelectionView(date: broadcast.viewDate,
                                                          logoSize: logoSize) {newDate in
-//                                    vm.eventDate = newDate
                                     broadcast.date = newDate
                                 }
                                 //guest team logo/selection action
@@ -79,7 +49,6 @@ struct BroadcastEditView: View {
                                               logoSize: logoSize,
                                               cancelAction: {},
                                               accessAction: { club in
-//                                    vm.guestClub = club
                                     broadcast.guestClub = club
                                 })
                             }
@@ -97,7 +66,7 @@ struct BroadcastEditView: View {
                         .resizable()
                         .scaledToFit()
                         .onTapGesture {
-                            
+                            try? dataManager.mainContext.save()
                             router.routeTo(path: .stadPointsEdit(broadcast))
                         }
 //                    broadcast.viewObvanPreview
@@ -122,12 +91,6 @@ struct BroadcastEditView: View {
             
             appState.primaryAction = {
                 do{
-//                    broadcast.updateValues(date: vm.eventDate,
-//                                           lastUpdated: Date.now,
-//                                           homeClub: vm.homeClub,
-//                                           guestClub: vm.guestClub,
-//                                           venue: vm.location,
-//                                           in: dataManager.mainContext)
                     try dataManager.saveContext(publish: .broadcasts,
                                                id: [broadcast.viewId])
                 } catch{

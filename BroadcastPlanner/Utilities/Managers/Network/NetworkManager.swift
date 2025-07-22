@@ -28,6 +28,8 @@ final class NetworkManager: ObservableObject {
         }
     }
     
+    weak var globalSettingsDelegate: GlobalSettingsDelegate?
+    
     weak var syncDelegate: UpdateDelegateProtocol?
     weak var eventProgressHandler: EventsProgressHandler?
 
@@ -60,6 +62,7 @@ final class NetworkManager: ObservableObject {
     func startToObserveChanges() {
         guard !isObserving else { return }
         isObserving = true
+        makeGlobalSettingsSnapshotListener()
         makeSnapshotListener(
             forType: GlobalProperties.Path.members,
             of: MemberDTO.self
@@ -426,4 +429,118 @@ extension NetworkManager {
                                              id: String) -> DocumentReference {
         dbService.collection(type.rawValue).document(id)
     }
+}
+
+
+// MARK: - GlobalSettings Methods
+extension NetworkManager {
+
+    private func makeGlobalSettingsSnapshotListener() {
+        let collection = dbService.collection(GlobalProperties.Path.globalSettings.rawValue)
+        let arrays = [
+            "userSpecialization",
+            "cameraPosition",
+            "opticType",
+            "soundPlaceType",
+            "windDefenceType",
+            "lightType",
+            "hardwareType"
+        ]
+        
+        arrays.forEach { arrayName in
+            let listener = collection.document(arrayName).addSnapshotListener { document, error in
+                guard let document = document, document.exists else {
+                    print("NetworkManager: \(arrayName) document error: \(error?.localizedDescription ?? "Document does not exist")")
+                    return
+                }
+                do {
+                    let data = try document.data(as: GlobalSettingsArray.self)
+                    Task { @MainActor in
+                        self.globalSettingsDelegate?.updateGlobalSettingsArray(name: arrayName, values: data.values)
+                    }
+                } catch {
+                    print("NetworkManager: Failed to decode \(arrayName): \(error)")
+                }
+            }
+            listeners.append(listener)
+        }
+    }
+    
+    func loadGlobalSettings() async {
+        let collection = dbService.collection(GlobalProperties.Path.globalSettings.rawValue)
+        let arrays = [
+            "userSpecialization",
+            "cameraPosition",
+            "opticType",
+            "soundPlaceType",
+            "windDefenceType",
+            "lightType",
+            "hardwareType"
+        ]
+        
+        for arrayName in arrays {
+            do {
+                let document = try await collection.document(arrayName).getDocument()
+                guard document.exists else {
+                    print("NetworkManager: \(arrayName) document does not exist")
+                    continue
+                }
+                let data = try document.data(as: GlobalSettingsArray.self)
+                Task { @MainActor in
+                    self.globalSettingsDelegate?.updateGlobalSettingsArray(name: arrayName, values: data.values)
+                }
+            } catch {
+                print("NetworkManager: Failed to load \(arrayName): \(error)")
+            }
+        }
+    }
+    
+   private func saveGlobalSettingsArray(name: String, values: [String]) async {
+        do {
+            let data = try Firestore.Encoder().encode(GlobalSettingsArray(values: values))
+            try await dbService.collection(GlobalProperties.Path.globalSettings.rawValue)
+                .document(name)
+                .setData(data)
+        } catch {
+            print("NetworkManager: Failed to save \(name): \(error)")
+        }
+    }
+    
+    // MARK: - Save to Firestore
+      func saveGlobalSettingsToFirestore() async {
+          guard let globalSettingsDelegate = globalSettingsDelegate as? GlobalSettings else { return }
+          await withTaskGroup(of: Void.self) { group in
+              group.addTask {
+                  await self.saveGlobalSettingsArray(name: "userSpecialization", values: globalSettingsDelegate.userSpecialization)
+              }
+              group.addTask {
+                  await self.saveGlobalSettingsArray(name: "cameraPosition", values: globalSettingsDelegate.cameraPosition)
+              }
+              group.addTask {
+                  await self.saveGlobalSettingsArray(name: "opticType", values: globalSettingsDelegate.opticType)
+              }
+              group.addTask {
+                  await self.saveGlobalSettingsArray(name: "soundPlaceType", values: globalSettingsDelegate.soundPlaceType)
+              }
+              group.addTask {
+                  await self.saveGlobalSettingsArray(name: "windDefenceType", values: globalSettingsDelegate.windDefenceType)
+              }
+              group.addTask {
+                  await self.saveGlobalSettingsArray(name: "lightType", values: globalSettingsDelegate.lightType)
+              }
+              group.addTask {
+                  await self.saveGlobalSettingsArray(name: "hardwareType", values: globalSettingsDelegate.hardwareType)
+              }
+          }
+      }
+}
+
+// MARK: - Helper Codable Struct
+struct GlobalSettingsArray: Codable {
+    let values: [String]
+}
+
+// MARK: - GlobalSettings Delegate Protocol
+protocol GlobalSettingsDelegate: AnyObject {
+    func updateGlobalSettingsArray(name: String, values: [String])
 }

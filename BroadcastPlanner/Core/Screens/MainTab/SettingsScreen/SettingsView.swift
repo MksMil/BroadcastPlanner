@@ -103,6 +103,20 @@ struct SettingsView: View {
                         .clipShape(RoundedRectangle(cornerRadius: 20))
                         .padding(.horizontal)
                 }
+                //TODO: edit settings view
+                Button {
+//                    router.routeTo(path: RouterPath.venueCollection)
+                    Task{
+                       await dataManager.networkManager.saveGlobalSettingsToFirestore()
+                    }
+                }label: {
+                    Text("Save settings")
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 50)
+                        .background {Color.white.opacity(30)}
+                        .clipShape(RoundedRectangle(cornerRadius: 20))
+                        .padding(.horizontal)
+                }
                 
                 // MARK: - "Sign out" button
                 

@@ -6,17 +6,17 @@ struct ExploreEventView: View {
     
     let logoSize: Double = 90
     
-    @StateObject private var vm: BPCreateEditEventViewModel
+//    @StateObject private var vm: BPCreateEditEventViewModel
     
 //    @EnvironmentObject var eventRouter: EventTabRouter
     @EnvironmentObject var mdm: DataManager
     
-    let event: Broadcast
+    let broadcast: Broadcast
     
-    init(event: Broadcast) {
-        self._vm = StateObject(wrappedValue: BPCreateEditEventViewModel(event: event))
-        self.event = event
-    }
+//    init(event: Broadcast) {
+//        self._vm = StateObject(wrappedValue: BPCreateEditEventViewModel(event: event))
+//        self.event = event
+//    }
     var body: some View {
         ZStack{
             MainBackground()
@@ -24,27 +24,26 @@ struct ExploreEventView: View {
                 //header: time, date, teams, venue
                 VStack{
                     ZStack{
-                        LocationSelectionView(location: vm.location, offset: logoSize,editable: false) {
+                        LocationSelectionView(location: broadcast.venue, offset: logoSize,editable: false) {
                             
                         } acceptAction: { newLocation in
-                            vm.location = newLocation
                         }
                         VStack(spacing: 5){
                             //team logos section
                             HStack(alignment: .top) {
                                 //home team logo
-                                LogoImageView(club: event.homeClub,
+                                LogoImageView(club: broadcast.homeClub,
                                               logoSize: logoSize,
                                               editable: false,
                                               cancelAction: {},
                                               accessAction: { club in
-                                    vm.homeClub = club
+//                                    broadcast. = club
                                 })
                                 
                                 //broadcast date section
                                 VStack(spacing: 20) {
                                     Text(
-                                        vm.eventDate.formatted(
+                                        broadcast.viewDate.formatted(
                                             date: .abbreviated, time: .omitted)
                                     )
                                     .fixedSize()
@@ -63,7 +62,7 @@ struct ExploreEventView: View {
                                    
 
                                     Text(
-                                        vm.eventDate.formatted(
+                                        broadcast.viewDate.formatted(
                                             date: .omitted,
                                             time: .shortened)
                                     )
@@ -81,12 +80,12 @@ struct ExploreEventView: View {
                                   
                                 }
                                 //guest team logo
-                                LogoImageView(club: event.guestClub,
+                                LogoImageView(club: broadcast.guestClub,
                                               logoSize: logoSize,
                                               editable: false,
                                               cancelAction: {},
                                               accessAction: { club in
-                                    vm.guestClub = club
+//                                    vm.guestClub = club
                                 })
                             }
                             .padding(.top)
@@ -99,7 +98,7 @@ struct ExploreEventView: View {
                 
                 //previews
                 HStack(spacing: 15) {
-                    event.viewVenueSchemaPreview
+                    broadcast.viewVenueSchemaPreview
                         .resizable()
                         .scaledToFit()
                         .onTapGesture {
