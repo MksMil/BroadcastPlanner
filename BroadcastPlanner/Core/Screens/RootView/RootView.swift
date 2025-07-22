@@ -36,7 +36,7 @@ struct RootView: View {
                             case .authScreen:
                                 AuthenticationScreen()
                             case .ownerInfo:
-                                BPAccountInfoView(user: dataManager.fetchOwner())
+                                EditMemberInfoView(user: dataManager.fetchOwner())
                             case .settings:
                                 SettingsView()
                                 // email/pass update
@@ -77,6 +77,11 @@ struct RootView: View {
                                 BroadcastEditView(broadcast: broadcast)
                             case .stadPointsEdit(let broadcast):
                                 BPEditStadiumView(broadcast: broadcast)
+                                //obvan managment
+                            case .obvanCollection:
+                                ObvanCollectionView()
+                            case .addEditObvan(let obvan):
+                                AddEditObvanView(obvan: obvan)
                                 //messenger
                             case .messenger:
                                 BPMessengerView()

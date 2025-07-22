@@ -27,15 +27,20 @@ struct BroadcastPlannerApp: App {
                         switch phase {
                             case .active:
                                 //send online status
+                                #if DEBUG
                                 print("scene in foreground: send online status")
+                                #endif
                                 appState.userOnlineStatus = .online
                             case .background, .inactive:
                                 //send offline status
-                                //save local cache: images + data( broadcasts, members, messages)
+                                #if DEBUG
                                 print("scene in background or inactive state: send offline status")
+                                #endif
                                 appState.userOnlineStatus = .offline
                             @unknown default:
+                                #if DEBUG
                                 print("scene in unknown phase: send unknown status")
+                                #endif
                         }
                     }
                 })

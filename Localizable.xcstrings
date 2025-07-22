@@ -53,6 +53,12 @@
     "Add new template" : {
 
     },
+    "Add Obvan" : {
+
+    },
+    "Add specialization" : {
+
+    },
     "Add Venue" : {
 
     },
@@ -101,9 +107,6 @@
     "Discard all changes and step back?" : {
 
     },
-    "Done" : {
-
-    },
     "empty" : {
 
     },
@@ -111,6 +114,9 @@
 
     },
     "Hello Error" : {
+
+    },
+    "Hello, World!" : {
 
     },
     "Hours" : {
@@ -149,6 +155,9 @@
     "Permanently erase the Club in the trash?" : {
 
     },
+    "Permanently erase the Obvan in the trash?" : {
+
+    },
     "Permanently erase the photo in the trash?" : {
 
     },
@@ -165,6 +174,9 @@
 
     },
     "Remove Club" : {
+
+    },
+    "Remove Obvan" : {
 
     },
     "Remove Photo" : {
@@ -210,9 +222,6 @@
 
     },
     "Tap to edit" : {
-
-    },
-    "Tap to make choise of specialization" : {
 
     },
     "template title" : {

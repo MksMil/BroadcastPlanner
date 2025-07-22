@@ -215,18 +215,19 @@ extension ApplicationState{
 //                
             case .clubCollection:
                 applyAppConfiguration(StateCongiguration.ClubCollectionConfiguration)
-//            case .locationSheet(let club):
-//                <#code#>
             case .addEditClub(_):
                 applyAppConfiguration(StateCongiguration.AddEditClubConfiguration)
-//            case .addEditLocation(let venue):
-//                <#code#>
-//            case .addEditObvan:
-//                <#code#>
+
+            case .obvanCollection:
+                applyAppConfiguration(StateCongiguration.ObvanCollectionConfiguration)
+            case .addEditObvan(_):
+                applyAppConfiguration(StateCongiguration.AddEditObvanConfiguration)
+                
             case .venueCollection:
                 applyAppConfiguration(StateCongiguration.VenueCollectionConfiguration)
             case .addEditVenue(_):
                 applyAppConfiguration(StateCongiguration.AddEditVenueConfiguration)
+                
             case .messenger:
                 applyAppConfiguration(StateCongiguration.MessengerConfiguration)
             default: applyAppConfiguration(StateCongiguration.AllDissabledConfiguration)

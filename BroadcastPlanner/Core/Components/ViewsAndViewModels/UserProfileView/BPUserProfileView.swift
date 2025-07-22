@@ -113,7 +113,7 @@ struct BPUserProfileView: View {
 //        }
         VStack {
             AnyContentView(
-                sourceContent: settings.userSpecialization,
+                sourceContent: $settings.userSpecialization,
                 selectedContent: .constant(user.viewSpecialization),
                 isEdit: .constant(false)
             ) {
@@ -121,16 +121,6 @@ struct BPUserProfileView: View {
                     
             } cellView: { text in
                 BPSpecializationCellView(text: text)
-            } buttonView: {
-                EmptyView()
-//                Text("Done")
-//                    .fixedSize()
-//                    .padding(.horizontal, 20)
-//                    .padding(.vertical, 4)
-//                    .background {
-//                        RoundedRectangle(cornerRadius: 10).fill(
-//                            .white.opacity(0.4))
-//                    }
             } promptView: {
                 EmptyView()
 //                Text("Tap to make choise of specialization")

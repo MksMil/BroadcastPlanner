@@ -32,10 +32,11 @@ enum RouterPath: Hashable{
     case updatePassword
     case clubCollection
     case venueCollection
+    case obvanCollection
     
     case addEditClub(Club)
     case addEditVenue(Venue)
-    case addEditObvan
+    case addEditObvan(Obvan)
     
     case messenger
 }

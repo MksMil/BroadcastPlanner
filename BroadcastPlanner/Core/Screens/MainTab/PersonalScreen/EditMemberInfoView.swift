@@ -1,12 +1,12 @@
 import PhotosUI
 import SwiftUI
 
-struct BPAccountInfoView: View {
+struct EditMemberInfoView: View {
     @EnvironmentObject var dataManager: DataManager
     @EnvironmentObject var router: Router
     @EnvironmentObject var appState: ApplicationState
     
-    @StateObject var vm: PersonalScreenViewModel
+    @StateObject var vm: EditMemberViewModel
     @State private var isEdit: Bool = false
     @State private var isEditSpecialization: Bool = false
 
@@ -14,7 +14,7 @@ struct BPAccountInfoView: View {
     
     init(user: Member) {
         self.user = user
-        self._vm = StateObject(wrappedValue: PersonalScreenViewModel(localUser: user))
+        self._vm = StateObject(wrappedValue: EditMemberViewModel(localUser: user))
     }
 
     var body: some View {

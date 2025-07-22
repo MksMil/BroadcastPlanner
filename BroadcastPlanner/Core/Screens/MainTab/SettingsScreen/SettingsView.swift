@@ -103,6 +103,17 @@ struct SettingsView: View {
                         .clipShape(RoundedRectangle(cornerRadius: 20))
                         .padding(.horizontal)
                 }
+                //add obvan
+                Button {
+                    router.routeTo(path: RouterPath.obvanCollection)
+                }label: {
+                    Text("Add Obvan")
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 50)
+                        .background {Color.white.opacity(30)}
+                        .clipShape(RoundedRectangle(cornerRadius: 20))
+                        .padding(.horizontal)
+                }
                 //TODO: edit settings view
                 Button {
 //                    router.routeTo(path: RouterPath.venueCollection)

@@ -2,10 +2,9 @@ import SwiftUI
 
 
 // MARK: - Generic tag view
-@available(iOS 15.0, *)
-public struct AnyContentView<T: View,B:View,But: View,Prompt: View, SelectableContent: Hashable>: View {
+public struct AnyContentView<T: View,B:View,Prompt: View, SelectableContent: Hashable>: View {
     
-    public var sourceContent: [SelectableContent]
+    @Binding public var sourceContent: [SelectableContent]
     @State private var identableContent: [(SelectableContent, Int)] = []
     
     @Binding public var selectedContent: [SelectableContent]
@@ -18,17 +17,14 @@ public struct AnyContentView<T: View,B:View,But: View,Prompt: View, SelectableCo
     
     @ViewBuilder public var backgroundView: () -> B
     @ViewBuilder public var cellView: (SelectableContent) -> T
-    @ViewBuilder public var buttonView: () -> But
     @ViewBuilder public var promptView: () -> Prompt
     
     public var horizontalPadding: Double = 4
     public var verticalPadding: Double = 4
-    public var promptPlaceholder: String = "Tap to make choise of specialization"
     
-    @Namespace var tagPositionNameSpace
     
-    public init(sourceContent: [SelectableContent], selectedContent: Binding<[SelectableContent]>, selectedCases: [(SelectableContent, Int)] = [], allCases: [(SelectableContent, Int)] = [],isEdit: Binding<Bool>, backgroundView: @escaping () -> B, cellView: @escaping (SelectableContent) -> T, buttonView: @escaping ()->But, promptView: @escaping ()->Prompt) {
-        self.sourceContent = sourceContent
+    public init(sourceContent: Binding<[SelectableContent]>, selectedContent: Binding<[SelectableContent]>, selectedCases: [(SelectableContent, Int)] = [], allCases: [(SelectableContent, Int)] = [],isEdit: Binding<Bool>, backgroundView: @escaping () -> B, cellView: @escaping (SelectableContent) -> T, promptView: @escaping ()->Prompt) {
+        self._sourceContent = sourceContent
         self._selectedContent = selectedContent
         self.selectedCases = selectedCases
         self.allCases = allCases
@@ -36,49 +32,75 @@ public struct AnyContentView<T: View,B:View,But: View,Prompt: View, SelectableCo
         
         self.backgroundView = backgroundView
         self.cellView = cellView
-        self.buttonView = buttonView
         self.promptView = promptView
     }
     
     public var body: some View {
+        if #available(iOS 17.0, *){
         VStack{
             makeContent()
-            if isEdit{
-                Button(action: {
-                    isEdit.toggle()
-                }, label: {
-                    buttonView()
-                })
-            }
         }
         .onAppear {
-            identableContent = []
-            selectedCases = []
-            for (index, element) in sourceContent.enumerated(){
-                identableContent.append((element, index))
-                if selectedContent.contains(element){
-                    selectedCases.append((element, index))
+            update()
+        }
+        .onChange(of: selectedContent, { oldValue, value in
+                if !isEdit{
+                    selectedCases = identableContent.compactMap({ (el, index) in
+                        if value.contains(el) {
+                            return (el,index)
+                        } else {
+                            return nil
+                        }
+                    })
+                    withAnimation(.easeInOut(duration: 1)) {
+                        allCases = selectedCases
+                    }
                 }
+            })
+        .onChange(of: sourceContent) { oldValue, newValue in
+            print("source updated \(sourceContent)")
+            update()
+        }
+        } else {
+            VStack{
+                makeContent()
             }
-            allCases = isEdit ? identableContent:selectedCases
+            .onAppear {
+                update()
+            }
+            .onChange(of: selectedContent, perform: { value in
+                if !isEdit{
+                    selectedCases = identableContent.compactMap({ (el, index) in
+                        if value.contains(el) {
+                            return (el,index)
+                        } else {
+                            return nil
+                        }
+                    })
+                    withAnimation(.easeInOut(duration: 1)) {
+                        allCases = selectedCases
+                    }
+                }
+            })
+            .onChange(of: sourceContent, perform: { value in
+                update()
+                print("source updated \(sourceContent)")
+            })
         }
         
-        // TODO: need to improve
-        .onChange(of: selectedContent, perform: { value in
-            if !isEdit{
-                selectedCases = identableContent.compactMap({ (el, index) in
-                    if value.contains(el) {
-                        return (el,index)
-                    } else {
-                        return nil
-                    }
-                })
-                withAnimation(.easeInOut(duration: 1)) {
-                    allCases = selectedCases
-                }
-            }
-        })
     }
+    func update(){
+        identableContent = []
+        selectedCases = []
+        for (index, element) in sourceContent.enumerated(){
+            identableContent.append((element, index))
+            if selectedContent.contains(element){
+                selectedCases.append((element, index))
+            }
+        }
+        allCases = isEdit ? identableContent:selectedCases
+    }
+    
     
     @ViewBuilder func makeContent() -> some View{
         VStack {
@@ -117,7 +139,6 @@ public struct AnyContentView<T: View,B:View,But: View,Prompt: View, SelectableCo
                                 }
                                 return result
                             })
-                        
                             .onTapGesture {
                                 withAnimation {
                                     if isEdit{
@@ -194,13 +215,6 @@ public struct AnyContentViewSizePreferenceKey: PreferenceKey{
     }
 }
 
-//#Preview {
-//    let mdm = DataManager(networkManager: NetworkManager())
-//    BPAccountInfoView(user:)
-//        .environment(\.managedObjectContext, mdm.mainContext)
-//        .environmentObject(mdm)
+//extension GeometryProxy: @retroactive @unchecked Sendable{
+//    
 //}
-
-extension GeometryProxy: @retroactive @unchecked Sendable{
-    
-}

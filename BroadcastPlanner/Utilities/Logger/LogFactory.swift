@@ -1,11 +1,3 @@
-//
-//  LogFactory.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 03.06.2025.
-//
-
-
 import OSLog
 
   enum LogCategory: String {

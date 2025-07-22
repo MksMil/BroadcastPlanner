@@ -3,7 +3,7 @@ import SwiftUI
 import UIKit
 
 //@MainActor
-final class PersonalScreenViewModel: ObservableObject {
+final class EditMemberViewModel: ObservableObject {
     
     var localUser: Member
     

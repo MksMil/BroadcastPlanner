@@ -10,7 +10,7 @@
 		290056C62C37DF6400CBA472 /* BPUserDataListCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 290056C52C37DF6400CBA472 /* BPUserDataListCellView.swift */; };
 		290B81702AD7FCE700B858F1 /* MainEventsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 290B816F2AD7FCE700B858F1 /* MainEventsList.swift */; };
 		290B81752AD9149800B858F1 /* MotionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 290B81742AD9149800B858F1 /* MotionManager.swift */; };
-		290F598A2CE63006002EAA4A /* PersonalScreenViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 290F59892CE63006002EAA4A /* PersonalScreenViewModel.swift */; };
+		290F598A2CE63006002EAA4A /* EditMemberViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 290F59892CE63006002EAA4A /* EditMemberViewModel.swift */; };
 		290FF3B72B5E90240096D655 /* BPErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 290FF3B62B5E90240096D655 /* BPErrorView.swift */; };
 		291339152E17D11900F14F30 /* CycleType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 291339142E17D11800F14F30 /* CycleType.swift */; };
 		291339172E17D12F00F14F30 /* StatusViewNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 291339162E17D12F00F14F30 /* StatusViewNotification.swift */; };
@@ -21,7 +21,7 @@
 		291CDA542DDCB2CB00724F53 /* DividerWithText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 291CDA532DDCB2CB00724F53 /* DividerWithText.swift */; };
 		291CDA5C2DDF3CF900724F53 /* SelectableModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 291CDA5B2DDF3CF800724F53 /* SelectableModifier.swift */; };
 		291E72C32BBE859F008092D7 /* BPMessengerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 291E72C22BBE859F008092D7 /* BPMessengerView.swift */; };
-		291E72CB2BBEDF23008092D7 /* BPAccountInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 291E72CA2BBEDF23008092D7 /* BPAccountInfoView.swift */; };
+		291E72CB2BBEDF23008092D7 /* EditMemberInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 291E72CA2BBEDF23008092D7 /* EditMemberInfoView.swift */; };
 		291E72CF2BBEEBDD008092D7 /* BPSpecializationCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 291E72CE2BBEEBDD008092D7 /* BPSpecializationCellView.swift */; };
 		291EB4EE2DBFB22500FCDA75 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 291EB4ED2DBFB22500FCDA75 /* FirebaseDatabase */; };
 		291EB4F02DBFB22500FCDA75 /* FirebaseDatabaseSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 291EB4EF2DBFB22500FCDA75 /* FirebaseDatabaseSwift */; };
@@ -56,9 +56,8 @@
 		299277982B7629FD00B8F892 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 299277972B7629FD00B8F892 /* GoogleService-Info.plist */; };
 		2994DE672C157C9F00DF9060 /* BroadcastEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2994DE662C157C9F00DF9060 /* BroadcastEditView.swift */; };
 		2994DE6E2C16F18E00DF9060 /* BPJoystick.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2994DE6D2C16F18D00DF9060 /* BPJoystick.swift */; };
-		299D43882D2E880F007EEEFE /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 299D436B2D2E880F007EEEFE /* DataManager.swift */; };
 		299D43A52D365A49007EEEFE /* EventPointInfoPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 299D43A42D365A49007EEEFE /* EventPointInfoPanelView.swift */; };
-		299D43C72D38F925007EEEFE /* MainDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 299D43C62D38F925007EEEFE /* MainDataManager.swift */; };
+		299D43C72D38F925007EEEFE /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 299D43C62D38F925007EEEFE /* DataManager.swift */; };
 		29AE68742BE24F9300DE8FAB /* Chat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29AE68732BE24F9300DE8FAB /* Chat.swift */; };
 		29AE68762BE24F9A00DE8FAB /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29AE68752BE24F9A00DE8FAB /* Message.swift */; };
 		29C041C02AC556CE008B3E1F /* BroadcastPlannerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041BF2AC556CE008B3E1F /* BroadcastPlannerApp.swift */; };
@@ -101,7 +100,7 @@
 		290056C52C37DF6400CBA472 /* BPUserDataListCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPUserDataListCellView.swift; sourceTree = "<group>"; };
 		290B816F2AD7FCE700B858F1 /* MainEventsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainEventsList.swift; sourceTree = "<group>"; };
 		290B81742AD9149800B858F1 /* MotionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionManager.swift; sourceTree = "<group>"; };
-		290F59892CE63006002EAA4A /* PersonalScreenViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalScreenViewModel.swift; sourceTree = "<group>"; };
+		290F59892CE63006002EAA4A /* EditMemberViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditMemberViewModel.swift; sourceTree = "<group>"; };
 		290FF3B62B5E90240096D655 /* BPErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPErrorView.swift; sourceTree = "<group>"; };
 		291339142E17D11800F14F30 /* CycleType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CycleType.swift; sourceTree = "<group>"; };
 		291339162E17D12F00F14F30 /* StatusViewNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusViewNotification.swift; sourceTree = "<group>"; };
@@ -112,7 +111,7 @@
 		291CDA532DDCB2CB00724F53 /* DividerWithText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DividerWithText.swift; sourceTree = "<group>"; };
 		291CDA5B2DDF3CF800724F53 /* SelectableModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectableModifier.swift; sourceTree = "<group>"; };
 		291E72C22BBE859F008092D7 /* BPMessengerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPMessengerView.swift; sourceTree = "<group>"; };
-		291E72CA2BBEDF23008092D7 /* BPAccountInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPAccountInfoView.swift; sourceTree = "<group>"; };
+		291E72CA2BBEDF23008092D7 /* EditMemberInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditMemberInfoView.swift; sourceTree = "<group>"; };
 		291E72CE2BBEEBDD008092D7 /* BPSpecializationCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPSpecializationCellView.swift; sourceTree = "<group>"; };
 		292D66442BD79989009A2187 /* AnyContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnyContentView.swift; sourceTree = "<group>"; };
 		292D66452BD79989009A2187 /* SmartLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SmartLayout.swift; sourceTree = "<group>"; };
@@ -142,9 +141,8 @@
 		299277992B762A4100B8F892 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		2994DE662C157C9F00DF9060 /* BroadcastEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BroadcastEditView.swift; sourceTree = "<group>"; };
 		2994DE6D2C16F18D00DF9060 /* BPJoystick.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPJoystick.swift; sourceTree = "<group>"; };
-		299D436B2D2E880F007EEEFE /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DataManager.swift; path = BroadcastPlanner/Utilities/Managers/DataManager.swift; sourceTree = SOURCE_ROOT; };
 		299D43A42D365A49007EEEFE /* EventPointInfoPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventPointInfoPanelView.swift; sourceTree = "<group>"; };
-		299D43C62D38F925007EEEFE /* MainDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainDataManager.swift; sourceTree = "<group>"; };
+		299D43C62D38F925007EEEFE /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		29AE68732BE24F9300DE8FAB /* Chat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chat.swift; sourceTree = "<group>"; };
 		29AE68752BE24F9A00DE8FAB /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		29B505BC2CB6B3C9003A1E3F /* BroadcastPlannerUnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BroadcastPlannerUnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -194,6 +192,7 @@
 		29C37D402E21121100CBA6A4 /* Club */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Club; sourceTree = "<group>"; };
 		29C37D412E21124000CBA6A4 /* Venue */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Venue; sourceTree = "<group>"; };
 		29CB63492E2CE9DC00256563 /* AUX_types */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = AUX_types; sourceTree = "<group>"; };
+		29CB634A2E2FA83E00256563 /* Obvan */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Obvan; sourceTree = "<group>"; };
 		29D8D3B02CEDE589000E4F72 /* Buttons */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Buttons; sourceTree = "<group>"; };
 		29E70B942CDE03B9002B826E /* ImageHandle */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = ImageHandle; sourceTree = "<group>"; };
 		29F7CF132CA158FA009C303E /* DateViews */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = DateViews; sourceTree = "<group>"; };
@@ -285,8 +284,7 @@
 			isa = PBXGroup;
 			children = (
 				291D7DCD2DF026100073A4B1 /* Network */,
-				299D43C62D38F925007EEEFE /* MainDataManager.swift */,
-				299D436B2D2E880F007EEEFE /* DataManager.swift */,
+				299D43C62D38F925007EEEFE /* DataManager.swift */,
 				29CCF2EB2C807FE000BCEF34 /* SessionManager.swift */,
 				295943272C64EA7900C2B27C /* Formaters */,
 			);
@@ -311,8 +309,8 @@
 		291E72C42BBE8961008092D7 /* PersonalScreen */ = {
 			isa = PBXGroup;
 			children = (
-				291E72CA2BBEDF23008092D7 /* BPAccountInfoView.swift */,
-				290F59892CE63006002EAA4A /* PersonalScreenViewModel.swift */,
+				291E72CA2BBEDF23008092D7 /* EditMemberInfoView.swift */,
+				290F59892CE63006002EAA4A /* EditMemberViewModel.swift */,
 			);
 			path = PersonalScreen;
 			sourceTree = "<group>";
@@ -436,6 +434,7 @@
 		2955C97A2B5186FD003F9ADC /* SettingsScreen */ = {
 			isa = PBXGroup;
 			children = (
+				29CB634A2E2FA83E00256563 /* Obvan */,
 				29C37D412E21124000CBA6A4 /* Venue */,
 				29C37D402E21121100CBA6A4 /* Club */,
 				2967DF172B61101E003956FD /* Change Email and Password Flow */,
@@ -730,6 +729,7 @@
 				29C37D402E21121100CBA6A4 /* Club */,
 				29C37D412E21124000CBA6A4 /* Venue */,
 				29CB63492E2CE9DC00256563 /* AUX_types */,
+				29CB634A2E2FA83E00256563 /* Obvan */,
 				29D8D3B02CEDE589000E4F72 /* Buttons */,
 				29E70B942CDE03B9002B826E /* ImageHandle */,
 				29F7CF132CA158FA009C303E /* DateViews */,
@@ -830,8 +830,7 @@
 				2955C9822B57C1BE003F9ADC /* SessionModel.swift in Sources */,
 				29CCF2F12C80895100BCEF34 /* EmailPasswordStackView.swift in Sources */,
 				293752AA2BF8CD950044924D /* BPEventFilterCaseTabView.swift in Sources */,
-				299D43C72D38F925007EEEFE /* MainDataManager.swift in Sources */,
-				299D43882D2E880F007EEEFE /* DataManager.swift in Sources */,
+				299D43C72D38F925007EEEFE /* DataManager.swift in Sources */,
 				29CCF2EC2C807FE000BCEF34 /* SessionManager.swift in Sources */,
 				291E72CF2BBEEBDD008092D7 /* BPSpecializationCellView.swift in Sources */,
 				292D664F2BD7998A009A2187 /* SmartLayout.swift in Sources */,
@@ -845,7 +844,7 @@
 				29AE68742BE24F9300DE8FAB /* Chat.swift in Sources */,
 				29C041F22ACBF45B008B3E1F /* Color+Ext.swift in Sources */,
 				291339172E17D12F00F14F30 /* StatusViewNotification.swift in Sources */,
-				291E72CB2BBEDF23008092D7 /* BPAccountInfoView.swift in Sources */,
+				291E72CB2BBEDF23008092D7 /* EditMemberInfoView.swift in Sources */,
 				29F7CF102CA14BA9009C303E /* Date+Ext.swift in Sources */,
 				29CB0F642C98B24E003B30C4 /* CarUnitEnableCellView.swift in Sources */,
 				2915AD1C2BF4A2AA0038239A /* BPUserProfileView.swift in Sources */,
@@ -875,7 +874,7 @@
 				29C37D3F2E20FFE200CBA6A4 /* OpacityViewTransitionModifier.swift in Sources */,
 				2955C96D2B4ECB05003F9ADC /* BPTextFieldWithIcon.swift in Sources */,
 				29418D922C6CCDAE007CC6F3 /* FiltersEnums.swift in Sources */,
-				290F598A2CE63006002EAA4A /* PersonalScreenViewModel.swift in Sources */,
+				290F598A2CE63006002EAA4A /* EditMemberViewModel.swift in Sources */,
 				290FF3B72B5E90240096D655 /* BPErrorView.swift in Sources */,
 				29D169802B86188B00A70638 /* BPValidator.swift in Sources */,
 				29778E242C0B85FC006EF6CE /* BPResetPasswordView.swift in Sources */,

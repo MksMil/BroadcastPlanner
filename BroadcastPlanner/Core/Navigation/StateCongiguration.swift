@@ -167,5 +167,28 @@ extension StateCongiguration{
         menuState: .none,
         title: "Edit Venue"
     )
-    
+    static let ObvanCollectionConfiguration: StateCongiguration = StateCongiguration(
+        isPrimaryButtonVisisble: true,
+        isPrimaryButtonEnable: true,
+        primaryButtonIcon: .plus,
+        isSecondaryButtonVisible: true,
+        isSecondaryButtonEnabled: false,
+        secondaryButtonIcon: .remove,
+        isBackButtonVisible: true,
+        isBackButtonEnabled: true,
+        menuState: .none,
+        title: "Add/Edit Obvan"
+    )
+    static let AddEditObvanConfiguration: StateCongiguration = StateCongiguration(
+        isPrimaryButtonVisisble: true,
+        isPrimaryButtonEnable: true,
+        primaryButtonIcon: .plus,
+        isSecondaryButtonVisible: true,
+        isSecondaryButtonEnabled: false,
+        secondaryButtonIcon: .remove,
+        isBackButtonVisible: true,
+        isBackButtonEnabled: true,
+        menuState: .none,
+        title: "Edit Obvan"
+    )
 }
