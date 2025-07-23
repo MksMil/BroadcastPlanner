@@ -26,11 +26,7 @@ struct AddEditObvanView: View {
             VStack(spacing: 0){
                 //choose back image from library
                 
-                Button{
-                    vm.uiimage = [UIImage(named: "empty_babybird"),UIImage(named: "empty_starbird")].randomElement()!
-                } label: {
-                    Text("Default")
-                }
+                
                 //accessAction(add to SKScene) in vm?
                 
                 //scscene
@@ -54,6 +50,57 @@ struct AddEditObvanView: View {
                     //control panel
                     VStack(spacing: 0){
                         HStack {
+                            Button{
+                                vm.uiimage = UIImage(named: "empty_babybird")
+                            } label: {
+                                Image(systemName: "bus")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .bold()
+                                    .padding(5)
+                                    .frame(width: 40, height: 40)
+                                    .background {
+                                        RoundedRectangle(cornerRadius: 5)
+                                            .fill(
+                                                .ultraThickMaterial
+                                                    .opacity(0.3)
+                                            )
+                                            .overlay {
+                                                RoundedRectangle(cornerRadius: 5)
+                                                    .stroke(
+                                                        .ultraThickMaterial
+                                                            .opacity(0.5),
+                                                        lineWidth: 2
+                                                    )
+                                            }
+                                    }
+                            }
+                            Button{
+                                vm.uiimage = UIImage(named: "empty_starbird")
+                            } label: {
+                                Image(systemName: "bus.doubledecker")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .bold()
+                                    .padding(5)
+                                    .frame(width: 40, height: 40)
+                                    .background {
+                                        RoundedRectangle(cornerRadius: 5)
+                                            .fill(
+                                                .ultraThickMaterial
+                                                    .opacity(0.3)
+                                            )
+                                            .overlay {
+                                                RoundedRectangle(cornerRadius: 5)
+                                                    .stroke(
+                                                        .ultraThickMaterial
+                                                            .opacity(0.5),
+                                                        lineWidth: 2
+                                                    )
+                                            }
+                                    }
+                            }
+                            
                                                         Spacer()
                             //                            BPEventFilterCaseTabView(selectedTab: $vm.stadiumFilter){}
                             PhotosPicker(selection: $vm.selectedPhoto) {
@@ -111,10 +158,10 @@ struct AddEditObvanView: View {
                                                               y: vm.coordinateY,
                                                               rotation: Double(vm.rotation),
                                                               scaleFactor: vm.scaleFactor,
-                                                              position: "",
+                                                              position: vm.position,
                                                               isRequired: true,
                                                               in: dataManager.mainContext)
-                                        vm.deselectCrew()
+                                        vm.deselectCrewForRenderer()
                                     }
                                 },
                                 editAction: {
@@ -194,6 +241,30 @@ struct AddEditObvanView: View {
         }
         .navigationBarBackButtonHidden()
         .environmentObject(vm)
+        .task{
+            vm.saveAction = {
+                if let crew = vm.selectedCrew{
+                    crew.updateWithValues(x: vm.coordinateX,
+                                          y: vm.coordinateY,
+                                          rotation: Double(vm.rotation),
+                                          scaleFactor: vm.scaleFactor,
+                                          position: vm.position,
+                                          isRequired: true,
+                                          in: dataManager.mainContext)
+                }
+            }
+        }
+        .onAppear {
+            appState.primaryAction = {
+                
+            }
+            appState.secondaryAction = {
+                
+            }
+            appState.stepBackAction = {
+                
+            }
+        }
     }
 }
 

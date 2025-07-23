@@ -40,6 +40,7 @@ class AddEditObvanViewModel: ObservableObject{
     var coordinateY: Double = 0
     var rotation: Int = 0
     var scaleFactor: Double = 0
+    var position: String = ""
     
     @Published var selectedCrew: ObvanTemplateCrew?
     @Published var isEdit: Bool = false
@@ -48,7 +49,7 @@ class AddEditObvanViewModel: ObservableObject{
     let obvan: Obvan
     var templateCrews: [ObvanTemplateCrew] = []
     let renderObvanScene: ObvanEditSpriteScene
-//    var saveAction: (()->())?
+    var saveAction: (()->())?
     
     
     init(obvan: Obvan){
@@ -95,8 +96,7 @@ extension AddEditObvanViewModel {
 // MARK: - ObvanEditDelegate
 extension AddEditObvanViewModel: ObvanEditDelegate{
     func saveCrewAction() {
-       
-//        deselectCrew()
+       saveAction?()
     }
     
     func selectCrewtWithId(_ id: String) {
@@ -107,7 +107,7 @@ extension AddEditObvanViewModel: ObvanEditDelegate{
     
     func deselectCrew() {
         if selectedCrew != nil {
-//            saveAction?()
+            saveAction?()
             selectedCrew = nil
         }
         isEdit = false
@@ -115,7 +115,7 @@ extension AddEditObvanViewModel: ObvanEditDelegate{
     
     func deselectCrewForRenderer() {
         if selectedCrew != nil {
-//            saveAction?()
+            saveAction?()
             selectedCrew = nil
             renderObvanScene.deselect()
         }
@@ -135,7 +135,7 @@ extension AddEditObvanViewModel: ObvanEditDelegate{
         if let scaleFactor {
             self.scaleFactor = scaleFactor
         }
-        saveCrewAction()
+        saveAction?()
     }
     
     
