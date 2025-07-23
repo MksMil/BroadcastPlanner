@@ -95,6 +95,9 @@
     "Confirm" : {
 
     },
+    "Default" : {
+
+    },
     "Delete account" : {
 
     },
@@ -114,9 +117,6 @@
 
     },
     "Hello Error" : {
-
-    },
-    "Hello, World!" : {
 
     },
     "Hours" : {
@@ -192,6 +192,9 @@
 
     },
     "Save settings" : {
+
+    },
+    "Select photo" : {
 
     },
     "Send" : {

@@ -1,7 +1,7 @@
 import Foundation
 import CoreData
 
-@objc(ObvanTemplateUnit)
+@objc(ObvanTemplateCrew)
 public class ObvanTemplateCrew: NSManagedObject {}
 
 extension ObvanTemplateCrew {
@@ -87,9 +87,9 @@ extension ObvanTemplateCrew: CoreDataUpdatable{
         if let position {
             self.position = position
         }
-        if let isRequired {
-            self.isRequired = isRequired
-        }
+//        if let isRequired {
+//            self.isRequired = isRequired
+//        }
         parentObvan?.lastUpdated = .now
     }
 }

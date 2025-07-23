@@ -2,43 +2,21 @@ import SwiftUI
 import SpriteKit
 
 class ObvanEditSpriteScene: SKScene{
-//    enum NodeZone: String{
-//        case main, rightUp, rightDown, leftUp, leftDown
-//    }
+
     enum NodeType: String {
-        case camera = "_spriteCamera"
-        case sound = "_spriteSound"
-        case light = "_spriteLight"
         case background  = "_background"
         case number = "_spriteNumber"
-        case crew = "_person" //?
+        case crew = "_person"
     }
     
     //crew and cam movement control
     var sceneState: SceneState = .idle
     //delegate
-    weak var crewDelegate: BPSKViewDelegate?
+    weak var crewDelegate: ObvanEditDelegate?
     
     var backImage: UIImage? {
-        willSet{
-            backGroundNode.removeFromParent()
-            if let image = newValue{
-                let texture = SKTexture(image: image)
-                backGroundNode = SKSpriteNode(texture: texture)
-                backGroundNode.name = NodeType.background.rawValue
-                backGroundNode.position = CGPoint(x: size.width / 2,
-                                                  y: size.height / 2)
-                backGroundNode.scale(to: size)
-                addChild(backGroundNode)
-                
-            } else {
-                backGroundNode = SKSpriteNode(imageNamed: "empty_obvan")
-                backGroundNode.name = NodeType.background.rawValue
-                backGroundNode.position = CGPoint(x: size.width / 2,
-                                                  y: size.height / 2)
-                backGroundNode.scale(to: size)
-                addChild(backGroundNode)
-            }
+        didSet{
+            updateScene()
         }
     }
     var moveStep: Double = 1
@@ -54,7 +32,7 @@ class ObvanEditSpriteScene: SKScene{
     var lastPanLocation: CGPoint?
     
     //data source
-    var crews: [Crew] = []
+    var crews: [ObvanTemplateCrew] = []
     
     //control
     var selectedCrewNode: SKNode?
@@ -84,7 +62,7 @@ class ObvanEditSpriteScene: SKScene{
     // MARK: - Did move
     override func didMove(to view: SKView) {
         size = view.frame.size
-        scaleMode = .aspectFill
+        scaleMode = .aspectFit
         self.backgroundColor = UIColor(
             red: 153 / 256,
             green: 204 / 256,
@@ -104,41 +82,9 @@ class ObvanEditSpriteScene: SKScene{
             addCrew(crew,select: false)
         }
     }
+
     
-    func configureCrewNode(node: SKShapeNode,
-                            crew: Crew)
-    {
-        node.name = crew.viewId
-        node.zPosition = 1
-        if crew.viewX == 0 && crew.viewY == 0{
-            node.position = CGPoint(x: size.width / 2,
-                                    y: size.height / 2)
-        } else {
-            node.position = CGPoint(x:  size.width * crew.viewX,
-                                    y:  size.height * crew.viewY)
-        }
-        assignTexturesInNode(node, withCrew: crew)
-        
-        if crew.viewScaleFactor != 0 {
-            setScale(crew.viewScaleFactor, toNode: node)
-        }
-    }
-    
-    func assignTexturesInNode(_ node: SKShapeNode, withCrew crew: Crew){
-       
-        
-    }
-    
-    func updateSpritesWithCrew(_ crew: Crew){
-        //only with selectedNode we can change textures
-        if let selectedCrewNode = selectedCrewNode as? SKShapeNode {
-            selectedCrewNode.removeAllChildren()
-            assignTexturesInNode(selectedCrewNode, withCrew: crew)
-        }
-    }
-    
-    
-    func textureFromSFSymbol(named symbolName: String, pointSize: CGFloat = 10, weight: UIImage.SymbolWeight = .regular) -> SKTexture? {
+    func textureFromSFSymbol(named symbolName: String, pointSize: CGFloat = 30, weight: UIImage.SymbolWeight = .regular) -> SKTexture? {
             let config = UIImage.SymbolConfiguration(pointSize: pointSize, weight: weight)
             if let image = UIImage(systemName: symbolName, withConfiguration: config) {
                 return SKTexture(image: image)
@@ -146,14 +92,23 @@ class ObvanEditSpriteScene: SKScene{
             return nil
         }
     
-//    func setupBackground(){
-//        backGroundNode = SKSpriteNode(imageNamed:"stadium")
-//        backGroundNode.name = NodeType.background.rawValue
-//        backGroundNode.position = CGPoint(x: size.width / 2,
-//                                          y: size.height / 2)
-//        backGroundNode.scale(to: size)
-//        addChild(backGroundNode)
-//    }
+    func setupBackground(){
+        if let image = backImage{
+            let texture = SKTexture(image: image)
+//            size = texture.size()
+            
+            backGroundNode = SKSpriteNode(texture: texture)
+        } else {
+            backGroundNode = SKSpriteNode(imageNamed: "empty_obvan")
+        }
+        let scale = min(size.width / (backGroundNode.texture?.size().width ?? size.width),size.height / (backGroundNode.texture?.size().height ?? size.height))
+        backGroundNode.setScale(scale)
+        backGroundNode.name = NodeType.background.rawValue
+        backGroundNode.position = CGPoint(x: size.width / 2,
+                                          y: size.height / 2)
+        backGroundNode.zPosition = 1
+        addChild(backGroundNode)
+    }
     
     func setupCamera(){
         addChild(cameraNode)
@@ -166,10 +121,10 @@ class ObvanEditSpriteScene: SKScene{
         if let selectedCrewNode{
             var angle: Double = 0
             angle = (Angle(radians: selectedCrewNodeRotation).degrees.truncatingRemainder(dividingBy: 360)).rounded()
-            crewDelegate?.updatePoint(x: selectedCrewNode.position.x / size.width,
-                                       y: selectedCrewNode.position.y / size.height,
-                                       rotation: angle,
-                                       scaleFactor: selectedCrewNode.xScale)
+            crewDelegate?.updateTemplateCrew(x: selectedCrewNode.position.x / size.width,
+                                             y: selectedCrewNode.position.y / size.height,
+                                             rotation: angle,
+                                             scaleFactor: selectedCrewNode.xScale)
         }
     }
 }
@@ -178,13 +133,17 @@ class ObvanEditSpriteScene: SKScene{
 extension ObvanEditSpriteScene{
     
     func addSelectionAnimationToNode(node: SKShapeNode){
-        node.strokeColor = .blue
+//        node.strokeColor = .red
 //        node.lineWidth = 2
+        node.run(SKAction.fadeAlpha(to: 1, duration: 0.3))
         
     }
     
+    
+    
     func removeSelectionAnimationFromNode(node: SKShapeNode){
         node.strokeColor = .clear
+        node.run(SKAction.fadeAlpha(to: 0.7, duration: 0.3))
 //        node.lineWidth = 1
 
     }
@@ -194,26 +153,49 @@ extension ObvanEditSpriteScene{
 // MARK: - BPPlanDelegateProtocol
 extension ObvanEditSpriteScene{
     
-    func addCrew(_ crew: Crew, select: Bool){
-        let crewNode = SKShapeNode(
-            circleOfRadius: step * 2)
-        crewNode.strokeColor = .clear
-        crewNode.name = crew.viewId
+    func addCrew(_ crew: ObvanTemplateCrew, select: Bool){
+        crews.append(crew)
+        let texture = textureFromSFSymbol(named: "person.crop.circle")
+        let node = SKShapeNode(circleOfRadius: step * 2)
+        node.fillColor = UIColor.white
+        let personNode = SKSpriteNode(texture: texture, size: CGSize(width: step * 4,
+                                                                   height: step * 4))
+        personNode.name = NodeType.crew.rawValue
+        node.name = crew.viewId
         
-        configureCrewNode(node: crewNode,
+        configureCrewNode(node: node,
                            crew: crew)
-        crewNodes.append(crewNode)
-        self.addChild(crewNode)
+        crewNodes.append(node)
+        node.addChild(personNode)
+        self.addChild(node)
         selectedCrewNodeRotation = CGFloat.zero
         if select {
             self.select(crew: crew)
         }
     }
     
+    func configureCrewNode(node: SKShapeNode,
+                            crew: ObvanTemplateCrew)
+    {
+        node.name = crew.viewId
+        node.zPosition = 10
+        if crew.viewX == 0 && crew.viewY == 0{
+            node.position = CGPoint(x: size.width / 2,
+                                    y: size.height / 2)
+        } else {
+            node.position = CGPoint(x:  size.width * crew.viewX,
+                                    y:  size.height * crew.viewY)
+        }
+        
+        if crew.viewScaleFactor != 0 {
+            setScale(crew.viewScaleFactor, toNode: node)
+        }
+    }
+    
     func updateScene(){
         removeAllChildren()
+        setupBackground()
         setupCamera()
-//        setupBackground()
         setupCrews()
     }
     func updateCameraWithNewNode(){
@@ -226,15 +208,12 @@ extension ObvanEditSpriteScene{
         if let node = node as? SKShapeNode,let name = node.name{
             selectedCrewNode = node
             editedNode = selectedCrewNode
-//            if let name = node.name{
-//                selectedCrewNodeRotation = crews.first(where: {$0.viewId == name})?.viewRotation.radians ?? 0
-//            }
-            crewDelegate?.selectPointWithId(name)
+            crewDelegate?.selectCrewtWithId(name)
             addSelectionAnimationToNode(node: node)
         }
     }
     
-    func select(crew: Crew){
+    func select(crew: ObvanTemplateCrew){
         if let selectedCrewNode = selectedCrewNode as? SKShapeNode{
             removeSelectionAnimationFromNode(node: selectedCrewNode)
         }
@@ -256,7 +235,7 @@ extension ObvanEditSpriteScene{
         if let node = selectedCrewNode as? SKShapeNode{
             removeSelectionAnimationFromNode(node: node)
         }
-        crewDelegate?.deselectPoint()
+        crewDelegate?.deselectCrew()
         editedNode = nil
         selectedCrewNode = nil
     }
@@ -340,10 +319,13 @@ extension ObvanEditSpriteScene{
         guard let touch = touches.first else { return }
         let location = touch.location(in: self)
         
-        //removing moving gap
+        //if touched child sprite redirect to parent shape node
         var node = atPoint(location)
+        if let name = node.name, name == NodeType.crew.rawValue, let newNode = node.parent{
+            node = newNode
+        }
 
-
+        //removing moving gap
         let innerLocation = touch.location(in: node)
         
         if let selectedNode = selectedCrewNode, selectedNode.name == node.name{
@@ -394,20 +376,12 @@ extension ObvanEditSpriteScene{
             
         }
     }
-    
-    func smoothPositionForCam(nodePosition: CGPoint){
-        let difX = abs(cameraNode.position.x - nodePosition.x)
-        let difY = abs(cameraNode.position.y - nodePosition.y)
-        if difX > camXscaleMoveFactor || difY > camYscaleMoveFactor{
-            camFollowToSelectedNodePosition(nodePosition)
-        }
-    }
-    
+
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesEnded(touches, with: event)
+        print(sceneState)
         if sceneState == .movedPoint || sceneState == .touchingNewPoint{
             updateData()
-            crewDelegate?.saveAction()
         } else if sceneState == .touchingSelectedPoint{
             deselect()
         } else if sceneState == .movingCam{
@@ -425,7 +399,7 @@ extension ObvanEditSpriteScene{
         super.touchesCancelled(touches, with: event)
         sceneState = .idle
     }
-
+    
 }
 
 // MARK: - Move selected venuePoint node
@@ -631,6 +605,14 @@ extension ObvanEditSpriteScene{
 }
 // MARK: - Camera following to selected Node
 extension ObvanEditSpriteScene{
+    func smoothPositionForCam(nodePosition: CGPoint){
+        let difX = abs(cameraNode.position.x - nodePosition.x)
+        let difY = abs(cameraNode.position.y - nodePosition.y)
+        if difX > camXscaleMoveFactor || difY > camYscaleMoveFactor{
+            camFollowToSelectedNodePosition(nodePosition)
+        }
+    }
+    
     func camFollowToSelectedNodePosition(_ newPosition: CGPoint){
         if let selectedCrewNode,
            selectedCrewNode.isNotNodeWithName(NodeType.background.rawValue){

@@ -185,25 +185,6 @@ extension BPEditStadiumViewModel{
         }
     }
 }
-//// MARK: - CarEditScene managment
-//extension EditPlanPointsManager{
-//    func updateCarScene(crews: [OBVanUnit]){
-//        renderCarScene.venuePoints = crews
-//        renderCarScene.setupNodes()
-//    }
-//    
-//    func changeTexture(carName: String){
-//        renderCarScene.changeBackground(imageName: carName)
-//    }
-//    
-//    func setEnabledToUnit(name: String){
-//        print("set in manager \(name), ")
-////        if let index = selectedCar?.crews.firstIndex(where: {$0.id == name}){
-////            selectedCar?.crews[index].isEnabled.toggle()
-////        }
-//        renderCarScene.setNode(name: name)
-//    }
-//}
 
 // MARK: - Points Managment
 extension BPEditStadiumViewModel{
