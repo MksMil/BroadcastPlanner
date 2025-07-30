@@ -22,10 +22,10 @@ struct ObvanCollectionView: View {
                 VStack{
                     ForEach(obvans) { obvan in
                         //TODO: make cell
-                        Text(obvan.viewName)
-//                        ClubSheetCellView(image: club.viewImageMediumLogo,
-//                                          title: club.viewTitle,
-//                                          isSelected: selectedClub == club)
+//                        Text(obvan.viewName)
+                        ObvanCollectionCellView(title: obvan.viewName,
+                                                count: obvan.viewTemplateCrews.count,
+                                                isSelected: obvan == selectedObvan)
                         .onTapGesture {
                             withAnimation {
                                 if selectedObvan == obvan {
@@ -125,3 +125,33 @@ struct ObvanCollectionView: View {
 //#Preview {
 //    ObvanCollectionView()
 //}
+
+struct ObvanCollectionCellView: View {
+    let title: String
+    let count: Int
+    let isSelected: Bool
+    
+    var body: some View {
+        VStack(alignment: .leading,spacing: 2){
+            Text(title)
+                .font(.title)
+                .bold()
+                .minimumScaleFactor(0.4)
+            
+            Text("\(count) crews")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity,
+               alignment: .leading)
+        .padding(.vertical,8)
+        .padding(.horizontal,12)
+        .background {
+            RoundedRectangle(cornerRadius: 5).fill(.ultraThinMaterial)
+        }
+        .padding(.horizontal)
+        .padding(.vertical,5)
+        .scaleEffect(isSelected ? 1.05: 1)
+        .opacity(isSelected ? 1 : 0.65)
+    }
+}

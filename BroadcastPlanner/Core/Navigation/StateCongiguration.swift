@@ -182,7 +182,7 @@ extension StateCongiguration{
     static let AddEditObvanConfiguration: StateCongiguration = StateCongiguration(
         isPrimaryButtonVisisble: true,
         isPrimaryButtonEnable: true,
-        primaryButtonIcon: .plus,
+        primaryButtonIcon: .accept,
         isSecondaryButtonVisible: true,
         isSecondaryButtonEnabled: false,
         secondaryButtonIcon: .remove,

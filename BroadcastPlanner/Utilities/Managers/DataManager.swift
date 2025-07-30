@@ -397,7 +397,7 @@ extension DataManager {
                     point.removeFromSounds(sound)
                 }
     
-                if  placeType != "Empte"{
+                if  placeType != "Empty"{
                     let soundDto = SoundDTO(id: UUID().uuidString,windDefence: windDefence,placeType: placeType)
                     let sound: Sound = mainContext.makeObjectFromDTO(soundDto)
                     point.addToSounds(sound)

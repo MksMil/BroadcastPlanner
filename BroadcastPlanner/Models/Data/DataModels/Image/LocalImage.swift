@@ -167,7 +167,6 @@ extension LocalImage{
     func uploadImage(uiimage: UIImage){
         if !viewId.isEmpty{
             ImagesManager.saveResizedImages(image: uiimage, id: viewId, type: viewType)
-            print("saved id: \(viewId)")
         }
     }
     func removeImageDataFromDevice(){
@@ -195,6 +194,7 @@ extension LocalImage: CoreDataUpdatable{
         self.lastUpdated = lastUpdated
         
         if let uiimage {
+//            print("image uploading")
             uploadImage(uiimage: uiimage)
         }
     }

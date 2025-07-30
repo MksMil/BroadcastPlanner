@@ -120,6 +120,13 @@ struct BPEditStadiumView: View {
                                 VStack(alignment: .leading){
                                     HStack(spacing: 0){
                                         SmartLayout(hSpacing: 5, vSpacing: 5){
+                                            //obvans show
+                                            ForEach(broadcast.viewObvans){obvan in
+                                                Text(obvan.viewName)
+                                                    .onTapGesture {
+                                                        vm.selectedObvan = obvan
+                                                    }
+                                            }
                                             ForEach(vm.filteredLocationPoints.sorted(by: {$0.viewNumber < $1.viewNumber})){ point in
                                                 PointPanelCell(size: cellWidth,
                                                                state: vm.stateForPoint(point),
@@ -223,14 +230,23 @@ struct BPEditStadiumView: View {
             }
         }
         .sheet(isPresented: $isEditPressed) {
-            if let point = vm.selectedEventPoint{
-                PointInfoPanelView(point: point){ pointNum, pointUser, pointOptic,pointPlace,pointWD,pointLight in
-                    print("save venuePoint")
-                    dataManager.updatePoint(point, withNumber: pointNum, user: pointUser, optic: pointOptic, placeType: pointPlace, windDefence: pointWD, lightType: pointLight)
-                    vm.updatePoint(point)
-                }
+//            if let point = vm.selectedEventPoint{
+//                //point edit
+//                PointInfoPanelView(point: point){ pointNum, pointUser, pointOptic,pointPlace,pointWD,pointLight in
+//                    dataManager.updatePoint(point, withNumber: pointNum, user: pointUser, optic: pointOptic, placeType: pointPlace, windDefence: pointWD, lightType: pointLight)
+//                    vm.updatePoint(point)
+//                }
+//                .presentationBackground(Color.mainBackground)
+//           // } //else if let obvan = vm.selectedObvan{
+////                //obvan edit
+//////                Text("Obvan")
+////                ObvanInfoPanelView(broadcast: broadcast,selectedObvan: obvan)
+//            } else {
+//                //add new
+//                Text("Group")
+                ObvanInfoPanelView(broadcast: broadcast,selectedObvan: vm.selectedObvan)
                     .presentationBackground(Color.mainBackground)
-            }
+//            }
         }
         .environmentObject(vm)
     }

@@ -99,7 +99,6 @@
         <attribute name="coordinateY" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="id" optional="YES" attributeType="String"/>
         <attribute name="position" optional="YES" attributeType="String"/>
-        <attribute name="required" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="rotation" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="scaleFactor" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
         <relationship name="parentObvan" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Obvan" inverseName="crewTemplates" inverseEntity="Obvan"/>

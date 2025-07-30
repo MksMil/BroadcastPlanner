@@ -4,9 +4,6 @@
     "" : {
 
     },
-    " Save " : {
-
-    },
     "---" : {
 
     },
@@ -27,6 +24,9 @@
       }
     },
     "%lld" : {
+
+    },
+    "%lld crews" : {
 
     },
     "1" : {
@@ -95,9 +95,6 @@
     "Confirm" : {
 
     },
-    "Default" : {
-
-    },
     "Delete account" : {
 
     },
@@ -108,6 +105,9 @@
 
     },
     "Discard all changes and step back?" : {
+
+    },
+    "Edit Point" : {
 
     },
     "empty" : {
@@ -192,9 +192,6 @@
 
     },
     "Save settings" : {
-
-    },
-    "Select photo" : {
 
     },
     "Send" : {

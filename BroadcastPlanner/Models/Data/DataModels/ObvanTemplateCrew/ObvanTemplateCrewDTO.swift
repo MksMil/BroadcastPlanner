@@ -13,7 +13,4 @@ struct ObvanTemplateCrewDTO: Identifiable, Codable,CoreDataRepresentable {
     var rotation: Double
     var scaleFactor: Double
     var position: String
-    var isRequired: Bool
-    
-    
 }

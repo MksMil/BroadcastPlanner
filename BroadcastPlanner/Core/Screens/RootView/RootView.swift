@@ -190,7 +190,6 @@ struct RootView: View {
             }
         }
         .onReceive(router.pathPubisher) { path in
-//            print("path received: \(path)")
             appState.switchStateByPath(path)
         }
     }

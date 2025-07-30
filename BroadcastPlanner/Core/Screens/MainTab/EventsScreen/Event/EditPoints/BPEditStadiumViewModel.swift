@@ -11,7 +11,7 @@ protocol BPSKViewDelegate: AnyObject {
 }
 
 final class BPEditStadiumViewModel: ObservableObject {
-        
+    @Published var selectedObvan: Obvan?
     @Published var selectedEventPoint: VenuePoint?
     @Published var isEdit: Bool = false
     @Published var stadiumFilter: BPEventPlanPointStadiumFilter = .all{

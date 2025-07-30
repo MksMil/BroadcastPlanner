@@ -193,10 +193,10 @@ struct AddEditVenueView: View {
                         }
                         Spacer()
                     }
-                    
-                    Button("Status"){
-                        print(venue)
-                    }
+//                    
+//                    Button("Status"){
+//                        print(venue)
+//                    }
                     Spacer(minLength: 50)
                 }
                 .padding()

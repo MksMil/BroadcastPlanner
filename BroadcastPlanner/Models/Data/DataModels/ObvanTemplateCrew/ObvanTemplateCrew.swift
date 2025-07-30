@@ -16,7 +16,6 @@ extension ObvanTemplateCrew {
     @NSManaged public var coordinateY: Float
     @NSManaged public var rotation: Int16
     @NSManaged public var scaleFactor: Float
-    @NSManaged public var isRequired: Bool
     @NSManaged public var parentObvan: Obvan?
 
 }
@@ -46,8 +45,7 @@ extension ObvanTemplateCrew : Identifiable {
                              coordinateY: viewY,
                              rotation: viewRotation,
                              scaleFactor: viewScaleFactor,
-                             position: viewPosition,
-                             isRequired: isRequired)
+                             position: viewPosition)
     }
 }
 
@@ -62,7 +60,6 @@ extension ObvanTemplateCrew: CoreDataUpdatable{
         self.coordinateY = Float(dto.coordinateY)
         self.rotation = Int16(dto.rotation)
         self.scaleFactor = Float(dto.scaleFactor)
-        self.isRequired = dto.isRequired
     }
     
     func updateWithValues(x: Double? = nil,
@@ -70,7 +67,6 @@ extension ObvanTemplateCrew: CoreDataUpdatable{
                           rotation: Double? = nil,
                           scaleFactor: Double? = nil,
                           position: String? = nil,
-                          isRequired: Bool? = nil,
                           in context: NSManagedObjectContext){
         if let x {
             self.coordinateX = Float(x)
@@ -87,9 +83,6 @@ extension ObvanTemplateCrew: CoreDataUpdatable{
         if let position {
             self.position = position
         }
-//        if let isRequired {
-//            self.isRequired = isRequired
-//        }
         parentObvan?.lastUpdated = .now
     }
 }

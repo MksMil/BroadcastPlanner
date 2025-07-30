@@ -128,18 +128,11 @@ struct SaveEditControlPanelView: View {
                 isEdit = selectedEventPoint == nil ? false : true
             }
         }
+        .onReceive(vm.$selectedObvan) { selectedObvan in
+            withAnimation(.linear(duration: 0.1)) {
+                isEdit = selectedObvan == nil ? false : true
+            }
+        }
 
     }
 }
-
-//#Preview {
-//    SaveEditControlPanelView(addAction: {}, deleteAction: {}, saveAction: {}, isEditAction: {}, isEdit: false)
-//}
-//#Preview {
-//    let mdm = DataManager(networkManager: NetworkManager())
-//    let localEvent: Broadcast = mdm.mainContext.fetchOrCreateObject(withID: "id")
-//    
-//    return BPEditStadiumView(event: localEvent)
-//        .environmentObject(mdm)
-//        .environment(\.managedObjectContext, mdm.mainContext)
-//}

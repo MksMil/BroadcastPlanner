@@ -9,7 +9,6 @@ protocol ObvanEditDelegate: AnyObject {
     func deselectCrew() //id?
     func saveCrewAction()
     func updateTemplateCrew(x: Double?, y: Double?, rotation: Double?, scaleFactor: Double?) //x,y,rotation,scaleFactor
-    
 }
 
 
@@ -22,42 +21,63 @@ class AddEditObvanViewModel: ObservableObject{
                       let image = UIImage(data: data)
                 else { return }
                 self.uiimage = image
+                await updateImage(uiimage: image)
+
             }
         }
     }
     
-    var uiimage: UIImage?{
-        willSet{
-            if let newValue{
-                //update SKScene background
-                renderObvanScene.backImage = newValue
-                
-            }
+    var uiimage: UIImage?
+
+    var source: [String] = [] {
+        didSet{
+            sortCrews()
         }
     }
-    
     var coordinateX: Double = 0
     var coordinateY: Double = 0
     var rotation: Int = 0
     var scaleFactor: Double = 0
-    var position: String = ""
+    @Published var title: String = ""
     
     @Published var selectedCrew: ObvanTemplateCrew?
     @Published var isEdit: Bool = false
     //filter?
     
     let obvan: Obvan
-    var templateCrews: [ObvanTemplateCrew] = []
+    var templateCrews: [ObvanTemplateCrew] = []{
+        didSet{
+            sortCrews()
+        }
+    }
+    //TODO: remove settings dependency aka settiings.sortSource(...)->[newArray] and use it in view
+    @Published var sortedCrews: [ObvanTemplateCrew] = []
     let renderObvanScene: ObvanEditSpriteScene
     var saveAction: (()->())?
-    
+    func sortCrews(){
+        sortedCrews = templateCrews.sorted { first, second in
+            source.lastIndex(of: first.viewPosition) ?? 0 < source.lastIndex(of: second.viewPosition) ?? 0
+        }
+    }
     
     init(obvan: Obvan){
         self.obvan = obvan
         self.renderObvanScene = ObvanEditSpriteScene()
         self.renderObvanScene.crewDelegate = self
         self.templateCrews = obvan.viewTemplateCrews
-        self.uiimage = obvan.image?.makeUIImage()
+        self.renderObvanScene.crews = templateCrews
+        self.title = obvan.viewName
+        self.uiimage = ImagesManager.loadImage(imageSize: ImageSizes.originImages, id: obvan.viewId)//obvan.image?.makeUIImage()
+        self.renderObvanScene.backImage = self.uiimage
+    }
+    
+    @MainActor
+    func updateImage( uiimage: UIImage?){
+        if let uiimage{
+            self.uiimage = uiimage
+            self.renderObvanScene.backImage = uiimage
+        }
+        ImagesManager.saveResizedImages(image: uiimage, id: obvan.viewId, type: GlobalProperties.ImageType.obvan)
     }
 }
 // MARK: - TemplateObvanCrew managment
@@ -73,10 +93,8 @@ extension AddEditObvanViewModel {
     
     func deleteObvanTemplateCrew(_ crewToDelete: ObvanTemplateCrew){
         renderObvanScene.removeSelectedCrew()
-//        if let selectedCrew {
             templateCrews.removeAll { crew in
                 crewToDelete.viewId == crew.viewId
-//            }
         }
         isEdit = false
         selectedCrew = nil
@@ -100,7 +118,6 @@ extension AddEditObvanViewModel: ObvanEditDelegate{
     }
     
     func selectCrewtWithId(_ id: String) {
-        print("crew selected")
         selectedCrew = templateCrews.first(where: {$0.viewId == id})
         isEdit = true
     }
@@ -137,8 +154,6 @@ extension AddEditObvanViewModel: ObvanEditDelegate{
         }
         saveAction?()
     }
-    
-    
 }
 
 // MARK: - Scaling scenes
@@ -154,7 +169,6 @@ extension AddEditObvanViewModel {
     func resetScale(){
         renderObvanScene.resetScale()
     }
-    
 }
 
 // MARK: - Control (move,scale,rotate) TemplateCrew in Obvan Edit Scene
