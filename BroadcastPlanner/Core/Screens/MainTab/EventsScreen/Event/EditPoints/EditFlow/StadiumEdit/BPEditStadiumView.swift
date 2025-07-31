@@ -88,8 +88,7 @@ struct BPEditStadiumView: View {
                             SaveEditControlPanelView(
                                 addAction: {
                                     //dataManager: 'addPoint to broadcast' & delegete it to scene
-                                    let newPoint = dataManager.newPointInEvent(broadcast,withNumber: vm.numberForNewPoint())
-                                    vm.addPoint(point: newPoint)
+                                   
                                     isEditPressed = true
                                 },
                                 deleteAction: {
@@ -231,21 +230,30 @@ struct BPEditStadiumView: View {
         }
         .sheet(isPresented: $isEditPressed) {
 //            if let point = vm.selectedEventPoint{
-//                //point edit
-//                PointInfoPanelView(point: point){ pointNum, pointUser, pointOptic,pointPlace,pointWD,pointLight in
+                //point edit
+//                PointInfoPanelView(){ pointNum, pointUser, pointOptic,pointPlace,pointWD,pointLight in
 //                    dataManager.updatePoint(point, withNumber: pointNum, user: pointUser, optic: pointOptic, placeType: pointPlace, windDefence: pointWD, lightType: pointLight)
 //                    vm.updatePoint(point)
 //                }
 //                .presentationBackground(Color.mainBackground)
-//           // } //else if let obvan = vm.selectedObvan{
-////                //obvan edit
-//////                Text("Obvan")
-////                ObvanInfoPanelView(broadcast: broadcast,selectedObvan: obvan)
+//            } else if let obvan = vm.selectedObvan{
+//                //obvan edit
+//                ObvanInfoPanelView(broadcast: broadcast,selectedObvan: obvan)
+//                    .presentationBackground(Color.mainBackground)
 //            } else {
-//                //add new
-//                Text("Group")
-                ObvanInfoPanelView(broadcast: broadcast,selectedObvan: vm.selectedObvan)
-                    .presentationBackground(Color.mainBackground)
+                //add new point or obvan
+                //                let newPoint = dataManager.newPointInEvent(broadcast,withNumber: vm.numberForNewPoint())
+//                AddEditPointOrObvanView(state: .new ,broadcast: broadcast) { newPoint in
+//                    vm.addPoint(point: newPoint)
+//                } newObvanAction: { newObvan in
+//                    
+//                }
+                AddEditPointOrObvanView(state: .new, broadcast: broadcast, selectedPoint: nil, selectedObvan: nil, newPointAction: { newVenuePoint in
+                    
+                }, newObvanAction: { obvan in
+                    
+                })
+                .presentationBackground(Color.mainBackground)
 //            }
         }
         .environmentObject(vm)

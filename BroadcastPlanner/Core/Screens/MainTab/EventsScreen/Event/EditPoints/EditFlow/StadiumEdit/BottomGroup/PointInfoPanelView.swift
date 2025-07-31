@@ -3,53 +3,52 @@ import SwiftUI
 
 struct PointInfoPanelView: View {
     @EnvironmentObject var settings: GlobalSettings
-    @EnvironmentObject var pointManager: BPEditStadiumViewModel
-    @Environment(\.dismiss) var dismiss
+//    @EnvironmentObject var pointManager: BPEditStadiumViewModel
+//    @Environment(\.dismiss) var dismiss
     
-    @StateObject var vm: PointInfoPanelViewModel
+    @EnvironmentObject var vm: AddEditPointOrObvanViewModel
+   
     @FetchRequest<Member>(sortDescriptors: [SortDescriptor(\.lastName, order: .forward)]) var availableUsers
-    let saveAction: (_  num:Int,_ member:Member?,_ opticType:String,_ placeType: String,_ windDefence: String,_ lightType: String)->()
     
-    init(point: VenuePoint,
-         saveAction: @escaping (Int,Member?,String,String,String,String)->()) {
-        self._vm = StateObject(
-            wrappedValue: PointInfoPanelViewModel(point: point)
-        )
-        self.saveAction = saveAction
-    }
+//    let saveAction: (_  num:Int,_ member:Member?,_ opticType:String,_ placeType: String,_ windDefence: String,_ lightType: String)->()
+    
+//    init(broadcast: Broadcast,point: VenuePoint?/*,
+//         saveAction: @escaping (Int,Member?,String,String,String,String)->()*/) {
+////        self.saveAction = saveAction
+//    }
 
     var body: some View {
         VStack{
-            ConfirmationButtonGroupView(height: 60, isAcceptDisabled: false) {
-                //cancell
-                dismiss()
-            } acceptAction: {
-                //accept
-                saveAction(vm.number,vm.selectedUser,vm.selectedCameraOptic,vm.selectedSoundPlaceType,vm.selectedSoundWindDefence,vm.selectedLight)
-                //save venuePoint invoked here
-                dismiss()
-            } content: {
-                Text("Edit Point")
-                    .bold()
-                    .frame( height: 60)
-                    .frame(maxWidth: .infinity)
-                //                    .background {
-                //                        RoundedRectangle(cornerRadius: 5)
-                //                            .fill(
-                //                                .ultraThickMaterial
-                //                                    .opacity(0.3)
-                //                            )
-                //                            .overlay {
-                //                                RoundedRectangle(cornerRadius: 5)
-                //                                    .stroke(
-                //                                        .ultraThickMaterial
-                //                                            .opacity(0.5),
-                //                                        lineWidth: 2
-                //                                    )
-                //                            }
-                //                    }
-            }
-            .padding()
+//            ConfirmationButtonGroupView(height: 60, isAcceptDisabled: false) {
+//                //cancell
+//                dismiss()
+//            } acceptAction: {
+//                //accept
+//                saveAction(vm.number,vm.selectedUser,vm.selectedCameraOptic,vm.selectedSoundPlaceType,vm.selectedSoundWindDefence,vm.selectedLight)
+//                //save venuePoint invoked here
+//                dismiss()
+//            } content: {
+//                Text("Edit Point")
+//                    .bold()
+//                    .frame( height: 60)
+//                    .frame(maxWidth: .infinity)
+//                //                    .background {
+//                //                        RoundedRectangle(cornerRadius: 5)
+//                //                            .fill(
+//                //                                .ultraThickMaterial
+//                //                                    .opacity(0.3)
+//                //                            )
+//                //                            .overlay {
+//                //                                RoundedRectangle(cornerRadius: 5)
+//                //                                    .stroke(
+//                //                                        .ultraThickMaterial
+//                //                                            .opacity(0.5),
+//                //                                        lineWidth: 2
+//                //                                    )
+//                //                            }
+//                //                    }
+//            }
+//            .padding()
             
             ScrollView{
                 VStack(spacing: 0) {
@@ -180,7 +179,7 @@ struct PointInfoPanelView: View {
                     TabViewList(
                         source: availableUsers.compactMap{ user in
                             if user != vm.selectedUser{
-                                return user.isAvailableTo(broadcast: pointManager.broadcast) ? user: nil
+                                return user.isAvailableTo(broadcast: vm.broadcast) ? user: nil
                             } else {
                                 return user
                             }
@@ -231,7 +230,6 @@ struct PointInfoPanelView: View {
                 .padding(15)
             }
         }
-        .environmentObject(vm)
     }
 }
 

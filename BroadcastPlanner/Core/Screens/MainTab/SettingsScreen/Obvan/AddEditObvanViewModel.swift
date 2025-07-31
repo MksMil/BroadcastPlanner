@@ -79,6 +79,28 @@ class AddEditObvanViewModel: ObservableObject{
         }
         ImagesManager.saveResizedImages(image: uiimage, id: obvan.viewId, type: GlobalProperties.ImageType.obvan)
     }
+    
+    func takeScreenshot(of scene: SKScene) -> UIImage? {
+              guard let view = scene.view else {
+                  print("Сцена не привязана к SKView.")
+                  return nil
+              }
+              
+              guard let texture = view.texture(from: scene) else {
+                  print("Не удалось создать текстуру из сцены.")
+                  return nil
+              }
+              
+              let size = CGSize(width: texture.size().width, height: texture.size().height)
+              let rect = CGRect(origin: .zero, size: size)
+              
+              UIGraphicsBeginImageContextWithOptions(size, false, UIScreen.main.scale)
+              UIImage(cgImage: texture.cgImage()).draw(in: rect)
+              let image = UIGraphicsGetImageFromCurrentImageContext()
+              UIGraphicsEndImageContext()
+              
+              return image
+          }
 }
 // MARK: - TemplateObvanCrew managment
 extension AddEditObvanViewModel {

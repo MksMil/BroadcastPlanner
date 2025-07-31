@@ -1,7 +1,7 @@
 import SwiftUI
 // wrapper to reduce selectupdate render
 struct SelectablePointEditCellWithContent<V: View, T: Equatable>: View {
-    @EnvironmentObject var vm: PointInfoPanelViewModel
+    @EnvironmentObject var vm: AddEditPointOrObvanViewModel
     @StateObject var selectController: SelectableCellController = SelectableCellController()
     let val: T
     let publishType: PointEditPublishType

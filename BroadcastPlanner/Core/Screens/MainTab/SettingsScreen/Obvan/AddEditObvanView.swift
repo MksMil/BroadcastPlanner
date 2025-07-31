@@ -195,6 +195,8 @@ struct AddEditObvanView: View {
                     image.addToParentObvan(obvan)
                     try? dataManager.mainContext.save()
                 }
+                
+                
                 //network save
                 Task{
                    await dataManager.networkManager.saveData(obvan.dto, withId: obvan.viewId, withType: GlobalProperties.Path.obvans)

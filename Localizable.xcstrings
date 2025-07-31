@@ -107,9 +107,6 @@
     "Discard all changes and step back?" : {
 
     },
-    "Edit Point" : {
-
-    },
     "empty" : {
 
     },
@@ -152,6 +149,9 @@
     "Not Registered?   Sign Up!" : {
 
     },
+    "Obvan" : {
+
+    },
     "Permanently erase the Club in the trash?" : {
 
     },
@@ -165,6 +165,9 @@
 
     },
     "phone number" : {
+
+    },
+    "Point" : {
 
     },
     "Press me" : {
@@ -210,9 +213,6 @@
 
     },
     "Sign Up" : {
-
-    },
-    "Status" : {
 
     },
     "Tab Label 1" : {
