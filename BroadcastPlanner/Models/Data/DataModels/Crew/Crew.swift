@@ -23,6 +23,7 @@ extension Crew {
     @NSManaged public var hardware: Hardware?
     @NSManaged public var member: Member?
     @NSManaged public var obvanId: String?
+    @NSManaged public var templateId: String?
 
 }
 
@@ -55,6 +56,10 @@ extension Crew : Identifiable {
         obvanId ?? ""
     }
     
+    var viewTemplateId: String{
+        templateId ?? ""
+    }
+    
     var hardwareDTO: HardwareDTO?{
         guard let hardware else { return nil }
         return HardwareDTO(id: hardware.veiwId, envType: hardware.viewType, chanels: hardware.viewChannels)
@@ -69,7 +74,8 @@ extension Crew : Identifiable {
                 task: viewTask,
                 memberId: viewMemberId,
                 obvanId: viewObvanId,
-                hardware: hardwareDTO, )
+                hardware: hardwareDTO,
+                templateId: viewTemplateId)
     }
 }
 
@@ -82,6 +88,7 @@ extension Crew: CoreDataUpdatable{
         self.coordinateY = Float(dto.coordinateY)
         self.scaleFactor = Float(dto.scaleFactor)
         self.rotation = Int16(dto.rotation)
+        self.templateId = dto.templateId
         self.task = dto.task
         if let member {
             member.removeFromCrews(self)
@@ -120,7 +127,9 @@ extension Crew: CoreDataUpdatable{
                       hardware:Hardware? = nil,
                       broadcast: Broadcast? = nil,
                       obvanId: String? = nil,
+                      templateId: String,
                       in context: NSManagedObjectContext){
+        self.templateId = templateId
         if let position {
             self.position = position
         }

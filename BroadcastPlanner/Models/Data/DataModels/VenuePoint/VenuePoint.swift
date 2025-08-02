@@ -20,7 +20,7 @@ extension VenuePoint {
     @NSManaged public var pointDescription: String?
     @NSManaged public var task: String?
     @NSManaged public var image: LocalImage?
-    @NSManaged public var imageString: String? //what am i want ???
+    @NSManaged public var obvanId: String? //what am i want ???
     @NSManaged public var cameras: NSSet?
     @NSManaged public var broadcast: Broadcast?
     @NSManaged public var lights: NSSet?
@@ -172,6 +172,7 @@ extension VenuePoint : Identifiable {
                       description: viewDescription,
                       task: viewTask,
                       imageId: viewImageId,
+                      obvanId: obvanId ?? "",
                       memberIds: viewMembers.map{$0.viewId},
                       cameras: cameraDTOs,
                       sounds: soundDTOs,
@@ -210,6 +211,7 @@ extension VenuePoint: CoreDataUpdatable{
         self.scaleFactor = Float(dto.scaleFactor)
         self.pointDescription = dto.description
         self.task = dto.task
+        self.obvanId = dto.obvanId
         //clean cameras
         cleanCameras(in: context)
         dto.cameras.forEach{
@@ -248,7 +250,7 @@ extension VenuePoint: CoreDataUpdatable{
                       pointDescription: String? = nil,
                       task: String? = nil,
                       image: LocalImage? = nil,
-                      imageString: String? = nil,
+                      obvanId: String? = nil,
                       cameras: [Camera]? = nil,
                       broadcast: Broadcast? = nil,
                       sounds: [Sound]? = nil,
@@ -283,8 +285,8 @@ extension VenuePoint: CoreDataUpdatable{
             self.image = image
             image.addToParentVenuePoint(self)
         }
-        if let imageString {
-            self.imageString = imageString
+        if let obvanId {
+            self.obvanId = obvanId
         }
         if let cameras {
             cleanCameras(in: context)

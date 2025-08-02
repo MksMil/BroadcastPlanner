@@ -186,6 +186,7 @@ struct AddEditObvanView: View {
         .onAppear {
             vm.source = globalSettings.userSpecialization
             appState.primaryAction = {
+                
                 dataManager.mainContext.performAndWait {
                     let image: LocalImage = dataManager.mainContext.fetchOrCreateObject(withID: obvan.viewId)
                         image.updateValues(type: GlobalProperties.ImageType.obvan.rawValue,

@@ -598,6 +598,11 @@ extension ObvanEditSpriteScene{
                                        SKAction.move(to: centerPoint, duration: animationDuration)]))
     }
     
+    func resetScaleImediatly(){
+        cameraNode.position = centerPoint
+        cameraNode.setScale(1)
+    }
+    
     func startCameraAnimation(){
         let scaleFactor = backGroundNode.size.height / size.height
         cameraNode.run(SKAction.scale(to: scaleFactor, duration: 1))

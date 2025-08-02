@@ -16,8 +16,8 @@ struct EventPointInfoPanelView: View {
 //    }
     
     var body: some View {
-        if let point = vm.selectedEventPoint{
-//            Text(vm.selectedEventPoint?.viewId ?? "hello")
+        if let point = vm.selectedVenuePoint{
+//            Text(vm.selectedVenuePoint?.viewId ?? "hello")
             //venuePoint number
             //venuePoint position?
             VStack(alignment: .leading, spacing: 0){

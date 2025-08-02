@@ -1,14 +1,8 @@
 import SwiftUI
 
 struct PointPanelCell: View {
-    enum PointPanelCellState {
-        case selected //visible
-        case unselected // 0.5 visible
-        case noSelection // all cells visible
-    }
     
     let size: Double
-    let state: PointPanelCellState
     let number: Int
     
     let isCamera: Bool
@@ -16,7 +10,7 @@ struct PointPanelCell: View {
     let isLight: Bool
     let isUser: Bool
 
-    @Binding var selectedPoint: VenuePoint?
+//    @Binding var selectedPoint: VenuePoint?
     
     var body: some View {
         
@@ -72,7 +66,7 @@ struct PointPanelCell: View {
         .background {
             RoundedRectangle(cornerRadius: size / 10).fill(.white.opacity(0.4))
         }
-        .opacity(state == PointPanelCellState.unselected ? 0.3: 1)
+        
     }
     
     func makeNumber() -> String{
@@ -85,5 +79,5 @@ struct PointPanelCell: View {
 }
 
 #Preview {
-    PointPanelCell(size:200, state: .selected, number: 20, isCamera: true,isSound: true,isLight: true, isUser: true, selectedPoint: .constant(nil))
+    PointPanelCell(size:200, number: 20, isCamera: true,isSound: true,isLight: true, isUser: true)
 }

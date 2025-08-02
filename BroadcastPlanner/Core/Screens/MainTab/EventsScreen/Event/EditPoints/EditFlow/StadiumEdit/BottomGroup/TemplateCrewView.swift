@@ -3,35 +3,39 @@ import SwiftUI
 struct TemplateCrewView: View {
     @EnvironmentObject var settings: GlobalSettings
     @EnvironmentObject var vm: AddEditPointOrObvanViewModel
-    let crewPreview: CrewPreview
-    let action: (CrewPreview) -> Void
+    @EnvironmentObject var dataManager: DataManager
+    
+    let template: ObvanTemplateCrew
+    let broadcast: Broadcast
+        
     @State var selectedMember: Member?
     @State var selectedHardware: String?
+    
+    @State var crew: Crew?
+    
     @State private var predicate: NSPredicate // Состояние для предиката
     private var members: FetchRequest<Member>
 
-    init(crewPreview: CrewPreview, action: @escaping (CrewPreview) -> Void) {
-        self.crewPreview = crewPreview
-        self.selectedMember = crewPreview.member
-        self.selectedHardware = crewPreview.hardware
-        self.action = action
-        // Инициализация предиката
-        self._predicate = State(initialValue: NSPredicate(format: "specializations CONTAINS %@", crewPreview.position))
-        // Инициализация FetchRequest с использованием предиката
+    init(broadcast: Broadcast,template: ObvanTemplateCrew) {
+        self.template = template
+        self.broadcast = broadcast
+
+        self._predicate = State(initialValue: NSPredicate(format: "specializations CONTAINS %@", template.viewPosition))
         self.members = FetchRequest(
                     entity: Member.entity(),
                     sortDescriptors: [],
                     predicate: _predicate.wrappedValue
+                    
                 )
     }
 
     var body: some View {
-#if DEBUG
-        let _ = Self._printChanges()
-#endif
+//#if DEBUG
+//        let _ = Self._printChanges()
+//#endif
         GeometryReader { geo in
             HStack {
-                Text(crewPreview.position)
+                Text(template.viewPosition)
                     .lineLimit(1)
                     .font(.system(size: 12))
                     .minimumScaleFactor(0.3)
@@ -40,14 +44,19 @@ struct TemplateCrewView: View {
                 Menu(selectedMember?.viewCompactName ?? (members.wrappedValue.isEmpty ? "no crews": "Choose crew")) {
                     ForEach(members.wrappedValue) { member in
                         Button {
+                            crew?.member = crew?.member == member ? nil:member
                             selectedMember = selectedMember == member ? nil : member
-                            crewPreview.member = selectedMember
-                            action(crewPreview)
                         } label: {
                             HStack {
                                 Text(member.viewCompactName)
                             }
                         }
+                        .disabled(broadcast.viewCrews.contains(where: { crew in
+                            crew.member == member
+                        }) && selectedMember != member)
+                        .opacity(broadcast.viewCrews.contains(where: { crew in
+                            crew.member == member
+                        }) && selectedMember != member ? 0.5: 1)
                     }
                 }
                 .disabled(members.wrappedValue.isEmpty)
@@ -56,9 +65,8 @@ struct TemplateCrewView: View {
                 Menu(selectedHardware ?? "Unknown", systemImage: "keyboard") {
                     ForEach(settings.hardwareType, id: \.self) { type in
                         Button("\(type)", action: {
+                            crew?.hardware?.type = crew?.hardware?.type == type ? nil: type
                             selectedHardware = selectedHardware == type ? nil : type
-                            crewPreview.hardware = selectedHardware
-                            action(crewPreview)
                         })
                     }
                 }
@@ -76,10 +84,48 @@ struct TemplateCrewView: View {
                         .stroke(.ultraThinMaterial, lineWidth: 2)
                 }
         }
-        .onReceive(vm.$previewsCrew) { _ in
-            // Обновление предиката при изменении previewsCrew
-            predicate = NSPredicate(format: "specializations CONTAINS %@", crewPreview.position)
-            print("\(crewPreview.position): OnAppear, members: \(members.wrappedValue.count)")
+        .task{
+            if let oldCrew = broadcast.viewCrews.compactMap({ crew in
+                crew.viewTemplateId == template.viewId ? crew:nil
+            }).first {
+                self.crew = oldCrew
+            } else {
+                let newCrew: Crew = dataManager.mainContext.fetchOrCreateObject(withID: UUID().uuidString)
+                let hardware: Hardware = dataManager.mainContext.fetchOrCreateObject(withID: UUID().uuidString)
+                
+                newCrew.updateValues(position: template.viewPosition,
+                                     x: template.viewX,
+                                     y: template.viewY,
+                                     scaleFactor: template.viewScaleFactor,
+                                     rotation: template.viewRotation,
+                                     task: nil,
+                                     member: nil,
+                                     hardware: hardware,
+                                     broadcast: broadcast,
+                                     obvanId: template.parentObvan?.viewId,
+                                     templateId: template.viewId,
+                                     in: dataManager.mainContext)
+                hardware.crew = newCrew
+                broadcast.addToCrews(newCrew)
+                self.crew = newCrew
+            }
+            selectedMember = crew?.member
+            selectedHardware = crew?.hardware?.type
         }
     }
 }
+
+#if DEBUG
+#Preview {
+    let dm = DataManager(globalDataManager: NetworkManager())
+    let appState = ApplicationState()
+    dm.networkManager.eventProgressHandler = appState
+    return RootView()
+        .environmentObject(GlobalSettings())
+        .environmentObject(SessionManager())
+        .environmentObject(appState)
+        .environmentObject(Router())
+        .environmentObject(dm)
+        .environment(\.managedObjectContext, dm.mainContext)
+}
+#endif

@@ -16,11 +16,7 @@ enum EditState: String {
 
 @MainActor
 final class AddEditPointOrObvanViewModel: ObservableObject{
-    var number: Int = 0{
-        didSet{
-            print("now number \(number)")
-        }
-    }
+    var number: Int = 0
     var selectedCameraOptic: String = "Empty"
     var selectedSoundPlaceType: String = "Empty"
     var selectedSoundWindDefence: String = "Empty"
@@ -49,42 +45,15 @@ final class AddEditPointOrObvanViewModel: ObservableObject{
     }
     
     @Published var selectedObvan: Obvan?
-    @Published var previewsCrew: [CrewPreview] = []
-
+    var sourceObvan: Obvan?
     var source: [String] = []
     
-    func make(){
-        if let selectedObvan {
-            var existingCrews = broadcast.viewCrews.filter { crew in
-                crew.viewObvanId == selectedObvan.viewId
-            }
-            var result:[CrewPreview] = []
-            selectedObvan.viewTemplateCrews.forEach { template in
-                let position = template.viewPosition
-                let member = existingCrews.first { crew in
-                    crew.viewPosition == position
-                }?.member
-                let hardware = existingCrews.first { crew in
-                    crew.viewPosition == position
-                }?.hardware
-                
-                result.append(CrewPreview(position: position, member: member, hardware: hardware?.viewType,template: template))
-                existingCrews.removeAll { crew in
-                    crew.member == member
-                }
-            }
-            previewsCrew = result.sorted(by: { first, second in
-                source.firstIndex(of: first.position) ?? 0 < source.firstIndex(of: second.position) ?? 0
-            })
-        } else {
-            previewsCrew = []
-        }
-        
-    }
 
     init(point: VenuePoint?, selectedObvan: Obvan?,broadcast: Broadcast) {
         self.broadcast = broadcast
         self.selectedObvan = selectedObvan
+        self.sourceObvan = selectedObvan
+        
         self.point = point
         if let user = point?.viewMembers.first {
             selectedUser = user
@@ -107,6 +76,7 @@ final class AddEditPointOrObvanViewModel: ObservableObject{
         if let camPos = point?.pointDescription {
             position = camPos
         }
+        
     }
 
 }
@@ -130,6 +100,7 @@ struct AddEditPointOrObvanView: View {
         self.state = state
         self.broadcast = broadcast
         self._innerVm = StateObject(wrappedValue: AddEditPointOrObvanViewModel(point: selectedPoint, selectedObvan: selectedObvan,broadcast: broadcast))
+        
         self.newPointAction = newPointAction
         self.newObvanAction = newObvanAction
     }
@@ -137,18 +108,21 @@ struct AddEditPointOrObvanView: View {
     var body: some View {
         VStack{
             switch state {
+                    //edit
                 case .point:
                     PointInfoPanelView()
                 case .obvan:
-                    ObvanInfoPanelView(
+                    ObvanInfoPanelView(broadcast: broadcast,
                         selectedObvan: innerVm.selectedObvan
                     )
+                    //add new
                 case .new:
                     VStack {
                         if isPoint {
                             PointInfoPanelView()
                         } else {
-                            ObvanInfoPanelView(selectedObvan: nil)
+                            ObvanInfoPanelView(broadcast: broadcast,
+                                               selectedObvan: nil)
                         }
                         Spacer()
                     }
@@ -156,70 +130,99 @@ struct AddEditPointOrObvanView: View {
             ConfirmationButtonGroupView(height: 60, isAcceptDisabled: false)
             {
                 //cancel
-                
+                dataManager.rollBackMoc()
                 dismiss()
             } acceptAction: {
                 //accept
                 switch state {
                     case .point:
-                        print("point update")
-                        //                    dataManager.updatePoint(point, withNumber: pointNum, user: pointUser, optic: pointOptic, placeType: pointPlace, windDefence: pointWD, lightType: pointLight)
-                        //                    vm.updatePoint(point)
-                        //                    newPointAction()
-//                    }
+                        if let point = innerVm.point{
+                            dataManager.updatePoint(point, withNumber: innerVm.number, user: innerVm.selectedUser, optic: innerVm.selectedCameraOptic, placeType: innerVm.selectedSoundPlaceType, windDefence: innerVm.selectedSoundWindDefence, lightType: innerVm.selectedLight)
+                            newPointAction(point)
+                        }
                     case .obvan:
-                        print("obvan update")
-                        //accept
-                        //                // if new obvan replace old
-                        //                if let sourceObvan,let newObvan = vm.selectedObvan, newObvan != sourceObvan{
-                        //                    let obvanId = sourceObvan.viewId
-                        //                    broadcast.removeFromObvan(sourceObvan)
-                        //                    broadcast.viewCrews.forEach { crew in
-                        //                        if crew.obvanId == obvanId{
-                        //                            dataManager.mainContext.delete(crew)
-                        //                        }
-                        //                    }
-                        //                }
-                        //                //confirm new obvan and crews
-                        //                if let selectedObvan = vm.selectedObvan{
-                        //                    broadcast.addToObvan(selectedObvan)
-                        //                    let obvanId = selectedObvan.viewId
-                        //                    for preview in vm.previewsCrew{
-                        //                        let hardware: Hardware = dataManager.mainContext.fetchOrCreateObject(withID: UUID().uuidString)
-                        //                        hardware.updateValues(type: preview.hardware)
-                        //                        let newCrew: Crew = dataManager.mainContext.fetchOrCreateObject(withID: UUID().uuidString)
-                        //                        newCrew.updateValues(position: preview.position, x: Double(preview.template.coordinateX), y: Double(preview.template.coordinateY), scaleFactor: Double(preview.template.scaleFactor), rotation: Double(preview.template.rotation), task: nil, member: preview.member, hardware: hardware, broadcast: broadcast, obvanId: obvanId, in: dataManager.mainContext)
-                        //                        hardware.crew = newCrew
-                        //                        preview.member?.addToCrews(newCrew)
-                        //                        broadcast.addToCrews(newCrew)
-                        //                    }
-                        //                }
-                        //                try? dataManager.mainContext.save()
+                        if let newObvan = innerVm.selectedObvan{
+                        if let obvanToRemove = innerVm.sourceObvan,
+                               newObvan != obvanToRemove{
+                                let id = obvanToRemove.viewId
+                                dataManager.mainContext.delete(obvanToRemove)
+                                broadcast.viewCrews.forEach { crew in
+                                    if crew.viewObvanId == id{
+                                        dataManager.mainContext.delete(crew)
+                                    }
+                                }
+                            }
+                            broadcast.addToObvan(newObvan)
+                            newObvan.addToBroadcasts(broadcast)
+                            try? dataManager.mainContext.save()
+                        }
                     case .new:
                         print("add new point or obvan")
-                        //create new point
-                        
-                        //                    dataManager.updatePoint(point, withNumber: pointNum, user: pointUser, optic: pointOptic, placeType: pointPlace, windDefence: pointWD, lightType: pointLight)
-                        //                    vm.updatePoint(point)
-                        //                    newPointAction()
-                        //                            }
-                        // --OR--
-                        //create new obvan point
+                        if isPoint {
+                            //create new point
+                            let newPoint: VenuePoint = dataManager.mainContext.fetchOrCreateObject(withID: UUID().uuidString)
+                            dataManager.updatePoint(newPoint, withNumber: innerVm.number, user: innerVm.selectedUser, optic: innerVm.selectedCameraOptic, placeType: innerVm.selectedSoundPlaceType, windDefence: innerVm.selectedSoundWindDefence, lightType: innerVm.selectedLight)
+                            newPointAction(newPoint)
+                        } else {
+                            //add obvan create crews
+                            if let newObvan = innerVm.selectedObvan{
+                                broadcast.addToObvan(newObvan)
+                                newObvan.addToBroadcasts(broadcast)
+                                try? dataManager.mainContext.save()
+                            }
+                        }
                 }
-                
                 dismiss()
             } content: {
                     HStack {
                         if state == .new{
                             Button {
-                                isPoint = true
+                                withAnimation{
+                                    isPoint = true
+                                }
                             } label: {
-                                Text("Point")
+                                Image(systemName: "sportscourt")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .bold()
+                                    .padding(60 / 4)
+                                    .frame(height: 60)
+
+                                    .background {
+                                        RoundedRectangle(cornerRadius: 5)
+                                            .fill( .ultraThinMaterial)
+                                            .overlay {
+                                                RoundedRectangle(cornerRadius: 5)
+                                                    .stroke(.ultraThickMaterial,
+                                                            lineWidth: 2)
+                                            }
+                                    }
+                                    .fixedSize()
+                                    .opacity(!isPoint ? 0.3 : 1)
                             }
                             Button {
-                                isPoint = false
+                                withAnimation{
+                                    isPoint = false
+                                }
                             } label: {
-                                Text("Obvan")
+                                Image(systemName: "truck.box")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .bold()
+                                    .padding(60 / 4)
+                                    .frame(height: 60)
+
+                                    .background {
+                                        RoundedRectangle(cornerRadius: 5)
+                                            .fill( .ultraThinMaterial)
+                                            .overlay {
+                                                RoundedRectangle(cornerRadius: 5)
+                                                    .stroke(.ultraThickMaterial,
+                                                            lineWidth: 2)
+                                            }
+                                    }
+                                    .fixedSize()
+                                    .opacity(isPoint ? 0.3 : 1)
                             }
                         } else {
                             Spacer()

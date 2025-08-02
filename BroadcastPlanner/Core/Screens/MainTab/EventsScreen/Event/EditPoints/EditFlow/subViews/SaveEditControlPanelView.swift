@@ -123,9 +123,9 @@ struct SaveEditControlPanelView: View {
 
             }
         }
-        .onReceive(vm.$selectedEventPoint) { selectedEventPoint in
+        .onReceive(vm.$selectedVenuePoint) { selectedVenuePoint in
             withAnimation(.linear(duration: 0.1)) {
-                isEdit = selectedEventPoint == nil ? false : true
+                isEdit = selectedVenuePoint == nil ? false : true
             }
         }
         .onReceive(vm.$selectedObvan) { selectedObvan in

@@ -20,5 +20,6 @@ struct CrewDTO: Codable, Identifiable,CoreDataRepresentable {
     var memberId: String
     var obvanId: String
     var hardware: HardwareDTO?
+    var templateId: String
 }
 

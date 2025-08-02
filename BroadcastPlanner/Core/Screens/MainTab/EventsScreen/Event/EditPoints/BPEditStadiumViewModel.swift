@@ -12,12 +12,13 @@ protocol BPSKViewDelegate: AnyObject {
 
 final class BPEditStadiumViewModel: ObservableObject {
     @Published var selectedObvan: Obvan?
-    @Published var selectedEventPoint: VenuePoint?
+    @Published var selectedVenuePoint: VenuePoint?
     @Published var isEdit: Bool = false
     @Published var stadiumFilter: BPEventPlanPointStadiumFilter = .all{
         willSet{
             filterPointsWithCase(newValue)
-            selectedEventPoint = nil
+            selectedObvan = nil
+            selectedVenuePoint = nil
             renderPitchScene.deselect()
             renderPitchScene.points = filteredLocationPoints
             renderPitchScene.updateScene()
@@ -78,7 +79,7 @@ final class BPEditStadiumViewModel: ObservableObject {
     }
     
     func changeState(){
-        if selectedEventPoint != nil{
+        if selectedVenuePoint != nil{
             isEdit = true
         } else {
             isEdit = false
@@ -150,18 +151,6 @@ extension BPEditStadiumViewModel {
                     !$0.viewLights.isEmpty})
         }
     }
-    
-    func stateForPoint(_ point: VenuePoint) -> PointPanelCell.PointPanelCellState {
-        if let selectedEventPoint{
-            if selectedEventPoint == point {
-                return .selected
-            } else {
-                return .unselected
-            }
-        } else {
-            return .noSelection
-        }
-    }
 }
 
 // MARK: - Number for newPoint
@@ -194,31 +183,31 @@ extension BPEditStadiumViewModel{
         renderPitchScene.points = filteredLocationPoints
         renderPitchScene.addPoint(point: point,
                                   select: true)
-        selectedEventPoint = point
+        selectedVenuePoint = point
         renderPitchScene.updateCameraWithNewNode()
         isEdit = true
     }
     
     func deletePoint(){
         renderPitchScene.removeSelectedPoint()
-        if let selectedEventPoint {
+        if let selectedVenuePoint {
             localPoints.removeAll { pointToDelete in
-                pointToDelete.viewId == selectedEventPoint.viewId
+                pointToDelete.viewId == selectedVenuePoint.viewId
             }
             filterPointsWithCase(stadiumFilter)
         }
         isEdit = false
-        selectedEventPoint = nil
+        selectedVenuePoint = nil
     }
     
     func save(){
         renderPitchScene.saveSelectedPoint()
-        selectedEventPoint = nil
+        selectedVenuePoint = nil
         isEdit = false
     }
     
     func selectPoint(point: VenuePoint){
-        selectedEventPoint = point
+        selectedVenuePoint = point
         renderPitchScene.select(point: point)
         isEdit = true
     }
@@ -290,22 +279,22 @@ extension BPEditStadiumViewModel{
 // MARK: - BPSKViewDelegate
 extension BPEditStadiumViewModel: BPSKViewDelegate {
     func selectPointWithId(_ id: String){
-        selectedEventPoint = localPoints.first(where: {$0.viewId == id})
+        selectedVenuePoint = localPoints.first(where: {$0.viewId == id})
         isEdit = true
     }
     
     func deselectPoint(){
-        if selectedEventPoint != nil {
+        if selectedVenuePoint != nil {
             //save point
             savePointAction?()
-            self.selectedEventPoint = nil
+            self.selectedVenuePoint = nil
         }
         isEdit = false
     }
     
     func deselectPointForRender(){
-        if selectedEventPoint != nil {
-            self.selectedEventPoint = nil
+        if selectedVenuePoint != nil {
+            self.selectedVenuePoint = nil
             renderPitchScene.deselect()
         }
         isEdit = false
@@ -338,9 +327,9 @@ extension BPEditStadiumViewModel: BPSKViewDelegate {
 // MARK: - Point data control
 extension BPEditStadiumViewModel {
     func addUser(user: Member){
-        guard let selectedEventPoint else { return }
+        guard let selectedVenuePoint else { return }
         users.append(user)
-        self.renderPitchScene.updateSpritesWithPoint(point: selectedEventPoint)
+        self.renderPitchScene.updateSpritesWithPoint(point: selectedVenuePoint)
     }
     
     func removeUserFromPoint(user: Member){
@@ -353,39 +342,39 @@ extension BPEditStadiumViewModel {
     }
     
     func addCam(cam: Camera){
-        guard let selectedEventPoint else { return }
+        guard let selectedVenuePoint else { return }
         cameras.append(cam)
-        self.renderPitchScene.updateSpritesWithPoint(point: selectedEventPoint)
+        self.renderPitchScene.updateSpritesWithPoint(point: selectedVenuePoint)
     }
     
     func removeCameraFromPoint(camera: Camera){
-        guard let selectedEventPoint else { return }
+        guard let selectedVenuePoint else { return }
         cameras.removeAll(where: {$0.viewId == camera.viewId})
-        self.renderPitchScene.updateSpritesWithPoint(point: selectedEventPoint)
+        self.renderPitchScene.updateSpritesWithPoint(point: selectedVenuePoint)
     }
 
     func addSound(sound: Sound){
-        guard let selectedEventPoint else { return }
+        guard let selectedVenuePoint else { return }
         sounds.append(sound)
-        self.renderPitchScene.updateSpritesWithPoint(point: selectedEventPoint)
+        self.renderPitchScene.updateSpritesWithPoint(point: selectedVenuePoint)
     }
     
     func removeSoundFromPoint(sound: Sound){
-        guard let selectedEventPoint else { return }
+        guard let selectedVenuePoint else { return }
         sounds.removeAll(where: {$0.viewId == sound.viewId})
-        self.renderPitchScene.updateSpritesWithPoint(point: selectedEventPoint)
+        self.renderPitchScene.updateSpritesWithPoint(point: selectedVenuePoint)
     }
     
     func addLight(light: Light){
-        guard let selectedEventPoint else { return }
+        guard let selectedVenuePoint else { return }
         lights.append(light)
-        self.renderPitchScene.updateSpritesWithPoint(point: selectedEventPoint)
+        self.renderPitchScene.updateSpritesWithPoint(point: selectedVenuePoint)
     }
     
     func removeLightFromPoint(light: Light){
-        guard let selectedEventPoint else { return }
+        guard let selectedVenuePoint else { return }
         lights.removeAll(where: {$0.viewId == light.viewId })
-        self.renderPitchScene.updateSpritesWithPoint(point: selectedEventPoint)
+        self.renderPitchScene.updateSpritesWithPoint(point: selectedVenuePoint)
 
     }
     

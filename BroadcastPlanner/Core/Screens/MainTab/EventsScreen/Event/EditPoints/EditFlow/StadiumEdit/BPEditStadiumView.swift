@@ -16,6 +16,7 @@ struct BPEditStadiumView: View {
     @State private var isEditPressed: Bool = false
 
     @FetchRequest<Template>(sortDescriptors: []) var templates
+    @FetchRequest<Obvan>(sortDescriptors: []) var obvans
     
     init(broadcast: Broadcast) {
         self.broadcast = broadcast
@@ -78,6 +79,7 @@ struct BPEditStadiumView: View {
 
                 GeometryReader{ geo in
                     let cellWidth = ((geo.size.width * 3 / 5 - 30) / 5).rounded()
+                    let obvanCellWidth = ((geo.size.width * 3 / 5 - 12) / 2).rounded()
                     //control panel
                     VStack(spacing: 0){
                         HStack {
@@ -88,21 +90,36 @@ struct BPEditStadiumView: View {
                             SaveEditControlPanelView(
                                 addAction: {
                                     //dataManager: 'addPoint to broadcast' & delegete it to scene
-                                   
                                     isEditPressed = true
                                 },
                                 deleteAction: {
-                                    if let pointToDelete = vm.selectedEventPoint{
+                                    if let pointToDelete = vm.selectedVenuePoint{
                                         vm.deletePoint()
                                         dataManager.deletePoint(pointToDelete,
                                                         inEvent: broadcast)
                                     }
+                                    if let obvanToRemove = vm.selectedObvan{
+                                        let id = obvanToRemove.viewId
+                                        vm.selectedObvan = nil
+                                        broadcast.removeFromObvan(obvanToRemove)
+                                        broadcast.viewCrews.forEach { crew in
+                                            if crew.viewObvanId == id{
+                                                dataManager.mainContext.delete(crew)
+                                            }
+                                        }
+                                    }
+                                    broadcast.lastUpdated = .now
                                 },
                                 saveAction: {
-                                    if let point = vm.selectedEventPoint{
-                                        point.updateValues( x: vm.coordinateX, y: vm.coordinateY, rotation: Double(vm.rotation), scaleFactor: vm.scaleFactor, in: dataManager.mainContext)
-                                       
+                                    if let point = vm.selectedVenuePoint{
+                                        point.updateValues( x: vm.coordinateX,
+                                                            y: vm.coordinateY,
+                                                            rotation: Double(vm.rotation),
+                                                            scaleFactor: vm.scaleFactor,
+                                                            in: dataManager.mainContext)
                                         vm.save()
+                                    } else if vm.selectedObvan != nil{
+                                        vm.selectedObvan = nil
                                     }
                                 },
                                 editAction: {
@@ -120,31 +137,48 @@ struct BPEditStadiumView: View {
                                     HStack(spacing: 0){
                                         SmartLayout(hSpacing: 5, vSpacing: 5){
                                             //obvans show
-                                            ForEach(broadcast.viewObvans){obvan in
-                                                Text(obvan.viewName)
-                                                    .onTapGesture {
-                                                        vm.selectedObvan = obvan
+                                            ForEach(obvans){obvan in
+                                                //Text(obvan.viewName)
+                                                //TODO: counter
+                                                ObvanPanelCell(sizeW: obvanCellWidth,
+                                                               sizeH: cellWidth,
+                                                                obvanTitle: obvan.viewName,
+                                                               num: 5)
+                                                .opacity(vm.selectedObvan == obvan ? 1: 0.6)
+                                                .scaleEffect(vm.selectedObvan == obvan ? 1: 0.95)
+                                                .onTapGesture {
+                                                    withAnimation{
+                                                        if vm.selectedVenuePoint != nil{
+                                                            vm.deselectPointForRender()
+                                                        }
+                                                        vm.selectedObvan = vm.selectedObvan == obvan ? nil: obvan
                                                     }
+                                                }
                                             }
+                                        }
+                                    }
+                                        HStack(spacing: 0){
+                                            SmartLayout(hSpacing: 5, vSpacing: 5){
                                             ForEach(vm.filteredLocationPoints.sorted(by: {$0.viewNumber < $1.viewNumber})){ point in
                                                 PointPanelCell(size: cellWidth,
-                                                               state: vm.stateForPoint(point),
-                                                               number: point.viewNumber,
+                                                              number: point.viewNumber,
                                                                isCamera: !point.viewCameras.isEmpty,
                                                                isSound: !point.viewSounds.isEmpty,
                                                                isLight: !point.viewLights.isEmpty,
-                                                               isUser: !point.viewMembers.isEmpty,
-                                                               selectedPoint: $vm.selectedEventPoint)
+                                                               isUser: !point.viewMembers.isEmpty)
+                                                .opacity(vm.selectedVenuePoint == point ? 1:0.6)
+                                                .scaleEffect(vm.selectedVenuePoint == point ? 1:0.95)
                                                 .onTapGesture {
                                                     withAnimation{
-                                                        if vm.selectedEventPoint == point{
+                                                        vm.selectedObvan = nil
+                                                        if vm.selectedVenuePoint == point{
                                                             vm.deselectPointForRender()
                                                         } else {
                                                             vm.selectPoint(point: point)
                                                         }
                                                     }
                                                 }
-                                                .animation(.easeInOut, value: vm.selectedEventPoint)
+//                                                .animation(.easeInOut, value: vm.selectedVenuePoint)
                                             }
                                         }
                                         Spacer()
@@ -186,11 +220,13 @@ struct BPEditStadiumView: View {
             .transitionWithOpacity()
         }
         .onAppear{
+            let predicate = NSPredicate(format: "broadcasts CONTAINS %@", broadcast)
+            obvans.nsPredicate = predicate
             appState.applyAppConfiguration(StateCongiguration.StadPointsEditViewConfiguration)
             appState.setTitle("\(broadcast.venue?.viewTitle ?? "") \( BPDateFormater.format(date: broadcast.viewDate))")
             appState.primaryAction = {
                 vm.resetScale()
-                vm.selectedEventPoint = nil
+                vm.selectedVenuePoint = nil
                 vm.renderPitchScene.deselect()
                 vm.isEdit = false
 
@@ -203,6 +239,7 @@ struct BPEditStadiumView: View {
             }
             appState.secondaryAction = {
                 //edit selected car
+                dataManager.rollBackMoc()
             }
             appState.stepBackAction = {
                 isConfirmDiscardChanges = true
@@ -211,7 +248,7 @@ struct BPEditStadiumView: View {
         }
         .task{
             vm.savePointAction = {
-                if let point = vm.selectedEventPoint{
+                if let point = vm.selectedVenuePoint{
                     point.updateValues(x: vm.coordinateX,
                                        y:vm.coordinateY,
                                        rotation: Double(vm.rotation),
@@ -229,32 +266,28 @@ struct BPEditStadiumView: View {
             }
         }
         .sheet(isPresented: $isEditPressed) {
-//            if let point = vm.selectedEventPoint{
-                //point edit
-//                PointInfoPanelView(){ pointNum, pointUser, pointOptic,pointPlace,pointWD,pointLight in
-//                    dataManager.updatePoint(point, withNumber: pointNum, user: pointUser, optic: pointOptic, placeType: pointPlace, windDefence: pointWD, lightType: pointLight)
-//                    vm.updatePoint(point)
-//                }
-//                .presentationBackground(Color.mainBackground)
-//            } else if let obvan = vm.selectedObvan{
-//                //obvan edit
-//                ObvanInfoPanelView(broadcast: broadcast,selectedObvan: obvan)
-//                    .presentationBackground(Color.mainBackground)
-//            } else {
-                //add new point or obvan
-                //                let newPoint = dataManager.newPointInEvent(broadcast,withNumber: vm.numberForNewPoint())
-//                AddEditPointOrObvanView(state: .new ,broadcast: broadcast) { newPoint in
-//                    vm.addPoint(point: newPoint)
-//                } newObvanAction: { newObvan in
-//                    
-//                }
+            if let point = vm.selectedVenuePoint{
+                AddEditPointOrObvanView(state: .point,
+                                        broadcast: broadcast, selectedPoint: point, selectedObvan: nil) { point in
+                    vm.updatePoint(point)
+                } newObvanAction: { _ in }
+                .presentationBackground(Color.mainBackground)
+            } else if let obvan = vm.selectedObvan{
+                AddEditPointOrObvanView(state: .obvan,
+                                        broadcast: broadcast, selectedPoint: nil, selectedObvan: obvan) { _ in} newObvanAction: { obvan in
+                    vm.selectedObvan = obvan
+                }
+                .presentationBackground(Color.mainBackground)
+            } else {
                 AddEditPointOrObvanView(state: .new, broadcast: broadcast, selectedPoint: nil, selectedObvan: nil, newPointAction: { newVenuePoint in
-                    
+                    broadcast.addToVenuePoints(newVenuePoint)
+                    newVenuePoint.broadcast = broadcast
+                    vm.addPoint(point: newVenuePoint)
                 }, newObvanAction: { obvan in
-                    
+                    vm.selectedObvan = obvan
                 })
                 .presentationBackground(Color.mainBackground)
-//            }
+            }
         }
         .environmentObject(vm)
     }

@@ -19,6 +19,7 @@ struct VenuePointDTO: Identifiable, Codable,CoreDataRepresentable {
     var task: String
     
     var imageId: String
+    var obvanId: String
     
     var memberIds : [String]
     var cameras: [CameraDTO]
