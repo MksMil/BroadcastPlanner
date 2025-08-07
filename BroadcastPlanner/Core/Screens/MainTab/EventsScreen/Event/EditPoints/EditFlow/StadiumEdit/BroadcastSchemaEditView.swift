@@ -1,14 +1,14 @@
 import SpriteKit
 import SwiftUI
 
-struct BPEditStadiumView: View {
+struct BroadcastSchemaEditView: View {
 
     @EnvironmentObject var router: Router
     @EnvironmentObject var appState: ApplicationState
     @EnvironmentObject var settings: GlobalSettings
     @EnvironmentObject var dataManager: DataManager
     
-    @StateObject var vm: BPEditStadiumViewModel
+    @StateObject var vm: BroadcastSchemaEditViewModel
     
     let broadcast: Broadcast
 
@@ -20,7 +20,7 @@ struct BPEditStadiumView: View {
     
     init(broadcast: Broadcast) {
         self.broadcast = broadcast
-        self._vm = .init(wrappedValue: BPEditStadiumViewModel(broadcast: broadcast))
+        self._vm = .init(wrappedValue: BroadcastSchemaEditViewModel(broadcast: broadcast))
     }
 
     var body: some View {
@@ -95,8 +95,7 @@ struct BPEditStadiumView: View {
                                 deleteAction: {
                                     if let pointToDelete = vm.selectedVenuePoint{
                                         vm.deletePoint()
-                                        dataManager.deletePoint(pointToDelete,
-                                                        inEvent: broadcast)
+                                        dataManager.deletePoint(pointToDelete)
                                     }
                                     if let obvanToRemove = vm.selectedObvan{
                                         let id = obvanToRemove.viewId
@@ -222,20 +221,16 @@ struct BPEditStadiumView: View {
         .onAppear{
             let predicate = NSPredicate(format: "broadcasts CONTAINS %@", broadcast)
             obvans.nsPredicate = predicate
-            appState.applyAppConfiguration(StateCongiguration.StadPointsEditViewConfiguration)
-            appState.setTitle("\(broadcast.venue?.viewTitle ?? "") \( BPDateFormater.format(date: broadcast.viewDate))")
-            appState.primaryAction = {
-                vm.resetScale()
-                vm.selectedVenuePoint = nil
-                vm.renderPitchScene.deselect()
-                vm.isEdit = false
 
-                Task{
-                    await dataManager.assignSnapshot(vm.makeSceneScreenshot(), toBroadcast: broadcast)
-                    
-                    try? dataManager.saveContext(publish: .broadcasts, id: [broadcast.viewId])
-                    router.stepBack()
-                }
+            appState.setTitle("\(broadcast.venue?.viewTitle ?? "") \( BPDateFormater.format(date: broadcast.viewDate))")
+            //TODO: fix
+            appState.primaryAction = {
+                let screenshot = vm.makeSceneScreenshot()
+                dataManager.assignSnapshot(screenshot,
+                                           toBroadcast: broadcast)
+//                try? dataManager.saveContext(publish: .broadcasts, id: [broadcast.viewId])
+//                
+                router.stepBack()
             }
             appState.secondaryAction = {
                 //edit selected car
@@ -274,7 +269,9 @@ struct BPEditStadiumView: View {
                 .presentationBackground(Color.mainBackground)
             } else if let obvan = vm.selectedObvan{
                 AddEditPointOrObvanView(state: .obvan,
-                                        broadcast: broadcast, selectedPoint: nil, selectedObvan: obvan) { _ in} newObvanAction: { obvan in
+                                        broadcast: broadcast,
+                                        selectedPoint: nil,
+                                        selectedObvan: obvan) { _ in} newObvanAction: { obvan in
                     vm.selectedObvan = obvan
                 }
                 .presentationBackground(Color.mainBackground)

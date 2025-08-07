@@ -13,7 +13,7 @@ struct AuthenticationScreen: View {
     
     var body: some View {
         ScrollView{
-            VStack{
+            VStack(spacing: 5){
                 // MARK: - Logo
                 //logo here. circle is just a placeholder
                 Circle()
@@ -57,7 +57,7 @@ struct AuthenticationScreen: View {
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                         .padding(.horizontal)
                 })
-                .padding(.bottom,50)
+                .padding(.bottom,20)
                 .padding(.top,10)
                 
                 // MARK: - "Sign in with Google"
@@ -90,7 +90,7 @@ struct AuthenticationScreen: View {
                 .frame(height: 44)
                 .frame(width: 200)
                 .padding(.horizontal)
-                .padding(.bottom,50)
+                .padding(.bottom,20)
                 
                 // MARK: - "Sign Up" Link
                 Button {

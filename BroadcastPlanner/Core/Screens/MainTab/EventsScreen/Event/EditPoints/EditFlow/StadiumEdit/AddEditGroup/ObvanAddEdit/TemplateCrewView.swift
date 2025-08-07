@@ -84,15 +84,14 @@ struct TemplateCrewView: View {
                         .stroke(.ultraThinMaterial, lineWidth: 2)
                 }
         }
-        .task{
+        .onAppear{
             if let oldCrew = broadcast.viewCrews.compactMap({ crew in
-                crew.viewTemplateId == template.viewId ? crew:nil
+               return crew.viewTemplateId == template.viewId ? crew:nil
             }).first {
                 self.crew = oldCrew
             } else {
                 let newCrew: Crew = dataManager.mainContext.fetchOrCreateObject(withID: UUID().uuidString)
                 let hardware: Hardware = dataManager.mainContext.fetchOrCreateObject(withID: UUID().uuidString)
-                
                 newCrew.updateValues(position: template.viewPosition,
                                      x: template.viewX,
                                      y: template.viewY,

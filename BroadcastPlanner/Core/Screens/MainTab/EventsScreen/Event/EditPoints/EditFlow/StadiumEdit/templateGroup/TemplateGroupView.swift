@@ -19,7 +19,6 @@ struct TemplateGroup: View {
     var body: some View {
         HStack {
             Button {
-                
                 isRemoveComfirmation = true
             } label: {
                 Image(systemName: "trash")
@@ -89,7 +88,12 @@ struct TemplateGroup: View {
                     Text("Add new template")
                         .font(.largeTitle)
                         .foregroundStyle(.white)
-                    CustomTemplateNameEditor(text: $newTemplateName){
+//                    CustomTextEditor(text: newTemplateName) { newText in
+//                        self.newTemplateName = newText
+//                        addAction(newText)
+//                        isAddSheetshowed = false
+//                    }
+                    CustomTextField(text: $newTemplateName){
                         isAddSheetshowed = false
                         addAction(newTemplateName)
                     }
@@ -122,7 +126,7 @@ struct TemplateGroup: View {
 //    let mdm = DataManager(networkManager: NetworkManager())
 //    mdm.setMember(id: "123")
 //    let localEvent: Broadcast = mdm.mainContext.fetchOrCreateObject(withID: "id")
-//    return BPEditStadiumView(event:localEvent)
+//    return BroadcastSchemaEditView(event:localEvent)
 //        .environmentObject(mdm)
 //        .environment(\.managedObjectContext, mdm.mainContext)
 //}

@@ -4,9 +4,6 @@
     "" : {
 
     },
-    "---" : {
-
-    },
     "?" : {
 
     },
@@ -44,12 +41,6 @@
     "Add Club" : {
 
     },
-    "Add Crew form here" : {
-
-    },
-    "Add new crew" : {
-
-    },
     "Add new template" : {
 
     },
@@ -74,9 +65,6 @@
     "Broadcast" : {
 
     },
-    "broadcast summary" : {
-
-    },
     "Cancel" : {
 
     },
@@ -93,6 +81,9 @@
 
     },
     "Confirm" : {
+
+    },
+    "Crews: %@" : {
 
     },
     "Delete account" : {
@@ -182,9 +173,6 @@
     "Remove Venue" : {
 
     },
-    "Replay Hardware" : {
-
-    },
     "Save" : {
 
     },
@@ -213,9 +201,6 @@
 
     },
     "Tab Label 2" : {
-
-    },
-    "Tap to edit" : {
 
     },
     "template title" : {

@@ -338,7 +338,7 @@ extension DataManager {
     // TODO: Rework mb?
     @MainActor
     func assignSnapshot(_ image: UIImage?,
-                        toBroadcast broadcast: Broadcast) async {
+                        toBroadcast broadcast: Broadcast) {
         if let image {
             let localImage: LocalImage = mainContext.makeObjectFromDTO(
                 ImageDTO(id: UUID().uuidString,
@@ -542,11 +542,13 @@ extension DataManager {
             }
         }
         
-        @MainActor
+        
         func deletePoint(
-            _ point: VenuePoint,
-            inEvent event: Broadcast
-        ) {
+            _ point: VenuePoint) {
+            mainContext.performAndWait {
+                mainContext.delete(point)
+            }
+            
 //TODO:            removeLocalLocationPoint(point, inContext: .main)
         }
     }
@@ -587,7 +589,7 @@ extension DataManager {
          -> [VenuePoint]
         {
                 return await withTaskGroup(of: VenuePoint.self,
-                                           returning: [VenuePoint].self)/*await withTaskGroup(of: Void.self)*/ {[unowned self] group in
+                                           returning: [VenuePoint].self) {[unowned self] group in
                     template.viewTemplatePoints.forEach { point in
                         group.addTask {
                             await self.mainContext.perform {
@@ -604,19 +606,6 @@ extension DataManager {
                     
                     return result
                 }
-//            await withTaskGroup(of: Void.self) {[unowned self] group in
-//                template.viewTemplatePoints.forEach { point in
-//                    group.addTask {
-//                        self.mainContext.perform {
-//                            let newVenuePoint: VenuePoint = self.mainContext.fetchOrCreateObject(withID: UUID().uuidString)
-//                            newVenuePoint.fromTemplaPoint(point, context: self.mainContext)
-//                            result.append(newVenuePoint)
-//                        }
-//                    }
-//                }
-//                await group.waitForAll()
-//            }
-//            return result
         }
         
         func cleanLocalPoints(_ points: [VenuePoint], inEvent event: Broadcast) async {
@@ -652,7 +641,7 @@ extension DataManager {
             localPoints: [VenuePoint],
             withName name: String
         ) async {
-            let template: Template = mainContext.fetchOrCreateObject(withID: UUID().uuidString)
+            let template: Template = mainContext.fetchOrCreateObject(withID: name)
             let templatePoints:[TemplatePoint] =  localPoints.map { point in
                 let newTemplatePoint: TemplatePoint = mainContext.fetchOrCreateObject(withID: UUID().uuidString)
                 newTemplatePoint.fromVenuePoint(point)
@@ -917,11 +906,11 @@ extension DataManager{
 
 // MARK: - Online status managment
 extension DataManager {
-    func changeOnlineStatus(isOnline: Bool) async {
+    func changeOnlineStatus(isOnline: Bool,id: String) async {
         if isOnline {
-            await networkManager.goOnline(id: currentId)
+            await networkManager.goOnline(id: id)
         } else {
-            await networkManager.goOffline(id: currentId)
+            await networkManager.goOffline(id: id)
         }
     }
 }

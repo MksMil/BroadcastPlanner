@@ -309,6 +309,10 @@ extension NetworkManager {
 // MARK: - Online/Offline
 extension NetworkManager {
     func goOnline(id: String) async {
+        guard !id.isEmpty else {
+            print("empty id,cant update online status")
+                return
+        }
         let userRef = dbService.collection("\(GlobalProperties.Path.members.rawValue)")
             .document(id)
         do {
@@ -326,7 +330,10 @@ extension NetworkManager {
         }
     }
     func goOffline(id: String) async {
-
+        guard !id.isEmpty else {
+            print("empty id,cant update online status")
+                return
+        }
         let userRef = dbService.collection("\(GlobalProperties.Path.members.rawValue)")
             .document(id)
 

@@ -1,4 +1,3 @@
-import SwiftUI
 import SpriteKit
 
 enum SceneState{
@@ -116,14 +115,15 @@ class PitchEditSpriteScene: SKScene{
         if point.viewScaleFactor != 0 {
             setScale(point.viewScaleFactor, toNode: node)
         }
+//        node.zRotation = point.viewRotation * angle
     }
     
     func assignTexturesInNode(_ node: SKShapeNode, withPoint point: VenuePoint){
         var rotation = CGFloat.zero
         if node == selectedPointNode {
-            rotation = selectedPointNodeRotation
+            rotation = selectedPointNodeRotation * angle
         } else {
-            rotation = point.viewRotation.radians
+            rotation = point.viewRotation * angle
         }
         if !point.viewCameras.isEmpty{
             
@@ -254,11 +254,10 @@ class PitchEditSpriteScene: SKScene{
     }
     func updateData(){
         if let selectedPointNode{
-            var angle: Double = 0
-            angle = (Angle(radians: selectedPointNodeRotation).degrees.truncatingRemainder(dividingBy: 360)).rounded()
+            
             pointDelegate?.updatePoint(x: selectedPointNode.position.x / size.width,
                                        y: selectedPointNode.position.y / size.height,
-                                       rotation: angle,//in degrees
+                                       rotation: selectedPointNodeRotation.truncatingRemainder(dividingBy: 16),//in step count
                                        scaleFactor: selectedPointNode.xScale)
         }
     }
@@ -319,7 +318,7 @@ extension PitchEditSpriteScene{
             selectedPointNode = node
             editedNode = selectedPointNode
             if let name = node.name{
-                selectedPointNodeRotation = points.first(where: {$0.viewId == name})?.viewRotation.radians ?? 0
+                selectedPointNodeRotation = points.first(where: {$0.viewId == name})?.viewRotation ?? 0
             }
             pointDelegate?.selectPointWithId(name)
             addSelectionAnimationToNode(node: node)
@@ -334,7 +333,7 @@ extension PitchEditSpriteScene{
             //selection animation
             selectedPointNode = node
             editedNode = selectedPointNode
-            selectedPointNodeRotation = point.viewRotation.radians
+            selectedPointNodeRotation = point.viewRotation
             addSelectionAnimationToNode(node: node)
             camFollowToSelectedNodePosition(node.position)
         } else {
@@ -589,8 +588,9 @@ extension PitchEditSpriteScene{
            let name = selectedPointNode.name,
            let node = selectedPointNode.childNode(withName: name + NodeZone.main.rawValue){
             node.run(SKAction.rotate(byAngle: angle, duration: animationDuration))
-            selectedPointNodeRotation += angle
+            selectedPointNodeRotation += 1
             updateData()
+            
         }
     }
     
@@ -600,7 +600,7 @@ extension PitchEditSpriteScene{
            let name = selectedPointNode.name,
            let node = selectedPointNode.childNode(withName: name + NodeZone.main.rawValue){
             node.run(SKAction.rotate(byAngle: -angle, duration: animationDuration))
-            selectedPointNodeRotation -= angle
+            selectedPointNodeRotation -= 1
             updateData()
         }
     }
@@ -754,7 +754,7 @@ extension SKNode{
 //    let mdm = DataManager(networkManager: NetworkManager())
 //    mdm.setMember(id: "123")
 //    let localEvent: Broadcast = mdm.mainContext.fetchOrCreateObject(withID: "id")
-//    return BPEditStadiumView(event: localEvent)
+//    return BroadcastSchemaEditView(event: localEvent)
 //        .environmentObject(mdm)
 //        .environment(\.managedObjectContext, mdm.mainContext)
 //}

@@ -10,7 +10,7 @@ protocol BPSKViewDelegate: AnyObject {
     func updatePoint(x: Double?, y: Double?, rotation: Double?, scaleFactor: Double?) //x,y,rotation,scaleFactor
 }
 
-final class BPEditStadiumViewModel: ObservableObject {
+final class BroadcastSchemaEditViewModel: ObservableObject {
     @Published var selectedObvan: Obvan?
     @Published var selectedVenuePoint: VenuePoint?
     @Published var isEdit: Bool = false
@@ -106,7 +106,15 @@ final class BPEditStadiumViewModel: ObservableObject {
     }
     
     // MARK: scene screenshot
+    func prepareForScreenshot(){
+        resetScale()
+        selectedVenuePoint = nil
+        renderPitchScene.deselect()
+        isEdit = false
+    }
+
     func makeSceneScreenshot()-> UIImage?{
+        prepareForScreenshot()
         guard let view = renderPitchScene.view else {
                 print("Сцена не привязана к SKView.")
                 return nil
@@ -129,7 +137,7 @@ final class BPEditStadiumViewModel: ObservableObject {
     }
 }
 // MARK: - filter venuePoints & venuePoint state
-extension BPEditStadiumViewModel {
+extension BroadcastSchemaEditViewModel {
     
     func filterPointsWithCase(_ filter: BPEventPlanPointStadiumFilter){
         
@@ -154,7 +162,7 @@ extension BPEditStadiumViewModel {
 }
 
 // MARK: - Number for newPoint
-extension BPEditStadiumViewModel{
+extension BroadcastSchemaEditViewModel{
     func configureNumbers(){
         
     }
@@ -165,7 +173,7 @@ extension BPEditStadiumViewModel{
 }
 
 // MARK: - Available Users
-extension BPEditStadiumViewModel{
+extension BroadcastSchemaEditViewModel{
     func availableUsers() -> [Member]{
         return users.filter { user in
             
@@ -176,7 +184,7 @@ extension BPEditStadiumViewModel{
 }
 
 // MARK: - Points Managment
-extension BPEditStadiumViewModel{
+extension BroadcastSchemaEditViewModel{
     func addPoint(point: VenuePoint){
         localPoints.append(point)
         filterPointsWithCase(stadiumFilter)
@@ -220,7 +228,7 @@ extension BPEditStadiumViewModel{
  
 
 // MARK: - Scaling scenes
-extension BPEditStadiumViewModel {
+extension BroadcastSchemaEditViewModel {
     func scaleUp(){
         renderPitchScene.scaleUp()
     }
@@ -236,7 +244,7 @@ extension BPEditStadiumViewModel {
 }
 
 // MARK: - Control (move,scale,rotate) Points in Stadium Edit Scene
-extension BPEditStadiumViewModel{
+extension BroadcastSchemaEditViewModel{
     func moveUp(){
         renderPitchScene.moveUP()
     }
@@ -277,7 +285,7 @@ extension BPEditStadiumViewModel{
 
 
 // MARK: - BPSKViewDelegate
-extension BPEditStadiumViewModel: BPSKViewDelegate {
+extension BroadcastSchemaEditViewModel: BPSKViewDelegate {
     func selectPointWithId(_ id: String){
         selectedVenuePoint = localPoints.first(where: {$0.viewId == id})
         isEdit = true
@@ -325,7 +333,7 @@ extension BPEditStadiumViewModel: BPSKViewDelegate {
 }
 
 // MARK: - Point data control
-extension BPEditStadiumViewModel {
+extension BroadcastSchemaEditViewModel {
     func addUser(user: Member){
         guard let selectedVenuePoint else { return }
         users.append(user)

@@ -133,11 +133,12 @@ struct SettingsView: View {
                 
                 Button(action: {
                     Task{
+                        appState.userOnlineStatus = .offline
+//                        await dataManager.changeOnlineStatus(isOnline: false)
                         do{
-                            appState.userOnlineStatus = .offline
                             try sessionManager.logOut()
                             appState.state = .notAuthorized
-                            
+                            router.routeTo(path: RouterPath.authScreen)
                         }catch {
                             print("failed to signing out: \(error.localizedDescription)")
                         }

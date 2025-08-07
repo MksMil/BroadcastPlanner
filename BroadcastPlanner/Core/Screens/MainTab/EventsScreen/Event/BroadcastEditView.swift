@@ -66,7 +66,7 @@ struct BroadcastEditView: View {
                         .resizable()
                         .scaledToFit()
                         .onTapGesture {
-                            try? dataManager.mainContext.save()
+//                            try? dataManager.mainContext.save()
                             router.routeTo(path: .stadPointsEdit(broadcast))
                         }
 //                    broadcast.viewObvanPreview

@@ -53,7 +53,7 @@ extension Crew : Identifiable {
         task ?? "Task"
     }
     var viewObvanId: String {
-        obvanId ?? ""
+        return obvanId ?? ""
     }
     
     var viewTemplateId: String{
@@ -108,13 +108,8 @@ extension Crew: CoreDataUpdatable{
             let hardware: Hardware = context.makeObjectFromDTO(hardDTO)
             self.hardware = hardware
             hardware.crew = self
-        }
-        
-        if !dto.obvanId.isEmpty {
-            self.obvanId = obvanId
-        } else {
-            self.obvanId = nil
-        }
+        }        
+        self.obvanId = dto.obvanId
     }
     
     func updateValues(position: String? = nil,
@@ -172,9 +167,9 @@ extension Crew: CoreDataUpdatable{
         self.broadcast?.lastUpdated = .now
         
         
-        if let obvanId {
-            self.obvanId = obvanId
-        }
+        
+        self.obvanId = obvanId
+        
         if let member, member != self.member {
             self.member?.removeFromCrews(self)
             self.member = member

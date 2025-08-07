@@ -62,6 +62,7 @@ struct StatusView: View {
             } label: {
             image
                 .resizable()
+                .aspectRatio(contentMode: .fill)
                 .frame(width: 50, height: 50)
                 .clipShape(Circle())
                 .overlay {
@@ -93,6 +94,8 @@ struct StatusView: View {
                     self.image = Image(uiImage: image)
                 }
             }
+        } else {
+            self.image = Image(systemName: "person")
         }
     }
 }

@@ -2,7 +2,7 @@ import Combine
 import SwiftUI
 
 struct SaveEditControlPanelView: View {
-    @EnvironmentObject var vm: BPEditStadiumViewModel
+    @EnvironmentObject var vm: BroadcastSchemaEditViewModel
     //Actions
     let addAction: () -> Void
     let deleteAction: () -> Void

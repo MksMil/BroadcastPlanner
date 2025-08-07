@@ -32,7 +32,7 @@ struct RootView: View {
                             case .animatedStart:
                                 AnimatedStart()
                             case .broadcastList:
-                                MainEventsList()
+                                BroadcastListView()
                             case .authScreen:
                                 AuthenticationScreen()
                             case .ownerInfo:
@@ -76,7 +76,7 @@ struct RootView: View {
                             case .createEdit(let broadcast):
                                 BroadcastEditView(broadcast: broadcast)
                             case .stadPointsEdit(let broadcast):
-                                BPEditStadiumView(broadcast: broadcast)
+                                BroadcastSchemaEditView(broadcast: broadcast)
                                 //obvan managment
                             case .obvanCollection:
                                 ObvanCollectionView()
@@ -155,10 +155,14 @@ struct RootView: View {
                 await sessionManager.getUserSession()
             }
         }
+        
         .onReceive(sessionManager.$sessionUser) { user in
                 if let user{
                     dataManager.setMember(id: user.id)
                     appState.state = .authorized
+                    if isStarted{
+                        appState.isStartAnimationFinishedPublisher.send(true)
+                    }
                 } else {
                     dataManager.clearData()
                     appState.state = .notAuthorized
@@ -177,15 +181,15 @@ struct RootView: View {
             }
         })
         .onReceive(appState.$userOnlineStatus) { value in
-            guard let _ = sessionManager.sessionUser else { return }
+            guard let id = sessionManager.sessionUser?.id else { return }
             switch value {
             case .online:
                 Task {
-                    await dataManager.changeOnlineStatus(isOnline: true)
+                    await dataManager.changeOnlineStatus(isOnline: true,id:id)
                 }
             case .offline:
                 Task {
-                    await dataManager.changeOnlineStatus(isOnline: false)
+                    await dataManager.changeOnlineStatus(isOnline: false,id:id)
                 }
             }
         }

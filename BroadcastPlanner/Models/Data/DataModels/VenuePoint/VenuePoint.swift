@@ -112,8 +112,8 @@ extension VenuePoint : Identifiable {
     var viewY: Double {
         Double(coordinateY)
     }
-    var viewRotation: Angle{
-        Angle(degrees: Double(rotation))
+    var viewRotation: Double{
+        Double(rotation)
     }
 
     var viewScaleFactor: Double{
@@ -167,7 +167,7 @@ extension VenuePoint : Identifiable {
                       number: viewNumber,
                       coordinateX: viewX,
                       coordinateY: viewY,
-                      rotation: viewRotation.radians,
+                      rotation: viewRotation,
                       scaleFactor: viewScaleFactor,
                       description: viewDescription,
                       task: viewTask,

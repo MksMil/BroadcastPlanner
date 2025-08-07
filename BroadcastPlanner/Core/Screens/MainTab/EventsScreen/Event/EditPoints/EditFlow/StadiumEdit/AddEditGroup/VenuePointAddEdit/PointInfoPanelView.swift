@@ -3,53 +3,13 @@ import SwiftUI
 
 struct PointInfoPanelView: View {
     @EnvironmentObject var settings: GlobalSettings
-//    @EnvironmentObject var pointManager: BPEditStadiumViewModel
-//    @Environment(\.dismiss) var dismiss
-    
     @EnvironmentObject var vm: AddEditPointOrObvanViewModel
    
     @FetchRequest<Member>(sortDescriptors: [SortDescriptor(\.lastName, order: .forward)]) var availableUsers
-    
-//    let saveAction: (_  num:Int,_ member:Member?,_ opticType:String,_ placeType: String,_ windDefence: String,_ lightType: String)->()
-    
-//    init(broadcast: Broadcast,point: VenuePoint?/*,
-//         saveAction: @escaping (Int,Member?,String,String,String,String)->()*/) {
-////        self.saveAction = saveAction
-//    }
 
     var body: some View {
         VStack{
-//            ConfirmationButtonGroupView(height: 60, isAcceptDisabled: false) {
-//                //cancell
-//                dismiss()
-//            } acceptAction: {
-//                //accept
-//                saveAction(vm.number,vm.selectedUser,vm.selectedCameraOptic,vm.selectedSoundPlaceType,vm.selectedSoundWindDefence,vm.selectedLight)
-//                //save venuePoint invoked here
-//                dismiss()
-//            } content: {
-//                Text("Edit Point")
-//                    .bold()
-//                    .frame( height: 60)
-//                    .frame(maxWidth: .infinity)
-//                //                    .background {
-//                //                        RoundedRectangle(cornerRadius: 5)
-//                //                            .fill(
-//                //                                .ultraThickMaterial
-//                //                                    .opacity(0.3)
-//                //                            )
-//                //                            .overlay {
-//                //                                RoundedRectangle(cornerRadius: 5)
-//                //                                    .stroke(
-//                //                                        .ultraThickMaterial
-//                //                                            .opacity(0.5),
-//                //                                        lineWidth: 2
-//                //                                    )
-//                //                            }
-//                //                    }
-//            }
-//            .padding()
-            
+
             ScrollView{
                 VStack(spacing: 0) {
                     DividerWithText(text: "select position number")
@@ -200,31 +160,6 @@ struct PointInfoPanelView: View {
                         
                     }
                     .frame(height: 150)
-                    
-                    //                        DividerWithText(text: "save or cancel")
-                    //                            .padding(.bottom,5)
-                    //                        HStack{
-                    //                            Spacer()
-                    //                            Button("Cancel"){
-                    //                                dismiss()
-                    //                            }
-                    //                            .padding(8)
-                    //                            .background{
-                    //                                RoundedRectangle(cornerRadius: 8).fill(.white.opacity(0.4))
-                    //                            }
-                    //                            Spacer()
-                    //                            Button(" Save "){
-                    //                                print("Save tapped: num:\(vm.number), member: \(vm.selectedUser?.viewCompactName ?? "no member"), optic: \(vm.selectedCameraOptic), sound: \(vm.selectedSoundPlaceType) / \(vm.selectedSoundWindDefence), light: \(vm.selectedLight)")
-                    //                                saveAction(vm.number,vm.selectedUser,vm.selectedCameraOptic,vm.selectedSoundPlaceType,vm.selectedSoundWindDefence,vm.selectedLight)
-                    //                                //save venuePoint invoked here
-                    //                                dismiss()
-                    //                            }
-                    //                            .padding(8)
-                    //                            .background{
-                    //                                RoundedRectangle(cornerRadius: 8).fill(.white.opacity(0.4))
-                    //                            }
-                    //                            Spacer()
-                    //                        }
                     Spacer()
                 }
                 .padding(15)

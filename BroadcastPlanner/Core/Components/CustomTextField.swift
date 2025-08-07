@@ -1,8 +1,9 @@
 import SwiftUI
 
-struct CustomTemplateNameEditor: View {
+struct CustomTextField: View {
     
     @FocusState private var isFocused: Bool
+    
     @Binding var text: String
     
     let submitAction: ()->()
@@ -34,3 +35,5 @@ struct CustomTemplateNameEditor: View {
         }
     }
 }
+
+

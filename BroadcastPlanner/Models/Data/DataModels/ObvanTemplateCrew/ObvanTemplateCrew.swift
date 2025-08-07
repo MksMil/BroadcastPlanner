@@ -39,13 +39,18 @@ extension ObvanTemplateCrew : Identifiable {
     var viewPosition: String{
         position ?? "Empty"
     }
+    var viewParentObvanId: String{
+        parentObvan?.viewId ?? ""
+    }
+    
     var dto: ObvanTemplateCrewDTO {
         ObvanTemplateCrewDTO(id: viewId,
                              coordinateX: viewX,
                              coordinateY: viewY,
                              rotation: viewRotation,
                              scaleFactor: viewScaleFactor,
-                             position: viewPosition)
+                             position: viewPosition,
+                             obvanId: viewParentObvanId)
     }
 }
 
@@ -60,6 +65,7 @@ extension ObvanTemplateCrew: CoreDataUpdatable{
         self.coordinateY = Float(dto.coordinateY)
         self.rotation = Int16(dto.rotation)
         self.scaleFactor = Float(dto.scaleFactor)
+        
     }
     
     func updateWithValues(x: Double? = nil,
