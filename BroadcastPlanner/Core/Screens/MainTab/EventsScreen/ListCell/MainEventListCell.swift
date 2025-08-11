@@ -2,11 +2,9 @@ import SwiftUI
 import Combine
 
 struct MainEventListCell: View {
-    @EnvironmentObject var mdm : DataManager
     @EnvironmentObject var appState: ApplicationState
     let broadcast: Broadcast
     
-    @StateObject var vm: MainEventListCellViewModel
     @State private var rowHeight: Double = 70
     @State private var isExpired: Bool
     var status: BroadcastStatus {
@@ -15,7 +13,6 @@ struct MainEventListCell: View {
     }
     init(event: Broadcast){
         self.broadcast = event
-        self._vm = StateObject(wrappedValue: MainEventListCellViewModel(event: event))
         self.isExpired = broadcast.isExpired
     }
     
@@ -27,26 +24,23 @@ struct MainEventListCell: View {
                 .overlay {
                     HStack{
                         VStack(spacing: 5){
-                            Text("\(vm.firstDate)")
+                            Text("\(BPDateFormater.formatDate(date: broadcast.viewDate))")
                                 .font(.caption2)
-                            Text("\(vm.secondDate)")
-                            RemainigTimveView(time: vm.date)
+                            Text("\(BPDateFormater.formatTime(date: broadcast.viewDate))")
+                            RemainigTimveView(time: broadcast.viewDate)
                         }
                         .frame(width: 100)
-                        .background{
-                            Color.randomColor()
-                        }
+                        
                         
                         Divider()
                             .background(.white.opacity(0.4))
                         
                         VStack(spacing: 0){
-                            LogosCellImageView(homeImage: vm.homeImage,
-                                               guestImage: vm.guestImage, size: 45)
+                            LogosCellImageView(homeImage: broadcast.homeImage,
+                                               guestImage: broadcast.guestImage
+                                               , size: 45)
                             .frame(height: 45)
-                            .background{
-                                Color.randomColor()
-                            }
+                           
                             
                         }
                         .padding(.vertical,2)
@@ -55,14 +49,14 @@ struct MainEventListCell: View {
                             .background(.white.opacity(0.4))
                         
                         VStack(alignment: .leading){
-                            Text(vm.title)
+                            Text(broadcast.viewTitle)
                                 .font(.title3)
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.35)
                             Spacer()
-                            Text(vm.address)
+                            Text(broadcast.viewAddress)
                                 .font(.caption)
-                                .lineLimit(1)
+                                .lineLimit(2)
                                 .minimumScaleFactor(0.35)
                         }
                         .padding(.vertical,10)
@@ -81,18 +75,6 @@ struct MainEventListCell: View {
         .onReceive(appState.currentTime) { currentTime in
             if currentTime >= broadcast.viewDate{
                 isExpired = true
-            }
-        }
-        
-        .onReceive(mdm.updatePublisher) { value in
-            if value.0 == .broadcasts{
-                value.1.forEach { id in
-                    if id == broadcast.viewId{
-                        withAnimation{
-                            vm.update()
-                        }
-                    }
-                }
             }
         }
     }
@@ -117,7 +99,6 @@ struct MainEventListCell: View {
 
 struct RemainigTimveView: View {
     @EnvironmentObject var appState: ApplicationState
-    @EnvironmentObject var mdm: DataManager
     let time: Date
     @State private var text: String
     

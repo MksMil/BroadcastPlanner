@@ -147,7 +147,12 @@ struct BroadcastSchemaEditView: View {
                                                 .scaleEffect(vm.selectedObvan == obvan ? 1: 0.95)
                                                 .onTapGesture {
                                                     withAnimation{
-                                                        if vm.selectedVenuePoint != nil{
+                                                        if let point = vm.selectedVenuePoint{
+                                                            point.updateValues( x: vm.coordinateX,
+                                                                                y: vm.coordinateY,
+                                                                                rotation: Double(vm.rotation),
+                                                                                scaleFactor: vm.scaleFactor,
+                                                                                in: dataManager.mainContext)
                                                             vm.deselectPointForRender()
                                                         }
                                                         vm.selectedObvan = vm.selectedObvan == obvan ? nil: obvan
@@ -170,6 +175,13 @@ struct BroadcastSchemaEditView: View {
                                                 .onTapGesture {
                                                     withAnimation{
                                                         vm.selectedObvan = nil
+                                                        if let selectedPoint = vm.selectedVenuePoint{
+                                                            selectedPoint.updateValues( x: vm.coordinateX,
+                                                                                        y: vm.coordinateY,
+                                                                                        rotation: Double(vm.rotation),
+                                                                                        scaleFactor: vm.scaleFactor,
+                                                                                        in: dataManager.mainContext)
+                                                        }
                                                         if vm.selectedVenuePoint == point{
                                                             vm.deselectPointForRender()
                                                         } else {

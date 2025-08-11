@@ -918,18 +918,22 @@ extension DataManager {
 // MARK: - CoreDate Context
 extension DataManager {
     
-    @MainActor
+//    @MainActor
     func rollBackMoc() {
-        mainContext.rollback()
+        mainContext.performAndWait {
+            mainContext.rollback()
+        }
     }
     
-    @MainActor
+//    @MainActor
     func saveContext(publish: GlobalProperties.PublishChanges,
                      id: [String]) throws {
-        if mainContext.hasChanges {
-            try mainContext.save()
-            if publish != .none {
-                self.updatePublisher.send((publish, id))
+        mainContext.performAndWait {
+            if mainContext.hasChanges {
+                try? mainContext.save()
+                if publish != .none {
+                    self.updatePublisher.send((publish, id))
+                }
             }
         }
     }

@@ -155,7 +155,8 @@ struct PointInfoPanelView: View {
                             val: user,
                             publishType: PointEditPublishType.user
                         ) {
-                            PointEditUserCellView(user: user)
+                            PointEditUserCellView(name: user.viewCompactName,
+                                                  image: user.viewImage)
                         }
                         
                     }

@@ -74,6 +74,7 @@ struct AddEditPointOrObvanView: View {
                             broadcast.addToObvan(newObvan)
                             newObvan.addToBroadcasts(broadcast)
                             try? dataManager.mainContext.save()
+                            newObvanAction(newObvan)
                         }
                     case .new:
                         print("add new point or obvan")
@@ -89,6 +90,7 @@ struct AddEditPointOrObvanView: View {
                                 broadcast.addToObvan(newObvan)
                                 newObvan.addToBroadcasts(broadcast)
                                 try? dataManager.mainContext.save()
+                                newObvanAction(newObvan)
                             }
                         }
                 }

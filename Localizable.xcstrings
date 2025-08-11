@@ -98,6 +98,9 @@
     "Discard all changes and step back?" : {
 
     },
+    "Edit" : {
+
+    },
     "empty" : {
 
     },
@@ -123,6 +126,9 @@
 
     },
     "LOGO" : {
+
+    },
+    "Managed by: " : {
 
     },
     "Match Day" : {
@@ -158,6 +164,12 @@
     "Press me" : {
 
     },
+    "Remove" : {
+
+    },
+    "Remove  %@ from owners?" : {
+
+    },
     "Remove %@ template!" : {
 
     },
@@ -186,6 +198,9 @@
 
     },
     "sfdsfsdfds" : {
+
+    },
+    "Share" : {
 
     },
     "Sign In" : {
