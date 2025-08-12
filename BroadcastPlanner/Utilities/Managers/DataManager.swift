@@ -365,10 +365,12 @@ extension DataManager {
     
         }
         
-        @MainActor func updatePoint(_ point: VenuePoint?, withNumber number: Int, user: Member?, optic: String, placeType: String, windDefence: String, lightType: String){
-            guard let point else { return }
+        @MainActor
+        func updatePoint(_ point: VenuePoint?, withNumber number: Int, user: Member?, optic: String, placeType: String, windDefence: String, lightType: String){
     
             mainContext.performAndWait {
+                guard let point else { return }
+                print("point: x - \(point.viewX), y - \(point.viewY) ")
                 point.number = Int16(number)
                     //remove member
                     if let userToRemove = point.viewMembers.first{
@@ -620,21 +622,21 @@ extension DataManager {
             }
         }
     
-        func loadTemplatePoints(_ points:[TemplatePoint],
-                                toBroadcast broadcast: Broadcast) async {
-            await withTaskGroup(of: Void.self) {[unowned self] group in
-                points.forEach { point in
-                    group.addTask {
-                        self.mainContext.perform {
-                            let newVenuePoint: VenuePoint = self.mainContext.fetchOrCreateObject(withID: UUID().uuidString)
-                            newVenuePoint.fromTemplaPoint(point, context: self.mainContext)
-                            broadcast.addToVenuePoints(newVenuePoint)
-                            newVenuePoint.broadcast = broadcast
-                        }
-                    }
-                }
-            }
-        }
+//        func loadTemplatePoints(_ points:[TemplatePoint],
+//                                toBroadcast broadcast: Broadcast) async {
+//            await withTaskGroup(of: Void.self) {[unowned self] group in
+//                points.forEach { point in
+//                    group.addTask {
+//                        self.mainContext.perform {
+//                            let newVenuePoint: VenuePoint = self.mainContext.fetchOrCreateObject(withID: UUID().uuidString)
+//                            newVenuePoint.fromTemplaPoint(point, context: self.mainContext)
+//                            broadcast.addToVenuePoints(newVenuePoint)
+//                            newVenuePoint.broadcast = broadcast
+//                        }
+//                    }
+//                }
+//            }
+//        }
     
         @MainActor
         func saveTemplateFromSchema(

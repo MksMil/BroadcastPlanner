@@ -8,6 +8,7 @@ struct AddEditPointOrObvanView: View {
     @EnvironmentObject var dataManager: DataManager
 //    @EnvironmentObject var vm: BroadcastSchemaEditViewModel
     @Environment(\.dismiss) var dismiss
+    
     let state: AddEditPointOrObvanState
     let broadcast: Broadcast
     
@@ -35,7 +36,6 @@ struct AddEditPointOrObvanView: View {
 
     var body: some View {
         VStack{
-            
             VStack {
                 if isPoint {
                     PointInfoPanelView()

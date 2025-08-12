@@ -34,7 +34,7 @@ struct BroadcastEditView: View {
             MainBackground()
 
             VStack(alignment: .center, spacing: 5) {
-
+                
                 //header: time, date, teams, venue
                 VStack{
                     ZStack{
@@ -44,7 +44,7 @@ struct BroadcastEditView: View {
                         } acceptAction: { newVenue in
                             broadcast.venue = newVenue
                         }
-                       VStack(spacing: 5){
+                        VStack(spacing: 5){
                             //team logos section
                             HStack(alignment: .top) {
                                 //home team logo/selection action
@@ -67,7 +67,7 @@ struct BroadcastEditView: View {
                                     broadcast.guestClub = club
                                 })
                             }
-//                            .padding(.top)
+                            //                            .padding(.top)
                             Spacer()
                         }
                         .padding()
@@ -76,39 +76,67 @@ struct BroadcastEditView: View {
                 .frame(height: 250)
                 
                 HStack(spacing: 3){
-                    Text("Managed by: ")
+                    Text("Owned by:")
                         .font(.system(size: 14))
                         .bold()
                     Menu {
                         ForEach(members){ member in
-                            Button("\(member.viewCompactName)") {
+                            Button{
                                 if !broadcast.viewOwners.contains(member){
                                     broadcast.addToOwners(member)
+                                }
+                            } label: {
+                                HStack{
+                                    Text("\(member.viewCompactName)")
+                                    Spacer()
+                                    if broadcast.viewOwners.contains(member){
+                                        Image(systemName: "checkmark")
+                                    }
                                 }
                             }
                         }
                     } label: {
                         Image(systemName: "plus")
-                            .padding(10)
+                            .padding(4)
                             .background(content: {
                                 Circle().stroke(Color.white, lineWidth: 2)
                             })
-                            .frame(width: 40, height: 40)
+                            .padding(4)
+                            .frame(width: 30, height: 30)
                     }
-
-                    ForEach(broadcast.viewOwners){ owner in
-                        LogoInWhiteCircleView(image: owner.viewImage)
-                            .frame(width: 40, height: 40)
-                            .onTapGesture {
-                                ownerToRemove = owner
-                                isRemoveFromOwners = true
+                    ScrollView(.horizontal){
+                        HStack(alignment: .center){
+                            ForEach(broadcast.viewOwners){ owner in
+                                LogoInWhiteRectView(image: owner.viewImage)
+                                    .frame(width: 30, height: 30)
+                                    .contextMenu {
+                                        Text("\(owner.viewCompactName)")
+                                        Button{
+                                            
+                                        } label:{
+                                            Text("Info")
+                                        }
+                                        Button{
+                                            
+                                        } label:{
+                                            Text("Message")
+                                        }
+                                        Button{
+                                            ownerToRemove = owner
+                                            isRemoveFromOwners = true
+                                        } label:{
+                                            Text("Remove")
+                                        }
+                                    }
                             }
-                            
+                        }
+                        .padding(.leading,5)
+                        .frame(height: 40)
                     }
                     
-                    Spacer()
                 }
-                .padding(.horizontal)
+                .frame(height: 40)
+                .padding(.leading)
                 
                 
                 //preview + fsc editStad / editCar  views
@@ -156,13 +184,10 @@ struct BroadcastEditView: View {
                             ForEach(broadcast.viewVenuePoints.sorted(by: { first, second in
                                 first.number < second.number
                             })){ point in
-                                Rectangle().fill(Color.clear)
-                                    .overlay {
-                                        LogoInWhiteCircleView(image: point.viewMembers.first?.viewImage ?? Image(systemName: "person"))
-                                            .padding(3)
-                                    }
+                                 LogoInWhiteRectView(image:(point.viewMembers.first?.viewImage ?? Image(systemName: "person.crop.square")))
                                     .frame(width: 30, height: 30)
                                     .contextMenu {
+                                        Text("\(point.viewMembers.first?.viewCompactName ?? "empty position")")
                                         Button{
                                             
                                         } label:{
@@ -179,7 +204,6 @@ struct BroadcastEditView: View {
                                     }
                                     .scaleEffect(point == memberToShow ? 1.05 : 0.95)
                                     .opacity(point == memberToShow ? 1 : 0.75)
-                                    
                             }
                         }
                         Spacer()
@@ -188,48 +212,42 @@ struct BroadcastEditView: View {
                     .layoutPriority(2)
                     Divider()
                     VStack(alignment: .leading){
-                        VStack{
-                            ForEach(broadcast.viewObvans) { obvan in
-                                obvan.viewImage
-                                    .resizable()
-                                    .scaledToFit()
-//                                    .border(Color.green)
-                                    .onTapGesture {
-                                        router.routeTo(path: .stadPointsEdit(broadcast))
-                                    }
-                            }
-                        }
-//                        .frame(height: 150)
-                        Divider()
-                            .opacity(broadcast.viewObvans.count > 0 ? 1 : 0)
                         ScrollView{
-                            SmartLayout(hSpacing: 5, vSpacing: 5){
-                                ForEach(broadcast.viewCrews.filter({ crew in
-                                    crew.member != nil
-                                })){ crew in
-                                    let _ = print(broadcast.viewCrews.count)
-                                    LogoInWhiteCircleView(image: crew.member?.viewImage ?? Image(systemName: "person"))
-                                        .frame(width: 30, height: 30)
-                                        .clipShape(Circle())
-                                        .background(content: {
-                                            RoundedRectangle(cornerRadius: 10).fill(Color.white.opacity(0.4))
-                                        })
-                                        .contextMenu {
-                                            Button{
-                                                
-                                            } label:{
-                                                Text("Info")
-                                            }
-                                            Button{
-                                                
-                                            } label:{
-                                                Text("Message")
-                                            }
+                            ForEach(broadcast.viewObvans.sorted(by: { first, second in
+                                first.viewName < second.viewName
+                            })) { obvan in
+                                VStack{
+                                    obvan.viewImage
+                                        .resizable()
+                                        .scaledToFit()
+                                        .onTapGesture {
+                                            router.routeTo(path: .stadPointsEdit(broadcast))
                                         }
+                                    SmartLayout(hSpacing: 5, vSpacing: 5){
+                                        ForEach(broadcast.crewsForObvan(obvan: obvan)){ crew in
+                                            LogoInWhiteRectView(image:
+                                            (crew.member?.viewImage ?? Image(systemName: "person.crop.square")))
+                                                .frame(width: 30, height: 30)
+                                                .contextMenu {
+                                                    Text("\(crew.viewPosition): \(crew.member?.viewCompactName ?? "")")
+                                                    Button{
+                                                        
+                                                    } label:{
+                                                        Text("Info")
+                                                    }
+                                                    Button{
+                                                        
+                                                    } label:{
+                                                        Text("Message")
+                                                    }
+                                                }
+                                        }
+                                    }
+                                    Divider()
+                                        .opacity(broadcast.viewObvans.count > 0 ? 1 : 0)
                                 }
                             }
                         }
-                        .buttonStyle(.plain)
                         Spacer()
                     }
                     .frame(maxWidth: imageWidth)

@@ -28,7 +28,15 @@ struct ObvanInfoPanelView: View {
     var body: some View {
         VStack{
             DividerWithText(text: "Obvans")
-            TabViewList(source: obvans.map{$0}, selectedItem: selectedObvan, pageCount: 2, spacing: 5) { obvan in
+            TabViewList(source: obvans.compactMap{
+                if $0 == selectedObvan{
+                    return $0
+                }
+                return broadcast.viewObvans.contains($0) ? nil: $0
+            },
+                        selectedItem: selectedObvan,
+                        pageCount: 2,
+                        spacing: 5) { obvan in
                 selectedObvan = selectedObvan == obvan ? nil : obvan
                 vm.selectedObvan = vm.selectedObvan == obvan ? nil : obvan
                 updateSource()

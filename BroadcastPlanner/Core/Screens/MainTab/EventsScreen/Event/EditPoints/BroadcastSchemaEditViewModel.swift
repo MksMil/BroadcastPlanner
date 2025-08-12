@@ -114,7 +114,7 @@ final class BroadcastSchemaEditViewModel: ObservableObject {
     }
 
     func makeSceneScreenshot()-> UIImage?{
-        prepareForScreenshot()
+//        prepareForScreenshot()
         guard let view = renderPitchScene.view else {
                 print("Сцена не привязана к SKView.")
                 return nil
@@ -216,6 +216,18 @@ extension BroadcastSchemaEditViewModel{
     
     func selectPoint(point: VenuePoint){
         selectedVenuePoint = point
+        coordinateX = point.viewX
+        coordinateY = point.viewY
+        scaleFactor = point.viewScaleFactor
+        rotation = Int(point.viewRotation)
+        cameras = point.viewCameras
+        sounds = point.viewSounds
+        lights = point.viewLights
+        num = Int(point.number)
+        users = point.viewMembers
+        description = point.viewDescription
+        task = point.viewTask
+        
         renderPitchScene.select(point: point)
         isEdit = true
     }
@@ -238,7 +250,7 @@ extension BroadcastSchemaEditViewModel {
     }
     
     func resetScale(){
-        renderPitchScene.resetScale()
+        renderPitchScene.resetScaleNow()
     }
     
 }
@@ -287,8 +299,22 @@ extension BroadcastSchemaEditViewModel{
 // MARK: - BPSKViewDelegate
 extension BroadcastSchemaEditViewModel: BPSKViewDelegate {
     func selectPointWithId(_ id: String){
-        selectedVenuePoint = localPoints.first(where: {$0.viewId == id})
-        isEdit = true
+        if let point = localPoints.first(where: {$0.viewId == id}){
+            selectedVenuePoint = point
+            coordinateX = point.viewX
+            coordinateY = point.viewY
+            scaleFactor = point.viewScaleFactor
+            rotation = Int(point.viewRotation)
+            cameras = point.viewCameras
+            sounds = point.viewSounds
+            lights = point.viewLights
+            num = Int(point.number)
+            users = point.viewMembers
+            description = point.viewDescription
+            task = point.viewTask
+            isEdit = true
+        }
+        
     }
     
     func deselectPoint(){

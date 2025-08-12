@@ -715,6 +715,10 @@ extension PitchEditSpriteScene{
         cameraNode.run(SKAction.group([SKAction.scale(to: 1, duration: animationDuration),
                                        SKAction.move(to: centerPoint, duration: animationDuration)]))
     }
+    func resetScaleNow(){
+        cameraNode.setScale(1)
+        cameraNode.position = centerPoint
+    }
     
     func scaleCameraTo(_ scaleFactor: Double){
         var action: SKAction = SKAction()

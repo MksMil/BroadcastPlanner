@@ -33,8 +33,13 @@ struct BroadcastSchemaEditView: View {
                     withAnimation {
                         broadcast.cleanVenuePoints()
                         Task{
-                           let points = await dataManager.makeLocalPointsFromTemplate(templateToShow)
-                            await dataManager.loadTemplatePoints(templateToShow.viewTemplatePoints, toBroadcast: broadcast)
+                            let points = await dataManager.makeLocalPointsFromTemplate(templateToShow)
+//                            await dataManager.loadTemplatePoints(templateToShow.viewTemplatePoints,
+//                                                                 toBroadcast: broadcast)
+                            points.forEach { point in
+                                broadcast.addToVenuePoints(point)
+                                point.broadcast = broadcast
+                            }
                             vm.loadTemplate(points)
                             vm.selectedTemplate = templateToShow
                             
@@ -137,12 +142,10 @@ struct BroadcastSchemaEditView: View {
                                         SmartLayout(hSpacing: 5, vSpacing: 5){
                                             //obvans show
                                             ForEach(obvans){obvan in
-                                                //Text(obvan.viewName)
-                                                //TODO: counter
                                                 ObvanPanelCell(sizeW: obvanCellWidth,
                                                                sizeH: cellWidth,
                                                                 obvanTitle: obvan.viewName,
-                                                               num: 5)
+                                                               num: broadcast.crewsCountForObvan(obvan: obvan))
                                                 .opacity(vm.selectedObvan == obvan ? 1: 0.6)
                                                 .scaleEffect(vm.selectedObvan == obvan ? 1: 0.95)
                                                 .onTapGesture {
@@ -189,7 +192,6 @@ struct BroadcastSchemaEditView: View {
                                                         }
                                                     }
                                                 }
-//                                                .animation(.easeInOut, value: vm.selectedVenuePoint)
                                             }
                                         }
                                         Spacer()
@@ -233,27 +235,6 @@ struct BroadcastSchemaEditView: View {
         .onAppear{
             let predicate = NSPredicate(format: "broadcasts CONTAINS %@", broadcast)
             obvans.nsPredicate = predicate
-
-            appState.setTitle("\(broadcast.venue?.viewTitle ?? "") \( BPDateFormater.format(date: broadcast.viewDate))")
-            //TODO: fix
-            appState.primaryAction = {
-                let screenshot = vm.makeSceneScreenshot()
-                dataManager.assignSnapshot(screenshot,
-                                           toBroadcast: broadcast)
-//                try? dataManager.saveContext(publish: .broadcasts, id: [broadcast.viewId])
-//                
-                router.stepBack()
-            }
-            appState.secondaryAction = {
-                //edit selected car
-                dataManager.rollBackMoc()
-            }
-            appState.stepBackAction = {
-                isConfirmDiscardChanges = true
-            }
-            
-        }
-        .task{
             vm.savePointAction = {
                 if let point = vm.selectedVenuePoint{
                     point.updateValues(x: vm.coordinateX,
@@ -262,6 +243,27 @@ struct BroadcastSchemaEditView: View {
                                        scaleFactor: vm.scaleFactor,
                                        in: dataManager.mainContext)
                 }
+            }
+
+
+            appState.setTitle("\(broadcast.venue?.viewTitle ?? "") \( BPDateFormater.format(date: broadcast.viewDate))")
+            //TODO: fix
+            appState.primaryAction = {
+                vm.prepareForScreenshot()
+                let screenshot = vm.makeSceneScreenshot()
+                dataManager.assignSnapshot(screenshot,
+                                           toBroadcast: broadcast)
+//                try? dataManager.saveContext(publish: .broadcasts, id: [broadcast.viewId])
+//
+                try? dataManager.mainContext.save()
+                router.stepBack()
+            }
+            appState.secondaryAction = {
+                //edit selected car
+                dataManager.rollBackMoc()
+            }
+            appState.stepBackAction = {
+                isConfirmDiscardChanges = true
             }
             
         }
@@ -274,12 +276,16 @@ struct BroadcastSchemaEditView: View {
         }
         .sheet(isPresented: $isEditPressed) {
             if let point = vm.selectedVenuePoint{
+                let _ = print("1")
                 AddEditPointOrObvanView(state: .point,
-                                        broadcast: broadcast, selectedPoint: point, selectedObvan: nil) { point in
-                    vm.updatePoint(point)
+                                        broadcast: broadcast,
+                                        selectedPoint: vm.selectedVenuePoint,
+                                        selectedObvan: nil) { updatedPoint in
+                    vm.updatePoint(updatedPoint)
                 } newObvanAction: { _ in }
                 .presentationBackground(Color.mainBackground)
             } else if let obvan = vm.selectedObvan{
+                let _ = print("2")
                 AddEditPointOrObvanView(state: .obvan,
                                         broadcast: broadcast,
                                         selectedPoint: nil,
@@ -288,6 +294,7 @@ struct BroadcastSchemaEditView: View {
                 }
                 .presentationBackground(Color.mainBackground)
             } else {
+                let _ = print("3")
                 AddEditPointOrObvanView(state: .new, broadcast: broadcast, selectedPoint: nil, selectedObvan: nil, newPointAction: { newVenuePoint in
                     broadcast.addToVenuePoints(newVenuePoint)
                     newVenuePoint.broadcast = broadcast
@@ -299,6 +306,20 @@ struct BroadcastSchemaEditView: View {
             }
         }
         .environmentObject(vm)
+        .onReceive(vm.$selectedObvan) { obvan in
+            if obvan == nil , vm.selectedVenuePoint == nil{
+                appState.makePrimaryButtonEnabled(true)
+            } else {
+                appState.makePrimaryButtonEnabled(false)
+            }
+        }
+        .onReceive(vm.$selectedVenuePoint) { point in
+            if point == nil , vm.selectedObvan == nil{
+                appState.makePrimaryButtonEnabled(true)
+            } else {
+                appState.makePrimaryButtonEnabled(false)
+            }
+        }
     }
 }
 

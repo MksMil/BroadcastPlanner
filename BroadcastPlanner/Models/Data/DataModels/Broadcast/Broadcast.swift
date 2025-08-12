@@ -224,6 +224,16 @@ extension Broadcast : Identifiable {
         }
         return result.uniqued()
     }
+    
+    func crewsCountForObvan(obvan: Obvan) -> Int{
+        viewCrews.filter({$0.obvanId == obvan.viewId && $0.member != nil}).count
+    }
+    
+    func crewsForObvan(obvan: Obvan) -> [Crew]{
+            viewCrews.filter({ crew in
+                crew.obvanId == obvan.viewId && crew.member != nil
+            })
+    }
 }
 
 // MARK: - Update

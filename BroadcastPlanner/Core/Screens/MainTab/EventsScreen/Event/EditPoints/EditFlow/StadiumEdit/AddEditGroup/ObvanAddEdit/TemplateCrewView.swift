@@ -49,6 +49,10 @@ struct TemplateCrewView: View {
                         } label: {
                             HStack {
                                 Text(member.viewCompactName)
+                                Spacer()
+                                if crew?.member == member{
+                                    Image(systemName: "checkmark")
+                                }
                             }
                         }
                         .disabled(broadcast.viewCrews.contains(where: { crew in
@@ -62,12 +66,21 @@ struct TemplateCrewView: View {
                 .disabled(members.wrappedValue.isEmpty)
                 Spacer()
                 Divider()
-                Menu(selectedHardware ?? "Unknown", systemImage: "keyboard") {
+                Menu(selectedHardware ?? "Empty", systemImage: "keyboard") {
                     ForEach(settings.hardwareType, id: \.self) { type in
-                        Button("\(type)", action: {
-                            crew?.hardware?.type = crew?.hardware?.type == type ? nil: type
-                            selectedHardware = selectedHardware == type ? nil : type
-                        })
+                        Button{
+                            crew?.hardware?.type = crew?.hardware?.type == type ? settings.hardwareType[0]: type
+                            selectedHardware = selectedHardware == type ? settings.hardwareType[0] : type
+                        } label: {
+                            HStack{
+                                Text("\(type)")
+                                Spacer()
+                                if crew?.hardware?.type == type {
+                                    Image(systemName: "checkmark")
+
+                                }
+                            }
+                        }
                     }
                 }
                 .font(.system(size: 12))

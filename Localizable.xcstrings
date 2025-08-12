@@ -20,6 +20,16 @@
         }
       }
     },
+    "%@: %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@: %2$@"
+          }
+        }
+      }
+    },
     "%lld" : {
 
     },
@@ -98,9 +108,6 @@
     "Discard all changes and step back?" : {
 
     },
-    "Edit" : {
-
-    },
     "empty" : {
 
     },
@@ -128,10 +135,10 @@
     "LOGO" : {
 
     },
-    "Managed by: " : {
+    "Match Day" : {
 
     },
-    "Match Day" : {
+    "Message" : {
 
     },
     "Minutes" : {
@@ -144,6 +151,9 @@
 
     },
     "Not Registered?   Sign Up!" : {
+
+    },
+    "Owned by:" : {
 
     },
     "Permanently erase the Club in the trash?" : {
@@ -198,9 +208,6 @@
 
     },
     "sfdsfsdfds" : {
-
-    },
-    "Share" : {
 
     },
     "Sign In" : {
