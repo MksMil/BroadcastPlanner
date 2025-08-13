@@ -23,9 +23,38 @@ enum MenuState: String {
     case settings
     case none
 }
+// Тип поля для контекстно-зависимых кнопок
+enum TextFieldType: Equatable {
+    case login
+    case password
+    case email
+    case custom([String]) // Для кастомных символов
 
-
-
+    var toolbarButtons: [String] {
+        switch self {
+        case .login:
+            return ["@"]
+        case .password:
+            return ["#", "!"]
+        case .email:
+            return ["@", "."]
+        case .custom(let symbols):
+            return symbols
+        }
+    }
+    var contentType: UITextContentType? {
+        switch self {
+            case .login:
+                    .username
+            case .password:
+                    .password
+            case .email:
+                    .emailAddress
+            default:
+                    nil
+        }
+    }
+}
 class ApplicationState: ObservableObject{
     @Published var state: AppState = .notAuthorized
     @Published var userOnlineStatus: UserOnlineStatus = .offline
@@ -33,6 +62,28 @@ class ApplicationState: ObservableObject{
     @MainActor var primaryAction: ()->() = {}
     @MainActor var secondaryAction: ()->() = {}
     @MainActor var stepBackAction: ()->() = {}
+    
+    // MARK: - GlobalTextField Control
+    @Published var fieldType: TextFieldType = .custom([])
+    @Published var textfieldSource: String = ""
+    @Published var isTextFieldShowed: Bool = false
+    var isSecure: Bool = false
+    var promptString: String = "Enter your information here!"
+    var doneAction: (String)->() = { _ in  }
+    func openTextFieldWithAction(_ action: @escaping (String)->()){
+        doneAction = action
+        isTextFieldShowed = true
+        
+    }
+    func closeTextField(){
+        isTextFieldShowed = false
+        cleanTFInfo()
+    }
+    func cleanTFInfo(){
+        textfieldSource = ""
+        isSecure = false
+        doneAction = {_ in }
+    }
     
     // MARK: init
     init(){
@@ -79,6 +130,8 @@ class ApplicationState: ObservableObject{
     func stopTimer(){
         timer?.cancel()
     }
+
+    
     
     //MARK: - Primary action button
 

@@ -69,6 +69,7 @@ struct LogoImageView: View {
 //                .padding()
 //                .presentationBackground(.white.opacity(0.4))
                 .presentationContentInteraction(.scrolls)
+                .presentationDragIndicator(.visible)
 //                .presentationDetents(
 //                    [.fraction(0.6),.fraction(0.65) ,.fraction(0.9), .fraction(1)],
 //                    selection: $vm.locationSheetDetents)

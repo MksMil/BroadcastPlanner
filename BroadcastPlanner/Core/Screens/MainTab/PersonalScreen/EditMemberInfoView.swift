@@ -18,101 +18,144 @@ struct EditMemberInfoView: View {
     }
 
     var body: some View {
-
-            ZStack {
-                MainBackground()
-                VStack {
-                    VStack {
-                        HStack {
-                            PhotosPicker(
-                                selection: $vm.selectedPhoto,
-                                matching: .images,
-                                photoLibrary: .shared()
-                            ) {
-                                vm.showedImage
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                                    .frame(width: 100, height: 100)
-                                    .clipShape(Circle())
-                                    .background {
-                                        Circle()
-                                            .fill(.ultraThickMaterial)
-                                            .opacity(isEdit ? 0.8 : 0.3)
-                                            .frame(width: 110, height: 110)
-                                    }
-                                    .padding(.trailing, 15)
-                            }
-                            VStack(alignment: .leading, spacing: 3) {
-
-                                UserInfoTextField(
-                                    text: $vm.firstName,
-                                    isEdit: isEdit,
-                                    imageName: "",
-                                    prompt: "first name",
-                                    scaleFactor: 0.2)
-
-                                Divider()
-
-                                UserInfoTextField(
-                                    text: $vm.lastName,
-                                    isEdit: isEdit,
-                                    imageName: "",
-                                    prompt: "last name",
-                                    scaleFactor: 0.2)
-
-                                Divider()
-                            }
-                            .font(.title3)
-                            .bold()
-                            .frame(maxWidth: .infinity)
-
+        
+        ZStack {
+            MainBackground()
+            VStack {
+                Section {
+                    HStack {
+                        PhotosPicker(
+                            selection: $vm.selectedPhoto,
+                            matching: .images,
+                            photoLibrary: .shared()
+                        ) {
+                            vm.showedImage
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: 100, height: 100)
+                                .clipShape(Circle())
+                                .background {
+                                    Circle()
+                                        .fill(.ultraThickMaterial)
+                                        .opacity(isEdit ? 0.8 : 0.3)
+                                        .frame(width: 110, height: 110)
+                                }
+                                .padding(.trailing, 15)
                         }
-                        .padding(.vertical)
-                        Section {
-                            VStack {
-
-                                UserInfoTextField(
-                                    text: $vm.phoneNumber,
-                                    isEdit: isEdit,
-                                    imageName: "phone.circle.fill",
-                                    prompt: "phone number",
-                                    scaleFactor: 0.2)
-
-                                Divider()
-
-                                UserInfoTextField(
-                                    text: $vm.email,
-                                    isEdit: isEdit,
-                                    imageName: "envelope.circle.fill",
-                                    prompt: "E-mail",
-                                    scaleFactor: 0.2)
-
-                                Divider()
-                                UserInfoTextField(
-                                    text: $vm.address,
-                                    isEdit: isEdit,
-                                    imageName: "map.circle.fill",
-                                    prompt: "Address",
-                                    scaleFactor: 0.2)
-                                Divider()
+                        VStack(alignment: .leading, spacing: 3) {
+                            
+                            UserInfoTextField(
+                                text: vm.firstName,
+                                isEdit: isEdit,
+                                imageName: "",
+                                prompt: "first name",
+                                scaleFactor: 0.2)
+                            .onTapGesture {
+                                appState.cleanTFInfo()
+                                appState.textfieldSource = vm.firstName
+                                appState.promptString = "Enter first name, please"
+                                appState.fieldType = .custom([])
+                                appState.openTextFieldWithAction { name in
+                                    vm.firstName = name
+                                }
                             }
+                            
+                            Divider()
+                            
+                            UserInfoTextField(
+                                text: vm.lastName,
+                                isEdit: isEdit,
+                                imageName: "",
+                                prompt: "last name",
+                                scaleFactor: 0.2)
+                            .onTapGesture {
+                                appState.cleanTFInfo()
+                                appState.textfieldSource = vm.lastName
+                                appState.promptString = "Enter last name, please"
+                                appState.fieldType = .custom([])
+                                appState.openTextFieldWithAction { name in
+                                    vm.lastName = name
+                                }
+                            }
+                            
+                            Divider()
                         }
+                        .font(.title3)
+                        .bold()
+                        .frame(maxWidth: .infinity)
+                        
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.top, 10)
-                    .disabled(!isEdit)
-                    SpecializationSection(
-                        specialization: $vm.userSpecialization,
-                        isEditSpecialization: $isEditSpecialization,
-                        isEdit: isEdit
-                    )
-                    .padding(.vertical, 0)
-                    .padding(.horizontal)
-                    Divider()
-                        .padding(.vertical, 0)
-                        .padding(.horizontal, 20)
-                    Spacer()
+                  
+                    VStack {
+                        UserInfoTextField(
+                            text: vm.phoneNumber,
+                            isEdit: isEdit,
+                            imageName: "phone.circle.fill",
+                            prompt: "phone number",
+                            scaleFactor: 0.2)
+                        .onTapGesture {
+                            appState.cleanTFInfo()
+                            appState.textfieldSource = vm.phoneNumber
+                            appState.promptString = "Enter phone number, please"
+                            appState.fieldType = .custom([])
+                            appState.openTextFieldWithAction { number in
+                                vm.phoneNumber = number
+                            }
+                        }
+                        
+                        Divider()
+                        
+                        UserInfoTextField(
+                            text: vm.email,
+                            isEdit: isEdit,
+                            imageName: "envelope.circle.fill",
+                            prompt: "E-mail",
+                            scaleFactor: 0.2)
+                        .onTapGesture {
+                            appState.cleanTFInfo()
+                            appState.textfieldSource = vm.email
+                            appState.promptString = "Enter e-mail, please"
+                            appState.fieldType = .email
+                            appState.openTextFieldWithAction { email in
+                                vm.email = email
+                            }
+                        }
+                        
+                        Divider()
+                        
+                        UserInfoTextField(
+                            text: vm.address,
+                            isEdit: isEdit,
+                            imageName: "map.circle.fill",
+                            prompt: "Address",
+                            scaleFactor: 0.2)
+                        .onTapGesture {
+                            appState.cleanTFInfo()
+                            appState.textfieldSource = vm.address
+                            appState.promptString = "Enter your address, please"
+                            appState.fieldType = .custom([])
+                            appState.openTextFieldWithAction { address in
+                                vm.address = address
+                            }
+                        }
+                        Divider()
+                    }
                 }
+                .padding(.top, 10)
+                .disabled(!isEdit)
+                    
+                SpecializationSection(
+                    specialization: $vm.userSpecialization,
+                    isEditSpecialization: $isEditSpecialization,
+                    isEdit: isEdit
+                )
+                .frame(maxWidth: .infinity)
+
+                Divider()
+                Spacer()
+                }
+            .ignoresSafeArea(.keyboard)
+                .padding(.horizontal)
                 .transitionWithOpacity()
             }
             .navigationBarBackButtonHidden()

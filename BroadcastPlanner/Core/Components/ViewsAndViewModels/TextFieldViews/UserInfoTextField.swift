@@ -2,37 +2,45 @@ import SwiftUI
 
 //used in profile view
 struct UserInfoTextField: View {
-    @Binding var text: String
-    var isEdit: Bool
-    var imageName: String
-    var prompt: String
-    var scaleFactor: Double
+    let text: String
+    let isEdit: Bool
+    let imageName: String
+    let prompt: String
+    let scaleFactor: Double
     
     var body: some View {
         HStack{
             if !imageName.isEmpty{
                 Image(systemName: imageName)
                     .resizable()
-                    .frame(width: 30,height: 30)
+                    .frame(width: 25,height: 25)
                     .scaledToFill()
             }
             
-            // TODO: Text content type?
-            TextField("", text: $text, prompt: Text(prompt))
-                .autocorrectionDisabled()
+            Text(text.isEmpty ? prompt : text)
                 .font(.title)
                 .minimumScaleFactor(scaleFactor)
-                .padding(.vertical,4)
-                .padding(.horizontal,5)
-                .background {
-                    RoundedRectangle(cornerRadius: 5.0).fill(.white.opacity(0.4)).opacity(isEdit ? 0.5 : 0)
-                }
+            Spacer()
         }
+//        .ignoresSafeArea(.keyboard)
         .frame(height: 40)
+        .frame(maxWidth: .infinity)
+        .frame(alignment: .leading)
+        .background {
+            RoundedRectangle(cornerRadius: 5.0).fill(.white.opacity(0.4)).opacity(isEdit ? 0.5 : 0)
+        }
     }
 }
 
-//#Preview {
+#Preview {
+    ZStack{
+        Color.orange.ignoresSafeArea()
+        UserInfoTextField(text: "Dmitro",
+                          isEdit: true,
+                          imageName: "person",
+                          prompt: "enter your name",
+                          scaleFactor: 0.2)
+    }
 //    EditMemberInfoView(id: "123")
 //        .environment(\.managedObjectContext, DataManager.shared.moc)
-//}
+}

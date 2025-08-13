@@ -50,6 +50,7 @@ struct BPUserImageNameCompactCell: View {
         .padding(2)
         .sheet(isPresented: $isShowInfo) {
             BPUserProfileView(user: user)
+                .presentationDragIndicator(.visible)
         }
     }
 }

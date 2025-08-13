@@ -8,14 +8,18 @@ import SwiftUI
 struct AuthenticationScreen: View {
     @EnvironmentObject var sessionManager: SessionManager
     @EnvironmentObject var router: Router
+    @EnvironmentObject var appState: ApplicationState
+    
     @State private var isSignUp: Bool = false
-//    let signUpHandler: (BPUser)->()
+
     
     var body: some View {
-        ScrollView{
+        ZStack{
+            MainBackground()
             VStack(spacing: 5){
                 // MARK: - Logo
                 //logo here. circle is just a placeholder
+                Spacer()
                 Circle()
                     .frame(width: 150, height: 150)
                     .opacity(0.8)
@@ -27,20 +31,71 @@ struct AuthenticationScreen: View {
                     }
                 Divider()
                 
-                // MARK: - Email/Password Textfields
-                EmailPasswordStack(email: $sessionManager.email,
-                                     password: $sessionManager.password)
+                // MARK: - Email/Password Zone
+
+                VStack{
+                    RoundedRectangle(cornerRadius: 5)
+                        .fill( .ultraThinMaterial)
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 5)
+                                .stroke(.ultraThinMaterial)
+                        }
+                        .overlay {
+                            HStack {
+                                Text(sessionManager.email.isEmpty ? "login" : sessionManager.email)
+                                    .foregroundStyle(sessionManager.email.isEmpty ? .gray: .primary)
+                                    .padding(.leading, 8)
+                                Spacer()
+                            }
+                        }
+                        .frame(height: 40)
+                        .onTapGesture {
+                            appState.cleanTFInfo()
+                            appState.fieldType = .email
+                            appState.isSecure = false
+                            appState.promptString = "Enter login / e-mail"
+                            appState.openTextFieldWithAction { email in
+                                sessionManager.email = email
+                            }
+                        }
+                    RoundedRectangle(cornerRadius: 5)
+                        .fill( .ultraThinMaterial)
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 5)
+                                .stroke(.ultraThinMaterial)
+                        }
+                        .overlay {
+                            HStack {
+                                Text(sessionManager.password.isEmpty ? "password" : (sessionManager.password.map{_ in "*"}).joined())
+                                    .foregroundStyle(sessionManager.password.isEmpty ? .gray: .primary)
+                                    .padding(.leading, 8)
+                                Spacer()
+                            }
+                        }
+                        .frame(height: 40)
+                        .onTapGesture {
+                            appState.cleanTFInfo()
+                            appState.fieldType = .password
+                            appState.isSecure = true
+                            appState.promptString = "Enter password"
+                            appState.openTextFieldWithAction { pass in
+                                sessionManager.password = pass
+                            }
+                        }
+                }
+                .padding(.horizontal)
+                .frame(maxWidth: .infinity)
                 
                 // MARK: - "Forget password" button
-                HStack{
-                    Spacer()
-                    NavigationLink {
-                        BPResetPasswordView()
-                    } label: {
-                        Text("Forget password")
-                    }
-                }
-                .padding()
+//                HStack{
+//                    Spacer()
+//                    NavigationLink {
+//                        BPResetPasswordView()
+//                    } label: {
+//                        Text("Forget password")
+//                    }
+//                }
+//                .padding()
                 
                 // MARK: - "Sign In"
                 Button(action: {
@@ -102,28 +157,22 @@ struct AuthenticationScreen: View {
                 }
                 Spacer()
             }
-            .padding(.top,25)
+//            .fullScreenCover(isPresented: $isSignUp){
+//                SignUpView(email: $sessionManager.email, password: $sessionManager.password) {
+//                    Task{
+//                        await sessionManager.signUp()
+//                    }
+//                }
+//            }
+//            .accentColor(.black)
         }
-        .fullScreenCover(isPresented: $isSignUp){
-            SignUpView(email: $sessionManager.email, password: $sessionManager.password) {
-                Task{
-                    await sessionManager.signUp()
-//                    guard let id = sessionManager.sessionUser?.id else { return }
-//                    var member = BPUser(id: id)
-//                    signUpHandler(member)
-                }
-            }
-        }
-        .background{
-            MainBackground().ignoresSafeArea()
-        }
-        .scrollDisabled(true)
         .navigationBarBackButtonHidden()
-        .accentColor(.black)
         .onDisappear{
             sessionManager.email = ""
             sessionManager.password = ""
         }
+        .ignoresSafeArea(.keyboard)
+            
     }
 }
 
@@ -132,5 +181,6 @@ struct AuthenticationScreen: View {
     AuthenticationScreen()
         .environmentObject(SessionManager())
         .environmentObject(Router())
+        .environmentObject(ApplicationState())
     
 }

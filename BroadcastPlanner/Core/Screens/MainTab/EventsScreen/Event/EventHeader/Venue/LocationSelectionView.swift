@@ -66,6 +66,7 @@ struct LocationSelectionView: View {
                     vm.isLocationSheetPresented = false
                 }
             }
+            .presentationDragIndicator(.visible)
         }
     }
 }

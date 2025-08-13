@@ -237,12 +237,14 @@ struct AddEditObvanView: View {
                         }
                 }
             }
+            .presentationDragIndicator(.visible)
             
         }
         .sheet(isPresented: $isTitleEdit, content: {
             TextFieldObvanView(text: $vm.title, isTitleEdit: $isTitleEdit)
             .presentationBackground(.ultraThinMaterial)
             .presentationDetents([PresentationDetent.fraction(0.3)])
+            .presentationDragIndicator(.visible)
         })
         .onReceive(vm.$title) { title in
             obvan.name = title

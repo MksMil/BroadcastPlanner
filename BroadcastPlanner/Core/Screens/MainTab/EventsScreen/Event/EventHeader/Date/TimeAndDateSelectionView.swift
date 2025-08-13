@@ -105,6 +105,7 @@ struct TimeAndDateSelectionView: View {
                 .padding(.horizontal)
                 .presentationBackground(.ultraThinMaterial)
                 .presentationDetents([.fraction(0.65)])
+                .presentationDragIndicator(.visible)
             }
         )
         //time picker
@@ -120,6 +121,7 @@ struct TimeAndDateSelectionView: View {
                 .padding(.horizontal)
                 .presentationBackground(.ultraThinMaterial)
                 .presentationDetents([.fraction(0.5)])
+                .presentationDragIndicator(.visible)
             })
     }
 }

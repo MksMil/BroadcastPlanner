@@ -25,6 +25,7 @@ struct SpecializationSection: View {
                     .foregroundStyle(Color(.systemGray))
             }
         }
+        .frame(maxWidth: .infinity)
         .disabled(!isEdit)
     }
 }

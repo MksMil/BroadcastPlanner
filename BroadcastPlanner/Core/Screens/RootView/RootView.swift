@@ -8,11 +8,12 @@ struct RootView: View {
     @EnvironmentObject var dataManager: DataManager
 
     @EnvironmentObject var router: Router
-    
 
     @State var isStarted: Bool = false
 
     @State var status: Bool = false
+    
+    @State private var isTextFieldShowed: Bool = false
     
     var body: some View {
         
@@ -22,6 +23,7 @@ struct RootView: View {
         ZStack{
             MainBackground()
                 StatusView()
+//                .ignoresSafeArea(.keyboard)
                     .offset(y: (isStarted && appState.state == .authorized) ? 0: -200)
                     .frame(maxHeight: .infinity,alignment: .top)
                
@@ -90,9 +92,9 @@ struct RootView: View {
                         }
                     }
             }
+//            .ignoresSafeArea(.keyboard)
             .padding(.vertical,65)
-
-            //------------Test settings and action controls----
+                        //------------Test settings and action controls----
 //                HStack {
 //                    Button{
 //                        status.toggle()
@@ -147,6 +149,7 @@ struct RootView: View {
                 .offset(y: (isStarted && appState.state == .authorized) ? 0: 200)
                 .frame(maxHeight: .infinity,alignment: .bottom)
         }
+        .ignoresSafeArea(.keyboard)
         .onAppear(perform: {
             router.routeTo(path: .animatedStart)
         })
@@ -155,7 +158,6 @@ struct RootView: View {
                 await sessionManager.getUserSession()
             }
         }
-        
         .onReceive(sessionManager.$sessionUser) { user in
                 if let user{
                     dataManager.setMember(id: user.id)
@@ -196,6 +198,46 @@ struct RootView: View {
         .onReceive(router.pathPubisher) { path in
             appState.switchStateByPath(path)
         }
+        .onReceive(appState.$isTextFieldShowed) { value in
+            withAnimation{
+                isTextFieldShowed = value
+            }
+        }
+        .sheet(isPresented: $isTextFieldShowed) {
+            TextFieldSheetView(
+                source: $appState.textfieldSource,
+                promptSource: appState.promptString,
+                fieldType: appState.fieldType,
+                isSecure: appState.isSecure) {
+                    appState.closeTextField()
+                } doneAction: { value in
+                    appState.doneAction(value)
+                    appState.closeTextField()
+                }
+                .presentationDetents([.height(200)]) // Фиксируем высоту
+                .presentationDragIndicator(.visible)
+                .presentationBackground(.ultraThinMaterial)
+        }
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Button("Cancel") {
+                    appState.closeTextField()
+                }
+                ForEach(appState.fieldType.toolbarButtons, id: \.self) { symbol in
+                    Button(symbol) {
+                        print("\(symbol) tapped, appending to source")
+                        appState.textfieldSource += symbol
+                    }
+                }
+                Spacer()
+                Button("Done") {
+                    appState.doneAction(appState.textfieldSource)
+                    appState.closeTextField()
+
+                }
+            }
+        }
+//        .ignoresSafeArea(.keyboard)
     }
 }
 

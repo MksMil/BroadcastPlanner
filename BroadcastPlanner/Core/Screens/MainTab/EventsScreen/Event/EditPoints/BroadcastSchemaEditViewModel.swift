@@ -107,14 +107,14 @@ final class BroadcastSchemaEditViewModel: ObservableObject {
     
     // MARK: scene screenshot
     func prepareForScreenshot(){
-        resetScale()
+        renderPitchScene.resetScaleNow()
         selectedVenuePoint = nil
         renderPitchScene.deselect()
         isEdit = false
     }
 
     func makeSceneScreenshot()-> UIImage?{
-//        prepareForScreenshot()
+        prepareForScreenshot()
         guard let view = renderPitchScene.view else {
                 print("Сцена не привязана к SKView.")
                 return nil
@@ -250,7 +250,7 @@ extension BroadcastSchemaEditViewModel {
     }
     
     func resetScale(){
-        renderPitchScene.resetScaleNow()
+        renderPitchScene.resetScale()
     }
     
 }

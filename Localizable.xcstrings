@@ -51,9 +51,6 @@
     "Add Club" : {
 
     },
-    "Add new template" : {
-
-    },
     "Add Obvan" : {
 
     },
@@ -108,10 +105,10 @@
     "Discard all changes and step back?" : {
 
     },
-    "empty" : {
+    "Done" : {
 
     },
-    "Forget password" : {
+    "empty" : {
 
     },
     "Hello Error" : {
@@ -195,9 +192,6 @@
     "Remove Venue" : {
 
     },
-    "Save" : {
-
-    },
     "Save settings" : {
 
     },
@@ -223,9 +217,6 @@
 
     },
     "Tab Label 2" : {
-
-    },
-    "template title" : {
 
     },
     "title" : {

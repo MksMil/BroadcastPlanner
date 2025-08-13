@@ -9,7 +9,7 @@ struct TemplateGroup: View {
     }
     let templates: FetchedResults<Template>
     let chooseAction: (Template) ->()
-    let addAction: (String)->()
+    let addAction: ()->()
     let removeAction: ()->()
     let setEmptyTemplateAction: ()->()
     
@@ -65,7 +65,7 @@ struct TemplateGroup: View {
             Spacer()
 
             Button {
-                isAddSheetshowed = true
+                addAction()
             } label: {
                 Image(systemName: "folder.badge.plus")
                     .resizable()
@@ -82,28 +82,6 @@ struct TemplateGroup: View {
                     }
             }
         }
-        .fullScreenCover(isPresented: $isAddSheetshowed) {
-            VStack{
-                VStack{
-                    Text("Add new template")
-                        .font(.largeTitle)
-                        .foregroundStyle(.white)
-//                    CustomTextEditor(text: newTemplateName) { newText in
-//                        self.newTemplateName = newText
-//                        addAction(newText)
-//                        isAddSheetshowed = false
-//                    }
-                    CustomTextField(text: $newTemplateName){
-                        isAddSheetshowed = false
-                        addAction(newTemplateName)
-                    }
-                }
-                .padding(.top, 200)
-                Spacer()
-            }
-            .padding(.horizontal)
-            .presentationBackground(.black.opacity(0.8))
-        }
         .confirmationDialog("?", isPresented: $isRemoveComfirmation) {
             Button("Remove \(title) template!", role: .destructive) {
                 title = defaultTitle
@@ -113,20 +91,17 @@ struct TemplateGroup: View {
     }
 }
 
-//#Preview {
-//    TemplateGroup(templates: [] ){ _ in
-//        
-//    } addAction: { name in
-//    } removeAction: { _ in
-//        
-//    }
-//}
-
-//#Preview {
-//    let mdm = DataManager(networkManager: NetworkManager())
-//    mdm.setMember(id: "123")
-//    let localEvent: Broadcast = mdm.mainContext.fetchOrCreateObject(withID: "id")
-//    return BroadcastSchemaEditView(event:localEvent)
-//        .environmentObject(mdm)
-//        .environment(\.managedObjectContext, mdm.mainContext)
-//}
+#if DEBUG
+#Preview {
+    let dm = DataManager(globalDataManager: NetworkManager())
+    let appState = ApplicationState()
+    dm.networkManager.eventProgressHandler = appState
+    return RootView()
+        .environmentObject(GlobalSettings())
+        .environmentObject(SessionManager())
+        .environmentObject(appState)
+        .environmentObject(Router())
+        .environmentObject(dm)
+        .environment(\.managedObjectContext, dm.mainContext)
+}
+#endif

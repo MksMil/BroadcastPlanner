@@ -70,9 +70,6 @@
 		29CB0F642C98B24E003B30C4 /* CarUnitEnableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29CB0F632C98B24E003B30C4 /* CarUnitEnableCellView.swift */; };
 		29CB0F662C9A9BDE003B30C4 /* CarUnitCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29CB0F652C9A9BDE003B30C4 /* CarUnitCellView.swift */; };
 		29CCF2EC2C807FE000BCEF34 /* SessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29CCF2EB2C807FE000BCEF34 /* SessionManager.swift */; };
-		29CCF2F12C80895100BCEF34 /* EmailPasswordStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29CCF2F02C80895100BCEF34 /* EmailPasswordStackView.swift */; };
-		29CD65FA2E38B4380044535F /* CustomTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29CD65F42E38B4380044535F /* CustomTextField.swift */; };
-		29CD66932E3F39320044535F /* CustomTextEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29CD66922E3F39320044535F /* CustomTextEditor.swift */; };
 		29D1697A2B85D4F800A70638 /* HaptickEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29D169792B85D4F800A70638 /* HaptickEngine.swift */; };
 		29D169802B86188B00A70638 /* BPValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29D1697F2B86188B00A70638 /* BPValidator.swift */; };
 		29E10F5A2C1AF8B300A35A4B /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 29E10F592C1AF8B300A35A4B /* FirebaseStorage */; };
@@ -159,9 +156,6 @@
 		29CB0F632C98B24E003B30C4 /* CarUnitEnableCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarUnitEnableCellView.swift; sourceTree = "<group>"; };
 		29CB0F652C9A9BDE003B30C4 /* CarUnitCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarUnitCellView.swift; sourceTree = "<group>"; };
 		29CCF2EB2C807FE000BCEF34 /* SessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionManager.swift; sourceTree = "<group>"; };
-		29CCF2F02C80895100BCEF34 /* EmailPasswordStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailPasswordStackView.swift; sourceTree = "<group>"; };
-		29CD65F42E38B4380044535F /* CustomTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextField.swift; sourceTree = "<group>"; };
-		29CD66922E3F39320044535F /* CustomTextEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextEditor.swift; sourceTree = "<group>"; };
 		29D169792B85D4F800A70638 /* HaptickEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HaptickEngine.swift; sourceTree = "<group>"; };
 		29D1697F2B86188B00A70638 /* BPValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPValidator.swift; sourceTree = "<group>"; };
 		29E10F632C21696B00A35A4B /* GlobalSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalSettings.swift; sourceTree = "<group>"; };
@@ -185,7 +179,6 @@
 		29476BE82DA553B0007DFA88 /* Cells */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Cells; sourceTree = "<group>"; };
 		29476C002DACE2A8007DFA88 /* Navigation */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Navigation; sourceTree = "<group>"; };
 		295C87232DDB0D5A003B01B0 /* TabViewListGeneric */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = TabViewListGeneric; sourceTree = "<group>"; };
-		299397A52DFFFEA400E78B59 /* Transitions */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Transitions; sourceTree = "<group>"; };
 		299B455E2DE04934000D1F4B /* SelectablesWrappers */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = SelectablesWrappers; sourceTree = "<group>"; };
 		29AECAE92CEB357C00CAD02C /* ListCell */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = ListCell; sourceTree = "<group>"; };
 		29B505BD2CB6B3C9003A1E3F /* BroadcastPlannerUnitTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = BroadcastPlannerUnitTests; sourceTree = "<group>"; };
@@ -194,6 +187,7 @@
 		29C37D412E21124000CBA6A4 /* Venue */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Venue; sourceTree = "<group>"; };
 		29CB63492E2CE9DC00256563 /* AUX_types */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = AUX_types; sourceTree = "<group>"; };
 		29CB634A2E2FA83E00256563 /* Obvan */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Obvan; sourceTree = "<group>"; };
+		29CD66B22E4C88B10044535F /* TextGroup */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = TextGroup; sourceTree = "<group>"; };
 		29D8D3B02CEDE589000E4F72 /* Buttons */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Buttons; sourceTree = "<group>"; };
 		29E70B942CDE03B9002B826E /* ImageHandle */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = ImageHandle; sourceTree = "<group>"; };
 		29F7CF132CA158FA009C303E /* DateViews */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = DateViews; sourceTree = "<group>"; };
@@ -393,7 +387,6 @@
 				29CA68432DA4034300460EFE /* LocationPreview.swift */,
 				29D8D3B02CEDE589000E4F72 /* Buttons */,
 				29F7CF132CA158FA009C303E /* DateViews */,
-				29CCF2EF2C80891100BCEF34 /* AuthenticationGroup */,
 				29418D902C6CCD8B007CC6F3 /* FilterViews */,
 				292D66462BD79989009A2187 /* Layout */,
 				2967DF152B5FD507003956FD /* ErrorViews */,
@@ -503,7 +496,6 @@
 		29AE68772BE254DF00DE8FAB /* Core */ = {
 			isa = PBXGroup;
 			children = (
-				299397A52DFFFEA400E78B59 /* Transitions */,
 				29476C002DACE2A8007DFA88 /* Navigation */,
 				29C041D92AC561F2008B3E1F /* Components */,
 				29C041E42AC69976008B3E1F /* Screens */,
@@ -582,8 +574,7 @@
 		29C041D92AC561F2008B3E1F /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				29CD65F42E38B4380044535F /* CustomTextField.swift */,
-				29CD66922E3F39320044535F /* CustomTextEditor.swift */,
+				29CD66B22E4C88B10044535F /* TextGroup */,
 				295C87232DDB0D5A003B01B0 /* TabViewListGeneric */,
 				2916E62B2C58B83E0025DCC6 /* AnimatedStart.swift */,
 				292E4C622D0C3E9D0046CABA /* Logo */,
@@ -630,14 +621,6 @@
 				29E5B83B2E2B7CCB00CDAF8E /* Sequence+Ext.swift */,
 			);
 			path = Extensions;
-			sourceTree = "<group>";
-		};
-		29CCF2EF2C80891100BCEF34 /* AuthenticationGroup */ = {
-			isa = PBXGroup;
-			children = (
-				29CCF2F02C80895100BCEF34 /* EmailPasswordStackView.swift */,
-			);
-			path = AuthenticationGroup;
 			sourceTree = "<group>";
 		};
 		29D1697E2B86182900A70638 /* Validators */ = {
@@ -722,7 +705,6 @@
 				29476BE82DA553B0007DFA88 /* Cells */,
 				29476C002DACE2A8007DFA88 /* Navigation */,
 				295C87232DDB0D5A003B01B0 /* TabViewListGeneric */,
-				299397A52DFFFEA400E78B59 /* Transitions */,
 				299B455E2DE04934000D1F4B /* SelectablesWrappers */,
 				29AECAE92CEB357C00CAD02C /* ListCell */,
 				29BE3AF42CAD57E600BDEF82 /* Data */,
@@ -730,6 +712,7 @@
 				29C37D412E21124000CBA6A4 /* Venue */,
 				29CB63492E2CE9DC00256563 /* AUX_types */,
 				29CB634A2E2FA83E00256563 /* Obvan */,
+				29CD66B22E4C88B10044535F /* TextGroup */,
 				29D8D3B02CEDE589000E4F72 /* Buttons */,
 				29E70B942CDE03B9002B826E /* ImageHandle */,
 				29F7CF132CA158FA009C303E /* DateViews */,
@@ -826,10 +809,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				29CD65FA2E38B4380044535F /* CustomTextField.swift in Sources */,
 				290B81752AD9149800B858F1 /* MotionManager.swift in Sources */,
 				2955C9822B57C1BE003F9ADC /* SessionModel.swift in Sources */,
-				29CCF2F12C80895100BCEF34 /* EmailPasswordStackView.swift in Sources */,
 				293752AA2BF8CD950044924D /* BPEventFilterCaseTabView.swift in Sources */,
 				299D43C72D38F925007EEEFE /* DataManager.swift in Sources */,
 				29CCF2EC2C807FE000BCEF34 /* SessionManager.swift in Sources */,
@@ -880,7 +861,6 @@
 				29D169802B86188B00A70638 /* BPValidator.swift in Sources */,
 				29778E242C0B85FC006EF6CE /* BPResetPasswordView.swift in Sources */,
 				29E10F662C2169C400A35A4B /* GlobalProperties.swift in Sources */,
-				29CD66932E3F39320044535F /* CustomTextEditor.swift in Sources */,
 				29C041C02AC556CE008B3E1F /* BroadcastPlannerApp.swift in Sources */,
 				291E72C32BBE859F008092D7 /* BPMessengerView.swift in Sources */,
 				29E5B83C2E2B7CCB00CDAF8E /* Sequence+Ext.swift in Sources */,

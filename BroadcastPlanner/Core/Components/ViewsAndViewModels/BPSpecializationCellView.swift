@@ -21,6 +21,8 @@ struct BPSpecializationCellView: View, Identifiable {
                     RoundedRectangle(cornerRadius: 5).fill(.thinMaterial)
                 }
         }
+        .ignoresSafeArea(.keyboard)
+
     }
 }
 
