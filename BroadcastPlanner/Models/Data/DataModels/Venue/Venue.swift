@@ -1,5 +1,3 @@
-import SwiftUI
-import UIKit
 import CoreData
 
 public class Venue: NSManagedObject {}
@@ -71,6 +69,20 @@ extension Venue {
 
 }
 
+extension Venue: ImageParent{
+    func assignImage(image: LocalImage, ofType: GlobalProperties.ImageType) {
+        if ofType == .broadcastSchema{
+            broadcastSchema = image
+            image.addToParentVenueSchema(self)
+        }
+        if ofType == .venue{
+            addToImages(image)
+            image.parentVenueImage = self
+        }
+    }
+}
+
+
 extension Venue : Identifiable {
     var viewId: String {
         id ?? ""
@@ -83,13 +95,10 @@ extension Venue : Identifiable {
         title ?? ""
     }
     
-    var viewBackground: UIImage {
-        broadcastSchema?.makeUIImage() ?? UIImage(imageLiteralResourceName: "stadium")
+    var viewSchemaId: String {
+        broadcastSchema?.viewId ?? ""
     }
     
-    var viewBackgroundPreview: Image{
-        broadcastSchema?.mediumImage ?? Image(systemName: "compass.drawing")
-    }
     
     var viewHomeClubs: [Club] {
         homeClub?.allObjects as? [Club] ?? []
@@ -99,8 +108,8 @@ extension Venue : Identifiable {
         broadcasts?.allObjects as? [Broadcast] ?? []
     }
     
-    var viewImages: [Image] {
-        viewLocalImages.map{$0.largeImage}
+    var viewImageIds: [String] {
+        viewLocalImages.map{$0.viewId}
     }
     
     var viewLocalImages: [LocalImage]{
@@ -131,7 +140,7 @@ extension Venue: CoreDataUpdatable{
         self.lastUpdated = dto.lastUpdated
         
 
-        _ = viewLocalImages.map{
+        viewLocalImages.forEach{
             if !dto.imagesIds.contains($0.viewId){
                 removeFromImages($0)
                 context.delete($0)

@@ -22,7 +22,6 @@ struct ObvanCollectionView: View {
                 VStack{
                     ForEach(obvans) { obvan in
                         //TODO: make cell
-//                        Text(obvan.viewName)
                         ObvanCollectionCellView(title: obvan.viewName,
                                                 count: obvan.viewTemplateCrews.count,
                                                 isSelected: obvan == selectedObvan)

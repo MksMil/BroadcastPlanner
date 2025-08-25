@@ -9,8 +9,7 @@ struct BPUserImageNameCompactCell: View {
     var body: some View {
         HStack(spacing: 0){
             Section{
-                user.viewImage
-                    .resizable()
+                ImageWrapper(id: user.viewId,type: .member, imageSize: .smallImages)
                     .scaledToFit()
                     .clipShape(Circle())
                     .frame(width: 36)

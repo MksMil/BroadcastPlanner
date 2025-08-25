@@ -1,4 +1,3 @@
-import SwiftUI
 import CoreData
 
 public class Club: NSManagedObject {
@@ -22,6 +21,15 @@ extension Club {
     @NSManaged public var imageLogo: LocalImage?
 
 }
+extension Club: ImageParent{
+    func assignImage(image: LocalImage, ofType: GlobalProperties.ImageType) {
+        if ofType == .club{
+            imageLogo = image
+            image.parentClub = self
+        }
+    }
+}
+
 
 // MARK: Generated accessors for guestBroadcasts
 extension Club {
@@ -81,12 +89,8 @@ extension Club : Identifiable {
         homeBroadcasts?.allObjects as? [Broadcast] ?? []
     }
     
-    var viewImageSmallLogo: Image {
-        imageLogo?.smallImage ?? Image(systemName: "person.3")
-    }
-    
-    var viewImageMediumLogo: Image {
-        imageLogo?.mediumImage ?? Image(systemName: "person.3")
+    var viewImageId: String {
+        imageLogo?.viewId ?? ""
     }
     
     var viewLastUpdated: Date {

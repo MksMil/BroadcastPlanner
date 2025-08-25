@@ -31,7 +31,7 @@ struct VenueSelectionSheetView: View {
                     .padding(8)
                 ScrollView {
                     VStack(spacing:0){
-                        ForEach(venues) { venue in
+                        ForEach(venues,id: \.id) { venue in
                             VenueCell(
                                 title: venue.viewTitle,
                                 address: venue.viewAddress,

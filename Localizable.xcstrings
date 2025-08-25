@@ -10,16 +10,6 @@
     "%@" : {
 
     },
-    "%@ %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@ %2$@"
-          }
-        }
-      }
-    },
     "%@: %@" : {
       "localizations" : {
         "en" : {
@@ -34,9 +24,6 @@
 
     },
     "%lld crews" : {
-
-    },
-    "1" : {
 
     },
     "1K" : {
@@ -60,9 +47,6 @@
     "Add Venue" : {
 
     },
-    "address" : {
-
-    },
     "Back" : {
 
     },
@@ -75,19 +59,13 @@
     "Cancel" : {
 
     },
-    "Change E-mail" : {
-
-    },
-    "Change Password" : {
+    "Change E-mail or Password" : {
 
     },
     "Choose Club" : {
 
     },
     "Choose Venue" : {
-
-    },
-    "Confirm" : {
 
     },
     "Crews: %@" : {
@@ -102,13 +80,13 @@
     "Delete Point" : {
 
     },
-    "Discard all changes and step back?" : {
-
-    },
     "Done" : {
 
     },
     "empty" : {
+
+    },
+    "Forget password" : {
 
     },
     "Hello Error" : {
@@ -165,9 +143,6 @@
     "Permanently erase the Venue in the trash?" : {
 
     },
-    "phone number" : {
-
-    },
     "Press me" : {
 
     },
@@ -207,9 +182,6 @@
     "Sign In" : {
 
     },
-    "Sign Out" : {
-
-    },
     "Sign Up" : {
 
     },
@@ -220,12 +192,6 @@
 
     },
     "title" : {
-
-    },
-    "Update %@" : {
-
-    },
-    "url" : {
 
     },
     "Welcome!\nselection: %lld" : {

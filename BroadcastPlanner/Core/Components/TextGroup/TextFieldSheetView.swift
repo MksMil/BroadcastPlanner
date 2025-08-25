@@ -17,6 +17,7 @@ struct TextFieldSheetView: View {
                     if isSecure{
                         SecureField("", text: $source)
                             .textContentType(fieldType.contentType)
+                            .keyboardType(fieldType.keyboardType)
                             .textInputAutocapitalization(.never)
                             .disableAutocorrection(true)
                             .padding(8)
@@ -24,11 +25,13 @@ struct TextFieldSheetView: View {
                             .clipShape(RoundedRectangle(cornerRadius: 8))
                             .focused($isFocused)
                             .onSubmit {
+                                
                                 doneAction(source)
                             }
-                    }else {
+                    } else {
                         TextField("", text: $source)
                             .textContentType(fieldType.contentType)
+                            .keyboardType(fieldType.keyboardType)
                             .textInputAutocapitalization(.never)
                             .disableAutocorrection(true)
                             .padding(8)
@@ -36,6 +39,7 @@ struct TextFieldSheetView: View {
                             .clipShape(RoundedRectangle(cornerRadius: 8))
                             .focused($isFocused)
                             .onSubmit {
+                                
                                 doneAction(source)
                             }
                     }
@@ -50,7 +54,9 @@ struct TextFieldSheetView: View {
             }
             .padding(.bottom)
             .buttonStyle(.plain)
-            .task {
+//            .task {
+//            }
+            .onAppear {
                 isFocused = true
             }
     }

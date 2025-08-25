@@ -13,21 +13,9 @@ protocol ObvanEditDelegate: AnyObject {
 
 
 class AddEditObvanViewModel: ObservableObject{
-    var selectedPhoto: PhotosPickerItem? {
-        willSet{
-            Task{
-                guard let item = newValue,
-                      let data = try? await item.loadTransferable(type: Data.self),
-                      let image = UIImage(data: data)
-                else { return }
-                self.uiimage = image
-                await updateImage(uiimage: image)
-
-            }
-        }
-    }
+    @Published var selectedPhoto: PhotosPickerItem? 
     
-    var uiimage: UIImage?
+    @Published var uiimage: UIImage?
 
     var source: [String] = [] {
         didSet{
@@ -67,8 +55,6 @@ class AddEditObvanViewModel: ObservableObject{
         self.templateCrews = obvan.viewTemplateCrews
         self.renderObvanScene.crews = templateCrews
         self.title = obvan.viewName
-        self.uiimage = ImagesManager.loadImage(imageSize: ImageSizes.originImages, id: obvan.viewId)//obvan.image?.makeUIImage()
-        self.renderObvanScene.backImage = self.uiimage
     }
     
     @MainActor
@@ -77,7 +63,6 @@ class AddEditObvanViewModel: ObservableObject{
             self.uiimage = uiimage
             self.renderObvanScene.backImage = uiimage
         }
-        ImagesManager.saveResizedImages(image: uiimage, id: obvan.viewId, type: GlobalProperties.ImageType.obvan)
     }
     
     // MARK: scene screenshot
@@ -124,6 +109,10 @@ extension AddEditObvanViewModel {
     }
     func selectTemplateObvanCrew(_ obvanCrew: ObvanTemplateCrew){
         selectedCrew = obvanCrew
+        coordinateX = obvanCrew.viewX
+        coordinateY = obvanCrew.viewY
+        rotation = Int(obvanCrew.viewRotation)
+        scaleFactor = obvanCrew.viewScaleFactor
         renderObvanScene.select(crew: obvanCrew)
         isEdit = true
     }

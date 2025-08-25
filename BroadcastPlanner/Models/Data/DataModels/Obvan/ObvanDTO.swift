@@ -9,7 +9,6 @@ struct ObvanDTO: Codable, Identifiable,CoreDataRepresentable {
     var id: String
     var lastUpdated: Date = .now
     var name: String
-    var imageId: String
     var broadcaster: String
     var obvanTemplateCrewDTOs: [ObvanTemplateCrewDTO]
     

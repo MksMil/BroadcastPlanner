@@ -23,7 +23,6 @@ struct RootView: View {
         ZStack{
             MainBackground()
                 StatusView()
-//                .ignoresSafeArea(.keyboard)
                     .offset(y: (isStarted && appState.state == .authorized) ? 0: -200)
                     .frame(maxHeight: .infinity,alignment: .top)
                
@@ -37,33 +36,20 @@ struct RootView: View {
                                 BroadcastListView()
                             case .authScreen:
                                 AuthenticationScreen()
+                            case .sighUp:
+                                SignUpView(){
+                                    Task{
+                                        await sessionManager.signUp()
+                                    }
+                                }
                             case .ownerInfo:
-                                EditMemberInfoView(user: dataManager.fetchOwner())
+                                EditMemberInfoView(member: dataManager.fetchOwner())
                             case .settings:
                                 SettingsView()
                                 // email/pass update
-                            case .updateEmail:
-                                UpdateEPView(currentValue: sessionManager.email,
-                                             updEP: UpdatedEP.email) {
-                                    router.stepBack()
-                                } updateAction: { newEmail in
-                                    Task{
-                                        await sessionManager.updateEmailOrPassword(newValue: newEmail,
-                                                                                   type: UpdatedEP.email)
-                                    }
-                                    router.stepBack()
-                                }
-                            case .updatePassword:
-                                UpdateEPView(currentValue: sessionManager.password,
-                                             updEP: UpdatedEP.password) {
-                                    router.stepBack()
-                                } updateAction: { newPass in
-                                    Task{
-                                        await sessionManager.updateEmailOrPassword(newValue: newPass,
-                                                                                   type: UpdatedEP.password)
-                                    }
-                                    router.stepBack()
-                                }
+                            case .updateSessionUserData:
+                                UpdateSessionUserDataView()
+
                                 //club managment
                             case .clubCollection:
                                 ClubCollectionView()
@@ -92,7 +78,6 @@ struct RootView: View {
                         }
                     }
             }
-//            .ignoresSafeArea(.keyboard)
             .padding(.vertical,65)
                         //------------Test settings and action controls----
 //                HStack {
@@ -149,7 +134,7 @@ struct RootView: View {
                 .offset(y: (isStarted && appState.state == .authorized) ? 0: 200)
                 .frame(maxHeight: .infinity,alignment: .bottom)
         }
-        .ignoresSafeArea(.keyboard)
+        
         .onAppear(perform: {
             router.routeTo(path: .animatedStart)
         })
@@ -233,11 +218,10 @@ struct RootView: View {
                 Button("Done") {
                     appState.doneAction(appState.textfieldSource)
                     appState.closeTextField()
-
                 }
             }
         }
-//        .ignoresSafeArea(.keyboard)
+        .ignoresSafeArea(.keyboard)
     }
 }
 

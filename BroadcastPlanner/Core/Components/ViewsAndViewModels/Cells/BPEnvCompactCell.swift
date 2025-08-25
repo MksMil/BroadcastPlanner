@@ -7,8 +7,7 @@ struct BPEnvCompactCell: View {
     
     var body: some View {
         HStack{
-            user.viewImage
-                .resizable()
+            ImageWrapper(id: user.viewId, type: .member,imageSize: .smallImages)
                 .scaledToFit()
                 .padding(3)
                 .background {

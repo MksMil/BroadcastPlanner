@@ -45,8 +45,7 @@ struct ObvanInfoPanelView: View {
                     Text(obvan.viewName)
                         .font(.title)
                         .minimumScaleFactor(0.5)
-                    obvan.viewImage
-                        .resizable()
+                    ImageWrapper(id: obvan.viewId, type: .obvan,imageSize: ImageSizes.mediumImages)
                         .scaledToFit()
                 }
                     .opacity(obvan == selectedObvan ? 1 : 0.5)

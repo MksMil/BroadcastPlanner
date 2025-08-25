@@ -1,4 +1,3 @@
-import SwiftUI
 import CoreData
 
 public class Obvan: NSManagedObject {}
@@ -54,13 +53,23 @@ extension Obvan {
 
 }
 
+extension Obvan: ImageParent{
+    func assignImage(image: LocalImage, ofType: GlobalProperties.ImageType) {
+        if ofType == .obvan{
+            self.image = image
+            image.addToParentObvan(self)
+        }
+    }
+}
+
+
 // MARK: - Unwrapped + DTO
 extension Obvan : Identifiable {
     var viewId: String {
         id ?? ""
     }
     var viewName: String {
-        name ?? "obvan name"
+        name ?? ""
     }
     
     var viewBroadcasterName: String {
@@ -71,8 +80,8 @@ extension Obvan : Identifiable {
         broadcasts?.allObjects as? [Broadcast] ?? []
     }
     
-    var viewImage: Image {
-        image?.mediumImage ?? Image("empty_obvan")
+    var viewImageId: String {
+        image?.viewId ?? ""
     }
     var viewLastUpdated: Date {
         lastUpdated ?? .now
@@ -86,7 +95,6 @@ extension Obvan : Identifiable {
         ObvanDTO(id: viewId,
                  lastUpdated: viewLastUpdated,
                  name: viewName,
-                 imageId: image?.viewId ?? "",
                  broadcaster: viewBroadcasterName,
                  obvanTemplateCrewDTOs: viewTemplateCrews.map{$0.dto})
     }
@@ -107,16 +115,7 @@ extension Obvan: CoreDataUpdatable{
             addToCrewTemplates(templateCrew)
             templateCrew.parentObvan = self
         }
-        
-        if let image {
-            image.removeFromParentObvan(self)
-            self.image = nil
-        }
-        if !dto.imageId.isEmpty{
-            let image: LocalImage = context.fetchOrCreateObject(withID: dto.imageId)
-            image.addToParentObvan(self)
-            self.image = image
-        }
+      
     }
     
     func updateWithValue(name: String? = nil,

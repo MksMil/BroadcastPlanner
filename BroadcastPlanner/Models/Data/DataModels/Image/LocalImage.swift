@@ -1,5 +1,3 @@
-import UIKit
-import SwiftUI
 import CoreData
 
 public class LocalImage: NSManagedObject {}
@@ -13,6 +11,7 @@ extension LocalImage {
     @NSManaged public var id: String?
     @NSManaged public var lastUpdated: Date?
     @NSManaged public var type: String?
+    
     @NSManaged public var parentClub: Club?
     @NSManaged public var parentMember: Member?
     @NSManaged public var parentObvan: NSSet?
@@ -112,91 +111,21 @@ extension LocalImage : Identifiable {
     
 }
 
-// MARK: - Image representation and processing
-extension LocalImage{
-    
-    var originImage: Image {
-        makeImageWithSize(size: .originImages, type: viewType)
-    }
-    
-    var largeImage: Image{
-        makeImageWithSize(size: .largeImages, type: viewType)
-    }
-    
-    var mediumImage: Image{
-        makeImageWithSize(size: .mediumImages, type: viewType)
-    }
-    
-    var smallImage: Image {
-        makeImageWithSize(size: .smallImages, type: viewType)
-    }
-    
-    func makeImageWithSize(size: ImageSizes,
-                           type: GlobalProperties.ImageType) -> Image{
-        
-        if let result = ImagesManager.loadImage(imageSize: size, id: viewId)?.copy() as? UIImage{
-            return Image(uiImage: result)
-        } else {
-            switch viewType {
-                case .member:
-                    return Image(systemName: "person")
-                case .broadcastSchema:
-                    return Image(systemName: "compass.drawing")
-                case .club:
-                    return Image(systemName: "rhombus")
-                case .venue:
-                    return Image(systemName: "photo")
-                case .obvan:
-                    return Image(systemName: "truck.box")
-                case .venuePreview:
-                    return Image(systemName: "sportscourt")
-                case .obvanPreview:
-                    return Image(systemName: "truck.box")
-                case .none:
-                    return Image(systemName: "camera")
-                @unknown default:
-                    return Image(systemName: "camera")
-            }
-        }
-    }
-    
-    func makeUIImage() -> UIImage?{
-        return ImagesManager.loadImage(imageSize: .originImages,
-                                       id: viewId )
-    }
-    func uploadImage(uiimage: UIImage){
-        if !viewId.isEmpty{
-            ImagesManager.saveResizedImages(image: uiimage, id: viewId, type: viewType)
-        }
-    }
-    func removeImageDataFromDevice(){
-        if !viewId.isEmpty{
-           _ = ImagesManager.removeImageFromDevice(withId: viewId)
-        }
-    }
-}
-
 // MARK: - Update
 extension LocalImage: CoreDataUpdatable{
     func updateFromDTO(_ dto: ImageDTO,in context: NSManagedObjectContext) {
         self.id = dto.id
         self.type = dto.type
-        self.lastUpdated = dto.lastUpdated
+//        self.lastUpdated = dto.lastUpdated
     }
     
     func updateValues(type: String? = nil,
                       lastUpdated: Date? = .now,
-                      uiimage: UIImage? = nil,
                       in context: NSManagedObjectContext){
         if let type {
             self.type = type
         }
         self.lastUpdated = lastUpdated
-        
-        if let uiimage {
-//            print("image uploading")
-            uploadImage(uiimage: uiimage)
-        }
     }
 }
 
@@ -205,7 +134,6 @@ extension LocalImage{
     public override func prepareForDeletion() {
         super.prepareForDeletion()
         
-        self.removeImageDataFromDevice()
         
         viewParentVenuePoints.forEach{
             $0.image = nil

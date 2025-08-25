@@ -8,10 +8,10 @@ final class LocationSelectionViewModel: ObservableObject{
     @Published var title: String
     @Published var address: String
     
-    var images: [Image] = []
-    var maxCount: Int { images.count}
+    var imageIds: [String] = []
+    var maxCount: Int { imageIds.count}
     
-    @Published var image: Image = Image("neitral")
+    @Published var imageId: String = ""
     @Published var counter: Int = 0
     
     let timer = Timer.publish(every: 8, on: .main, in: .common)
@@ -22,12 +22,14 @@ final class LocationSelectionViewModel: ObservableObject{
         self.title = location?.viewTitle ?? ""
         self.address = location?.viewAddress ?? ""
         self.location = location
-        self.images = location?.viewImages ?? []
-        updateImages(newImages: images)
+//        self.imageIds = location?.viewImageIds ?? []
+        updateImageIds(newImageIds: location?.viewImageIds ?? [])
     }
     deinit{
         stop()
     }
+    
+    
     func start(){
         counter = 0
         configurePublisher()
@@ -46,7 +48,7 @@ final class LocationSelectionViewModel: ObservableObject{
             .sink { [weak self] _ in
                 guard let self, self.maxCount != 0 else { return }
                 self.updateCounter()
-                self.image = self.images[counter]
+                self.imageId = self.imageIds[counter]
             }
             .store(in: &cancellables)
     }
@@ -55,22 +57,22 @@ final class LocationSelectionViewModel: ObservableObject{
         (counter < maxCount - 1) ? (counter += 1):(counter = 0)
     }
     
-    func updateImages(newImages: [Image]){
+    func updateImageIds(newImageIds: [String]){
         stop()
-        images = newImages
+        imageIds = newImageIds
         counter = 0
-        if images.isEmpty{
-            images = [Image("neitral")]
+        if imageIds.isEmpty{
+            imageIds = []
         }
-        self.image = images[counter]
-        if images.count > 1 { start() }
+//        self.imageId = imageIds[counter]
+        if imageIds.count > 1 { start() }
     }
     
     @MainActor
-    func update(newLocation: Venue ){
+    func update(newLocation: Venue){
         self.location = newLocation
         title = newLocation.viewTitle
         address = newLocation.viewAddress
-        updateImages(newImages: newLocation.viewImages)
+        updateImageIds(newImageIds: newLocation.viewImageIds)
     }
 }

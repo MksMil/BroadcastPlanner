@@ -5,17 +5,15 @@ struct EditMemberInfoView: View {
     @EnvironmentObject var dataManager: DataManager
     @EnvironmentObject var router: Router
     @EnvironmentObject var appState: ApplicationState
+    @EnvironmentObject var settings: GlobalSettings
     
-    @StateObject var vm: EditMemberViewModel
+    @State private var vm: EditMemberViewModel = EditMemberViewModel()
     @State private var isEdit: Bool = false
-    @State private var isEditSpecialization: Bool = false
 
-    let user: Member
-    
-    init(user: Member) {
-        self.user = user
-        self._vm = StateObject(wrappedValue: EditMemberViewModel(localUser: user))
-    }
+    let member: Member
+//    @State var selectedPhoto: PhotosPickerItem?
+
+    @State var userSpecialization: [String] = []
 
     var body: some View {
         
@@ -29,8 +27,10 @@ struct EditMemberInfoView: View {
                             matching: .images,
                             photoLibrary: .shared()
                         ) {
-                            vm.showedImage
-                                .resizable()
+                            ImageWrapper(id: member.viewId,
+                                         type: .member,
+                                         imageSize: ImageSizes.mediumImages,
+                                         placeHolder: "person.circle")
                                 .aspectRatio(contentMode: .fill)
                                 .frame(width: 100, height: 100)
                                 .clipShape(Circle())
@@ -44,37 +44,37 @@ struct EditMemberInfoView: View {
                         }
                         VStack(alignment: .leading, spacing: 3) {
                             
-                            UserInfoTextField(
-                                text: vm.firstName,
+                            MemberDataTextCellView(
+                                text: member.viewFirstName,
                                 isEdit: isEdit,
                                 imageName: "",
                                 prompt: "first name",
                                 scaleFactor: 0.2)
                             .onTapGesture {
                                 appState.cleanTFInfo()
-                                appState.textfieldSource = vm.firstName
+                                appState.textfieldSource = member.viewFirstName
                                 appState.promptString = "Enter first name, please"
                                 appState.fieldType = .custom([])
                                 appState.openTextFieldWithAction { name in
-                                    vm.firstName = name
+                                    member.firstName = name
                                 }
                             }
                             
                             Divider()
                             
-                            UserInfoTextField(
-                                text: vm.lastName,
+                            MemberDataTextCellView(
+                                text: member.viewLastName,
                                 isEdit: isEdit,
                                 imageName: "",
                                 prompt: "last name",
                                 scaleFactor: 0.2)
                             .onTapGesture {
                                 appState.cleanTFInfo()
-                                appState.textfieldSource = vm.lastName
+                                appState.textfieldSource = member.viewLastName
                                 appState.promptString = "Enter last name, please"
                                 appState.fieldType = .custom([])
                                 appState.openTextFieldWithAction { name in
-                                    vm.lastName = name
+                                    member.lastName = name
                                 }
                             }
                             
@@ -85,57 +85,57 @@ struct EditMemberInfoView: View {
                         .frame(maxWidth: .infinity)
                         
                     }
-                  
+                    
                     VStack {
-                        UserInfoTextField(
-                            text: vm.phoneNumber,
+                        MemberDataTextCellView(
+                            text: member.viewPhoneNumber,
                             isEdit: isEdit,
                             imageName: "phone.circle.fill",
                             prompt: "phone number",
                             scaleFactor: 0.2)
                         .onTapGesture {
                             appState.cleanTFInfo()
-                            appState.textfieldSource = vm.phoneNumber
+                            appState.textfieldSource = member.viewPhoneNumber
                             appState.promptString = "Enter phone number, please"
                             appState.fieldType = .custom([])
                             appState.openTextFieldWithAction { number in
-                                vm.phoneNumber = number
+                                member.phoneNumber = number
                             }
                         }
                         
                         Divider()
                         
-                        UserInfoTextField(
-                            text: vm.email,
+                        MemberDataTextCellView(
+                            text: member.viewEmail,
                             isEdit: isEdit,
                             imageName: "envelope.circle.fill",
                             prompt: "E-mail",
                             scaleFactor: 0.2)
                         .onTapGesture {
                             appState.cleanTFInfo()
-                            appState.textfieldSource = vm.email
+                            appState.textfieldSource = member.viewEmail
                             appState.promptString = "Enter e-mail, please"
                             appState.fieldType = .email
                             appState.openTextFieldWithAction { email in
-                                vm.email = email
+                                member.email = email
                             }
                         }
                         
                         Divider()
                         
-                        UserInfoTextField(
-                            text: vm.address,
+                        MemberDataTextCellView(
+                            text: member.viewAddress,
                             isEdit: isEdit,
                             imageName: "map.circle.fill",
                             prompt: "Address",
                             scaleFactor: 0.2)
                         .onTapGesture {
                             appState.cleanTFInfo()
-                            appState.textfieldSource = vm.address
+                            appState.textfieldSource = member.viewAddress
                             appState.promptString = "Enter your address, please"
                             appState.fieldType = .custom([])
                             appState.openTextFieldWithAction { address in
-                                vm.address = address
+                                member.homeAddress = address
                             }
                         }
                         Divider()
@@ -143,42 +143,48 @@ struct EditMemberInfoView: View {
                 }
                 .padding(.top, 10)
                 .disabled(!isEdit)
+                
+                VStack(alignment: .leading){
+                    GeometryReader{ geo in
+                        let cellWidth = (geo.size.width - 24) / 3
                     
-                SpecializationSection(
-                    specialization: $vm.userSpecialization,
-                    isEditSpecialization: $isEditSpecialization,
-                    isEdit: isEdit
-                )
-                .frame(maxWidth: .infinity)
-
-                Divider()
-                Spacer()
+                    SelectableSmartCollectionView(sourceContent: settings.userSpecialization,
+                                   selectedContent: $userSpecialization,
+                                   isEdit: $isEdit) {
+                        RoundedRectangle(cornerRadius: 10.0).fill(.white.opacity(0.4))
+                            .opacity(isEdit ? 0.5 : 0)
+                    } cellView: { text in
+                        SpecializationCellView(cellWidth: cellWidth,text: text)
+                    } promptView: {
+                            Text("Add specialization")
+                                .font(.body)
+                                .fontWeight(.light)
+                                .foregroundStyle(Color(.systemGray))
+                        }
+                    }
                 }
-            .ignoresSafeArea(.keyboard)
-                .padding(.horizontal)
-                .transitionWithOpacity()
+                .frame(maxWidth: .infinity)
+//                Divider()
+                Spacer()
             }
-            .navigationBarBackButtonHidden()
-            .onAppear{
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal)
+            .transitionWithOpacity()
+        }
+        .ignoresSafeArea(.keyboard)
+        .navigationBarBackButtonHidden()
+        .onAppear{
+            userSpecialization = member.viewSpecialization
                 appState.primaryAction = {
                     if isEdit {
                         appState.setIconToPrimaryButton(.edit)
-                         dataManager
-                                .updateUserData(
-                                    firstName: vm.firstName,
-                                    lastName: vm.lastName,
-                                    email: vm.email,
-                                    phoneNumber: vm.phoneNumber,
-                                    address: vm.address,
-                                    userSpecialization: vm.userSpecialization,
-                                    inputImage: vm.inputImage
-                                )
+                        member.specializations = userSpecialization.joined(separator: ",")
+                        member.lastUpdated = Date.now
+                        try? dataManager.saveContext(publish: GlobalProperties.PublishChanges.members, id: [member.viewId])
                         isEdit = false
-                        isEditSpecialization = false
                     } else {
                         appState.setIconToPrimaryButton(.accept)
                         isEdit = true
-                        isEditSpecialization = true
                     }
                 }
                 appState.secondaryAction = {}
@@ -187,7 +193,21 @@ struct EditMemberInfoView: View {
                     router.stepBack()
                 }
             }
+        .onReceive(vm.$selectedPhoto) { newValue in
+            Task {
+                guard let item = newValue,
+                      let data = try? await item.loadTransferable(
+                        type: Data.self),
+                      let uiimage = UIImage(data: data)
+                else { return }
+                Task{
+                   await dataManager.updateImageWith(uiimage: uiimage, id: member.viewId, type: GlobalProperties.ImageType.member, lastUpdated: .now)
+                    dataManager.updatePublisher.send((GlobalProperties.PublishChanges.images, [member.viewId]))
+                }
+                
+            }
         }
+    }
 }
 
 #if DEBUG

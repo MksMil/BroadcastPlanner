@@ -5,10 +5,10 @@ struct StatusView: View {
     @EnvironmentObject var router: Router
     @EnvironmentObject var dataManager: DataManager
     @EnvironmentObject var appState: ApplicationState
-    
-    @State var image = Image(systemName: "person")
-    
+    @EnvironmentObject var sessionManager: SessionManager
+        
     @State private var menuState: MenuState = .none
+//    @State private var id: String = ""
     
     var body: some View {
         HStack{
@@ -20,7 +20,6 @@ struct StatusView: View {
                 //status view title here
                 TitleView()
                 NotificationView()
-                   
             }
             .frame(height: 50)
             ///
@@ -54,14 +53,22 @@ struct StatusView: View {
                 
                 //LogOut
                 Button {
-                    print("log out")
+                    Task{
+                        appState.userOnlineStatus = .offline
+                        do{
+                            try sessionManager.logOut()
+                            appState.state = .notAuthorized
+                            router.routeTo(path: RouterPath.authScreen)
+                        }catch {
+                            print("failed to signing out: \(error.localizedDescription)")
+                        }
+                    }
                 } label: {
                     Label("Log out", systemImage: "rectangle.portrait.and.arrow.right")
                 }
 
             } label: {
-            image
-                .resizable()
+                ImageWrapper(id: dataManager.currentId, type: .member, imageSize: ImageSizes.smallImages, placeHolder: "person.circle")
                 .aspectRatio(contentMode: .fill)
                 .frame(width: 50, height: 50)
                 .clipShape(Circle())
@@ -72,30 +79,15 @@ struct StatusView: View {
         }
         .frame(height: 60)
         .padding(.horizontal)
-        .task{
-            updateImage()
-        }
-        
-        .onReceive(dataManager.updatePublisher) { value in
-            if value.0 == .images, value.1.contains(dataManager.currentId){
-                updateImage()
-            }
-        }
         .onReceive(appState.menuStatePublisher) { menuState in
             self.menuState = menuState
         }
+        .onReceive(dataManager.$currentId) { newValue in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                dataManager.updatePublisher.send((GlobalProperties.PublishChanges.images, [newValue]))
+            }
+        }
         
     }
-    
-    func updateImage(){
-        if let image = ImagesManager.loadImage(imageSize: .smallImages, id: dataManager.currentId){
-            withAnimation{
-                withAnimation(.easeInOut(duration: 0.7)){
-                    self.image = Image(uiImage: image)
-                }
-            }
-        } else {
-            self.image = Image(systemName: "person")
-        }
-    }
+
 }

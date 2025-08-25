@@ -1,5 +1,3 @@
-import SwiftUI
-import UIKit
 import CoreData
 
 public class Broadcast: NSManagedObject {
@@ -111,6 +109,15 @@ extension Broadcast {
 
 }
 
+extension Broadcast: ImageParent{
+    func assignImage(image: LocalImage, ofType: GlobalProperties.ImageType) {
+        if ofType == .venuePreview{
+            venueSchemaPreview = image
+            image.parentVenuePreview = self
+        }
+    }
+}
+
 extension Broadcast : Identifiable {
     var viewId: String {
         id ?? ""
@@ -145,28 +152,20 @@ extension Broadcast : Identifiable {
         return address
     }
     
-    var homeSmallImage : Image {
-        homeClub?.imageLogo?.smallImage ?? Image(systemName: "plus")
+    var homeImageId : String {
+        homeClub?.imageLogo?.viewId ?? ""
     }
     
-    var guestSmallImage : Image {
-        guestClub?.imageLogo?.smallImage ?? Image(systemName: "plus")
+    var guestImageId : String {
+        guestClub?.imageLogo?.viewId ?? ""
     }
     
-    var homeImage : Image {
-        homeClub?.imageLogo?.mediumImage ?? Image(systemName: "plus")
+    var viewVenueImageIds: [String] {
+        venue?.viewLocalImages.map{$0.viewId} ?? []
     }
     
-    var guestImage : Image {
-        guestClub?.imageLogo?.mediumImage ?? Image(systemName: "plus")
-    }
-    
-    var viewVenueImages: [Image] {
-        venue?.viewImages ?? [Image("neutral")]
-    }
-    
-    var viewVenueSchemaPreview: Image {
-        venueSchemaPreview?.originImage ?? Image(systemName: "sportscourt")
+    var viewVenueSchemaPreviewId: String {
+        venueSchemaPreview?.viewId ?? ""
     }
     
     var viewObvanPreviews: [LocalImage] {
@@ -250,7 +249,7 @@ extension Broadcast: CoreDataUpdatable{
             self.homeClub = nil
         }
         //add new home club
-        if let dtoHomeClubId = dto.homeClubId{
+        if let dtoHomeClubId = dto.homeClubId, !dtoHomeClubId.isEmpty{
             let newClub: Club = context.fetchOrCreateObject(withID: dtoHomeClubId)
             self.homeClub = newClub
             newClub.addToHomeBroadcasts(self)
@@ -261,7 +260,7 @@ extension Broadcast: CoreDataUpdatable{
             self.guestClub = nil
         }
         //add new guest club
-        if let dtoGuestClubId = dto.guestClubId{
+        if let dtoGuestClubId = dto.guestClubId, !dtoGuestClubId.isEmpty{
             let newClub: Club = context.fetchOrCreateObject(withID: dtoGuestClubId)
             self.guestClub = newClub
             newClub.addToGuestBroadcasts(self)
@@ -272,7 +271,7 @@ extension Broadcast: CoreDataUpdatable{
             self.venue = nil
         }
         // add new venue
-        if let venueID = dto.venueID{
+        if let venueID = dto.venueID, !venueID.isEmpty{
             let newVenue: Venue = context.fetchOrCreateObject(withID: venueID)
             newVenue.addToBroadcasts(self)
             self.venue = newVenue
@@ -281,12 +280,14 @@ extension Broadcast: CoreDataUpdatable{
         unlinkObvans()
         //add new obvans
         dto.obvanId.forEach{
-            let newObvan: Obvan = context.fetchOrCreateObject(withID: $0)
-            newObvan.addToBroadcasts(self)
-            addToObvan(newObvan)
+            if !$0.isEmpty{
+                let newObvan: Obvan = context.fetchOrCreateObject(withID: $0)
+                newObvan.addToBroadcasts(self)
+                addToObvan(newObvan)
+            }
         }
         //add new venue preview
-        if let venuePreviewId = dto.venuePreviewId{
+        if let venuePreviewId = dto.venuePreviewId, !venuePreviewId.isEmpty{
             let newPreview: LocalImage = context.fetchOrCreateObject(withID: venuePreviewId)
             if let venueSchemaPreview, venueSchemaPreview.viewId != newPreview.viewId{
                 context.delete(venueSchemaPreview)
@@ -311,19 +312,23 @@ extension Broadcast: CoreDataUpdatable{
         }
         
         for id in dto.obvanPreviewId{
-            let image: LocalImage = context.fetchOrCreateObject(withID: id)
-            image.type = GlobalProperties.ImageType.obvanPreview.rawValue
-            self.addToObvanPreview(image)
-            image.parentObvanPreview = self
+            if !id.isEmpty{
+                let image: LocalImage = context.fetchOrCreateObject(withID: id)
+                image.type = GlobalProperties.ImageType.obvanPreview.rawValue
+                self.addToObvanPreview(image)
+                image.parentObvanPreview = self
+            }
         }
             
         //unlink owners
        unlinkOwners()
         //add new owners
         dto.ownersIds.forEach{
-            let member: Member = context.fetchOrCreateObject(withID: $0)
-            member.addToOwnedBroadcasts(self)
-            addToOwners(member)
+            if !$0.isEmpty {
+                let member: Member = context.fetchOrCreateObject(withID: $0)
+                member.addToOwnedBroadcasts(self)
+                addToOwners(member)
+            }
         }
         //clean venue points
         cleanVenuePoints()

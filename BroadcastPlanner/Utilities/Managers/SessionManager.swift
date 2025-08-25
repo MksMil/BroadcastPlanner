@@ -25,6 +25,14 @@ final class SessionManager: ObservableObject{
             sessionUser = nil
             return }
         sessionUser = SessionUser(user: currentUser)
+        email = sessionUser?.email ?? "invalid data"
+        //TODO: fix with UserDefaults or smthng
+        password = "123456"
+    }
+    
+    func cleanFields(){
+        email = ""
+        password = ""
     }
 }
 // MARK: - with Credential
@@ -193,24 +201,26 @@ extension SessionManager{
         sessionUser = nil
     }
     // MARK: Update password email
-    func updateEmailOrPassword(newValue: String, type: UpdatedEP) async{
+    //TODO: fix
+    func updateEmailOrPassword(newEmailValue: String, newPasswordValue: String) async{
         let credential: AuthCredential = EmailAuthProvider.credential(withEmail: email,
                                                                       password: password)
         if let user = Auth.auth().currentUser{
             do{
                 let _ = try await user.reauthenticate(with: credential)
-                
-                switch type {
-                    case .email:
-                        try await user.sendEmailVerification(beforeUpdatingEmail: newValue)
-                    case .password:
-                        try await user.updatePassword(to: newValue)
+                if newEmailValue != email{
+                    print("email verification started with \(newEmailValue)")
+                    try await user.sendEmailVerification(beforeUpdatingEmail: newEmailValue)
+                }
+                if newPasswordValue != password{
+                    print("password changed to \(newPasswordValue)")
+                    try await user.updatePassword(to: newPasswordValue)
                 }
             } catch {
                 print(error.localizedDescription)
             }
         }
-    }
+}
     // MARK: forget password handler
     func sendResetPassword(with email: String){
         Auth.auth().sendPasswordReset(withEmail: email) { error in

@@ -5,14 +5,14 @@ struct PointEditUserCellView: View {
     
     
     let name: String
-    let image: Image
+    let id: String
     
     var body: some View {
 //        GeometryReader{ geo in
 //            let w = geo.size.width
 //            let h = geo.size.height
             VStack(spacing: 5){
-                LogoInWhiteCircleView(image: image)
+                LogoInWhiteCircleView(id: id)
                 
                 //                Spacer()
                 Text(name)

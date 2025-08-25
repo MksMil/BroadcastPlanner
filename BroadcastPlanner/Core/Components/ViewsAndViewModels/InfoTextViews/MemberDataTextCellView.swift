@@ -1,7 +1,7 @@
 import SwiftUI
 
 //used in profile view
-struct UserInfoTextField: View {
+struct MemberDataTextCellView: View {
     let text: String
     let isEdit: Bool
     let imageName: String
@@ -15,14 +15,16 @@ struct UserInfoTextField: View {
                     .resizable()
                     .frame(width: 25,height: 25)
                     .scaledToFill()
+                    .padding(.leading,8)
             }
             
             Text(text.isEmpty ? prompt : text)
-                .font(.title)
+                .font(.title3)
+                .foregroundStyle(text.isEmpty ? .gray:.primary)
                 .minimumScaleFactor(scaleFactor)
+                .padding(8)
             Spacer()
         }
-//        .ignoresSafeArea(.keyboard)
         .frame(height: 40)
         .frame(maxWidth: .infinity)
         .frame(alignment: .leading)
@@ -35,12 +37,10 @@ struct UserInfoTextField: View {
 #Preview {
     ZStack{
         Color.orange.ignoresSafeArea()
-        UserInfoTextField(text: "Dmitro",
+        MemberDataTextCellView(text: "Dmitro",
                           isEdit: true,
-                          imageName: "person",
+                          imageName: "",
                           prompt: "enter your name",
                           scaleFactor: 0.2)
     }
-//    EditMemberInfoView(id: "123")
-//        .environment(\.managedObjectContext, DataManager.shared.moc)
 }

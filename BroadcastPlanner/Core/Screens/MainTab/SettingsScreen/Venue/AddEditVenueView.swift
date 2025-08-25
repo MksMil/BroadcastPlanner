@@ -3,6 +3,7 @@ import SwiftUI
 import UIKit
 
 struct AddEditVenueView: View {
+    
     let buttonSize: Double = 30
     let venue: Venue
 
@@ -14,7 +15,11 @@ struct AddEditVenueView: View {
     @State private var isRemoveBackgroundDialog: Bool = false
     @State private var isRemoveEventTemplate: Bool = false
     
-    @State private var bgImages: [LocalImage] = []
+    @State private var isImagesSheetPresented: Bool = false
+    @State private var isSchemaSheetPresented: Bool = false
+    
+    @State private var imageIds: [String]
+    @State private var schemasIds: [String] = []
     
     @FetchRequest<LocalImage>(
         sortDescriptors: [SortDescriptor(
@@ -26,47 +31,98 @@ struct AddEditVenueView: View {
             GlobalProperties.ImageType.broadcastSchema.rawValue
         )
     ) var eventTemplates
-
  
     init(venue: Venue) {
         self.venue = venue
+        self.imageIds = venue.viewImageIds
         self._vm = StateObject(
             wrappedValue: AddEditVenueViewModel(venue: venue))
+       
     }
 
     var body: some View {
         ZStack{
             MainBackground()
-            VStack(spacing: 0) {
                 
                 ScrollView {
-                    // TODO: Make component for title and textfield
                     DividerWithText(text: "Title")
-                    
-                    TextField("title", text: $vm.title)
-                        .padding(.horizontal)
-                        .textFieldStyle(.roundedBorder)
-                        .autocorrectionDisabled()
+                    RoundedRectangle(cornerRadius: 5)
+                        .fill( .ultraThinMaterial)
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 5)
+                                .stroke(.ultraThinMaterial)
+                        }
+                        .overlay {
+                            HStack(spacing: 0) {
+                                Image(systemName: "house.and.flag")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .padding(.horizontal, 5)
+                                    .frame(width: 40)
+                                Divider()
+                                Text(venue.viewTitle.isEmpty ? "title" : venue.viewTitle)
+                                    .foregroundStyle(venue.viewTitle.isEmpty ? .gray: .primary)
+                                    .padding(.horizontal, 15)
+                                Spacer()
+                            }
+                        }
+                        .frame(height: 40)
+                        .onTapGesture {
+                            appState.cleanTFInfo()
+                            appState.fieldType = .custom([])
+                            appState.isSecure = false
+                            appState.textfieldSource = venue.viewTitle
+                            appState.promptString = "Enter new Title"
+                            appState.openTextFieldWithAction { title in
+                                venue.title = title
+                            }
+                        }
                     
                     DividerWithText(text: "address")
                     
-                    TextField("address", text: $vm.address,axis: .vertical)
-                        .lineLimit(2, reservesSpace: true)
-                        .minimumScaleFactor(0.5)
-                        .padding(.horizontal)
-                        .textFieldStyle(.roundedBorder)
-                        .autocorrectionDisabled(true)
+                    RoundedRectangle(cornerRadius: 5)
+                        .fill( .ultraThinMaterial)
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 5)
+                                .stroke(.ultraThinMaterial)
+                        }
+                        .overlay {
+                            HStack(spacing: 0) {
+                                Image(systemName: "map")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .padding(.horizontal, 5)
+                                    .frame(width: 40)
+                                Divider()
+                                Text(venue.viewAddress.isEmpty ? "address" : venue.viewAddress)
+                                    .foregroundStyle(venue.viewAddress.isEmpty ? .gray: .primary)
+                                    .padding(.horizontal, 15)
+                                Spacer()
+                            }
+                        }
+                        .frame(height: 40)
+                        .onTapGesture {
+                            appState.cleanTFInfo()
+                            appState.fieldType = .custom([])
+                            appState.isSecure = false
+                            appState.textfieldSource = venue.viewAddress
+                            appState.promptString = "Enter address"
+                            appState.openTextFieldWithAction { address in
+                                venue.address = address
+                            }
+                        }
+
                    
                     DividerWithText(text: "Add Venue images")
                     
                     //venue photos collection
-                    TabViewList(source: bgImages, pageCount: 3, spacing: 5) { localImage in
-                        vm.backgroundSelected(localImage)
-                    } content: { localImage in
-                        SelectableLocationCellWithContent(val: localImage, publishType: LocationEditPublishType.background) {
+                    TabViewList(source: imageIds, pageCount: 3, spacing: 5) { id in
+                        vm.backgroundSelected(id)
+                    } content: { id in
+                        SelectableLocationCellWithContent(val: id,
+                                                          publishType: LocationEditPublishType.background) {
                             //make a cell to select
-                            localImage.mediumImage
-                                .resizable()
+                            ImageWrapper(id: id,type: .venue, imageSize: .smallImages)
                         }
                     }
                     .frame(height: 120)
@@ -102,7 +158,7 @@ struct AddEditVenueView: View {
                         
                         Spacer()
                         //add localImages to venue
-                        PhotosPicker(selection: $vm.locationPhotoItems) {
+                        PhotosPicker(selection: $vm.locationPhotoItems,matching: .images){
                             Image(systemName: "plus")
                                 .resizable()
                                 .scaledToFit()
@@ -122,26 +178,26 @@ struct AddEditVenueView: View {
                                                     lineWidth: 2)
                                         }
                                 }
+
                         }
                         Spacer()
                     }
                     //broadcast broadcastSchema representation
                     DividerWithText(text: "select schema for Venue")
                     
-                    TabViewList(source: eventTemplates.map{$0},
+                    TabViewList(source: schemasIds,
                                 selectedItem: vm.selectedEventTemplate,
                                 pageCount: 2,
-                                spacing: 15) { localImage in
-                        vm.eventTemplateSelected(localImage)
-                    } content: { localImage in
-                        SelectableLocationCellWithContent(val: localImage, publishType: LocationEditPublishType.eventTemplate) {
+                                spacing: 15) { id in
+                        vm.eventTemplateSelected(id)
+                        //TODO: assign/remove schema
+//                        venue.broadcastSchema = venue.broadcastSchema == localImage ? nil: localImage
+                    } content: { id in
+                        SelectableLocationCellWithContent(val: id, publishType: LocationEditPublishType.eventTemplate) {
                             //make a cell to select
-                                localImage.smallImage
-                                    .resizable()
+                            ImageWrapper(id: id, type: .broadcastSchema,imageSize: .smallImages)
                         }
                     }
-//                    .border(.red, width: 2)
-//                    .padding()
                     .frame(height: 150)
                     HStack{
                         Spacer()
@@ -171,7 +227,7 @@ struct AddEditVenueView: View {
                         }
                         .disabled(vm.selectedEventTemplate == nil)
                         Spacer()
-                        PhotosPicker(selection: $vm.eventBackgroundItem) {
+                        PhotosPicker(selection: $vm.eventBackgroundItem,matching: .images) {
                                 Image(systemName: "plus")
                                     .resizable()
                                     .scaledToFit()
@@ -193,16 +249,12 @@ struct AddEditVenueView: View {
                         }
                         Spacer()
                     }
-//                    
-//                    Button("Status"){
-//                        print(venue)
-//                    }
                     Spacer(minLength: 50)
                 }
-                .padding()
-                .scrollDismissesKeyboard(.immediately)
+//                .scrollDisabled(true)
                 
-                //broadcastSchema photo remove confirmation dialog
+                .padding()
+                //background photo remove confirmation dialog
                 .confirmationDialog(
                     Text("Permanently erase the photo in the trash?"),
                     isPresented: $isRemoveBackgroundDialog
@@ -210,9 +262,12 @@ struct AddEditVenueView: View {
                     Button("Remove Photo", role: .destructive) {
                         // Handle empty trash action.
                         withAnimation {
-                            if let localImageToRemove = vm.backgroundImageToRemove{
-                                bgImages.removeAll { $0 == localImageToRemove
+                            if let idToRemove = vm.backgroundImageToRemove{
+                                imageIds.removeAll { el in
+                                    el == idToRemove
                                 }
+                                dataManager.removeImageWithId(id: idToRemove)
+                                vm.backgroundImageToRemove = nil
                             }
                         }
                     }
@@ -225,41 +280,55 @@ struct AddEditVenueView: View {
                     Button("Remove Photo", role: .destructive) {
                         // Handle empty trash action.
                         withAnimation {
-                            if let localImageToRemove = vm.selectedEventTemplate {
-                                dataManager.removeImage(localImageToRemove, fromGlobal: true)
+                            if let idToRemove = vm.selectedEventTemplate {
+                                schemasIds.removeAll { el in
+                                    el == idToRemove
+                                }
+                                dataManager.removeImageWithId(id: idToRemove)
+                                vm.selectedEventTemplate = nil
                             }
                         }
                     }
                 }
-            }
-            .transitionWithOpacity()
+                .transitionWithOpacity()
         }
+        .ignoresSafeArea(.keyboard)
         .navigationBarBackButtonHidden()
-        .onReceive(vm.$eventBackgroundUIImage) { uiimage in
+        .onReceive(vm.$eventBackgroundUIImage) {uiimage in
             guard let uiimage else { return }
-            dataManager.saveImageInBackground(uiimage: uiimage, type: GlobalProperties.ImageType.broadcastSchema)
+            Task{
+                let lastUpdatedValue = Date.now
+                let id = UUID().uuidString
+                schemasIds.append(id)
+                await dataManager.saveNewImage(id: id,uiimage: uiimage, type: GlobalProperties.ImageType.broadcastSchema, parent: venue,lastUpdated: lastUpdatedValue)
+            }
         }
-        .onReceive(vm.$locationUiimages) { images in
+        .onReceive(vm.$uiimages) { images in
             if !images.isEmpty{
-                bgImages.append(contentsOf:  dataManager.createNewLocalImagesWith(
-                    uiimages: images,
-                    andType: GlobalProperties.ImageType.venue,
-                    linkToLocation: venue
-                ))
-                vm.locationUiimages = []
+                let lastUpdatedValue = Date.now
+                    for uiimage in images{
+                        Task{
+                            let id = UUID().uuidString
+                            imageIds.append(id)
+                            await dataManager.saveNewImage(id: id,uiimage: uiimage, type: GlobalProperties.ImageType.venue, parent: venue,lastUpdated: lastUpdatedValue)
+                    }
+                }
             }
         }
         .onAppear{
-            bgImages = venue.viewLocalImages
+            schemasIds = eventTemplates.map{$0.viewId}
             appState.primaryAction = {
-                //save venue, some validation?
-                    dataManager.saveVenue(
-                        venue: venue,
-                        title: vm.title,
-                        address: vm.address,
-                        schema: vm.selectedEventTemplate,
-                        images: bgImages
-                    )
+                appState.makePrimaryButtonEnabled(false)
+                dataManager.mainContext.performAndWait {
+                    let lastUpdatedValue = Date.now
+                    venue.lastUpdated = lastUpdatedValue
+                    try? dataManager.mainContext.save()
+                    Task{
+                        await dataManager.networkManager.saveData(venue.dto,
+                                                                  withId: venue.viewId,
+                                                                  withType: GlobalProperties.Path.venues)
+                    }
+                }
                 router.stepBack()
             }
             appState.secondaryAction = {
@@ -273,14 +342,4 @@ struct AddEditVenueView: View {
     }
 }
 
-#Preview {
-    let mdm = DataManager(globalDataManager: NetworkManager())
-    let dto = VenueDTO(id: "id", lastUpdated: Date.now, title: "Avangard", address: "Krivii Rih", imagesIds: [], venueSchemaId: nil)
-    let location = mdm.mainContext.makeObjectFromDTO(dto)
-    
-   return AddEditVenueView(venue: location)
-    .environmentObject(mdm)
-    .environment(\.managedObjectContext, mdm.mainContext)
-
-}
 

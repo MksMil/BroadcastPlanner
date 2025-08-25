@@ -97,22 +97,22 @@ struct ExploreEventView: View {
                 .frame(height: 300)
                 
                 //previews
-                HStack(spacing: 15) {
-                    broadcast.viewVenueSchemaPreview
-                        .resizable()
-                        .scaledToFit()
-                        .onTapGesture {
-                            
-                        }
-//                    event.viewObvanPreview
+//                HStack(spacing: 15) {
+//                    broadcast.viewVenueSchemaPreview
 //                        .resizable()
 //                        .scaledToFit()
-//                        .scaleEffect(0.5)
-////                        .rotationEffect(Angle(degrees: -90))
 //                        .onTapGesture {
+//                            
 //                        }
-                }
-                .padding(.horizontal)
+////                    event.viewObvanPreview
+////                        .resizable()
+////                        .scaledToFit()
+////                        .scaleEffect(0.5)
+//////                        .rotationEffect(Angle(degrees: -90))
+////                        .onTapGesture {
+////                        }
+//                }
+//                .padding(.horizontal)
 //                .border(.red, width: 2)
                 
                 Spacer()

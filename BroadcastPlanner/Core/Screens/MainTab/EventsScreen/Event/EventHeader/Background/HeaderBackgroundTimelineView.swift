@@ -2,10 +2,9 @@ import Combine
 import SwiftUI
 
 struct HeaderBackgroundTimelineView: View {
-    let image: Image
+    let id: String
     var body: some View {
-        image
-            .resizable()
+        ImageWrapper(id: id, type: .venue,imageSize: .largeImages)
         //            .aspectRatio(1.5, contentMode: .fill)
             .mask {
                 Rectangle().fill(
@@ -23,8 +22,8 @@ struct HeaderBackgroundTimelineView: View {
                     )
                 )
             }
-                        .animation(.smooth(duration: 3),
-                                   value: image)
-            .frame(maxWidth: .infinity)
+                                .animation(.smooth(duration: 3),
+                                           value: id)
+//            .frame(maxWidth: .infinity)
     }
 }

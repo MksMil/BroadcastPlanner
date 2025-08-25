@@ -28,6 +28,7 @@ enum TextFieldType: Equatable {
     case login
     case password
     case email
+    case phone
     case custom([String]) // Для кастомных символов
 
     var toolbarButtons: [String] {
@@ -40,6 +41,8 @@ enum TextFieldType: Equatable {
             return ["@", "."]
         case .custom(let symbols):
             return symbols
+            default:
+                return []
         }
     }
     var contentType: UITextContentType? {
@@ -50,8 +53,26 @@ enum TextFieldType: Equatable {
                     .password
             case .email:
                     .emailAddress
+            case .phone:
+                    .telephoneNumber
             default:
                     nil
+        }
+    }
+    var keyboardType: UIKeyboardType{
+        switch self {
+            case .login:
+                    .alphabet
+            case .password:
+                    .default
+            case .email:
+                    .emailAddress
+            case .phone:
+                    .numbersAndPunctuation
+            case .custom( _):
+                    .alphabet
+            @unknown default:
+                    .alphabet
         }
     }
 }
@@ -254,18 +275,14 @@ extension ApplicationState{
                 applyAppConfiguration(StateCongiguration.BroadcastEditViewConfiguration)
             case .stadPointsEdit(_):
                 applyAppConfiguration(StateCongiguration.StadPointsEditViewConfiguration)
-//            case .carPointsEdit(let bool):
-//                <#code#>
             case .ownerInfo:
                 applyAppConfiguration(StateCongiguration.OwnerInfoConfiguration)
 //            case .memberView:
 //                <#code#>
             case .settings:
                 applyAppConfiguration(StateCongiguration.SettingsConfiguration)
-//            case .updateEmail:
-//            
-//            case .updatePassword:
-//                
+            case .updateSessionUserData:
+                applyAppConfiguration(StateCongiguration.UpdateSessionUserDataConfiguration)
             case .clubCollection:
                 applyAppConfiguration(StateCongiguration.ClubCollectionConfiguration)
             case .addEditClub(_):

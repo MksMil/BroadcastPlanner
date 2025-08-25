@@ -53,6 +53,32 @@ extension StateCongiguration{
         title: ""
     )
     
+    static let AuthenticationConfiguration : StateCongiguration = StateCongiguration(
+        isPrimaryButtonVisisble: false,
+        isPrimaryButtonEnable: false,
+        primaryButtonIcon: .accept,
+        isSecondaryButtonVisible: false,
+        isSecondaryButtonEnabled: false,
+        secondaryButtonIcon: .cancel,
+        isBackButtonVisible: false,
+        isBackButtonEnabled: false,
+        menuState: .none,
+        title: ""
+    )
+    
+    static let SignUpConfiguration : StateCongiguration = StateCongiguration(
+        isPrimaryButtonVisisble: false,
+        isPrimaryButtonEnable: false,
+        primaryButtonIcon: .accept,
+        isSecondaryButtonVisible: false,
+        isSecondaryButtonEnabled: false,
+        secondaryButtonIcon: .cancel,
+        isBackButtonVisible: false,
+        isBackButtonEnabled: false,
+        menuState: .none,
+        title: ""
+    )
+    
     static let MainListConfiguration : StateCongiguration = StateCongiguration(
         isPrimaryButtonVisisble: false,
         isPrimaryButtonEnable: false,
@@ -136,8 +162,8 @@ extension StateCongiguration{
         isSecondaryButtonVisible: false,
         isSecondaryButtonEnabled: false,
         secondaryButtonIcon: .remove,
-        isBackButtonVisible: true,
-        isBackButtonEnabled: true,
+        isBackButtonVisible: false,
+        isBackButtonEnabled: false,
         menuState: .none,
         title: "Edit Club"
     )
@@ -162,8 +188,8 @@ extension StateCongiguration{
         isSecondaryButtonVisible: false,
         isSecondaryButtonEnabled: false,
         secondaryButtonIcon: .remove,
-        isBackButtonVisible: true,
-        isBackButtonEnabled: true,
+        isBackButtonVisible: false,
+        isBackButtonEnabled: false,
         menuState: .none,
         title: "Edit Venue"
     )
@@ -190,5 +216,18 @@ extension StateCongiguration{
         isBackButtonEnabled: true,
         menuState: .none,
         title: "Edit Obvan"
+    )
+    
+    static let UpdateSessionUserDataConfiguration: StateCongiguration = StateCongiguration(
+        isPrimaryButtonVisisble: true,
+        isPrimaryButtonEnable: false,
+        primaryButtonIcon: .accept,
+        isSecondaryButtonVisible: false,
+        isSecondaryButtonEnabled: false,
+        secondaryButtonIcon: .remove,
+        isBackButtonVisible: true,
+        isBackButtonEnabled: true,
+        menuState: .none,
+        title: "Update email and password"
     )
 }

@@ -107,7 +107,7 @@ struct BroadcastEditView: View {
                     ScrollView(.horizontal){
                         HStack(alignment: .center){
                             ForEach(broadcast.viewOwners){ owner in
-                                LogoInWhiteRectView(image: owner.viewImage)
+                                LogoInWhiteRectView(id: owner.viewId)
                                     .frame(width: 30, height: 30)
                                     .contextMenu {
                                         Text("\(owner.viewCompactName)")
@@ -144,8 +144,7 @@ struct BroadcastEditView: View {
                     VStack(alignment: .leading){
                         GeometryReader{ geo in
                             let h = geo.size.height
-                            broadcast.viewVenueSchemaPreview
-                                .resizable()
+                            ImageWrapper(id: broadcast.viewVenueSchemaPreviewId, type: .venuePreview, imageSize: .originImages)
                                 .scaledToFit()
                                 .frame(height: h)
                                 .background(
@@ -180,11 +179,11 @@ struct BroadcastEditView: View {
                         Divider()
                             .opacity(broadcast.viewVenuePoints.count > 0 ? 1 : 0)
                         //crews smart list
-                        SmartLayout(hSpacing: 5, vSpacing: 5){
+                        SmartCollection(hSpacing: 5, vSpacing: 5){
                             ForEach(broadcast.viewVenuePoints.sorted(by: { first, second in
                                 first.number < second.number
                             })){ point in
-                                 LogoInWhiteRectView(image:(point.viewMembers.first?.viewImage ?? Image(systemName: "person.crop.square")))
+                                LogoInWhiteRectView(id: point.viewMembers.first?.id ?? "")
                                     .frame(width: 30, height: 30)
                                     .contextMenu {
                                         Text("\(point.viewMembers.first?.viewCompactName ?? "empty position")")
@@ -217,16 +216,14 @@ struct BroadcastEditView: View {
                                 first.viewName < second.viewName
                             })) { obvan in
                                 VStack{
-                                    obvan.viewImage
-                                        .resizable()
+                                    ImageWrapper(id: obvan.id, type: .obvan,imageSize: ImageSizes.smallImages)
                                         .scaledToFit()
                                         .onTapGesture {
                                             router.routeTo(path: .stadPointsEdit(broadcast))
                                         }
-                                    SmartLayout(hSpacing: 5, vSpacing: 5){
+                                    SmartCollection(hSpacing: 5, vSpacing: 5){
                                         ForEach(broadcast.crewsForObvan(obvan: obvan)){ crew in
-                                            LogoInWhiteRectView(image:
-                                            (crew.member?.viewImage ?? Image(systemName: "person.crop.square")))
+                                            LogoInWhiteRectView(id: crew.member?.id ?? "")
                                                 .frame(width: 30, height: 30)
                                                 .contextMenu {
                                                     Text("\(crew.viewPosition): \(crew.member?.viewCompactName ?? "")")

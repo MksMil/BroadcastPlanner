@@ -1,22 +1,13 @@
-//
-//  LogoInWhiteCircleView.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 07.08.2025.
-//
-
 import SwiftUI
 
 struct LogoInWhiteCircleView: View {
     
-    let image: Image
+    let id: String
     
     var body: some View {
         GeometryReader { geo in
-            let w = geo.size.width
-            
-            image
-                .resizable()
+            let w = geo.size.width   
+            ImageWrapper(id: id, type: GlobalProperties.ImageType.member,imageSize: .smallImages)
                 .scaledToFill()
                 .frame(width:  w,height:  w)
                 .clipShape(Circle())
@@ -25,7 +16,6 @@ struct LogoInWhiteCircleView: View {
                     Circle().stroke(Color.white, lineWidth: 2)
                 }
         }
-        
     }
 }
 

@@ -5,19 +5,19 @@ enum UpdatedEP: String,Identifiable {
     var id: Self { self }
 }
 
-struct UpdateEPView: View {
-    enum FieldInFocus: Hashable{
-        case firstField, secondField
-    }
+struct UpdateSessionUserDataView: View {
+    @EnvironmentObject var appState: ApplicationState
+    @EnvironmentObject var router: Router
     
-    @FocusState private var isFocus: FieldInFocus?
-    
-    var currentValue: String
+    let currentValue: String
     
     @State private var oldValue: String = ""
     @State private var newValue: String = ""
     
-    var updEP: UpdatedEP
+    @State private var oldValueRepresentation: String = ""
+    @State private var newValueRepresentation: String = ""
+    
+    let updEP: UpdatedEP
     let cancelAction: ()->Void
     let updateAction: (String) -> Void
     
@@ -25,82 +25,135 @@ struct UpdateEPView: View {
         
         ZStack{
             MainBackground()
-            
-            VStack{
-                // MARK: - Header Text
-                Text("Update \(updEP == .email ? "email":"password")")
-                    .font(.title)
-                    .foregroundColor(.accentColor)
-                    .padding(.top)
                 
                 VStack(spacing: 20){
                     // MARK: - Old Value TF
-                    BPTextFieldWithIcon(text: $oldValue,
-                                        placeholder: "old \(updEP == .email ? "email":"password")",
-                                        imageName: updEP == .email ? "envelope":"lock.fill",
-                                        isSecureField: updEP == .password  )
-                    .keyboardType(updEP == .email ? .emailAddress: .default)
-                    .focused($isFocus, equals: .firstField)
-                    
-                    // MARK: - New Value TF
-                    BPTextFieldWithIcon(text: $newValue,
-                                        placeholder: "new \(updEP == .email ? "email":"password")",
-                                        imageName: updEP == .email ? "envelope":"lock.fill",
-                                        isSecureField: updEP == .password  )
-                    .keyboardType(updEP == .email ? .emailAddress: .default)
-                    .focused($isFocus, equals: .secondField)
-                    
+
+                    RoundedRectangle(cornerRadius: 5)
+                        .fill(.ultraThinMaterial)
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 5)
+                                .stroke(.ultraThinMaterial,lineWidth: 2)
+                        }
+                        .overlay {
+                            HStack(spacing:0) {
+                                Image(systemName: updEP == .email ? "envelope":"lock.fill")
+                                    .padding(.horizontal, 5)
+                                    .frame(width: 40)
+                                
+                                Divider()
+                                Text(oldValueRepresentation)
+                                    .foregroundStyle(
+                                        oldValue.isEmpty ? .gray : .primary
+                                    )
+                                    .padding(.horizontal, 15)
+                                Spacer()
+                            }
+                        }
+                        .frame(height: 40)
+                        .onTapGesture {
+                            appState.cleanTFInfo()
+                            appState.fieldType = updEP == .email ? .email: .password
+                            appState.isSecure = updEP != .email
+                            appState.promptString = "Enter old " + (updEP == .email ?  "e-mail": "password")
+                            appState.openTextFieldWithAction { value in
+                                self.oldValue = value
+                                oldValueRepresentation = textForValue(value: value, isOld: true)
+                                appState.makePrimaryButtonEnabled(validate())
+                            }
+                        }
+//                    // MARK: - New Value TF
+                    RoundedRectangle(cornerRadius: 5)
+                        .fill(.ultraThinMaterial)
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 5)
+                                .stroke(.ultraThinMaterial,lineWidth: 2)
+                        }
+                        .overlay {
+                            HStack(spacing:0) {
+                                Image(systemName: updEP == .email ? "envelope":"lock.fill")
+                                    .padding(.horizontal, 5)
+                                    .frame(width: 40)
+                                
+                                Divider()
+                                Text(newValueRepresentation)
+                                    .foregroundStyle(
+                                        newValue.isEmpty ? .gray : .primary
+                                    )
+                                    .padding(.horizontal, 15)
+                                Spacer()
+                            }
+                        }
+                        .frame(height: 40)
+                        .onTapGesture {
+                            appState.cleanTFInfo()
+                            appState.fieldType = updEP == .email ? .email: .password
+                            appState.isSecure = updEP != .email
+                            appState.promptString = "Enter new " + (updEP == .email ?  "e-mail": "password")
+                            appState.openTextFieldWithAction { value in
+                                self.newValue = value
+                                newValueRepresentation = textForValue(value: value, isOld: false)
+                                appState.makePrimaryButtonEnabled(validate())
+                            }
+                        }
                     // MARK: - Confirm Button
-                    Button{
-                        Task{
-                            isFocus = nil
-                            updateAction(newValue)
-                            
-                        }
-                    } label: {
-                        Text("Confirm")
-                            .font(.title)
-                            .foregroundStyle(Color.accent)
-                        
-                    }
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 50)
-                    .background {
-                        RoundedRectangle(cornerRadius: 25.0)
-                            .foregroundColor(Color.white.opacity(0.7))
-                            .padding(.horizontal)
-                    }
-                    .padding(.top,20)
-                    Button{
-                        Task{
-                            isFocus = nil
-                            cancelAction()
-                        }
-                    } label: {
-                        Text("Cancel")
-                            .font(.title)
-                            .foregroundStyle(Color.accent)
-                        
-                    }
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 50)
-                    .background {
-                        RoundedRectangle(cornerRadius: 25.0)
-                            .foregroundColor(Color.white.opacity(0.7))
-                            .padding(.horizontal)
-                    }
+                    
                     Spacer()
                 }
                 .padding(.top,100)
-            }
+                .padding(.horizontal)
+            .ignoresSafeArea(.keyboard)
+            .transitionWithOpacity()
             .navigationBarBackButtonHidden()
         }
+        .onAppear{
+            appState.setTitle("Update \(updEP == .email ? "email":"password")")
+            appState.primaryAction = {
+                Task{
+                    updateAction(newValue)
+                }
+            }
+            
+            appState.secondaryAction = {
+                Task{
+                    cancelAction()
+                }
+            }
+            
+            appState.stepBackAction = {
+                router.stepBack()
+            }
+            
+            
+        }
+        
+    }
+    func textForValue(value: String, isOld: Bool)->String{
+        if value.isEmpty{
+            return ((isOld ? "old":"new") + " " + (updEP == .email ? "email": "password"))
+        } else {
+            return updEP == .email ? value : value.starred()
+        }
+    }
+    
+    func validate()->Bool{
+        print("validate \(updEP.rawValue) called: \(currentValue), \(oldValue),\(newValue)")
+        if updEP == .email, !newValue.isValidEmail(){
+            return false
+        }
+        if updEP == .password, newValue.count < 6{
+            return false
+        }
+        if !oldValue.isEmpty, oldValue == currentValue{
+            return true
+        }
+        return false
     }
 }
 
 #Preview {
-    UpdateEPView(currentValue: "", updEP: .password, cancelAction: {}, updateAction: {_ in })
+    UpdateSessionUserDataView(currentValue: "", updEP: .password, cancelAction: {}, updateAction: {_ in })
 }
 #Preview {
-    UpdateEPView(currentValue: "", updEP: .email, cancelAction: {}, updateAction: {_ in })
+    UpdateSessionUserDataView(currentValue: "", updEP: .email, cancelAction: {}, updateAction: {_ in })
 }

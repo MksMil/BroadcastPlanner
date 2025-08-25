@@ -105,22 +105,21 @@ final class NetworkManager: ObservableObject {
     func start(completion: (() -> Void)? = nil) async {
         guard syncDelegate != nil else { return }
         stopListeners()
-        
+        await loadGlobalSettings()
+        await self.loadAndSync(.images, dtoType: ImageDTO.self)
+        await self.loadAndSync(.broadcasts, dtoType: BroadcastDTO.self)
         await withTaskGroup(of: Void.self) { group in
             group.addTask {
                 await self.loadAndSync(.members, dtoType: MemberDTO.self)
             }
             group.addTask {
-                await self.loadAndSync(.broadcasts, dtoType: BroadcastDTO.self)
+                await self.loadAndSync(.obvans, dtoType: ObvanDTO.self)
             }
             group.addTask {
                 await self.loadAndSync(.venues, dtoType: VenueDTO.self)
             }
             group.addTask {
                 await self.loadAndSync(.clubs, dtoType: ClubDTO.self)
-            }
-            group.addTask {
-                await self.loadAndSync(.images, dtoType: ImageDTO.self)
             }
             group.addTask {
                 await self.loadAndSync(.templates, dtoType: TemplateDTO.self)
@@ -138,9 +137,10 @@ final class NetworkManager: ObservableObject {
         let listener = dbService.collection(type.rawValue)
             .addSnapshotListener { snapshot, error in
                 guard let snapshot else {
-                    print(
-                        "Snapshot error: \(error?.localizedDescription ?? "Unknown error")"
-                    )
+                    print("Snapshot error: \(error?.localizedDescription ?? "Unknown error")")
+                    return
+                }
+                guard !snapshot.metadata.isFromCache else {
                     return
                 }
                 Task {
@@ -174,10 +174,13 @@ final class NetworkManager: ObservableObject {
 // MARK: - Save/Load Images
 
 extension NetworkManager {
+    
+    @discardableResult
     func saveImageToGlobalStorage(
         id: String,
         uiimage: UIImage,
-        type: GlobalProperties.ImageType
+        type: GlobalProperties.ImageType,
+        lastUpdated: Date
     ) async -> Bool {
         guard let imageData = prepareImageData(from: uiimage, type: type) else {
             #if DEBUG
@@ -188,7 +191,7 @@ extension NetworkManager {
 
         do {
             try await uploadImageData(id: id, data: imageData)
-            try await uploadImageMetadata(id: id, type: type)
+            try await uploadImageMetadata(id: id, type: type,lastUpdated: lastUpdated)
             return true
         } catch {
             #if DEBUG
@@ -204,7 +207,8 @@ extension NetworkManager {
         from image: UIImage,
         type: GlobalProperties.ImageType
     ) -> Data? {
-        if type == .club || type == .broadcastSchema || type == .obvan {
+        if (type == .club || type == .broadcastSchema || type == .obvan) {
+            print("png data prepared")
             return image.pngData()
         } else {
             return image.jpegData(compressionQuality: 1)
@@ -217,7 +221,8 @@ extension NetworkManager {
 
     private func uploadImageMetadata(
         id: String,
-        type: GlobalProperties.ImageType
+        type: GlobalProperties.ImageType,
+        lastUpdated: Date
     ) async throws {
         try await getFirestoreDocumentRef(
             type: GlobalProperties.Path.images,
@@ -225,7 +230,7 @@ extension NetworkManager {
         ).setData([
             "id": id,
             "type": type.rawValue,
-            "lastUpdated": Date.now
+            "lastUpdated": lastUpdated
         ])
     }
 
@@ -254,9 +259,9 @@ extension NetworkManager {
         case decodingFailed
     }
 
-    func loadImage(from id: String) async -> Result<UIImage, ImageLoadError> {
+    func loadImage(from id: String) async -> UIImage? {
         guard !id.isEmpty else {
-            return .failure(.emptyId)
+            return nil
         }
 
         let imageRef = getImageStorageRef(id: id)
@@ -264,20 +269,21 @@ extension NetworkManager {
         do {
             let data = try await getDataAsync(
                 from: imageRef,
-                maxSize: 8 * 1024 * 1024    //const?
+                maxSize: 12 * 1024 * 1024    //const?
             )
 
             guard !data.isEmpty else {
-                return .failure(.invalidData)
+                return nil
             }
 
             guard let image = UIImage(data: data) else {
-                return .failure(.decodingFailed)
+                return nil
             }
 
-            return .success(image)
+            return image
         } catch {
-            return .failure(.downloadFailed(error.localizedDescription))
+            print("error loading image \(error.localizedDescription)")
+            return nil
         }
     }
 

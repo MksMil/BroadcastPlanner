@@ -1,5 +1,4 @@
 import UIKit
-import SwiftUI
 import CoreData
 
 public class Member: NSManagedObject {}
@@ -81,6 +80,16 @@ extension Member {
 
 }
 
+extension Member: ImageParent{
+    func assignImage(image: LocalImage, ofType: GlobalProperties.ImageType) {
+        if ofType == .member{
+            self.image = image
+            image.parentMember = self
+        }
+    }
+}
+
+
 
 // MARK: - Unwrapped + DTO
 extension Member : Identifiable {
@@ -97,15 +106,8 @@ extension Member : Identifiable {
     var viewLeaveDate: Date { leaveDate ?? Date() }
     
     //an image or system Person.circle symbol
-    var viewImage: Image{
-//        print("fetch image")
-        if let image {
-//            print("image exists")
-            return image.mediumImage
-        } else {
-//            print("image not exists")
-            return Image(systemName: "person.circle")
-        }
+    var viewImageId: String{
+        image?.viewId ?? ""
     }
     //make an array of UserSpecialization values from String value (with "," strategy)
     var viewSpecialization: [String] {
@@ -225,9 +227,6 @@ extension Member: CoreDataUpdatable{
             self.email = email
         }
         if let image {
-//            if let oldImage = self.image{
-//                cleanImage(image: oldImage, in: context)
-//            }
             image.parentMember = self
             self.image = image
         }

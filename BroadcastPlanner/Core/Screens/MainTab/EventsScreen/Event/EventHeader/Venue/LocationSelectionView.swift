@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct LocationSelectionView: View {
-    
+    @EnvironmentObject var dataManager: DataManager
     @StateObject private var vm: LocationSelectionViewModel
     
     let location: Venue?
@@ -26,7 +26,7 @@ struct LocationSelectionView: View {
     
     var body: some View {
         ZStack{
-            HeaderBackgroundTimelineView(image: vm.image)
+            HeaderBackgroundTimelineView(id: vm.imageId)
             
             VStack(spacing: 5) {
                 // venue title
@@ -81,7 +81,4 @@ struct LocationSelectionView: View {
         .environmentObject(GlobalSettings())
         .environment(\.managedObjectContext, mdm.mainContext)
         .environmentObject(mdm)
-    
-    
-    
 }

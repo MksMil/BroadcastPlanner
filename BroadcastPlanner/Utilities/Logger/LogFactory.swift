@@ -3,6 +3,7 @@ import OSLog
   enum LogCategory: String {
       case network = "Network"
       case database = "Database"
+      case images = "ImageManagment"
       case ui = "UI"
   }
 

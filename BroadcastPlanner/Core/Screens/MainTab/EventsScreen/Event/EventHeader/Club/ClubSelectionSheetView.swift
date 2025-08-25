@@ -30,9 +30,9 @@ struct ClubSelectionSheetView: View {
                 Divider()
                     .padding(8)
                 ScrollView{
-                    SmartLayout(hSpacing: 5, vSpacing: 5) {
+                    SmartCollection(hSpacing: 5, vSpacing: 5) {
                         ForEach(clubs) { club in
-                            ClubSheetCellView(image: club.viewImageMediumLogo,
+                            ClubSheetCellView(id: club.viewId,
                                               title: club.viewTitle,
                                               isSelected: selectedClub == club)
                             .onTapGesture {

@@ -12,9 +12,6 @@ struct SelectableLocationCellWithContent<V: View, T: Equatable>: View {
         content()
             .clipShape(RoundedRectangle(cornerRadius: 8))
             .padding(5)
-//            .overlay {
-//                RoundedRectangle(cornerRadius: 8).stroke(selectController.selected ?  Color.white:Color.clear, lineWidth: 4).blur(radius: 2)
-//            }
             .opacity(selectController.selected ? 1: 0.75)
             .scaleEffect(selectController.selected ? 1.0: 0.95)
             .onReceive(vm.publisher) { value in

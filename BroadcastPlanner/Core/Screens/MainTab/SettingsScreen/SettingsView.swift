@@ -18,20 +18,9 @@ struct SettingsView: View {
             MainBackground()
             ScrollView{
                 Button {
-                    router.routeTo(path: .updateEmail)
+                    router.routeTo(path: .updateSessionUserData)
                 } label: {
-                    Text("Change E-mail")
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 50)
-                        .background {Color.white.opacity(30)}
-                        .clipShape(RoundedRectangle(cornerRadius: 20))
-                        .padding(.horizontal)
-                }
-                
-                Button {
-                    router.routeTo(path: .updatePassword)
-                } label: {
-                    Text("Change Password")
+                    Text("Change E-mail or Password")
                         .frame(maxWidth: .infinity)
                         .frame(height: 50)
                         .background {Color.white.opacity(30)}
@@ -128,29 +117,6 @@ struct SettingsView: View {
                         .clipShape(RoundedRectangle(cornerRadius: 20))
                         .padding(.horizontal)
                 }
-                
-                // MARK: - "Sign out" button
-                
-                Button(action: {
-                    Task{
-                        appState.userOnlineStatus = .offline
-//                        await dataManager.changeOnlineStatus(isOnline: false)
-                        do{
-                            try sessionManager.logOut()
-                            appState.state = .notAuthorized
-                            router.routeTo(path: RouterPath.authScreen)
-                        }catch {
-                            print("failed to signing out: \(error.localizedDescription)")
-                        }
-                    }
-                }, label: {
-                    Text("Sign Out")
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 50)
-                        .background {Color.white.opacity(30)}
-                        .clipShape(RoundedRectangle(cornerRadius: 20))
-                        .padding(.horizontal)
-                })
                 
                 // MARK: - Delete member
                 Button(role: .destructive) {

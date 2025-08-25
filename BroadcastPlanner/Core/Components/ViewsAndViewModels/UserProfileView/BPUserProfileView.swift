@@ -22,8 +22,7 @@ struct BPUserProfileView: View {
         VStack{
             //photo here
             HStack {
-                user.viewImage
-                        .resizable()
+                ImageWrapper(id: user.viewId,type: .member, imageSize: ImageSizes.mediumImages)
                         .scaledToFill()
                         .frame(width: 100,height: 100)
                         .clipShape(Circle())
@@ -100,34 +99,34 @@ struct BPUserProfileView: View {
         .padding(.top,10)
     }
     @ViewBuilder func specializationSection() -> some View {
-//        VStack{
-//            SmartLayout(hSpacing: 5, vSpacing: 5){
-//                ForEach(member.userSpecialization,id: \.self) { text in
-//                    BPSpecializationCellView(text: text.rawValue)
-//                }
-//            }
-//            .padding(.horizontal,20)
-//            .padding(.vertical,5)
-//            Divider()
-//                .padding(.horizontal,20)
-//        }
-        VStack {
-            AnyContentView(
-                sourceContent: $settings.userSpecialization,
-                selectedContent: .constant(user.viewSpecialization),
-                isEdit: .constant(false)
-            ) {
-                RoundedRectangle(cornerRadius: 10.0).fill(.white.opacity(0.4))
-                    
-            } cellView: { text in
-                BPSpecializationCellView(text: text)
-            } promptView: {
-                EmptyView()
-//                Text("Tap to make choise of specialization")
-//                    .font(.body)
-//                    .fontWeight(.light)
-//                    .foregroundStyle(Color(.systemGray))
+        VStack{
+            SmartCollection(hSpacing: 5, vSpacing: 5){
+                ForEach(user.viewSpecialization,id: \.self) { text in
+                    SpecializationCellView(cellWidth: 100,text: text)
+                }
             }
+            .padding(.horizontal,20)
+            .padding(.vertical,5)
+            Divider()
+                .padding(.horizontal,20)
+        }
+        VStack {
+//            AnyContentView(
+//                sourceContent: $settings.userSpecialization,
+//                selectedContent: .constant(user.viewSpecialization),
+//                isEdit: .constant(false)
+//            ) {
+//                RoundedRectangle(cornerRadius: 10.0).fill(.white.opacity(0.4))
+//                    
+//            } cellView: { text in
+//                BPSpecializationCellView(text: text)
+//            } promptView: {
+//                EmptyView()
+////                Text("Tap to make choise of specialization")
+////                    .font(.body)
+////                    .fontWeight(.light)
+////                    .foregroundStyle(Color(.systemGray))
+//            }
         }
         .disabled(true)
     }

@@ -16,18 +16,15 @@ enum ImageSizes: String, CaseIterable {
 }
 
 enum ImagesManager {
-    
+    static let dirName = "originImages"
     static func imageExists(withId id: String) -> Bool {
         let fileManager = FileManager.default
         let documentDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let folder = documentDirectory.appendingPathComponent(ImagesManager.dirName)
+        let pngFilepath   = folder.appendingPathComponent("\(id).png").path()
+        let jpegFilepath  = folder.appendingPathComponent("\(id).jpeg").path()
         
-        return ImageSizes.allCases.contains { size in
-            let folder = documentDirectory.appendingPathComponent(size.rawValue)
-            let pngFilepath   = folder.appendingPathComponent("\(id).png").path()
-            let jpegFilepath  = folder.appendingPathComponent("\(id).jpeg").path()
-
-            return fileManager.fileExists(atPath: pngFilepath) || fileManager.fileExists(atPath: jpegFilepath)
-        }
+        return fileManager.fileExists(atPath: pngFilepath) || fileManager.fileExists(atPath: jpegFilepath)
     }
 
 
@@ -61,60 +58,22 @@ enum ImagesManager {
         return image
     }
     
-    //async case
-     static func saveResizedImagesAsync(
-         image: UIImage?,
-         id: String,
-         type: GlobalProperties.ImageType
-     ) async {
-         guard let image else { return }
-         let resizingResult = resizeImages(image: image)
 
-         await withTaskGroup(of: Void.self) { group in
-             for size in ImageSizes.allCases {
-                 group.addTask {
-                     let dir = createCustomDirectory(folderName: size.rawValue)
-                     _ = saveImageToDirectory(
-                         image: resizingResult[size],
-                         directory: dir,
-                         id: id,
-                         type: type
-                     )
-                 }
-             }
-         }
-     }
-
-    static func saveResizedImages(
+    static func saveImage(
         image: UIImage?,
         id: String,
         type: GlobalProperties.ImageType
-    ) {
+    )  {
         guard let image else { return }
-        let resizingResult = resizeImages(image: image)
-        ImageSizes.allCases.forEach { size in
-            let dir = createCustomDirectory(
-                folderName: "\(size.rawValue)"
-            )
-//            print(dir)
-             _ = saveImageToDirectory(
-                image: resizingResult[size],
-                directory: dir,
-                id: id,
-                type: type
-            )
-        }
-    }
-
-    static func resizeImages(image: UIImage) -> [ImageSizes: UIImage] {
-        // resizing image
-        var result: [ImageSizes: UIImage] = [:]
-
-        ImageSizes.allCases.forEach { size in
-            result[size] = resizeImage(image: image, targetSize: size)
-        }
-
-        return result
+        
+        let dir = createCustomDirectory(folderName: ImagesManager.dirName)
+        
+        _ = saveImageToDirectory(
+            image: image,
+            directory: dir,
+            id: id,
+            type: type
+        )
     }
 
     static func saveImageToDirectory(
@@ -128,8 +87,11 @@ enum ImagesManager {
         let fileExtension = (type == .club || type == .broadcastSchema || type == .obvan) ? "png" : "jpeg"
         let fileURL = directory.appendingPathComponent("\(id).\(fileExtension)")
         //png flow
-        if type == .club || type == .broadcastSchema || type == .obvan {
-            guard let data = image.pngData() else { return nil }
+        if (type == .club || type == .broadcastSchema || type == .obvan) {
+            guard let data = image.pngData() else {
+                print("cant load pngdata")
+                return nil
+            }
             do {
                 try data.write(to: fileURL)
                 return fileURL
@@ -153,14 +115,14 @@ enum ImagesManager {
         }
     }
 
-    static func loadImage(imageSize: ImageSizes, id: String) -> UIImage? {
+    static func loadImage(id: String) -> UIImage? {
         let fileManager = FileManager.default
         let documentDirectory = fileManager.urls(
             for: .documentDirectory,
             in: .userDomainMask
         ).first!
         
-        let directoryPath = documentDirectory.appendingPathComponent("\(imageSize.rawValue)")
+        let directoryPath = documentDirectory.appendingPathComponent(ImagesManager.dirName)
         let pngFilepath   = directoryPath.appendingPathComponent("\(id).png")
         let jpegFilepath  = directoryPath.appendingPathComponent("\(id).jpeg")
         
@@ -194,8 +156,8 @@ enum ImagesManager {
         ).first!
 
         var success = true
-        ImageSizes.allCases.forEach { size in
-            let directory = documentDirectory.appendingPathComponent(size.rawValue)
+        
+            let directory = documentDirectory.appendingPathComponent(ImagesManager.dirName)
             let pngURL = directory.appendingPathComponent("\(id).png")
             let jpegURL = directory.appendingPathComponent("\(id).jpeg")
 
@@ -206,15 +168,13 @@ enum ImagesManager {
                     try fileManager.removeItem(at: jpegURL)
 
                 } else {
-                    print("File doesn't exist: id: \(id) in \(size.rawValue)")
+                    print("File doesn't exist: id: \(id)")
                     success = false
                 }
             } catch {
                 print("Error removing file: \(error.localizedDescription)")
                 success = false
             }
-        }
-
         return success
     }
  

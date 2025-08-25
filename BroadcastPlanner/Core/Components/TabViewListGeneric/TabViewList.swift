@@ -44,17 +44,7 @@ struct TabViewList<T: Hashable, Content: View>: View {
                     }
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
-                .onAppear {
-                    //scroll to selected item
-                    var num: Int = 0
-                    if let selectedItem,
-                       let index = source.firstIndex(where: { el in
-                           el == selectedItem
-                       }){
-                        num = index / pageCount
-                        selectedPage = num
-                    }
-                }
+                
             
                 HStack(spacing: 0){
                     Image(systemName: "arrow.left.to.line")
@@ -85,6 +75,17 @@ struct TabViewList<T: Hashable, Content: View>: View {
 
             }
         }
+            .task {
+                //scroll to selected item
+                var num: Int = 0
+                if let selectedItem,
+                   let index = source.firstIndex(where: { el in
+                       el == selectedItem
+                   }){
+                    num = index / pageCount
+                    selectedPage = num
+                }
+            }
     }
 }
 

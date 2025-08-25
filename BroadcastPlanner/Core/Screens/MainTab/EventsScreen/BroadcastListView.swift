@@ -74,7 +74,7 @@ struct BroadcastListView: View {
                 }
                 .padding(.horizontal, 8)
                 .opacity(opacity)
-
+                //TODO: fix access
                 if dataManager.accessLevel < 2 {
                     Button {
                             opacity = 0
@@ -105,7 +105,6 @@ struct BroadcastListView: View {
             }
             .navigationBarBackButtonHidden()
             .transitionWithOpacity()
-           
         }
         .onAppear{
             selectedBroadcast = nil

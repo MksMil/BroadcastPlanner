@@ -9,11 +9,11 @@ struct BPResetPasswordView: View {
             MainBackground()
                 .ignoresSafeArea()
             VStack{
-                
-                BPTextFieldWithIcon(text: $email,
-                                    placeholder: "e-mail",
-                                    imageName: "envelope")
-                .padding(.bottom,40)
+                //TODO: fix
+//                BPTextFieldWithIcon(text: $email,
+//                                    placeholder: "e-mail",
+//                                    imageName: "envelope")
+//                .padding(.bottom,40)
                 
                 Button {
                     sessionManager.sendResetPassword(with: email)

@@ -1,31 +1,14 @@
 import SwiftUI
 
-final class LogoImageViewModel: ObservableObject{
-    @Published var image : Image
-    @Published var isSheetPresented: Bool = false
-    var selectedClub: Club?
-    
-    init(club: Club?) {
-        if let club = club{
-            self.selectedClub = club
-            self.image = club.viewImageMediumLogo
-        } else {
-            self.image = Image(systemName: "plus")
-        }
-    }
-    
-    func updatewithClub(club: Club){
-        image = club.viewImageMediumLogo
-    }
-}
-
 struct LogoImageView: View {
+    @State var isSheetPresented: Bool = false
+    @State var selectedClub: Club?
     
-    @StateObject private var vm: LogoImageViewModel
     var logoSize: Double
     let cancelAction: ()->Void
     let accessAction: (Club)->Void
     let editable: Bool
+    
     
     init(club: Club?,logoSize: Double = 100,editable: Bool = true,
          cancelAction: @escaping () -> Void,
@@ -34,12 +17,11 @@ struct LogoImageView: View {
         self.editable = editable
         self.cancelAction = cancelAction
         self.accessAction = accessAction
-        self._vm = StateObject(wrappedValue: LogoImageViewModel(club: club))
+        self.selectedClub = club
     }
     
     var body: some View {
-        vm.image
-            .resizable()
+        ImageWrapper(id: selectedClub?.viewId ?? "",type: .club, imageSize: .mediumImages)
             .scaledToFit()
             .frame(width: logoSize, height: logoSize)
             .padding(logoSize / 10)
@@ -51,28 +33,22 @@ struct LogoImageView: View {
                 Circle().stroke(Color.white, lineWidth: 3)
             }
             .onTapGesture {
-                vm.isSheetPresented.toggle()
+                isSheetPresented.toggle()
             }
             .disabled(!editable)
         //club/venue select/add/edit/remove sheet
         .sheet(
-            isPresented: $vm.isSheetPresented,
+            isPresented: $isSheetPresented,
             content: {
-                ClubSelectionSheetView(selectedClub: vm.selectedClub, acceptAction: { newClub in
-                    vm.selectedClub = newClub
+                ClubSelectionSheetView(selectedClub: selectedClub, acceptAction: { newClub in
+                    selectedClub = newClub
                     if let newClub{
-                        vm.updatewithClub(club: newClub)
                         accessAction(newClub)
                     }
-                    vm.isSheetPresented = false
+                    isSheetPresented = false
                 })
-//                .padding()
-//                .presentationBackground(.white.opacity(0.4))
                 .presentationContentInteraction(.scrolls)
                 .presentationDragIndicator(.visible)
-//                .presentationDetents(
-//                    [.fraction(0.6),.fraction(0.65) ,.fraction(0.9), .fraction(1)],
-//                    selection: $vm.locationSheetDetents)
             }
         )
     }

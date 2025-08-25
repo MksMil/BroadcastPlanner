@@ -1,23 +1,15 @@
-//
-//  LogosCellImageView.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 13.12.2024.
-//
-
 import SwiftUI
 
-struct LogosCellImageView: View {
+struct LogosCellImageView<V: View>: View {
     
-    let homeImage: Image
-    let guestImage: Image
+    var homeImageId: String?
+    var guestImageId: String?
     let size : Double
     
     var body: some View {
         HStack{
             //home team logo
-            homeImage
-                .resizable()
+            ImageWrapper(id: homeImageId, type: .club,imageSize: ImageSizes.mediumImages)
                 .scaledToFit()
                 .frame(width: size, height: size)
                 .padding(size / 10)
@@ -30,8 +22,7 @@ struct LogosCellImageView: View {
                 }
                 
             
-            guestImage
-                .resizable()
+            ImageWrapper(id: guestImageId,type: .club, imageSize: ImageSizes.mediumImages)
                 .scaledToFit()
                 .frame(width: size, height: size)
                 .padding(size / 10)
@@ -42,15 +33,7 @@ struct LogosCellImageView: View {
                 .overlay {
                     Circle().stroke(Color.white, lineWidth: 3)
                 }
-
         }
     }
 }
 
-#if DEBUG
-#Preview {
-    LogosCellImageView(homeImage: Image(systemName: "plus"),
-                       guestImage: Image(systemName: "plus"),
-                       size: 100)
-}
-#endif

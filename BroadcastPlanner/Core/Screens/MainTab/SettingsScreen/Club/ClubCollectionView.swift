@@ -18,9 +18,9 @@ struct ClubCollectionView: View {
         ZStack {
             MainBackground()
             ScrollView{
-                SmartLayout(hSpacing: 5, vSpacing: 5) {
+                SmartCollection(hSpacing: 5, vSpacing: 5) {
                     ForEach(clubs) { club in
-                        ClubSheetCellView(image: club.viewImageMediumLogo,
+                        ClubSheetCellView(id: club.viewId,
                                           title: club.viewTitle,
                                           isSelected: selectedClub == club)
                         .onTapGesture {
@@ -94,21 +94,20 @@ struct ClubCollectionView: View {
                 if let club = selectedClub {
                     selectedClub = nil
                     let id = club.viewId
-                    let imageId: String? = club.imageLogo?.viewId
-                    dataManager.mainContext.performAndWait{
+//                    dataManager.mainContext.performAndWait{
+                        if let imageToRemove = club.imageLogo {
+                            dataManager.removeImage(imageToRemove,fromGlobal: true)
+                        }
                         dataManager.mainContext.delete(club)
                         try? dataManager.saveContext(
                             publish: GlobalProperties.PublishChanges.clubs,
                             id: []
                         )
-                    }
+//                    }
                     appState.setIconToPrimaryButton(.plus)
                     appState.makeSecondaryButtonEnabled(false)
-                    //remove from network image & club
+                    //remove from network club
                     Task{
-                        if let imageId{
-                            await dataManager.networkManager.removeImage(localImageId: imageId)
-                        }
                         await dataManager.networkManager.removeDataOfType(GlobalProperties.Path.clubs, withId: id)
                     }
                     

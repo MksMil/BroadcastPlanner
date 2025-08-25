@@ -8,6 +8,7 @@ enum RouterPath: Hashable{
     //!authenticated
     case authScreen
     //authenticated
+    case sighUp
     //flow
     
     case broadcastList
@@ -16,7 +17,7 @@ enum RouterPath: Hashable{
     
     //...flow
     case stadPointsEdit(Broadcast)
-    case carPointsEdit(Bool)
+//    case carPointsEdit(Bool)
     
     
     
@@ -28,8 +29,8 @@ enum RouterPath: Hashable{
     
     case settings
     //settings
-    case updateEmail
-    case updatePassword
+    case updateSessionUserData
+    
     case clubCollection
     case venueCollection
     case obvanCollection

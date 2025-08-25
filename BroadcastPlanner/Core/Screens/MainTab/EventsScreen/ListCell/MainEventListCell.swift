@@ -27,7 +27,7 @@ struct MainEventListCell: View {
                             Text("\(BPDateFormater.formatDate(date: broadcast.viewDate))")
                                 .font(.caption2)
                             Text("\(BPDateFormater.formatTime(date: broadcast.viewDate))")
-                            RemainigTimveView(time: broadcast.viewDate)
+                            RemainigTimeView(time: broadcast.viewDate)
                         }
                         .frame(width: 100)
                         
@@ -35,15 +35,15 @@ struct MainEventListCell: View {
                         Divider()
                             .background(.white.opacity(0.4))
                         
-                        VStack(spacing: 0){
-                            LogosCellImageView(homeImage: broadcast.homeImage,
-                                               guestImage: broadcast.guestImage
-                                               , size: 45)
-                            .frame(height: 45)
+//                        VStack(spacing: 0){
+//                            LogosCellImageView(homeImageId: broadcast.homeClub?.viewId,
+//                                               guestImageId: broadcast.guestClub?.viewId,
+//                                               size: 45)
+//                            .frame(height: 45)
                            
                             
-                        }
-                        .padding(.vertical,2)
+//                        }
+//                        .padding(.vertical,2)
                         
                         Divider()
                             .background(.white.opacity(0.4))
@@ -97,27 +97,4 @@ struct MainEventListCell: View {
 }
 #endif
 
-struct RemainigTimveView: View {
-    @EnvironmentObject var appState: ApplicationState
-    let time: Date
-    @State private var text: String
-    
-    init(time: Date) {
-        self.time = time
-        self.text = BPDateFormater.timeInterval(to: time,
-                                                currentTime: .now,
-                                                expiredString: "finished")
-    }
-    
-    var body: some View {
-        Text(text)
-            .font(.footnote)
-            .onReceive(appState.currentTime) { currentTime in
-                text = BPDateFormater.timeInterval(to: time,
-                                                   currentTime: currentTime,
-                expiredString: "finished")
-            }
-    }
-    
-    
-}
+

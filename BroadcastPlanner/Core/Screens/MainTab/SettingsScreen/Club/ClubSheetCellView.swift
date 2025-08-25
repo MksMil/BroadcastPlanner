@@ -3,15 +3,14 @@ import SwiftUI
 struct ClubSheetCellView: View {
     
 //    let club: Club
-    let image: Image
+    let id: String
     let title: String
     
     let isSelected : Bool
     
     var body: some View {
         VStack{
-            image
-                .resizable()
+            ImageWrapper(id: id,type: .club, imageSize: ImageSizes.mediumImages)
                 .scaledToFit()
                 .padding(5)
                 .frame(width: 70, height: 70)

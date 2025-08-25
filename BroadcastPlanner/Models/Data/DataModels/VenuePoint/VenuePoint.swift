@@ -1,4 +1,3 @@
-import SwiftUI
 import CoreData
 
 public class VenuePoint: NSManagedObject {
@@ -96,6 +95,12 @@ extension VenuePoint {
     @NSManaged public func removeFromMembers(_ values: NSSet)
 
 }
+extension VenuePoint: ImageParent{
+    func assignImage(image: LocalImage, ofType: GlobalProperties.ImageType) {
+        
+    }
+}
+
 
 extension VenuePoint : Identifiable {
     var viewId: String{
@@ -146,10 +151,6 @@ extension VenuePoint : Identifiable {
     
     var viewMembers: [Member]{
         (members?.allObjects as? [Member]) ?? []
-    }
-    
-    var viewImage: Image {
-        image?.smallImage ?? Image("cam1")
     }
     
     //DTO
@@ -405,19 +406,3 @@ extension VenuePoint {
     }
     
 }
-
-//@NSManaged public var id: String? -
-//@NSManaged public var number: Int16 +
-//@NSManaged public var coordinateX: Float +
-//@NSManaged public var coordinateY: Float +
-//@NSManaged public var rotation: Int16 +
-//@NSManaged public var scaleFactor: Float +
-//@NSManaged public var pointDescription: String? +
-//@NSManaged public var task: String? +
-//@NSManaged public var image: LocalImage?
-//@NSManaged public var imageString: String? //what am i want ???
-//@NSManaged public var cameras: NSSet?
-//@NSManaged public var broadcast: Broadcast?
-//@NSManaged public var lights: NSSet?
-//@NSManaged public var sounds: NSSet?
-//@NSManaged public var members: NSSet?

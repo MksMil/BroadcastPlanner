@@ -14,5 +14,5 @@ struct ClubDTO: Codable, Identifiable,CoreDataRepresentable {
     var urlString: String = ""
     var imageLogoID: String?
     var homeVenueID: String?
-    var lastUpdated: Date = .now
+    var lastUpdated: Date 
 }

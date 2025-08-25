@@ -13,6 +13,7 @@ protocol CoreDataUpdatable {
     func updateFromDTO(_ dto: DTO, in context: NSManagedObjectContext)
 }
 extension CoreDataRepresentable where Self == Entity.DTO {
+    ///fetches or creates coredata object with dto.id defined in 'primaryKeyPredicate' property
     @discardableResult
     func create(in context: NSManagedObjectContext) -> Entity {
             let fetchRequest = NSFetchRequest<Entity>(entityName: String(describing: Entity.self))
@@ -23,6 +24,7 @@ extension CoreDataRepresentable where Self == Entity.DTO {
             
             return object
     }
+    ///removes coredata object with dto.id defined in 'primaryKeyPredicate' property
     func remove(in context: NSManagedObjectContext){
         context.performAndWait{
             let fetchRequest = NSFetchRequest<Entity>(entityName: String(describing: Entity.self))
@@ -37,7 +39,7 @@ extension CoreDataRepresentable where Self == Entity.DTO {
 }
 
 extension NSManagedObjectContext {
-
+    ///make coredata object from dto and return it
     func makeObjectFromDTO<DTO: CoreDataRepresentable>(_ dto: DTO)-> DTO.Entity where DTO.Entity.DTO == DTO{
         self.performAndWait {
             
@@ -52,7 +54,7 @@ extension NSManagedObjectContext {
             return object
         }
     }
-    
+    ///make coredata object from dto async
     func makeObjectFromDTOAsync<T: CoreDataRepresentable>(dto: T) async throws -> T.Entity where T.Entity.DTO == T {
         try await withCheckedThrowingContinuation { continuation in
             self.perform {
@@ -74,7 +76,7 @@ extension NSManagedObjectContext {
     }
 
 
-    
+    ///make coredata object from dto without returning
     func applyDTOs<DTO: CoreDataRepresentable>(
         _ dtos: [DTO]
     ) throws where DTO.Entity.DTO == DTO {
@@ -89,7 +91,7 @@ extension NSManagedObjectContext {
             object.updateFromDTO(dto, in: self)
         }
     }
-
+    ///decoding array of dto's
     func decodeAndApplyDTOs<DTO: CoreDataRepresentable>(
         from data: Data,
         as type: [DTO].Type
@@ -97,7 +99,7 @@ extension NSManagedObjectContext {
         let dtos = try JSONDecoder().decode(type, from: data)
         try applyDTOs(dtos)
     }
-    
+    ///decoding single dto
     func decodeAndApplyDTO<DTO: CoreDataRepresentable>(
         from data: Data,
         as type: DTO.Type
@@ -117,10 +119,12 @@ extension NSManagedObjectContext {
         request.fetchLimit = 1
         var object: T
         if let existing = try? fetch(request).first as? T{
+            print("existing with id: \(id)")
             object = existing
         } else {
             object = T(context: self)
             object.id = id
+            print("new object created, id: \(id)")
         }
         return object
     }

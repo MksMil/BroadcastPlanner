@@ -1,22 +1,13 @@
-//
-//  LogoInWhiteRectView.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 12.08.2025.
-//
-
 import SwiftUI
 
 struct LogoInWhiteRectView: View {
     
-    let image: Image
+    let id: String
     
     var body: some View {
         GeometryReader { geo in
             let w = geo.size.width
-            
-            image
-                .resizable()
+            ImageWrapper(id: id, type: GlobalProperties.ImageType.member, imageSize: ImageSizes.smallImages)
                 .scaledToFill()
                 .frame(width:  w,height:  w)
                 .clipShape(Rectangle())
@@ -25,7 +16,6 @@ struct LogoInWhiteRectView: View {
                     Rectangle().stroke(Color.white, lineWidth: 2)
                 }
         }
-        
     }
 }
 

@@ -2,7 +2,7 @@ import SwiftUI
 
 // MARK: - Any View and Size Grid Layout
 @available(iOS 16.0, *)
-struct SmartLayout: Layout{
+struct SmartCollection: Layout{
     
     var hSpacing: Double
     var vSpacing: Double
@@ -83,15 +83,17 @@ struct SmartLayout: Layout{
 }
 
 #Preview(body: {
-    SmartLayout(hSpacing: 0, vSpacing: 0) {
-        ForEach([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], id: \.self){ logo in
-            Image(systemName:"\(logo).circle")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 75, height: 75)
+    
+        SmartCollection(hSpacing: 0, vSpacing: 0) {
+            ForEach([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], id: \.self){ logo in
+                //            Image(systemName:"\(logo).circle")
+                //                .resizable()
+                //                .scaledToFit()
+                Circle().fill(Color.red)
+                    .frame(width: logo * 10, height: logo * 10)
                 
+            }
         }
-    }
-    .border(.red)
+        .border(.blue)
 })
 
