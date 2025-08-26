@@ -54,8 +54,6 @@ struct TextFieldSheetView: View {
             }
             .padding(.bottom)
             .buttonStyle(.plain)
-//            .task {
-//            }
             .onAppear {
                 isFocused = true
             }

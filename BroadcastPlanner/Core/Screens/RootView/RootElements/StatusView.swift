@@ -81,13 +81,7 @@ struct StatusView: View {
         .padding(.horizontal)
         .onReceive(appState.menuStatePublisher) { menuState in
             self.menuState = menuState
-        }
-        .onReceive(dataManager.$currentId) { newValue in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                dataManager.updatePublisher.send((GlobalProperties.PublishChanges.images, [newValue]))
-            }
-        }
-        
+        }        
     }
 
 }

@@ -2,19 +2,13 @@ import SwiftUI
 import Combine
 
 struct PointEditUserCellView: View {
-    
-    
     let name: String
     let id: String
     
     var body: some View {
-//        GeometryReader{ geo in
-//            let w = geo.size.width
-//            let h = geo.size.height
             VStack(spacing: 5){
                 LogoInWhiteCircleView(id: id)
                 
-                //                Spacer()
                 Text(name)
                     .font(.title)
                     .lineLimit(1)

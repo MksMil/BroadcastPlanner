@@ -4,7 +4,7 @@ struct SheetedTextFieldView: View {
     let height: Double
     @Binding var source: String
     let promptSource: String
-    let fieldType: TextFieldType // Тип поля для кнопок
+    let fieldType: TextFieldType // for buttons config
     let isSecure: Bool
     let action: (String)->()
     @State private var isTextEnter = false

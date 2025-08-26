@@ -13,7 +13,7 @@ class DataManager: ObservableObject {
 
     
     var updatePublisher: PassthroughSubject = PassthroughSubject<(GlobalProperties.PublishChanges, [String]), Never>()
-//    var cancellables: Set<AnyCancellable> = []
+    var cancellables: Set<AnyCancellable> = []
     
     @Published var currentId: String = ""
 
@@ -47,13 +47,25 @@ class DataManager: ObservableObject {
         self.backgroundContext = persistentContainer.newBackgroundContext()
         backgroundContext.mergePolicy =
         NSMergeByPropertyObjectTrumpMergePolicy
- 
+        
         self.imageCacher = ImageCacher()
         self.networkManager = globalDataManager
         self.networkManager.syncDelegate = self
+        self.makePublishers()
         Task{
             await self.networkManager.start()
         }
+    }
+    
+    func makePublishers(){
+        $currentId.sink { value in
+            Task{
+                try? await Task.sleep(for: .milliseconds(2))
+                await MainActor.run {
+                    self.updatePublisher.send((GlobalProperties.PublishChanges.images, [value]))
+                }
+            }
+        }.store(in: &cancellables)
     }
     
     @MainActor

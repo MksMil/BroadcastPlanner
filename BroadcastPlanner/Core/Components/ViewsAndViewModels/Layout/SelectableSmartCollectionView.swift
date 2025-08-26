@@ -47,92 +47,21 @@ public struct SelectableSmartCollectionView<T: View,B:View,Prompt: View, Selecta
                 ForEach(allCases.indices,id:\.self) { index in
                     cellView(allCases[index].0)
                         .onTapGesture {
-//                            withAnimation {
                                 if isEdit{
                                     tap(element: allCases[index])
                                 } else {
                                     isEdit.toggle()
                                 }
-//                            }
                         }
                         .opacity(selectedCases.contains(where: { $0 == allCases[index] }) ? 1: 0.4)
                 }
             }
-//            .frame(maxWidth: .infinity)
-//            GeometryReader { g in
-//                let _ = print("main geo is \(g.size)")
-//                var width = Double.zero
-//                var height = Double.zero
-//                var resHeight = verticalPadding
-//                ZStack(alignment: .topLeading) {
-//                    ForEach(allCases.indices,id:\.self) { index in
-//                        cellView(allCases[index].0)
-//                            .padding(.horizontal, horizontalPadding)
-//                            .padding(.vertical, verticalPadding)
-//                            .alignmentGuide(.leading, computeValue: { d in
-//                                if (abs(width - d.width) > g.size.width) {
-//                                    width = 0
-//                                    height -= d.height
-//                                    resHeight += d.height + 2 * verticalPadding
-//                                }
-//                                let result = width
-//                                if allCases[index].1 == allCases.last!.1 {
-//                                    width = 0 //last item
-//                                } else {
-//                                    width -= d.width
-//                                }
-//                                return result
-//                            })
-//                            .alignmentGuide(.top, computeValue: {d in
-//                                let result = height
-//                                if allCases[index].1 ==  allCases.last!.1 {
-//                                    height = 0 // last item
-//                                    print("result height is \(resHeight)")
-//                                    //                                        totalHeight = resHeight
-//                                    resHeight = verticalPadding
-//                                }
-//                                return result
-//                            })
-//                            .onTapGesture {
-//                                withAnimation {
-//                                    if isEdit{
-//                                        tap(element: allCases[index])
-//                                    } else {
-//                                        isEdit.toggle()
-//                                    }
-//                                }
-//                            }
-//                            .opacity(selectedCases.contains(where: { $0 == allCases[index] }) ? 1: 0.4)
-//                    }
-//                }
-//                    .background {
-//                        GeometryReader { geometry in
-//                            let _ = print("background geo is \(geometry.size)")
-//                            Color.clear.preference(key: AnyContentViewSizePreferenceKey.self, value: geometry.size.height)
-//                        }
-//                    }
-//                    .onPreferenceChange(AnyContentViewSizePreferenceKey.self, perform: { val in
-//                        print("new height is: \(val)")
-////                        if val > 0, val.isFinite{
-//                            withAnimation(.easeInOut(duration: isEdit ? 0.25: 0.55)) {
-//                                self.totalHeight = val
-////                            }
-//                        }
-//                    })
-//                    .frame(height: totalHeight)
-//                }
         }
         .frame(maxWidth: .infinity)
-//        .frame(height: (selectedCases.isEmpty && !isEdit) ? 30 :totalHeight)
         .padding(6)
         .background {
             backgroundView()
         }
-//        .onTapGesture {
-//            if !isEdit{
-//                isEdit.toggle()
-//            }
-//        }
         .onAppear {
             update()
         }
@@ -186,28 +115,3 @@ public struct SelectableSmartCollectionView<T: View,B:View,Prompt: View, Selecta
     }
 }
 
-// MARK: - size preference key
-
-//public struct AnyContentViewSizePreferenceKey: PreferenceKey{
-//    public static var defaultValue: CGFloat = 0
-//    public static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
-//        print("preferene is: \(nextValue())")
-////        value = nextValue() > 0 ? nextValue() : value
-////        value += nextValue()
-//    }
-//}
-
-#if DEBUG
-#Preview {
-    let dm = DataManager(globalDataManager: NetworkManager())
-    let appState = ApplicationState()
-    dm.networkManager.eventProgressHandler = appState
-    return RootView()
-        .environmentObject(GlobalSettings())
-        .environmentObject(SessionManager())
-        .environmentObject(appState)
-        .environmentObject(Router())
-        .environmentObject(dm)
-        .environment(\.managedObjectContext, dm.mainContext)
-}
-#endif

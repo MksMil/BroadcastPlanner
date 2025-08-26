@@ -38,7 +38,7 @@ class AddEditObvanViewModel: ObservableObject{
             sortCrews()
         }
     }
-    //TODO: remove settings dependency aka settiings.sortSource(...)->[newArray] and use it in view
+
     @Published var sortedCrews: [ObvanTemplateCrew] = []
     let renderObvanScene: ObvanEditSpriteScene
     var saveAction: (()->())?

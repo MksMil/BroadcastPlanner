@@ -1,12 +1,7 @@
-//
-//  UIKit+ext.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 28.02.2024.
-//
-
 import UIKit
 
+
+///for google sign in
 @MainActor
 func topViewController(controller: UIViewController? = nil) -> UIViewController? {
     
@@ -30,7 +25,7 @@ func topViewController(controller: UIViewController? = nil) -> UIViewController?
 }
 
 
-// MARK: - .navigationBarBackButtonHidden() backSwipe fix
+// MARK: - .navigationBarBackButtonHidden() backSwipe 
 extension UINavigationController {
     override open func viewDidLoad() {
         super.viewDidLoad()

@@ -2,7 +2,7 @@ import SwiftUI
 import Combine
 
 struct ActionTabView: View {
-    let height: Double = 60
+    let length: Double = 60
     @EnvironmentObject var router: Router
     @EnvironmentObject var appState: ApplicationState
     @State private var unreadMessages: Int = 0
@@ -17,12 +17,12 @@ struct ActionTabView: View {
                     .resizable()
                     .scaledToFit()
                 //                        .bold()
-                    .padding(height / 6)
-                    .padding(.horizontal,height / 6)
-                    .frame(height: height)
+                    .padding(length / 6)
+                    .padding(.horizontal,length / 6)
+                    .frame(height: length)
                     .background {
-                        UnevenRoundedRectangle(topLeadingRadius: height / 4,
-                                               bottomLeadingRadius: height / 4, bottomTrailingRadius: 0, topTrailingRadius: 0, style: .circular)
+                        UnevenRoundedRectangle(topLeadingRadius: length / 4,
+                                               bottomLeadingRadius: length / 4, bottomTrailingRadius: 0, topTrailingRadius: 0, style: .circular)
                         .fill(Color.white.opacity(0.3))
                     }
                     .opacity(!isMessengerActive ? 0.5:1)
@@ -36,13 +36,13 @@ struct ActionTabView: View {
                 Image(systemName: "ellipsis.message")
                     .resizable()
                     .scaledToFit()
-                    .padding(height / 6)
-                    .padding(.horizontal,height / 6)
-                    .frame(height: height)
+                    .padding(length / 6)
+                    .padding(.horizontal,length / 6)
+                    .frame(height: length)
                     .background{
                         UnevenRoundedRectangle(topLeadingRadius: 0,
                                                bottomLeadingRadius: 0,
-                                               bottomTrailingRadius: height / 4, topTrailingRadius: height / 4,
+                                               bottomTrailingRadius: length / 4, topTrailingRadius: length / 4,
                                                style: .circular)
                         .fill(Color.white.opacity(0.5))
                     }
@@ -51,7 +51,7 @@ struct ActionTabView: View {
             .overlay{
                 if unreadMessages > 0 {
                     Circle().fill(Color.white)
-                        .frame(width: height / 3, height: height / 3)
+                        .frame(width: length / 3, height: length / 3)
                         .overlay{
                             Circle().stroke(Color.black, lineWidth: 2)
                         }
@@ -63,14 +63,14 @@ struct ActionTabView: View {
                                 .lineLimit(1)
                                 .foregroundStyle(Color.black)
                         }
-                        .offset(x: height / 4, y: -height / 4)
+                        .offset(x: length / 4, y: -length / 4)
                         .opacity(isMessengerActive ? 0.4:1)
                 }
             }
             .disabled(isMessengerActive)
         }
         .padding(.horizontal)
-        .frame(height: height)
+        .frame(height: length)
         .frame(maxWidth: .infinity,alignment: .center)
         .onAppear{
             if appState.unreadMessagesPublisher.value > 0{

@@ -62,7 +62,6 @@
 		29C041F22ACBF45B008B3E1F /* Color+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C041F12ACBF45B008B3E1F /* Color+Ext.swift */; };
 		29C37D3F2E20FFE200CBA6A4 /* OpacityViewTransitionModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C37D3E2E20FFE200CBA6A4 /* OpacityViewTransitionModifier.swift */; };
 		29C8F9472CC24FD000A7D5D2 /* MemberDataTextCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C8F9462CC24FD000A7D5D2 /* MemberDataTextCellView.swift */; };
-		29CA68442DA4034300460EFE /* LocationPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29CA68432DA4034300460EFE /* LocationPreview.swift */; };
 		29CA68462DA40B1E00460EFE /* VenueCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29CA68452DA40B1E00460EFE /* VenueCell.swift */; };
 		29CCF2EC2C807FE000BCEF34 /* SessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29CCF2EB2C807FE000BCEF34 /* SessionManager.swift */; };
 		29D1697A2B85D4F800A70638 /* HaptickEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29D169792B85D4F800A70638 /* HaptickEngine.swift */; };
@@ -142,7 +141,6 @@
 		29C041F12ACBF45B008B3E1F /* Color+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Ext.swift"; sourceTree = "<group>"; };
 		29C37D3E2E20FFE200CBA6A4 /* OpacityViewTransitionModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpacityViewTransitionModifier.swift; sourceTree = "<group>"; };
 		29C8F9462CC24FD000A7D5D2 /* MemberDataTextCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberDataTextCellView.swift; sourceTree = "<group>"; };
-		29CA68432DA4034300460EFE /* LocationPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationPreview.swift; sourceTree = "<group>"; };
 		29CA68452DA40B1E00460EFE /* VenueCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VenueCell.swift; sourceTree = "<group>"; };
 		29CCF2EB2C807FE000BCEF34 /* SessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionManager.swift; sourceTree = "<group>"; };
 		29D169792B85D4F800A70638 /* HaptickEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HaptickEngine.swift; sourceTree = "<group>"; };
@@ -177,7 +175,6 @@
 		29CD66B22E4C88B10044535F /* TextGroup */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = TextGroup; sourceTree = "<group>"; };
 		29D8D3B02CEDE589000E4F72 /* Buttons */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Buttons; sourceTree = "<group>"; };
 		29E70B942CDE03B9002B826E /* ImageManager */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = ImageManager; sourceTree = "<group>"; };
-		29F7CF132CA158FA009C303E /* DateViews */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = DateViews; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -238,7 +235,9 @@
 		2915AD172BF34C940038239A /* UserProfileView */ = {
 			isa = PBXGroup;
 			children = (
+				291E72CE2BBEEBDD008092D7 /* SpecializationCellView.swift */,
 				2915AD1B2BF4A2AA0038239A /* BPUserProfileView.swift */,
+				29C8F9462CC24FD000A7D5D2 /* MemberDataTextCellView.swift */,
 			);
 			path = UserProfileView;
 			sourceTree = "<group>";
@@ -370,15 +369,11 @@
 				291CDA532DDCB2CB00724F53 /* DividerWithText.swift */,
 				29476BE82DA553B0007DFA88 /* Cells */,
 				29CA68452DA40B1E00460EFE /* VenueCell.swift */,
-				29CA68432DA4034300460EFE /* LocationPreview.swift */,
 				29D8D3B02CEDE589000E4F72 /* Buttons */,
-				29F7CF132CA158FA009C303E /* DateViews */,
 				29418D902C6CCD8B007CC6F3 /* FilterViews */,
 				292D66462BD79989009A2187 /* Layout */,
 				2967DF152B5FD507003956FD /* ErrorViews */,
-				2967DF162B5FD585003956FD /* InfoTextViews */,
 				2915AD172BF34C940038239A /* UserProfileView */,
-				291E72CE2BBEEBDD008092D7 /* SpecializationCellView.swift */,
 				29D169792B85D4F800A70638 /* HaptickEngine.swift */,
 				2994DE6D2C16F18D00DF9060 /* BPJoystick.swift */,
 				29C37D3E2E20FFE200CBA6A4 /* OpacityViewTransitionModifier.swift */,
@@ -432,14 +427,6 @@
 				290FF3B62B5E90240096D655 /* BPErrorView.swift */,
 			);
 			path = ErrorViews;
-			sourceTree = "<group>";
-		};
-		2967DF162B5FD585003956FD /* InfoTextViews */ = {
-			isa = PBXGroup;
-			children = (
-				29C8F9462CC24FD000A7D5D2 /* MemberDataTextCellView.swift */,
-			);
-			path = InfoTextViews;
 			sourceTree = "<group>";
 		};
 		2967DF172B61101E003956FD /* Change Email and Password Flow */ = {
@@ -686,7 +673,6 @@
 				29CD66B22E4C88B10044535F /* TextGroup */,
 				29D8D3B02CEDE589000E4F72 /* Buttons */,
 				29E70B942CDE03B9002B826E /* ImageManager */,
-				29F7CF132CA158FA009C303E /* DateViews */,
 			);
 			name = BroadcastPlanner;
 			packageProductDependencies = (
@@ -803,7 +789,6 @@
 				290B81702AD7FCE700B858F1 /* BroadcastListView.swift in Sources */,
 				29FFDAB82ADBC2F1005AD50F /* MainBackground.swift in Sources */,
 				29F7CF122CA15861009C303E /* View+Ext.swift in Sources */,
-				29CA68442DA4034300460EFE /* LocationPreview.swift in Sources */,
 				2916E62C2C58B83E0025DCC6 /* AnimatedStart.swift in Sources */,
 				298932682AE24D7000BD93CA /* BPError.swift in Sources */,
 				29BD5DE02E507A9C00EB8328 /* ImageWrapper.swift in Sources */,
