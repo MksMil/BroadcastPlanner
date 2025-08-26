@@ -18,7 +18,6 @@ struct ObvanCollectionView: View {
         ZStack {
             MainBackground()
             ScrollView{
-//                SmartLayout(hSpacing: 5, vSpacing: 5) {
                 VStack{
                     ForEach(obvans) { obvan in
                         //TODO: make cell
@@ -73,8 +72,12 @@ struct ObvanCollectionView: View {
                 } else {
                     dataManager.mainContext.performAndWait {
                         obvanToRoute = dataManager.mainContext.fetchOrCreateObject(
-                            withID: UUID().uuidString
-                    )
+                            withID: UUID().uuidString)
+                        let image: LocalImage = dataManager.mainContext.fetchOrCreateObject(withID: obvanToRoute.viewId)
+                        image.type = GlobalProperties.ImageType.obvan.rawValue
+                        obvanToRoute.image = image
+                        image.addToParentObvan(obvanToRoute)
+                        
                     }
                 }
                 router.routeTo(path: .addEditObvan(obvanToRoute))
@@ -100,7 +103,7 @@ struct ObvanCollectionView: View {
                     
                     dataManager.mainContext.performAndWait{
                         dataManager.mainContext.delete(obvan)
-                        try? dataManager.saveContext(
+                        try? dataManager.saveAndPublish(
                             publish: GlobalProperties.PublishChanges.obvans,
                             id: []
                         )
@@ -110,7 +113,7 @@ struct ObvanCollectionView: View {
                     //remove from network image & club
                     Task{
                         if let imageId{
-                            await dataManager.networkManager.removeImage(localImageId: imageId)
+                            dataManager.removeImageWithId(id: imageId)
                         }
                         await dataManager.networkManager.removeDataOfType(GlobalProperties.Path.obvans, withId: id)
                     }

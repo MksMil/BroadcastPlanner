@@ -32,6 +32,17 @@ actor ImageCacher {
         cachedImages[id]?[ImageSizes.originImages]
     }
     
+    func getAndCache(id: String) -> UIImage?{
+        if let image = cachedImages[id]?[ImageSizes.originImages]{
+            return image
+        } else if let image = ImagesManager.loadImage(id: id){
+            cachedImages[id]?[ImageSizes.originImages] = image
+            return image
+        } else {
+            return nil
+        }
+    }
+    
     func saveImage(uiimage: UIImage, id: String, type: GlobalProperties.ImageType){
         cachedImages[id] = [.originImages:uiimage]
         ImageSizes.allCases.forEach { size in
@@ -53,5 +64,10 @@ actor ImageCacher {
         #if DEBUG
         logger.debug("Image with \(id) \(isRemoved ? "removed":"not removed") from local storage")
         #endif
+    }
+    
+    func clearCache(){
+        logger.debug("image cache cleared")
+        cachedImages = [:]
     }
 }

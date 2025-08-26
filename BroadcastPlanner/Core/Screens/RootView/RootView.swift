@@ -17,15 +17,13 @@ struct RootView: View {
     
     var body: some View {
         
-//#if DEBUG
-//        let _ = Self._printChanges()
-//#endif
         ZStack{
             MainBackground()
-                StatusView()
-                    .offset(y: (isStarted && appState.state == .authorized) ? 0: -200)
-                    .frame(maxHeight: .infinity,alignment: .top)
-               
+            ZStack{
+            StatusView()
+                .offset(y: (isStarted && appState.state == .authorized) ? 0: -200)
+                .frame(maxHeight: .infinity,alignment: .top)
+            
             NavigationStack(path: $router.path) {
                 MainBackground()
                     .navigationDestination(for: RouterPath.self) { path in
@@ -49,13 +47,13 @@ struct RootView: View {
                                 // email/pass update
                             case .updateSessionUserData:
                                 UpdateSessionUserDataView()
-
+                                
                                 //club managment
                             case .clubCollection:
                                 ClubCollectionView()
                             case .addEditClub(let club):
-                                AddEditClubView(club: club) 
-                            //venue managmaent
+                                AddEditClubView(club: club)
+                                //venue managmaent
                             case .venueCollection:
                                 VenueCollectionView()
                             case .addEditVenue(let venue):
@@ -78,63 +76,17 @@ struct RootView: View {
                         }
                     }
             }
+            .transitionWithOpacity()
             .padding(.vertical,65)
-                        //------------Test settings and action controls----
-//                HStack {
-//                    Button{
-//                        status.toggle()
-//                        appState.makePrimaryButtonVisible(status)
-//                        appState.makeSecondaryButtonVisible(status)
-//                        appState.makeBackwardButtonVisible(status)
-//                    } label:{
-//                        Text("V")
-//                    }
-//                    Button{
-//                        status.toggle()
-//                        appState.makePrimaryButtonEnabled(status)
-//                        appState.makeSecondaryButtonEnabled(status)
-//                        appState.makeBackwardButtonEnabled(status)
-//                       
-//                    } label:{
-//                        Text("A")
-//                    }
-//                    Button{
-//                        appState.setUnreadMessages(num: appState.unreadMessagesPublisher.value + 1)
-//                    } label:{
-//                        Text("+")
-//                    }
-//                    Button{
-//                        appState.setUnreadMessages(num: appState.unreadMessagesPublisher.value - 1)
-//                    } label:{
-//                        Text("-")
-//                    }
-//                    Button{
-//                        appState.setIconToPrimaryButton(.edit)
-//                    } label:{
-//                        Text("Edit")
-//                    }
-//                    Button{
-//                        appState.setIconToPrimaryButton(.accept)
-//                    } label:{
-//                        Text("CHECK")
-//                    }
-//                    Button{
-////                        appState.addNewNotification(note: StatusViewNotification.random())
-//                        appState.setTitle(["Hello","How are you?","Goodbye!","Very very very long title here and we are ready for it!"].randomElement()!)
-//                    } label: {
-//                        Image(systemName: "plus")
-//                    }
-//                }
-//                .offset(y: isStarted ? 0: 500)
-
-            //-------------------------------------------------
-                ActionView()
+            
+            ActionView()
                 .padding(.horizontal)
                 .frame(height: 60)
                 .offset(y: (isStarted && appState.state == .authorized) ? 0: 200)
                 .frame(maxHeight: .infinity,alignment: .bottom)
         }
-        
+            .padding(.vertical)
+    }
         .onAppear(perform: {
             router.routeTo(path: .animatedStart)
         })
@@ -199,7 +151,7 @@ struct RootView: View {
                     appState.doneAction(value)
                     appState.closeTextField()
                 }
-                .presentationDetents([.height(200)]) // Фиксируем высоту
+                .presentationDetents([.height(200)])
                 .presentationDragIndicator(.visible)
                 .presentationBackground(.ultraThinMaterial)
         }

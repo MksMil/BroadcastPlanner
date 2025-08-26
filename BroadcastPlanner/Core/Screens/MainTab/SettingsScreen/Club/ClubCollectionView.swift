@@ -99,7 +99,7 @@ struct ClubCollectionView: View {
                             dataManager.removeImage(imageToRemove,fromGlobal: true)
                         }
                         dataManager.mainContext.delete(club)
-                        try? dataManager.saveContext(
+                        try? dataManager.saveAndPublish(
                             publish: GlobalProperties.PublishChanges.clubs,
                             id: []
                         )

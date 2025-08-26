@@ -35,15 +35,15 @@ struct MainEventListCell: View {
                         Divider()
                             .background(.white.opacity(0.4))
                         
-//                        VStack(spacing: 0){
-//                            LogosCellImageView(homeImageId: broadcast.homeClub?.viewId,
-//                                               guestImageId: broadcast.guestClub?.viewId,
-//                                               size: 45)
-//                            .frame(height: 45)
+                        VStack(spacing: 0){
+                            LogosCellImageView(homeImageId: broadcast.homeClub?.viewId,
+                                               guestImageId: broadcast.guestClub?.viewId,
+                                               size: 45)
+                            .frame(height: 45)
                            
                             
-//                        }
-//                        .padding(.vertical,2)
+                        }
+                        .padding(.vertical,2)
                         
                         Divider()
                             .background(.white.opacity(0.4))

@@ -16,13 +16,7 @@ class DataManager: ObservableObject {
 //    var cancellables: Set<AnyCancellable> = []
     
     @Published var currentId: String = ""
-//    {
-//        willSet{
-//            if !newValue.isEmpty{
-//                updatePublisher.send((GlobalProperties.PublishChanges.images, [newValue])) //update profile image in status view
-//            }
-//        }
-//    }
+
     var accessLevel: Int = 2
     var currentUserID: NSManagedObjectID = NSManagedObjectID()
     
@@ -60,15 +54,40 @@ class DataManager: ObservableObject {
         Task{
             await self.networkManager.start()
         }
-//        self.updatePublisher.sink { value in
-//            self.updatePublisher.send(value)
-//        }
-//        .store(in: &cancellables)
     }
     
+    @MainActor
     func setMember(id: String){
+        guard !id.isEmpty else {
+        print("Critical Error with empty id!")
+            return
+        }
+        //TODO: process access level
         self.currentId = id
-        let currentUserInMainContext: Member = mainContext.fetchOrCreateObject(withID: id)
+        let request = Member.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", id)
+        var currentMember: Member
+        if let member = try? mainContext.fetch(request).first{
+            currentMember = member
+        } else {
+            currentMember = Member(context: mainContext)
+            let image = LocalImage(context: mainContext)
+            currentMember.id = id
+            image.id = id
+            image.type = GlobalProperties.ImageType.member.rawValue
+            currentMember.image = image
+            image.parentMember = currentMember
+            save()
+            //network save
+            Task{
+               await networkManager.saveData(currentMember.dto,
+                                        withId: id, withType: GlobalProperties.Path.members)
+                await networkManager.saveData(image.dto,
+                                         withId: id, withType: GlobalProperties.Path.images)
+            }
+        }
+        
+        let currentUserInMainContext = currentMember
         self.currentUserID = currentUserInMainContext.objectID
         self.accessLevel = Int(currentUserInMainContext.accessLevel)
     }
@@ -142,7 +161,7 @@ extension DataManager: UpdateDelegateProtocol {
         }
     }
     
-       /// Удаляет объекты Core Data, которых нет среди DTO.id
+       /// Remove CoreData object with type equal to DTO.Entity, not included in dtos
     func removeMissing<DTO: CoreDataRepresentable>(dtos: [DTO],in context: NSManagedObjectContext) {
         let ids = dtos.map { $0.id }
         let request = DTO.Entity.fetchRequest()
@@ -169,22 +188,30 @@ extension DataManager: UpdateDelegateProtocol {
         
     }
 }
+// MARK: - Object and Network Managment
+extension DataManager {
+    
+    ///aux for removing objects excluding LocalImage from parent context
+    func fullRemoveObject(_ object: NSManagedObject,
+                          networkPath: GlobalProperties.Path,
+                          id: String) async {
+        if let context = object.managedObjectContext{
+            await context.perform {
+                context.delete(object)
+                try? context.save()
+            }
+        }
+        guard !id.isEmpty else { return }
+        await networkManager
+            .removeDataOfType(networkPath, withId: id)
+    }
+}
 
 // MARK: - User managment
 extension DataManager {
     //creates new member cloud entity
     @MainActor func fetchOwner() -> Member {
         return  mainContext.fetchOrCreateObject(withID: currentId)
-    }
-    
-    //TODO: fix new user reation, local image must be created
-    func createUser(id: String) async {
-        let userDTO = MemberDTO(id: id)
-        await networkManager.saveData(
-            userDTO,
-            withId: id,
-            withType: GlobalProperties.Path.members
-        )
     }
 
     @MainActor
@@ -219,7 +246,6 @@ extension DataManager {
             broadcast.addToOwners(user)
             user.addToOwnedBroadcasts(broadcast)
         }
-        //            try self.mainContext.save()
         return broadcast
     }
     
@@ -234,9 +260,9 @@ extension DataManager {
             )
             //
             if let venuePreview = broadcast.venueSchemaPreview{
-                await networkManager.saveData(venuePreview.dto,
-                                              withId: venuePreview.viewId,
-                                              withType: GlobalProperties.Path.images)
+//                await networkManager.saveData(venuePreview.dto,
+//                                              withId: venuePreview.viewId,
+//                                              withType: GlobalProperties.Path.images)
                 if !venuePreview.viewId.isEmpty, let uiimage = await imageCacher.getOrigin(id: venuePreview.viewId){
                     _ = await networkManager.saveImageToGlobalStorage(id: venuePreview.viewId,
                                                                       uiimage: uiimage,
@@ -260,143 +286,104 @@ extension DataManager {
     @MainActor
     func removeBroadcast(_ broadcast: Broadcast) async {
         let id = broadcast.viewId
+        //remove preview
         if let previewId = broadcast.venueSchemaPreview?.viewId{
             await imageCacher.removeImage(id: id)
-            await networkManager.removeDataOfType(
-                GlobalProperties.Path.images,
-                withId: previewId
-            )
             await networkManager.removeImage(localImageId: previewId)
         }
+        //remove obvans previews
         for previewObvan in broadcast.viewObvanPreviews{
             await imageCacher.removeImage(id: previewObvan.viewId)
-            await networkManager.removeDataOfType(
-                GlobalProperties.Path.images,
-                withId: previewObvan.viewId
-            )
             await networkManager.removeImage(localImageId: previewObvan.viewId)
         }
+            //remove broadcast locally
         mainContext.delete(broadcast)
-        try? saveContext(publish: .broadcasts, id: [])
+        save()
+        //remove broadcast from firebase
         await networkManager.removeDataOfType(
             GlobalProperties.Path.broadcasts,
             withId: id
         )
-        
     }
-    // TODO: Rework mb?
+
     @MainActor
     func assignSnapshot(_ image: UIImage?,
                         toBroadcast broadcast: Broadcast) {
-        if let image {
+        if let image, let id = broadcast.id, !id.isEmpty {
+            let lastUpdated = Date.now
             let localImage: LocalImage = mainContext.makeObjectFromDTO(
-                ImageDTO(id: broadcast.viewId,
+                ImageDTO(id: id,
                          type: GlobalProperties.ImageType.venuePreview.rawValue,
-                         lastUpdated: .now)
+                         lastUpdated: lastUpdated)
             )
-            localImage.lastUpdated = Date.now
             broadcast.venueSchemaPreview = localImage
             localImage.parentVenuePreview = broadcast
-            try? saveContext(publish: .images, id:[])
+            save()
             Task{
-                await imageCacher.saveImage(uiimage: image, id: broadcast.viewId, type: GlobalProperties.ImageType.venuePreview)
+                await imageCacher.saveImage(uiimage: image, id: id, type: GlobalProperties.ImageType.venuePreview)
+                await networkManager.saveImageToGlobalStorage(id: id, uiimage: image, type: GlobalProperties.ImageType.venuePreview, lastUpdated: lastUpdated)
             }
         }
     }
 }
     // MARK: - Points managment
-    extension DataManager {
-    
-        @MainActor
-        func updateEvent(
-            _ event: Broadcast,
-            withPoints points: [VenuePoint]
-        ) {
-            mainContext.perform {
-                event.updateValues(venuePoints: points, in: self.mainContext)
+extension DataManager {
+    @MainActor
+    func updatePoint(_ point: VenuePoint?, withNumber number: Int, user: Member?, optic: String, placeType: String, windDefence: String, lightType: String){
+        guard let point else { return }
+        print("point: x - \(point.viewX), y - \(point.viewY) ")
+        point.number = Int16(number)
+        //remove member
+        if let userToRemove = point.viewMembers.first{
+            point.removeFromMembers(userToRemove)
+            userToRemove.removeFromVenuePoints(point)
+            if let event = point.broadcast {
+                event.removeFromOwners(userToRemove)
+            } else {
+                print("event in venuePoint error occured")
             }
+        }
+        if let user{
+            point.addToMembers(user)
+            user.addToVenuePoints(point)
+        }
+        for cam in point.viewCameras {
+            point.removeFromCameras(cam)
+        }
+        if optic != "Empty"{
+            let cameraDTO = CameraDTO(id: UUID().uuidString, optic: optic)
+            let camera: Camera = mainContext.makeObjectFromDTO(cameraDTO)
+            point.addToCameras(camera)
+            camera.point = point
+        }
+        for sound in point.viewSounds {
+            point.removeFromSounds(sound)
         }
         
-        @MainActor
-        func updatePoint(_ point: VenuePoint?, withNumber number: Int, user: Member?, optic: String, placeType: String, windDefence: String, lightType: String){
-            mainContext.performAndWait {
-                guard let point else { return }
-                print("point: x - \(point.viewX), y - \(point.viewY) ")
-                point.number = Int16(number)
-                    //remove member
-                    if let userToRemove = point.viewMembers.first{
-                        point.removeFromMembers(userToRemove)
-                        userToRemove.removeFromVenuePoints(point)
-                        if let event = point.broadcast {
-                            event.removeFromOwners(userToRemove)
-                        } else {
-                            print("event in venuePoint error occured")
-                        }
-                    }
-                if let user{
-                    point.addToMembers(user)
-                    user.addToVenuePoints(point)
-                }
-                for cam in point.viewCameras {
-                    point.removeFromCameras(cam)
-                }
-                if optic != "Empty"{
-                    let cameraDTO = CameraDTO(id: UUID().uuidString, optic: optic)
-                    let camera: Camera = mainContext.makeObjectFromDTO(cameraDTO)
-                    point.addToCameras(camera)
-                    camera.point = point
-                }
-                for sound in point.viewSounds {
-                    point.removeFromSounds(sound)
-                }
-    
-                if  placeType != "Empty"{
-                    let soundDto = SoundDTO(id: UUID().uuidString,windDefence: windDefence,placeType: placeType)
-                    let sound: Sound = mainContext.makeObjectFromDTO(soundDto)
-                    point.addToSounds(sound)
-                    sound.point = point
-                }
-    
-                    for light in point.viewLights {
-                        point.removeFromLights(light)
-                    }
-                if lightType != "Empty"{
-                    let lightDto = LightDTO(id: UUID().uuidString, lightType: lightType)
-                    let light: Light = mainContext.makeObjectFromDTO(lightDto)
-                    point.addToLights(light)
-                    light.point = point
-                }
-    //            saveContextSync(type: .main, publish: .venuePoint, id: [venuePoint.viewId])
-            }
-        }
-    
-        @MainActor
-        func newPointInEvent(
-            _ broadcast: Broadcast,
-            withNumber number: Int
-        ) -> VenuePoint {
-            mainContext.performAndWait {
-                let id = UUID().uuidString
-                let newPoint: VenuePoint = mainContext.fetchOrCreateObject(withID: id)
-                newPoint.number = Int16(number)
-                broadcast.addToVenuePoints(newPoint)
-                newPoint.broadcast = broadcast
-                return newPoint
-            }
+        if  placeType != "Empty"{
+            let soundDto = SoundDTO(id: UUID().uuidString,windDefence: windDefence,placeType: placeType)
+            let sound: Sound = mainContext.makeObjectFromDTO(soundDto)
+            point.addToSounds(sound)
+            sound.point = point
         }
         
-        @MainActor
-        func deleteObject(_ object: NSManagedObject) {
-            mainContext.performAndWait {
-                mainContext.delete(object)
-            }
-            
-//TODO:            removeLocalLocationPoint(point, inContext: .main)
+        for light in point.viewLights {
+            point.removeFromLights(light)
+        }
+        if lightType != "Empty"{
+            let lightDto = LightDTO(id: UUID().uuidString, lightType: lightType)
+            let light: Light = mainContext.makeObjectFromDTO(lightDto)
+            point.addToLights(light)
+            light.point = point
         }
     }
 
+        
+    }
+
 // MARK: - Template managment
-    extension DataManager {
+extension DataManager {
+    ///makes new CoreDate Entities for VenuePoint using Template,only using template from mainContext! be careful
         @MainActor
         func makeLocalPointsFromTemplate(_ template: Template) async
          -> [VenuePoint]
@@ -416,23 +403,22 @@ extension DataManager {
                     for await res in group{
                         result.append(res)
                     }
-                    
                     return result
                 }
         }
-        
-        @MainActor
-        func cleanLocalPoints(_ points: [VenuePoint], inEvent event: Broadcast) async {
-            await withTaskGroup(of: Void.self) {[unowned self] group in
-                points.forEach { point in
-                    group.addTask {
-                        self.mainContext.perform {
-                            self.mainContext.delete(point)
-                        }
-                    }
-                }
-            }
-        }
+        ///aux. using to remove
+//        @MainActor
+//        func cleanLocalPoints(_ points: [VenuePoint], inEvent event: Broadcast) async {
+//            await withTaskGroup(of: Void.self) {[unowned self] group in
+//                points.forEach { point in
+//                    group.addTask {
+//                        self.mainContext.perform {
+//                            self.mainContext.delete(point)
+//                        }
+//                    }
+//                }
+//            }
+//        }
     
         @MainActor
         func saveTemplateFromSchema(
@@ -459,30 +445,12 @@ extension DataManager {
                 withType: .templates
             )
         }
-        
-    @MainActor
-        func removeLocalTemplate(_ template: Template) {
-            let id = template.viewId
-            mainContext.delete(template)
-            //publish?
-            try? mainContext.save()
-            
-            Task{
-                await networkManager.removeDataOfType(
-                    GlobalProperties.Path.templates,
-                    withId: id
-                )
-            }
-        }
     }
     
 
-protocol ImageParent {
-    func assignImage(image: LocalImage, ofType: GlobalProperties.ImageType)
-}
 // MARK: - Image managment
 extension DataManager {
-    
+    ///can be executed only on 'parent's context, preffered main, be careful
     func saveNewImage(id: String = UUID().uuidString,uiimage: UIImage?, type: GlobalProperties.ImageType, parent: ImageParent?,lastUpdated: Date = Date.now) async {
         //save to cache
         guard let uiimage, !id.isEmpty else { return }
@@ -498,20 +466,20 @@ extension DataManager {
             if let parent {
                 parent.assignImage(image: localImage, ofType: type)
             }
-            
-            try? self.saveContext(publish: GlobalProperties.PublishChanges.images, id: [id])
         }
+        try? await self.saveAndPublish(publish: GlobalProperties.PublishChanges.images, id: [id])
         //network save
         Task{
             await networkManager.saveImageToGlobalStorage(id: id, uiimage: uiimage, type: type, lastUpdated: lastUpdated)
         }
    }
-    
+    ///add uiimage to cache and locally on device, and upload to network
     func updateImageWith(uiimage: UIImage, id: String,type: GlobalProperties.ImageType,lastUpdated: Date) async{
             await imageCacher.saveImage(uiimage: uiimage, id: id, type: type)
            _ = await networkManager.saveImageToGlobalStorage(id: id, uiimage: uiimage, type: type, lastUpdated: lastUpdated)
     }
     
+    ///gets uiimage from cache, or get from device - add to cache and return from cache, if not - trys to download from network, and adds to cache and device, if not -> nil
     func getImageWithId(_ id: String, type: GlobalProperties.ImageType, size: ImageSizes) async -> UIImage?{
         if let image = await imageCacher.getImage(id: id, size: size){
             return image
@@ -527,79 +495,27 @@ extension DataManager {
             }
         }
     }
+    ///aux. func for future
+//    func removeImagesInBackground(ids:[NSManagedObjectID]){
+//        Task{
+//            await withTaskGroup(of: Void.self) { group in
+//                let context = persistentContainer.newBackgroundContext()
+//                    ids.forEach { id in
+//                        group.addTask {
+//                            context.perform {
+//                                context.delete(context.object(with: id))
+//                            }
+//                        }
+//                }
+//                await group.waitForAll()
+//                await context.perform {
+//                    try? context.save()
+//                }
+//            }
+//        }
+//    }
     
-    func removeImagesInBackground(ids:[NSManagedObjectID]){
-        Task{
-            await withTaskGroup(of: Void.self) { group in
-                let context = persistentContainer.newBackgroundContext()
-                    ids.forEach { id in
-                        group.addTask {
-                            context.perform {
-                                context.delete(context.object(with: id))
-                            }
-                        }
-                }
-                await group.waitForAll()
-                await context.perform {
-                    try? context.save()
-                }
-            }
-        }
-    }
-    
-    @MainActor
-    func createNewLocalImagesWith(uiimages: [UIImage],
-                                  andType type: GlobalProperties.ImageType,
-                                  linkToLocation location: Venue? = nil) -> [LocalImage] {
-        mainContext.performAndWait {
-            var result: [LocalImage] = []
-            
-            for uiimage in uiimages {
-                let id = UUID().uuidString
-                Task{
-                    await imageCacher.saveImage(uiimage: uiimage, id: id, type: GlobalProperties.ImageType.venue)
-                }
-                let image: LocalImage = mainContext.fetchOrCreateObject(withID: id)
-                image.updateValues(type: type.rawValue,
-                                   lastUpdated: .now,
-                                   in: mainContext)
-                if let location {
-                    location.addToImages(image)
-                    image.parentVenueImage = location
-                }
-                result.append(image)
-            }
-            return result
-        }
-    }
-    
-    
-    //broadcast schema saving
-    func saveImageInBackground(uiimage: UIImage?,
-                               type: GlobalProperties.ImageType){
-        if let uiimage{
-            let context = persistentContainer.newBackgroundContext()
-            context.performAndWait {
-                let id = UUID().uuidString
-                let lastUpdated = Date.now
-                let image: LocalImage = context.fetchOrCreateObject(withID: id)
-                image.updateValues(type: type.rawValue,
-                                   lastUpdated: lastUpdated,
-                                   in: mainContext)
-                try? context.save()
-                Task{
-                    await imageCacher.saveImage(uiimage: uiimage, id: id,
-                                               type: type)
-                    _ = await networkManager.saveImageToGlobalStorage(id: id,
-                                                                      uiimage: uiimage,
-                                                                      type: type,
-                                                                      lastUpdated: lastUpdated)
-                }
-            }
-        }
-    }
-    
-    //remove venue aux
+    ///aux. remove venue images
     func removeImages(ids: [String]){
         Task{
             await withTaskGroup(of: Void.self){ [unowned self] group in
@@ -612,12 +528,7 @@ extension DataManager {
         }
     }
     
-    func updateImageWithId(_ id: String, type: GlobalProperties.ImageType, andUIImage uiimage: UIImage, lastUpdated: Date){
-        Task{
-            await networkManager.saveImageToGlobalStorage(id: id, uiimage: uiimage, type: type,lastUpdated: lastUpdated)
-        }
-    }
-    
+    ///removes LocalImage from CoreData conteiner, associated data from cache and device, and all network data - Firebase and Firestore
     @MainActor
     func removeImage(_ image: LocalImage, fromGlobal: Bool = false){
         let id = image.viewId
@@ -632,20 +543,24 @@ extension DataManager {
             }
         }
     }
+    ///aux. remove LocalImage using only id
     @MainActor
     func removeImageWithId(id: String){
+        guard !id.isEmpty else { return }
         let imageToRemove:LocalImage = mainContext.fetchOrCreateObject(withID: id)
-        mainContext.delete(imageToRemove)
-        try? mainContext.save()
-        Task{
-            await imageCacher.removeImage(id: id)
-            await networkManager.removeImage(localImageId: id)
-        }
+        removeImage(imageToRemove, fromGlobal: true)
     }
 }
 
-// MARK: - Remove object with ObjectId
+// MARK: - Remove CoreData Entity objects
 extension DataManager{
+    
+    @MainActor
+    func deleteObject(_ object: NSManagedObject) {
+        mainContext.delete(object)
+    }
+    
+    //remove object in newBGC
     func removeObjectWithId(id: NSManagedObjectID){
         let context = persistentContainer.newBackgroundContext()
         context.performAndWait {
@@ -670,7 +585,6 @@ extension DataManager {
 // MARK: - CoreDate Context
 extension DataManager {
     
-//    @MainActor
     func rollBackMoc() {
         mainContext.performAndWait {
             mainContext.rollback()
@@ -679,20 +593,20 @@ extension DataManager {
     
     @MainActor
     func save(){
-        try? mainContext.save()
+        if mainContext.hasChanges {
+            try? mainContext.save()
+        }
     }
     
-    func saveContext(publish: GlobalProperties.PublishChanges,
+    @MainActor
+    func saveAndPublish(publish: GlobalProperties.PublishChanges,
                      id: [String]) throws {
-        mainContext.performAndWait {
             if mainContext.hasChanges {
                 try? mainContext.save()
                 if publish != .none {
-                    print("publishing changes \(publish.rawValue) with id \(id)")
                     self.updatePublisher.send((publish, id))
                 }
             }
-        }
     }
 }
 

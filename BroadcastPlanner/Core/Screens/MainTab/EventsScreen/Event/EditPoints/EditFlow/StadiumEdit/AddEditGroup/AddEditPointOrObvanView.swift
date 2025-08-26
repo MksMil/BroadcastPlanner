@@ -24,7 +24,7 @@ struct AddEditPointOrObvanView: View {
          selectedPoint: VenuePoint?,
          selectedObvan: Obvan?,
          newPointAction: @escaping (VenuePoint)->(),
-         newObvanAction: @escaping (Obvan)->() ){
+         newObvanAction: @escaping (Obvan)->()){
         self.state = state
         self.broadcast = broadcast
         self._innerVm = StateObject(wrappedValue: AddEditPointOrObvanViewModel(point: selectedPoint, selectedObvan: selectedObvan,broadcast: broadcast))
@@ -67,7 +67,7 @@ struct AddEditPointOrObvanView: View {
                             obvanToRemove.removeFromBroadcasts(broadcast)
                                 broadcast.viewCrews.forEach { crew in
                                     if crew.viewObvanId == id{
-                                        dataManager.mainContext.delete(crew)
+                                        dataManager.deleteObject(crew)
                                     }
                                 }
                             }
@@ -77,7 +77,6 @@ struct AddEditPointOrObvanView: View {
                             newObvanAction(newObvan)
                         }
                     case .new:
-                        print("add new point or obvan")
                         if isPoint {
                             //create new point
                             let newPoint: VenuePoint = dataManager.mainContext.fetchOrCreateObject(withID: UUID().uuidString)

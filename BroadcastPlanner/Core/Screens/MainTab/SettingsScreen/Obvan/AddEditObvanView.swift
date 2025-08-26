@@ -23,55 +23,31 @@ struct AddEditObvanView: View {
         ZStack{
          MainBackground()
 //            ScrollView{
-                VStack(spacing: 0){
+            VStack(spacing: 0){
+                //scscene
+                SpriteView(scene: vm.renderObvanScene,
+                           debugOptions: [.showsFPS,.showsNodeCount])
+                .frame(height: 250)
+                .frame(maxWidth: .infinity)
+                .overlay(content: {
+                    RoundedRectangle(cornerRadius: 5).stroke( Color.black)
+                })
+                .padding(.horizontal)
+                
+                GeometryReader{ geo in
                     
-                    //scscene
-                    SpriteView(scene: vm.renderObvanScene,
-                               debugOptions: [.showsFPS,.showsNodeCount])
-                    .frame(height: 250)
-                    .frame(maxWidth: .infinity)
-                    .overlay(content: {
-                        RoundedRectangle(cornerRadius: 5).stroke( Color.black)
-                    })
-                    .padding(.horizontal)
-                    
-                    GeometryReader{ geo in
-                        
-                        //control panel
-                        VStack(spacing: 0){
-                            HStack {
-                                
-                                PhotosPicker(selection: $vm.selectedPhoto) {
-                                    //photo.artframe
-                                    Image(systemName: "photo.artframe")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .bold()
-                                        .padding(5)
-                                        .frame(width: 40, height: 40)
-                                        .background {
-                                            RoundedRectangle(cornerRadius: 5)
-                                                .fill(
-                                                    .ultraThickMaterial
-                                                        .opacity(0.3)
-                                                )
-                                                .overlay {
-                                                    RoundedRectangle(cornerRadius: 5)
-                                                        .stroke(
-                                                            .ultraThickMaterial
-                                                                .opacity(0.5),
-                                                            lineWidth: 2
-                                                        )
-                                                }
-                                        }
-                                }
-                                Text(vm.title.isEmpty ? "add name": vm.title)
-                                    .font(.system(size: 20))
-                                    .foregroundStyle(vm.title.isEmpty ? .secondary: .primary)
+                    //control panel
+                    VStack(spacing: 0){
+                        HStack {
+                            
+                            PhotosPicker(selection: $vm.selectedPhoto) {
+                                //photo.artframe
+                                Image(systemName: "photo.artframe")
+                                    .resizable()
+                                    .scaledToFit()
                                     .bold()
-                                    .minimumScaleFactor(0.3)
-                                    .frame(height: 40)
-                                    .frame(maxWidth: .infinity)
+                                    .padding(5)
+                                    .frame(width: 40, height: 40)
                                     .background {
                                         RoundedRectangle(cornerRadius: 5)
                                             .fill(
@@ -87,109 +63,126 @@ struct AddEditObvanView: View {
                                                     )
                                             }
                                     }
-                                    .onTapGesture {
-                                        appState.cleanTFInfo()
-                                        appState.fieldType = .custom([])
-                                        appState.isSecure = false
-                                        appState.textfieldSource = vm.title
-                                        appState.promptString = "Enter new Title"
-                                        appState.openTextFieldWithAction { title in
-                                            vm.title = title
-                                        }
-                                    }
-                                
-                                ObvanControlPanel(isEdit: $vm.isEdit,
-                                                  addAction: {
-                                    isEditPressed = true
-                                },
-                                                  deleteAction: {
-                                    if let crewToDelete = vm.selectedCrew{
-                                        vm.deleteObvanTemplateCrew(crewToDelete)
-                                        dataManager.mainContext.performAndWait{
-                                            obvan.removeFromCrewTemplates(crewToDelete)
-                                            dataManager.mainContext.delete(crewToDelete)
-                                        }
-                                    }
-                                },
-                                                  saveAction: {
-                                    if vm.selectedCrew != nil{
-                                        vm.deselectCrewForRenderer()
-                                    }
-                                },
-                                                  editAction: {
-                                    isEditPressed = true
-                                }
-                                )
-                                .frame(width: geo.size.width * 2 / 5)
                             }
-                            .frame(height: 40)
-                            .padding(.vertical,8)
+                            Text(vm.title.isEmpty ? "add name": vm.title)
+                                .font(.system(size: 20))
+                                .foregroundStyle(vm.title.isEmpty ? .secondary: .primary)
+                                .bold()
+                                .minimumScaleFactor(0.3)
+                                .frame(height: 40)
+                                .frame(maxWidth: .infinity)
+                                .background {
+                                    RoundedRectangle(cornerRadius: 5)
+                                        .fill(
+                                            .ultraThickMaterial
+                                                .opacity(0.3)
+                                        )
+                                        .overlay {
+                                            RoundedRectangle(cornerRadius: 5)
+                                                .stroke(
+                                                    .ultraThickMaterial
+                                                        .opacity(0.5),
+                                                    lineWidth: 2
+                                                )
+                                        }
+                                }
+                                .onTapGesture {
+                                    appState.cleanTFInfo()
+                                    appState.fieldType = .custom([])
+                                    appState.isSecure = false
+                                    appState.textfieldSource = vm.title
+                                    appState.promptString = "Enter new Title"
+                                    appState.openTextFieldWithAction { title in
+                                        vm.title = title
+                                    }
+                                }
                             
-                            HStack{
-                                VStack{
-                                    ScrollView{
-                                        ForEach(vm.sortedCrews){ crew in
-                                            ObvanTemplateCrewCell(crewPosition: crew.viewPosition, isSelected: crew == vm.selectedCrew)
-                                                .onTapGesture {
-                                                    withAnimation{
-                                                        if vm.selectedCrew == crew{
-                                                            vm.deselectCrewForRenderer()
-                                                        } else {
-                                                            vm.selectTemplateObvanCrew(crew)
-                                                        }
+                            ObvanControlPanel(isEdit: $vm.isEdit,
+                                              addAction: {
+                                isEditPressed = true
+                            },
+                                              deleteAction: {
+                                if let crewToDelete = vm.selectedCrew{
+                                    vm.deleteObvanTemplateCrew(crewToDelete)
+                                    dataManager.mainContext.performAndWait{
+                                        obvan.removeFromCrewTemplates(crewToDelete)
+                                        dataManager.mainContext.delete(crewToDelete)
+                                    }
+                                }
+                            },
+                                              saveAction: {
+                                if vm.selectedCrew != nil{
+                                    vm.deselectCrewForRenderer()
+                                }
+                            },
+                                              editAction: {
+                                isEditPressed = true
+                            }
+                            )
+                            .frame(width: geo.size.width * 2 / 5)
+                        }
+                        .frame(height: 40)
+                        .padding(.vertical,8)
+                        
+                        HStack{
+                            VStack{
+                                ScrollView{
+                                    ForEach(vm.sortedCrews){ crew in
+                                        ObvanTemplateCrewCell(crewPosition: crew.viewPosition, isSelected: crew == vm.selectedCrew)
+                                            .onTapGesture {
+                                                withAnimation{
+                                                    if vm.selectedCrew == crew{
+                                                        vm.deselectCrewForRenderer()
+                                                    } else {
+                                                        vm.selectTemplateObvanCrew(crew)
                                                     }
                                                 }
-                                                .animation(.easeInOut, value: vm.selectedCrew)
-                                        }
+                                            }
+                                            .animation(.easeInOut, value: vm.selectedCrew)
                                     }
                                 }
-                                .frame(width: geo.size.width * 3 / 5)
-                                VStack{
-                                    
-                                    BPEditEventControlPanel(
-                                        scaleUpAction: { vm.scaleUp() },
-                                        scaleDownAction: { vm.scaleDown() },
-                                        resetScaleAction: { vm.resetScale() })
-                                    
-                                    BPJoystick(
-                                        upAction: vm.moveUp,
-                                        downAction: vm.moveDown,
-                                        leftAction: vm.moveLeft,
-                                        rightAction: vm.moveRight,
-                                        rotationLeft: vm.rotateCounterClockwise,
-                                        rotationRight: vm.rotateClockwise,
-                                        swap: vm.swap,
-                                        scaleUp: vm.scaleUpPoint,
-                                        scaleDown: vm.scaleDownPoint
-                                    )
-                                    .aspectRatio(1, contentMode: .fit)
-                                    .padding(15)
-                                    .overlay {
-                                        RoundedRectangle(cornerRadius: 5).stroke(.white.opacity(0.4), lineWidth: 2)
-                                    }
-                                    Spacer()
-                                }
-                                .frame(width: geo.size.width * 2 / 5)
                             }
+                            .frame(width: geo.size.width * 3 / 5)
+                            VStack{
+                                
+                                BPEditEventControlPanel(
+                                    scaleUpAction: { vm.scaleUp() },
+                                    scaleDownAction: { vm.scaleDown() },
+                                    resetScaleAction: { vm.resetScale() })
+                                
+                                BPJoystick(
+                                    upAction: vm.moveUp,
+                                    downAction: vm.moveDown,
+                                    leftAction: vm.moveLeft,
+                                    rightAction: vm.moveRight,
+                                    rotationLeft: vm.rotateCounterClockwise,
+                                    rotationRight: vm.rotateClockwise,
+                                    swap: vm.swap,
+                                    scaleUp: vm.scaleUpPoint,
+                                    scaleDown: vm.scaleDownPoint
+                                )
+                                .aspectRatio(1, contentMode: .fit)
+                                .padding(15)
+                                .overlay {
+                                    RoundedRectangle(cornerRadius: 5).stroke(.white.opacity(0.4), lineWidth: 2)
+                                }
+                                Spacer()
+                            }
+                            .frame(width: geo.size.width * 2 / 5)
                         }
                     }
-                    .padding(.horizontal)
                 }
+                .padding(.horizontal)
             }
-            
             .transitionWithOpacity()
-//        }
+        }
         .ignoresSafeArea(.keyboard)
         .navigationBarBackButtonHidden()
         .environmentObject(vm)
         .onAppear {
             Task{
-                print("requet for obvan image with id: \(obvan.viewId)")
                 if let image = await dataManager.imageCacher.getImage(id: obvan.viewId, size: .originImages){
-                    print("get image for obvan")
                     vm.updateImage(uiimage: image)
-                } else {
-                    print("no image for obvan")
                 }
             }
             vm.saveAction = {
@@ -204,23 +197,27 @@ struct AddEditObvanView: View {
             }
             vm.source = globalSettings.userSpecialization
             appState.primaryAction = {
+                //update lastUpdate value
                 let lastUpdatedValue = Date.now
-                dataManager.mainContext.performAndWait {
-                    let image: LocalImage = dataManager.mainContext.fetchOrCreateObject(withID: obvan.viewId)
-                        image.updateValues(type: GlobalProperties.ImageType.obvan.rawValue,
-                                           lastUpdated: lastUpdatedValue,
-                                           in: dataManager.mainContext)
-                    obvan.image = image
-                    image.addToParentObvan(obvan)
-                    try? dataManager.mainContext.save()
-                }
-                
+                obvan.lastUpdated = lastUpdatedValue
+                dataManager.save()
                 //network save
+                let imageDto = obvan.image?.dto
+                let id = obvan.viewId
                 Task{
-                   await dataManager.networkManager.saveData(obvan.dto, withId: obvan.viewId, withType: GlobalProperties.Path.obvans)
-                    if let uiimage = vm.uiimage{
-                        _ = await dataManager.networkManager.saveImageToGlobalStorage(id: obvan.viewId, uiimage: uiimage, type: GlobalProperties.ImageType.obvan, lastUpdated: lastUpdatedValue)
+                   await dataManager
+                        .networkManager
+                        .saveData(obvan.dto,
+                                  withId: id,
+                                  withType: GlobalProperties.Path.obvans)
+                    if let imageDto{
+                        await dataManager
+                            .networkManager
+                            .saveData(imageDto,
+                                      withId: id,
+                                      withType: GlobalProperties.Path.images)
                     }
+                    
                 }
                 router.stepBack()
 
@@ -278,6 +275,7 @@ struct AddEditObvanView: View {
                 else { return }
                 
                 vm.updateImage(uiimage: image)
+                
                 await dataManager.updateImageWith(uiimage: image, id: obvan.viewId, type: .obvan, lastUpdated: .now)
             }
         }

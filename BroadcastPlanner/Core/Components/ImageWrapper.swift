@@ -20,6 +20,9 @@ struct ImageWrapper: View {
     }
     
     var body: some View {
+#if DEBUG
+        let _ = Self._printChanges()
+#endif
             image
                 .resizable()
                 .opacity(isLoading ? 0.3: 1)
@@ -32,6 +35,7 @@ struct ImageWrapper: View {
                     update()
                 }
                 .onReceive(dataManager.updatePublisher) { value in
+                    print("wrapper received \(value) with id: \(id)")
                     guard !id.isEmpty else { return }
                     if value.0 == .images, value.1.contains(id){
                         update()
@@ -40,13 +44,17 @@ struct ImageWrapper: View {
     }
     
     func update(){
+        print("start to update image")
         guard !id.isEmpty else { return }
         isLoading = true
         Task{
             if let newImage = await dataManager.getImageWithId(id, type: type, size: imageSize){
+                print("get new image")
                 await MainActor.run {
                     image = Image(uiImage: newImage)
                 }
+            } else {
+                print("not update image")
             }
             await MainActor.run {
                 isLoading = false

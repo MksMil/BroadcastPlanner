@@ -25,11 +25,13 @@ struct BroadcastEditView: View {
     @State private var isRemoveFromOwners: Bool = false
     @State private var ownerToRemove: Member?
     @State private var memberToShow: VenuePoint?
-
+    
     @State private var imageWidth: CGFloat = .infinity
     
     var body: some View {
-
+#if DEBUG
+        let _ = Self._printChanges()
+#endif
         ZStack {
             MainBackground()
 
@@ -47,8 +49,13 @@ struct BroadcastEditView: View {
                         VStack(spacing: 5){
                             //team logos section
                             HStack(alignment: .top) {
+
+                            //club/venue select/add/edit/remove sheet
+                            
+                                
                                 //home team logo/selection action
                                 LogoImageView(club: broadcast.homeClub,
+                                              excludedClub: broadcast.guestClub,
                                               logoSize: logoSize,
                                               cancelAction: {},
                                               accessAction: { club in
@@ -61,6 +68,7 @@ struct BroadcastEditView: View {
                                 }
                                 //guest team logo/selection action
                                 LogoImageView(club: broadcast.guestClub,
+                                              excludedClub: broadcast.homeClub,
                                               logoSize: logoSize,
                                               cancelAction: {},
                                               accessAction: { club in
@@ -172,7 +180,7 @@ struct BroadcastEditView: View {
                                     .frame(width: 15, height: 15)
                                     .scaleEffect(memberToShow.viewScaleFactor)
                                     .position(CGPoint(x: imageWidth * memberToShow.viewX ,
-                                                      y: 150 * (1 - memberToShow.viewY)))
+                                                      y: 150 * (1 - memberToShow.viewY) - 2))
                             }
                         }
                         .frame(height: 150)
@@ -269,7 +277,7 @@ struct BroadcastEditView: View {
             
             appState.primaryAction = {
                 do{
-                    try dataManager.saveContext(publish: .broadcasts,
+                    try dataManager.saveAndPublish(publish: .broadcasts,
                                                id: [broadcast.viewId])
                 } catch{
                     print("error save context: \(error.localizedDescription)")

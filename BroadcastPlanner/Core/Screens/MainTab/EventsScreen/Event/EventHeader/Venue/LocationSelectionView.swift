@@ -4,7 +4,7 @@ struct LocationSelectionView: View {
     @EnvironmentObject var dataManager: DataManager
     @StateObject private var vm: LocationSelectionViewModel
     
-    let location: Venue?
+    let venue: Venue?
     let offset: Double
     let editable: Bool
     let cancelAction: ()->Void
@@ -16,7 +16,7 @@ struct LocationSelectionView: View {
          editable: Bool = true,
          cancelAction: @escaping () -> Void,
          acceptAction: @escaping (Venue) -> Void) {
-        self.location = location
+        self.venue = location
         self.offset = offset
         self.editable = editable
         self._vm = StateObject(wrappedValue: LocationSelectionViewModel(location: location))
@@ -26,7 +26,7 @@ struct LocationSelectionView: View {
     
     var body: some View {
         ZStack{
-            HeaderBackgroundTimelineView(id: vm.imageId)
+            HeaderBackgroundTimelineView(image: vm.image)
             
             VStack(spacing: 5) {
                 // venue title
@@ -55,15 +55,45 @@ struct LocationSelectionView: View {
             .padding(.top,offset + 10)
             .disabled(!editable)
         }
-        .onDisappear(perform: {
-            
-        })
+        .task{
+            if let venue {
+                Task{
+                    var images: [Image] = []
+                    for localImage in venue.viewLocalImages{
+                        if let uiimage = await dataManager
+                            .getImageWithId(localImage.viewId,
+                                            type: GlobalProperties.ImageType.venue,
+                                            size: ImageSizes.originImages){
+                            images.append(Image(uiImage: uiimage))
+                        }
+                    }
+                   await MainActor.run {
+                        vm.update(title: venue.viewTitle,
+                                  address: venue.viewAddress,
+                                  images: images)
+
+                    }
+                }
+            }
+        }
         .sheet(isPresented: $vm.isLocationSheetPresented) {
-            VenueSelectionSheetView(selectedVenue: vm.location){ venue in
+            VenueSelectionSheetView(selectedVenue: vm.venue){ venue in
                 if let venue {
-                    vm.update(newLocation: venue)
-                    acceptAction(venue)
-                    vm.isLocationSheetPresented = false
+                    Task{
+                        var images: [Image] = []
+                        for localImage in venue.viewLocalImages{
+                            if let uiimage = await dataManager.getImageWithId(localImage.viewId, type: GlobalProperties.ImageType.venue, size: ImageSizes.originImages){
+                                images.append(Image(uiImage: uiimage))
+                            }
+                        }
+                       await MainActor.run {
+                            vm.update(title: venue.viewTitle,
+                                      address: venue.viewAddress,
+                                      images: images)
+                            acceptAction(venue)
+                            vm.isLocationSheetPresented = false
+                        }
+                    }
                 }
             }
             .presentationDragIndicator(.visible)

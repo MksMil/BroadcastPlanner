@@ -180,7 +180,7 @@ struct EditMemberInfoView: View {
                         appState.setIconToPrimaryButton(.edit)
                         member.specializations = userSpecialization.joined(separator: ",")
                         member.lastUpdated = Date.now
-                        try? dataManager.saveContext(publish: GlobalProperties.PublishChanges.members, id: [member.viewId])
+                        try? dataManager.saveAndPublish(publish: GlobalProperties.PublishChanges.members, id: [member.viewId])
                         isEdit = false
                     } else {
                         appState.setIconToPrimaryButton(.accept)

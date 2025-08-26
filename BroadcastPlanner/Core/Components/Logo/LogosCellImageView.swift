@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct LogosCellImageView<V: View>: View {
+struct LogosCellImageView: View {
     
     var homeImageId: String?
     var guestImageId: String?

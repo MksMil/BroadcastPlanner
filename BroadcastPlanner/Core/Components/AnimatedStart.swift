@@ -23,9 +23,9 @@ struct AnimatedStart: View {
                         appState.animationFinished()
                     }
                 }
+                .transitionWithOpacity()
         }
         .navigationBarBackButtonHidden()
-        .transitionWithOpacity()
     }
 }
 

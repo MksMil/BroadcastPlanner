@@ -233,15 +233,17 @@ extension NetworkManager {
             "lastUpdated": lastUpdated
         ])
     }
-
+    
     func removeImage(localImageId: String) async {
         guard !localImageId.isEmpty else { return }
             //with taskGroup?
         do {
+            //remove localImage
             try await getFirestoreDocumentRef(
                 type: .images,
                 id: localImageId
             ).delete()
+            //remove image data
             try await getImageStorageRef(id: localImageId).delete()
         } catch {
             print(

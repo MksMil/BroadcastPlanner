@@ -9,14 +9,15 @@ import SwiftUI
 
 struct ClubSelectionSheetView: View {
     @State private var selectedClub: Club?
-    
+    let excludedClub: Club?
     @FetchRequest<Club>(sortDescriptors: [])
     var clubs
     
     let acceptAction: (Club?)->()
     
-    init(selectedClub: Club? = nil, acceptAction: @escaping (Club?) -> Void) {
+    init(selectedClub: Club? = nil, excludedClub: Club?,acceptAction: @escaping (Club?) -> Void) {
         self.selectedClub = selectedClub
+        self.excludedClub = excludedClub
         self.acceptAction = acceptAction
     }
     
@@ -81,6 +82,11 @@ struct ClubSelectionSheetView: View {
                 }
                 .disabled(selectedClub == nil)
             }
+        }
+        .task{
+            guard let excludedClub, let id = excludedClub.id, !id.isEmpty else { return }
+            let predicate = NSPredicate(format: "id != %@", id)
+            clubs.nsPredicate = predicate
         }
     }
 }

@@ -1,27 +1,34 @@
 import SwiftUI
 
 struct LogoImageView: View {
+    @EnvironmentObject var dataManager: DataManager
     @State var isSheetPresented: Bool = false
     @State var selectedClub: Club?
-    
+    @State private var image: Image = Image(systemName: "person.circle")
+    let excludedClub: Club?
     var logoSize: Double
     let cancelAction: ()->Void
     let accessAction: (Club)->Void
     let editable: Bool
     
     
-    init(club: Club?,logoSize: Double = 100,editable: Bool = true,
+    init(club: Club?,excludedClub: Club? = nil,logoSize: Double = 100,editable: Bool = true,
          cancelAction: @escaping () -> Void,
          accessAction: @escaping (Club) -> Void) {
         self.logoSize = logoSize
         self.editable = editable
         self.cancelAction = cancelAction
         self.accessAction = accessAction
-        self.selectedClub = club
+        self._selectedClub = State(initialValue: club)
+        self.excludedClub = excludedClub
     }
     
     var body: some View {
-        ImageWrapper(id: selectedClub?.viewId ?? "",type: .club, imageSize: .mediumImages)
+#if DEBUG
+        let _ = Self._printChanges()
+#endif
+        image
+            .resizable()
             .scaledToFit()
             .frame(width: logoSize, height: logoSize)
             .padding(logoSize / 10)
@@ -37,32 +44,58 @@ struct LogoImageView: View {
             }
             .disabled(!editable)
         //club/venue select/add/edit/remove sheet
-        .sheet(
-            isPresented: $isSheetPresented,
-            content: {
-                ClubSelectionSheetView(selectedClub: selectedClub, acceptAction: { newClub in
-                    selectedClub = newClub
-                    if let newClub{
-                        accessAction(newClub)
-                    }
-                    isSheetPresented = false
-                })
-                .presentationContentInteraction(.scrolls)
-                .presentationDragIndicator(.visible)
+            .task{
+                update()
             }
-        )
+            .sheet(
+                isPresented: $isSheetPresented,
+                content: {
+                    ClubSelectionSheetView(selectedClub: selectedClub,
+                                           excludedClub: excludedClub,
+                                           acceptAction: { newClub in
+                        selectedClub = newClub
+                        update()
+                        if let newClub{
+                            accessAction(newClub)
+                        }
+                        isSheetPresented = false
+                    })
+                    .presentationContentInteraction(.scrolls)
+                    .presentationDragIndicator(.visible)
+                }
+            )
+    }
+    func update() {
+        Task{
+            if let id = selectedClub?.viewId,
+               !id.isEmpty,
+               let newImage = await dataManager.getImageWithId(id, type: GlobalProperties.ImageType.club, size: ImageSizes.mediumImages)
+            {
+                await MainActor.run {
+//                    withAnimation{
+                        image = Image(uiImage: newImage)
+//                    }
+                }
+            } else {
+                await MainActor.run {
+//                    withAnimation{
+                        image = Image(systemName: "person.circle")
+//                    }
+                }
+            }
+        }
     }
 }
 
-#Preview {
-    ZStack{
-        Color.blue
-            .ignoresSafeArea()
-        LogoImageView(club: nil, cancelAction: {
-            
-        }, accessAction: { _ in
-            
-        }
-)
-    }
-}
+//#Preview {
+//    ZStack{
+//        Color.blue
+//            .ignoresSafeArea()
+//        LogoImageView(club: nil, cancelAction: {
+//            
+//        }, accessAction: { _ in
+//            
+//        }
+//)
+//    }
+//}

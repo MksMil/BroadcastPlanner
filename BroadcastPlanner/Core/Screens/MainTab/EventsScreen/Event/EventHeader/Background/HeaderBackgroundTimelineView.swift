@@ -2,28 +2,33 @@ import Combine
 import SwiftUI
 
 struct HeaderBackgroundTimelineView: View {
-    let id: String
+    let image: Image?
     var body: some View {
-        ImageWrapper(id: id, type: .venue,imageSize: .largeImages)
-        //            .aspectRatio(1.5, contentMode: .fill)
-            .mask {
-                Rectangle().fill(
-                    LinearGradient(
-                        colors: [
-                            .clear,
-                            .black,
-                            .black,
-                            .black.opacity(0.65),
-                            .black.opacity(0.85),
-                            .clear,
-                        ],
-                        startPoint: .top,
-                        endPoint: .bottom
+        if let image{
+            image
+                .resizable()
+                .aspectRatio(1.5, contentMode: .fill)
+                .mask {
+                    Rectangle().fill(
+                        LinearGradient(
+                            colors: [
+                                .clear,
+                                .black,
+                                .black,
+                                .black.opacity(0.85),
+                                .black.opacity(0.65),
+                                .clear,
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
                     )
-                )
-            }
-                                .animation(.smooth(duration: 3),
-                                           value: id)
-//            .frame(maxWidth: .infinity)
+                }
+                .animation(.smooth(duration: 3),
+                           value: image)
+                .frame(maxWidth: .infinity)
+        }else {
+            ProgressView()
+        }
     }
 }
