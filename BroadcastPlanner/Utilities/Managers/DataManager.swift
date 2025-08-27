@@ -58,14 +58,15 @@ class DataManager: ObservableObject {
     }
     
     func makePublishers(){
-        $currentId.sink { value in
-            Task{
-                try? await Task.sleep(for: .milliseconds(2))
-                await MainActor.run {
-                    self.updatePublisher.send((GlobalProperties.PublishChanges.images, [value]))
+        $currentId
+            .sink { value in
+                Task{
+                    try? await Task.sleep(for: .milliseconds(2))
+                    await MainActor.run {
+                        self.updatePublisher.send((GlobalProperties.PublishChanges.images, [value]))
+                    }
                 }
-            }
-        }.store(in: &cancellables)
+            }.store(in: &cancellables)
     }
     
     @MainActor
@@ -105,9 +106,10 @@ class DataManager: ObservableObject {
     }
     
     func clearData(){
-        self.currentId = ""
+        self.currentId = "nil"
         self.currentUserID = NSManagedObjectID()
         self.accessLevel = 2
+        updatePublisher.send((GlobalProperties.PublishChanges.images, [currentId]))
     }
 }
 

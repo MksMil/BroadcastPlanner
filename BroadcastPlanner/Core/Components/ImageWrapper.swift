@@ -20,9 +20,6 @@ struct ImageWrapper: View {
     }
     
     var body: some View {
-#if DEBUG
-        let _ = Self._printChanges()
-#endif
             image
                 .resizable()
                 .opacity(isLoading ? 0.3: 1)
@@ -46,6 +43,9 @@ struct ImageWrapper: View {
     func update(){
 //        print("start to update image")
         guard !id.isEmpty else { return }
+        if id == "nil" {
+            image = Image(systemName: "person.circle")
+        }
         isLoading = true
         Task{
             if let newImage = await dataManager.getImageWithId(id, type: type, size: imageSize){

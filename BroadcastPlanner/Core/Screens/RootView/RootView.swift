@@ -6,15 +6,12 @@ struct RootView: View {
     @EnvironmentObject var appState: ApplicationState
     @EnvironmentObject var globalSettings: GlobalSettings
     @EnvironmentObject var dataManager: DataManager
-
     @EnvironmentObject var router: Router
 
     @State var isStarted: Bool = false
 
     @State var status: Bool = false
-    
-    @State private var isTextFieldShowed: Bool = false
-    
+        
     var body: some View {
         
         ZStack{
@@ -104,6 +101,7 @@ struct RootView: View {
                     }
                 } else {
                     dataManager.clearData()
+                    sessionManager.cleanFields()
                     appState.state = .notAuthorized
                 }
         }
@@ -135,12 +133,7 @@ struct RootView: View {
         .onReceive(router.pathPubisher) { path in
             appState.switchStateByPath(path)
         }
-        .onReceive(appState.$isTextFieldShowed) { value in
-            withAnimation{
-                isTextFieldShowed = value
-            }
-        }
-        .sheet(isPresented: $isTextFieldShowed) {
+        .sheet(isPresented: $appState.isTextFieldShowed) {
             TextFieldSheetView(
                 source: $appState.textfieldSource,
                 promptSource: appState.promptString,
@@ -162,7 +155,6 @@ struct RootView: View {
                 }
                 ForEach(appState.fieldType.toolbarButtons, id: \.self) { symbol in
                     Button(symbol) {
-                        print("\(symbol) tapped, appending to source")
                         appState.textfieldSource += symbol
                     }
                 }

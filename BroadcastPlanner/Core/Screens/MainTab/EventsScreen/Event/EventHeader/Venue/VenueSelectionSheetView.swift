@@ -1,19 +1,9 @@
-//
-//  VenueSelectionSheetView.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 17.07.2025.
-//
-
 import SwiftUI
 
 struct VenueSelectionSheetView: View {
-    
     @State private var selectedVenue: Venue?
-    
     @FetchRequest<Venue>(sortDescriptors: [SortDescriptor(\.address)])
     var venues
-
     let acceptAction: (Venue?)->()
     
     init(selectedVenue: Venue? = nil, acceptAction: @escaping (Venue?) -> Void) {

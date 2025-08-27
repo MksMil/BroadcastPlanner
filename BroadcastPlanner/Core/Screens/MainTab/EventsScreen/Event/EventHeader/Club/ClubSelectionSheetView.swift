@@ -8,21 +8,20 @@
 import SwiftUI
 
 struct ClubSelectionSheetView: View {
-    @State private var selectedClub: Club?
-    let excludedClub: Club?
+    @Binding var selectedClub: Club?
+    @Binding var excludedClub: Club?
     @FetchRequest<Club>(sortDescriptors: [])
     var clubs
     
     let acceptAction: (Club?)->()
     
-    init(selectedClub: Club? = nil, excludedClub: Club?,acceptAction: @escaping (Club?) -> Void) {
-        self.selectedClub = selectedClub
-        self.excludedClub = excludedClub
-        self.acceptAction = acceptAction
-    }
+//    init(selectedClub: Club? = nil, excludedClub: Club?,acceptAction: @escaping (Club?) -> Void) {
+//        self.selectedClub = selectedClub
+//        self.excludedClub = excludedClub
+//        self.acceptAction = acceptAction
+//    }
     
     var body: some View {
-        
         ZStack {
             MainBackground()
             VStack(spacing:0){
@@ -39,10 +38,8 @@ struct ClubSelectionSheetView: View {
                             .onTapGesture {
                                 withAnimation {
                                     if selectedClub == club {
-                                        //isEdit = false
                                         selectedClub = nil
                                     } else {
-                                        //isEdit = true
                                         selectedClub = club
                                     }
                                 }
@@ -59,7 +56,6 @@ struct ClubSelectionSheetView: View {
                 .onTapGesture {
                     withAnimation {
                         selectedClub = nil
-                        
                     }
                 }
                 Divider()
@@ -82,6 +78,7 @@ struct ClubSelectionSheetView: View {
                 }
                 .disabled(selectedClub == nil)
             }
+            .padding(.top,20)
         }
         .task{
             guard let excludedClub, let id = excludedClub.id, !id.isEmpty else { return }

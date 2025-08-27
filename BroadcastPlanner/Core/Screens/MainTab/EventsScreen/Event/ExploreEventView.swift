@@ -32,13 +32,13 @@ struct ExploreEventView: View {
                             //team logos section
                             HStack(alignment: .top) {
                                 //home team logo
-                                LogoImageView(club: broadcast.homeClub,
-                                              logoSize: logoSize,
-                                              editable: false,
-                                              cancelAction: {},
-                                              accessAction: { club in
-//                                    broadcast. = club
-                                })
+//                                LogoImageView(club: broadcast.homeClub,
+//                                              logoSize: logoSize,
+//                                              editable: false,
+//                                              cancelAction: {},
+//                                              accessAction: { club in
+////                                    broadcast. = club
+//                                })
                                 
                                 //broadcast date section
                                 VStack(spacing: 20) {
@@ -80,13 +80,13 @@ struct ExploreEventView: View {
                                   
                                 }
                                 //guest team logo
-                                LogoImageView(club: broadcast.guestClub,
-                                              logoSize: logoSize,
-                                              editable: false,
-                                              cancelAction: {},
-                                              accessAction: { club in
-//                                    vm.guestClub = club
-                                })
+//                                LogoImageView(club: broadcast.guestClub,
+//                                              logoSize: logoSize,
+//                                              editable: false,
+//                                              cancelAction: {},
+//                                              accessAction: { club in
+////                                    vm.guestClub = club
+//                                })
                             }
                             .padding(.top)
                             Spacer()

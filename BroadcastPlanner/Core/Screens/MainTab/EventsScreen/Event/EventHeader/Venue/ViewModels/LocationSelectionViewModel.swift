@@ -2,13 +2,13 @@ import SwiftUI
 import Combine
 
 final class LocationSelectionViewModel: ObservableObject{
-//    var location: Venue?
     
     @Published var isLocationSheetPresented: Bool = false
     @Published var title: String
     @Published var address: String
     
     @Published var venue: Venue?
+    
     let placeholder: Image
     var images: [Image] = []
     var maxCount: Int { images.count}

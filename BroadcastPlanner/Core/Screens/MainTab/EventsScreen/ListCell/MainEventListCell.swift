@@ -2,14 +2,14 @@ import SwiftUI
 import Combine
 
 struct MainEventListCell: View {
+    @EnvironmentObject var dataManager: DataManager
     @EnvironmentObject var appState: ApplicationState
     let broadcast: Broadcast
     
     @State private var rowHeight: Double = 70
     @State private var isExpired: Bool
     var status: BroadcastStatus {
-//        broadcast.status(user: mdm.currentUserInMainContext)
-        .none
+        broadcast.status(id: dataManager.currentId)
     }
     init(event: Broadcast){
         self.broadcast = event

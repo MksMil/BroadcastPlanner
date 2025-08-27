@@ -199,11 +199,16 @@ extension Broadcast : Identifiable {
         }
     }
     
-    func status(user: Member) -> BroadcastStatus{
-        if viewOwners.contains(user){
+    func status(id: String) -> BroadcastStatus{
+        guard !id.isEmpty else { return .none}
+        if viewOwners.contains(where: { member in
+            member.viewId == id
+        }){
             return .currentMemberOwned
         }
-        if viewMembers.contains(user){
+        if viewMembers.contains(where: { member in
+            member.viewId == id
+        }){
             return .currentMemberParticipated
         }
         return .none

@@ -60,11 +60,11 @@ struct AddEditPointOrObvanView: View {
                         }
                     case .obvan:
                         if let newObvan = innerVm.selectedObvan{
-                        if let obvanToRemove = innerVm.sourceObvan,
+                            if let obvanToRemove = innerVm.sourceObvan,
                                newObvan != obvanToRemove{
                                 let id = obvanToRemove.viewId
-                            broadcast.removeFromObvan(obvanToRemove)
-                            obvanToRemove.removeFromBroadcasts(broadcast)
+                                broadcast.removeFromObvan(obvanToRemove)
+                                obvanToRemove.removeFromBroadcasts(broadcast)
                                 broadcast.viewCrews.forEach { crew in
                                     if crew.viewObvanId == id{
                                         dataManager.deleteObject(crew)
@@ -73,7 +73,6 @@ struct AddEditPointOrObvanView: View {
                             }
                             broadcast.addToObvan(newObvan)
                             newObvan.addToBroadcasts(broadcast)
-                            try? dataManager.mainContext.save()
                             newObvanAction(newObvan)
                         }
                     case .new:
@@ -88,11 +87,11 @@ struct AddEditPointOrObvanView: View {
                             if let newObvan = innerVm.selectedObvan{
                                 broadcast.addToObvan(newObvan)
                                 newObvan.addToBroadcasts(broadcast)
-                                try? dataManager.mainContext.save()
                                 newObvanAction(newObvan)
                             }
                         }
                 }
+                dataManager.save()
                 dismiss()
             } content: {
                     HStack {

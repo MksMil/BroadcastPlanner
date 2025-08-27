@@ -62,7 +62,7 @@ struct TimeEditView: View {
                     }
                     .overlay{
                         RoundedRectangle(cornerRadius: 5)
-                            .stroke(.blue, lineWidth: 1)
+                            .stroke(.blue, lineWidth: 2)
                             .matchedGeometryEffect(id: selectedTime.0, in: hourNs, isSource: false)
                     }
                 }
@@ -91,7 +91,7 @@ struct TimeEditView: View {
                     }
                     .overlay(content: {
                         RoundedRectangle(cornerRadius: 5)
-                            .stroke(.blue, lineWidth: 1)
+                            .stroke(.blue, lineWidth: 2)
                             .matchedGeometryEffect(id: selectedTime.1, in: minNs, isSource: false)
                     })
                     .onTapGesture {

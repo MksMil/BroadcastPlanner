@@ -40,7 +40,6 @@ struct BroadcastSchemaEditView: View {
                             }
                             vm.loadTemplate(points)
                             vm.selectedTemplate = templateToShow
-                            
                         }
                     }
                 } addAction: {
@@ -303,9 +302,7 @@ struct BroadcastSchemaEditView: View {
                     broadcast.addToVenuePoints(newVenuePoint)
                     newVenuePoint.broadcast = broadcast
                     vm.addPoint(point: newVenuePoint)
-                }, newObvanAction: { obvan in
-                    vm.selectedObvan = obvan
-                })
+                }, newObvanAction: { _ in })
                 .presentationBackground(Color.mainBackground)
                 .presentationDragIndicator(.visible)
             }

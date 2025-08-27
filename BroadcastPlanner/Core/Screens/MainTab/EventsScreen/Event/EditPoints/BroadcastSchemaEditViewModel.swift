@@ -3,12 +3,7 @@ import SpriteKit
 import Combine
 
 
-protocol BPSKViewDelegate: AnyObject {
-    func selectPointWithId(_ id: String)
-    func deselectPoint() //id?
-    func saveAction()
-    func updatePoint(x: Double?, y: Double?, rotation: Double?, scaleFactor: Double?) //x,y,rotation,scaleFactor
-}
+
 
 final class BroadcastSchemaEditViewModel: ObservableObject {
     @Published var selectedObvan: Obvan?
@@ -29,10 +24,11 @@ final class BroadcastSchemaEditViewModel: ObservableObject {
     let broadcast: Broadcast
     
     // MARK: - vm Properties for available render updates
-    var users: [Member] = [] //saved
-    var num: Int = 0 //saved
-    var description: String = "Choose position" //saved
-    var cameras: [Camera] = [] 
+        //selected point updatable data data
+    var users: [Member] = []
+    var num: Int = 0
+    var description: String = "Choose position"
+    var cameras: [Camera] = []
     var sounds: [Sound] = []
     var lights: [Light] = []
     var task: String = ""
@@ -43,15 +39,11 @@ final class BroadcastSchemaEditViewModel: ObservableObject {
     var scaleFactor: Double = 0
     
     var localPoints: [VenuePoint]
-    
     @Published var filteredLocationPoints: [VenuePoint] = []
     
     var renderPitchScene: PitchEditSpriteScene
-
-    //templates control
     
     var selectedTemplate: Template?
-
     @Published var isTemplateRemovable: Bool = true
     
     init(broadcast: Broadcast){
@@ -59,7 +51,7 @@ final class BroadcastSchemaEditViewModel: ObservableObject {
         self.localPoints = broadcast.viewVenuePoints
         self.filteredLocationPoints = localPoints
         self.renderPitchScene = PitchEditSpriteScene()
-
+        
         renderPitchScene.pointDelegate = self
         renderPitchScene.points = localPoints
     }
@@ -67,7 +59,7 @@ final class BroadcastSchemaEditViewModel: ObservableObject {
     deinit {
         print("+++editManager de-init")
     }
-
+    
     func loadScene(){
         renderPitchScene.points = localPoints
         renderPitchScene.updateScene()
@@ -98,14 +90,15 @@ final class BroadcastSchemaEditViewModel: ObservableObject {
         loadTemplate([])
     }
     
-    // TODO: think about compare localPoints and templatePoints...
+    //TODO: think about compare localPoints and templatePoints...just dont use this now
     func compareTempateWithPoints()->Bool{
         guard let points = selectedTemplate?.viewTemplatePoints else { return false}
         guard points.count == localPoints.count else { return false}
         return true
     }
-    
-    // MARK: scene screenshot
+}
+// MARK: - scene screenshot
+extension BroadcastSchemaEditViewModel {
     func prepareForScreenshot(){
         renderPitchScene.resetScaleNow()
         selectedVenuePoint = nil
@@ -119,28 +112,22 @@ final class BroadcastSchemaEditViewModel: ObservableObject {
                 print("Сцена не привязана к SKView.")
                 return nil
             }
-            
             guard let texture = view.texture(from: renderPitchScene) else {
                 print("Не удалось создать текстуру из сцены.")
                 return nil
             }
-            
             let size = CGSize(width: texture.size().width, height: texture.size().height)
             let rect = CGRect(origin: .zero, size: size)
-            
             UIGraphicsBeginImageContextWithOptions(size, false, UIScreen.main.scale)
             UIImage(cgImage: texture.cgImage()).draw(in: rect)
             let image = UIGraphicsGetImageFromCurrentImageContext()
             UIGraphicsEndImageContext()
-            
             return image
     }
 }
 // MARK: - filter venuePoints & venuePoint state
 extension BroadcastSchemaEditViewModel {
-    
     func filterPointsWithCase(_ filter: BPEventPlanPointStadiumFilter){
-        
         switch filter {
             case .all:
                 filteredLocationPoints = localPoints
@@ -157,28 +144,6 @@ extension BroadcastSchemaEditViewModel {
                     //$0.viewMembers.isEmpty &&
                     //$0.viewSounds.isEmpty &&
                     !$0.viewLights.isEmpty})
-        }
-    }
-}
-
-// MARK: - Number for newPoint
-extension BroadcastSchemaEditViewModel{
-    func configureNumbers(){
-        
-    }
-    
-    func numberForNewPoint() -> Int {
-        return 0
-    }
-}
-
-// MARK: - Available Users
-extension BroadcastSchemaEditViewModel{
-    func availableUsers() -> [Member]{
-        return users.filter { user in
-            
-            
-            true
         }
     }
 }
@@ -238,7 +203,6 @@ extension BroadcastSchemaEditViewModel{
     }
 }
  
-
 // MARK: - Scaling scenes
 extension BroadcastSchemaEditViewModel {
     func scaleUp(){
@@ -295,7 +259,6 @@ extension BroadcastSchemaEditViewModel{
     
 }
 
-
 // MARK: - BPSKViewDelegate
 extension BroadcastSchemaEditViewModel: BPSKViewDelegate {
     func selectPointWithId(_ id: String){
@@ -312,6 +275,7 @@ extension BroadcastSchemaEditViewModel: BPSKViewDelegate {
             users = point.viewMembers
             description = point.viewDescription
             task = point.viewTask
+            
             isEdit = true
         }
         
@@ -320,7 +284,7 @@ extension BroadcastSchemaEditViewModel: BPSKViewDelegate {
     func deselectPoint(){
         if selectedVenuePoint != nil {
             //save point
-            savePointAction?()
+            saveAction()
             self.selectedVenuePoint = nil
         }
         isEdit = false

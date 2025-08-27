@@ -14,9 +14,10 @@ struct HeaderBackgroundTimelineView: View {
                             colors: [
                                 .clear,
                                 .black,
-                                .black,
                                 .black.opacity(0.85),
                                 .black.opacity(0.65),
+                                .black.opacity(0.35),
+                                .black.opacity(0.15),
                                 .clear,
                             ],
                             startPoint: .top,

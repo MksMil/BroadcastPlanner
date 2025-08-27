@@ -15,7 +15,6 @@
 		291339172E17D12F00F14F30 /* StatusViewNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 291339162E17D12F00F14F30 /* StatusViewNotification.swift */; };
 		2915AD1C2BF4A2AA0038239A /* BPUserProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2915AD1B2BF4A2AA0038239A /* BPUserProfileView.swift */; };
 		2916E60B2C4E85400025DCC6 /* BPEditEventControlPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2916E60A2C4E85400025DCC6 /* BPEditEventControlPanel.swift */; };
-		2916E60E2C4E875B0025DCC6 /* BPPlanDelegateProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2916E60D2C4E875B0025DCC6 /* BPPlanDelegateProtocol.swift */; };
 		2916E62C2C58B83E0025DCC6 /* AnimatedStart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2916E62B2C58B83E0025DCC6 /* AnimatedStart.swift */; };
 		291CDA542DDCB2CB00724F53 /* DividerWithText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 291CDA532DDCB2CB00724F53 /* DividerWithText.swift */; };
 		291CDA5C2DDF3CF900724F53 /* SelectableModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 291CDA5B2DDF3CF800724F53 /* SelectableModifier.swift */; };
@@ -64,6 +63,7 @@
 		29C8F9472CC24FD000A7D5D2 /* MemberDataTextCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29C8F9462CC24FD000A7D5D2 /* MemberDataTextCellView.swift */; };
 		29CA68462DA40B1E00460EFE /* VenueCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29CA68452DA40B1E00460EFE /* VenueCell.swift */; };
 		29CCF2EC2C807FE000BCEF34 /* SessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29CCF2EB2C807FE000BCEF34 /* SessionManager.swift */; };
+		29D141FB2E5DEF5C0032277A /* ImageWidthPreferenceKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29D141FA2E5DEF5C0032277A /* ImageWidthPreferenceKey.swift */; };
 		29D1697A2B85D4F800A70638 /* HaptickEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29D169792B85D4F800A70638 /* HaptickEngine.swift */; };
 		29E10F5A2C1AF8B300A35A4B /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 29E10F592C1AF8B300A35A4B /* FirebaseStorage */; };
 		29E10F642C21696B00A35A4B /* GlobalSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29E10F632C21696B00A35A4B /* GlobalSettings.swift */; };
@@ -96,7 +96,6 @@
 		291339162E17D12F00F14F30 /* StatusViewNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusViewNotification.swift; sourceTree = "<group>"; };
 		2915AD1B2BF4A2AA0038239A /* BPUserProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPUserProfileView.swift; sourceTree = "<group>"; };
 		2916E60A2C4E85400025DCC6 /* BPEditEventControlPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPEditEventControlPanel.swift; sourceTree = "<group>"; };
-		2916E60D2C4E875B0025DCC6 /* BPPlanDelegateProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPPlanDelegateProtocol.swift; sourceTree = "<group>"; };
 		2916E62B2C58B83E0025DCC6 /* AnimatedStart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedStart.swift; sourceTree = "<group>"; };
 		291CDA532DDCB2CB00724F53 /* DividerWithText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DividerWithText.swift; sourceTree = "<group>"; };
 		291CDA5B2DDF3CF800724F53 /* SelectableModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectableModifier.swift; sourceTree = "<group>"; };
@@ -143,6 +142,7 @@
 		29C8F9462CC24FD000A7D5D2 /* MemberDataTextCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberDataTextCellView.swift; sourceTree = "<group>"; };
 		29CA68452DA40B1E00460EFE /* VenueCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VenueCell.swift; sourceTree = "<group>"; };
 		29CCF2EB2C807FE000BCEF34 /* SessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionManager.swift; sourceTree = "<group>"; };
+		29D141FA2E5DEF5C0032277A /* ImageWidthPreferenceKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageWidthPreferenceKey.swift; sourceTree = "<group>"; };
 		29D169792B85D4F800A70638 /* HaptickEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HaptickEngine.swift; sourceTree = "<group>"; };
 		29E10F632C21696B00A35A4B /* GlobalSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalSettings.swift; sourceTree = "<group>"; };
 		29E10F652C2169C400A35A4B /* GlobalProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalProperties.swift; sourceTree = "<group>"; };
@@ -251,14 +251,6 @@
 			path = subViews;
 			sourceTree = "<group>";
 		};
-		2916E60C2C4E871A0025DCC6 /* Protocols */ = {
-			isa = PBXGroup;
-			children = (
-				2916E60D2C4E875B0025DCC6 /* BPPlanDelegateProtocol.swift */,
-			);
-			path = Protocols;
-			sourceTree = "<group>";
-		};
 		2916E6192C4F9DE40025DCC6 /* Managers */ = {
 			isa = PBXGroup;
 			children = (
@@ -342,7 +334,7 @@
 		2951142F2C4E71FF005E4BF8 /* Event */ = {
 			isa = PBXGroup;
 			children = (
-				2916E60C2C4E871A0025DCC6 /* Protocols */,
+				29D141FA2E5DEF5C0032277A /* ImageWidthPreferenceKey.swift */,
 				2994DE662C157C9F00DF9060 /* BroadcastEditView.swift */,
 				290127A92CCFD5300054B2D7 /* EventHeader */,
 				2951142E2C4E71A9005E4BF8 /* EditPoints */,
@@ -781,6 +773,7 @@
 				29AE68762BE24F9A00DE8FAB /* Message.swift in Sources */,
 				297507BE2C9426B400E58091 /* SaveEditControlPanelView.swift in Sources */,
 				29AE68742BE24F9300DE8FAB /* Chat.swift in Sources */,
+				29D141FB2E5DEF5C0032277A /* ImageWidthPreferenceKey.swift in Sources */,
 				29C041F22ACBF45B008B3E1F /* Color+Ext.swift in Sources */,
 				291339172E17D12F00F14F30 /* StatusViewNotification.swift in Sources */,
 				291E72CB2BBEDF23008092D7 /* EditMemberInfoView.swift in Sources */,
@@ -796,7 +789,6 @@
 				295C871E2DD38997003B01B0 /* BroadcastStatus.swift in Sources */,
 				295C87202DD47B5B003B01B0 /* ExploreEventView.swift in Sources */,
 				29D1697A2B85D4F800A70638 /* HaptickEngine.swift in Sources */,
-				2916E60E2C4E875B0025DCC6 /* BPPlanDelegateProtocol.swift in Sources */,
 				299190292C8A064400D2CDDC /* String+Ext.swift in Sources */,
 				291339152E17D11900F14F30 /* CycleType.swift in Sources */,
 				291CDA5C2DDF3CF900724F53 /* SelectableModifier.swift in Sources */,

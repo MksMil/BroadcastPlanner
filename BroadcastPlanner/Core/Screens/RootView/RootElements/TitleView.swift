@@ -21,12 +21,3 @@ struct TitleView: View {
     }
 }
 
-#if DEBUG
-#Preview {
-    RootView()
-        .environmentObject(GlobalSettings())
-        .environmentObject(SessionManager())
-        .environmentObject(ApplicationState())
-        .environmentObject(Router())
-}
-#endif

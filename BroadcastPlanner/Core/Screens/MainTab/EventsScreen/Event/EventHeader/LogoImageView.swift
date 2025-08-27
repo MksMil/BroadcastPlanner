@@ -3,30 +3,27 @@ import SwiftUI
 struct LogoImageView: View {
     @EnvironmentObject var dataManager: DataManager
     @State var isSheetPresented: Bool = false
-    @State var selectedClub: Club?
+    @Binding var selectedClub: Club?
     @State private var image: Image = Image(systemName: "person.circle")
-    let excludedClub: Club?
+    @Binding var excludedClub: Club?
     var logoSize: Double
     let cancelAction: ()->Void
     let accessAction: (Club)->Void
     let editable: Bool
     
     
-    init(club: Club?,excludedClub: Club? = nil,logoSize: Double = 100,editable: Bool = true,
-         cancelAction: @escaping () -> Void,
-         accessAction: @escaping (Club) -> Void) {
-        self.logoSize = logoSize
-        self.editable = editable
-        self.cancelAction = cancelAction
-        self.accessAction = accessAction
-        self._selectedClub = State(initialValue: club)
-        self.excludedClub = excludedClub
-    }
+//    init(club: Club?,excludedClub: Club? = nil,logoSize: Double = 100,editable: Bool = true,
+//         cancelAction: @escaping () -> Void,
+//         accessAction: @escaping (Club) -> Void) {
+//        self.logoSize = logoSize
+//        self.editable = editable
+//        self.cancelAction = cancelAction
+//        self.accessAction = accessAction
+//        self._selectedClub = State(initialValue: club)
+//        self.excludedClub = excludedClub
+//    }
     
     var body: some View {
-#if DEBUG
-        let _ = Self._printChanges()
-#endif
         image
             .resizable()
             .scaledToFit()
@@ -50,8 +47,8 @@ struct LogoImageView: View {
             .sheet(
                 isPresented: $isSheetPresented,
                 content: {
-                    ClubSelectionSheetView(selectedClub: selectedClub,
-                                           excludedClub: excludedClub,
+                    ClubSelectionSheetView(selectedClub: $selectedClub,
+                                           excludedClub: $excludedClub,
                                            acceptAction: { newClub in
                         selectedClub = newClub
                         update()
@@ -72,30 +69,14 @@ struct LogoImageView: View {
                let newImage = await dataManager.getImageWithId(id, type: GlobalProperties.ImageType.club, size: ImageSizes.mediumImages)
             {
                 await MainActor.run {
-//                    withAnimation{
                         image = Image(uiImage: newImage)
-//                    }
                 }
             } else {
                 await MainActor.run {
-//                    withAnimation{
                         image = Image(systemName: "person.circle")
-//                    }
                 }
             }
         }
     }
 }
 
-//#Preview {
-//    ZStack{
-//        Color.blue
-//            .ignoresSafeArea()
-//        LogoImageView(club: nil, cancelAction: {
-//            
-//        }, accessAction: { _ in
-//            
-//        }
-//)
-//    }
-//}

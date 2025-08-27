@@ -34,7 +34,7 @@ struct LocationSelectionView: View {
                     .font(.title2)
                     .lineLimit(2)
                 
-                //loation address
+                //venue address
                 Text(vm.address)
                     .font(.footnote)
                     .lineLimit(2)
@@ -71,7 +71,6 @@ struct LocationSelectionView: View {
                         vm.update(title: venue.viewTitle,
                                   address: venue.viewAddress,
                                   images: images)
-
                     }
                 }
             }

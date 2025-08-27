@@ -2,14 +2,6 @@ import Combine
 import SpriteKit
 import SwiftUI
 
-struct ImageWidthPreferenceKey: PreferenceKey {
-    static var defaultValue: CGFloat?
-
-    static func reduce(value: inout CGFloat?, nextValue: () -> CGFloat?) {
-        value = value ?? nextValue()
-    }
-}
-
 struct BroadcastEditView: View {
     let logoSize: Double = 90
         
@@ -26,12 +18,22 @@ struct BroadcastEditView: View {
     @State private var ownerToRemove: Member?
     @State private var memberToShow: VenuePoint?
     
-    @State private var imageWidth: CGFloat = .infinity
+    @State var homeClub: Club?
+    @State var guestClub: Club?
+    
+    //test
+//    @State var testImage = Image(systemName: "photo")
+    
+    
+    @State private var imageWidth: Double = .infinity
+    
+    init(broadcast: Broadcast) {
+        self.broadcast = broadcast
+        self._homeClub = State(initialValue: broadcast.homeClub)
+        self._guestClub = State(initialValue: broadcast.guestClub)
+    }
     
     var body: some View {
-#if DEBUG
-        let _ = Self._printChanges()
-#endif
         ZStack {
             MainBackground()
 
@@ -54,28 +56,27 @@ struct BroadcastEditView: View {
                             
                                 
                                 //home team logo/selection action
-                                LogoImageView(club: broadcast.homeClub,
-                                              excludedClub: broadcast.guestClub,
+                                LogoImageView(selectedClub: $homeClub,
+                                              excludedClub: $guestClub,
                                               logoSize: logoSize,
                                               cancelAction: {},
                                               accessAction: { club in
                                     broadcast.homeClub = club
-                                })
+                                }, editable: true)
                                 //broadcast date section
                                 TimeAndDateSelectionView(date: broadcast.viewDate,
                                                          logoSize: logoSize) {newDate in
                                     broadcast.date = newDate
                                 }
                                 //guest team logo/selection action
-                                LogoImageView(club: broadcast.guestClub,
-                                              excludedClub: broadcast.homeClub,
+                                LogoImageView(selectedClub:$guestClub,
+                                              excludedClub: $homeClub,
                                               logoSize: logoSize,
                                               cancelAction: {},
                                               accessAction: { club in
                                     broadcast.guestClub = club
-                                })
+                                },editable: true)
                             }
-                            //                            .padding(.top)
                             Spacer()
                         }
                         .padding()
@@ -115,6 +116,7 @@ struct BroadcastEditView: View {
                     ScrollView(.horizontal){
                         HStack(alignment: .center){
                             ForEach(broadcast.viewOwners){ owner in
+                                //TODO: menu route
                                 LogoInWhiteRectView(id: owner.viewId)
                                     .frame(width: 30, height: 30)
                                     .contextMenu {
@@ -146,46 +148,46 @@ struct BroadcastEditView: View {
                 .frame(height: 40)
                 .padding(.leading)
                 
-                
                 //preview + fsc editStad / editCar  views
-                HStack(spacing: 15) {
-                    VStack(alignment: .leading){
-                        GeometryReader{ geo in
-                            let h = geo.size.height
-                            ImageWrapper(id: broadcast.viewVenueSchemaPreviewId, type: .venuePreview, imageSize: .originImages)
-                                .scaledToFit()
-                                .frame(height: h)
-                                .background(
-                                    GeometryReader { imageGeometry in
-                                        Color.clear
-                                            .preference(
-                                                key: ImageWidthPreferenceKey.self,
-                                                value: imageGeometry.size.width
-                                            )
-                                    }
-                                )
-                        }
-                        
-                        .onPreferenceChange(ImageWidthPreferenceKey.self) { newWidth in
-                            if let newWidth, newWidth > 0, newWidth.isFinite{
-                                imageWidth = newWidth
+                HStack(spacing: 5) {
+                    VStack(alignment: /*broadcast.viewObvans.count > 0 ? .leading: */.center){
+                            ImageWrapper(id: broadcast.viewVenueSchemaPreviewId,
+                                         type: .venuePreview,
+                                         imageSize: .originImages)
+                            .scaledToFit()
+                            .frame(height: 150)
+                            .background(
+                                GeometryReader { imageGeometry in
+                                    Color.clear
+                                        .preference(
+                                            key: ImageWidthPreferenceKey.self,
+                                            value: imageGeometry.size.width
+                                        )
+                                }
+                            )
+                            .onPreferenceChange(ImageWidthPreferenceKey.self) { newWidth in
+                                if let newWidth, newWidth > 0, newWidth.isFinite{
+                                    print("new imageWidth:\(imageWidth)")
+                                    imageWidth = newWidth
+                                }
                             }
-                        }
+                            .overlay {
+                                if let memberToShow{
+                                    Circle().stroke(Color.red, lineWidth: 1)
+                                        .frame(width: 15, height: 15)
+                                        .scaleEffect(memberToShow.viewScaleFactor)
+                                        .position(CGPoint(x: imageWidth * memberToShow.viewX ,
+                                                          y: 150 * (1 - memberToShow.viewY)))
+                                }
+                            }
+                        .border(Color.orange, width: 2)
                         .onTapGesture {
                             router.routeTo(path: .stadPointsEdit(broadcast))
                         }
-                        .overlay {
-                            if let memberToShow{
-                                Circle().stroke(Color.red, lineWidth: 1)
-                                    .frame(width: 15, height: 15)
-                                    .scaleEffect(memberToShow.viewScaleFactor)
-                                    .position(CGPoint(x: imageWidth * memberToShow.viewX ,
-                                                      y: 150 * (1 - memberToShow.viewY) - 2))
-                            }
-                        }
-                        .frame(height: 150)
+                        
                         Divider()
                             .opacity(broadcast.viewVenuePoints.count > 0 ? 1 : 0)
+                            .padding(.horizontal,5)
                         //crews smart list
                         SmartCollection(hSpacing: 5, vSpacing: 5){
                             ForEach(broadcast.viewVenuePoints.sorted(by: { first, second in
@@ -195,6 +197,7 @@ struct BroadcastEditView: View {
                                     .frame(width: 30, height: 30)
                                     .contextMenu {
                                         Text("\(point.viewMembers.first?.viewCompactName ?? "empty position")")
+                                        //TODO: menu route
                                         Button{
                                             
                                         } label:{
@@ -208,16 +211,20 @@ struct BroadcastEditView: View {
                                     }
                                     .onTapGesture {
                                         memberToShow = memberToShow == point ? nil: point
+                                        print("\(imageWidth)")
                                     }
                                     .scaleEffect(point == memberToShow ? 1.05 : 0.95)
                                     .opacity(point == memberToShow ? 1 : 0.75)
                             }
                         }
+                        .padding(.horizontal,5)
                         Spacer()
                     }
-                    .frame(maxWidth: imageWidth)
-                    .layoutPriority(2)
+                    .frame(maxWidth: broadcast.viewObvans.count > 0 ? imageWidth + 20: .infinity)
+                    .layoutPriority(1)
                     Divider()
+                        .opacity(broadcast.viewObvans.count > 0 ? 1 : 0)
+                        .offset(x: -10)
                     VStack(alignment: .leading){
                         ScrollView{
                             ForEach(broadcast.viewObvans.sorted(by: { first, second in
@@ -235,6 +242,7 @@ struct BroadcastEditView: View {
                                                 .frame(width: 30, height: 30)
                                                 .contextMenu {
                                                     Text("\(crew.viewPosition): \(crew.member?.viewCompactName ?? "")")
+                                                    //TODO: menu route
                                                     Button{
                                                         
                                                     } label:{
@@ -255,11 +263,10 @@ struct BroadcastEditView: View {
                         }
                         Spacer()
                     }
-                    .frame(maxWidth: imageWidth)
-                    .layoutPriority(1)
+                    .offset(x: -10)
                 }
                 .frame(maxWidth: .infinity)
-                .padding(.horizontal)
+//                .padding(.horizontal)
                 Spacer()
             }
             .transitionWithOpacity()
@@ -274,11 +281,9 @@ struct BroadcastEditView: View {
             }
         }
         .onAppear{
-            
             appState.primaryAction = {
                 do{
-                    try dataManager.saveAndPublish(publish: .broadcasts,
-                                               id: [broadcast.viewId])
+                   try dataManager.saveAndPublish(publish: .broadcasts, id: [broadcast.viewId])
                 } catch{
                     print("error save context: \(error.localizedDescription)")
                     //show error in 'status'
@@ -304,6 +309,16 @@ struct BroadcastEditView: View {
                 }
             }
         }
+//        .task{
+//            
+//                if let id = broadcast.venueSchemaPreview?.viewId,
+//                   let uiimage = await dataManager.getImageWithId(id, type: GlobalProperties.ImageType.venuePreview, size: .originImages){
+//                    await MainActor.run{
+//                        testImage = Image(uiImage: uiimage)
+//                    }
+//                }
+//            
+//        }
     }
 }
 
