@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct AnimatedStart: View {
-    @EnvironmentObject var appState: ApplicationState
     @State private var animate: Bool = false
+  
     var body: some View {
         ZStack{
             MainBackground()
@@ -19,16 +19,13 @@ struct AnimatedStart: View {
                     withAnimation(
                         .linear(duration: 1)
                         .repeatForever()) { animate.toggle() }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 3){
-                        appState.animationFinished()
-                    }
+
                 }
-                .transitionWithOpacity()
         }
         .navigationBarBackButtonHidden()
     }
 }
 
-//#Preview {
-//    AnimatedStart()
-//}
+#Preview {
+    AnimatedStart()
+}

@@ -1,81 +1,66 @@
 import Foundation
-import FirebaseAuth
+import Firebase
 
-enum BPError: Error {
-    //Network
-    case invalidURL
-    case invalidData
-    case invalidResponce
+// MARK: - BPError
+// Централизованные ошибки приложения.
+// Добавлены новые кейсы под нужды аутентификации.
+
+enum BPError: LocalizedError {
+
     case unableToComplete
+    case invalidData
     case authError
-    
-    //
-    
-//    var bpErrorDescription: (String, String) {
-//        switch self {
-//        case .invalidURL:
-//            return ("","")
-//        case .invalidData:
-//            return ("","")
-//        case .invalidResponce:
-//            return ("","")
-//        case .unableToComplete:
-//            return ("","")
-////        default:
-////            return ("","")
-//        }
-//    }
-}
+    case invalidEmail
+    case weakPassword
+    case emailAlreadyInUse
+    case userNotFound
+    case wrongPassword
+    case networkError
+    case unknown(Error)
 
-//handler, returned string for message and name of sf-symbol for Image(systemname: ). optionally can make some 'completion' task
+    // MARK: - LocalizedError
 
-enum BPErrorHandleManager {
-    
-    // MARK: - Firebase error handler
-    static func handleFError(error: Error) -> (String, String){
-
-        switch (error as NSError).code {
-            //Auth
-        case AuthErrorCode.wrongPassword.rawValue:
-            return ("Wrong Password!","lock")
-        case AuthErrorCode.userDisabled.rawValue:
-            return ("Account disabled, please contact with network administrator","person.fill.badge.minus")
-        case AuthErrorCode.invalidEmail.rawValue:
-            return ("Wrong E-mail","person.slash.fill")
-            // Rregister
-        case AuthErrorCode.weakPassword.rawValue:
-            return ("Password too weak!","figure.child.and.lock.open")
-        case AuthErrorCode.userNotFound.rawValue:
-            return ("Account not founded","person.fill.questionmark")
-        case AuthErrorCode.emailAlreadyInUse.rawValue:
-            return ("This E-mail already in use","person.fill.xmark")
-            //network
-        case AuthErrorCode.networkError.rawValue:
-            return ("Network Error","network.slash")
-        default:
-            return ("Unknown Error, Sorry","sparkles")
-        }
-    }
-    
-    // MARK: - Custom error handling
-    static func handleBPError(error: BPError) -> (String, String){
-        switch error {
-        case .invalidURL:
-            return ("Invalid URL","eye.slash")
-        case .authError:
-            return ("Authorization Error","person.fill.xmark")
+    var errorDescription: String? {
+        switch self {
         case .unableToComplete:
-            return ("Unable to complete operation","wrongwaysign.fill")
+            return "Не удалось выполнить операцию. Попробуйте ещё раз."
         case .invalidData:
-            return ("Invalid data","checkmark.circle.badge.xmark.fill")
-        default:
-            return ("Unknown Error, Sorry","sparkles")
+            return "Получены некорректные данные."
+        case .authError:
+            return "Ошибка авторизации. Пожалуйста, войдите снова."
+        case .invalidEmail:
+            return "Введите корректный адрес электронной почты."
+        case .weakPassword:
+            return "Пароль слишком простой. Используйте не менее 8 символов."
+        case .emailAlreadyInUse:
+            return "Этот email уже используется другим аккаунтом."
+        case .userNotFound:
+            return "Пользователь с таким email не найден."
+        case .wrongPassword:
+            return "Неверный пароль."
+        case .networkError:
+            return "Нет подключения к интернету. Проверьте сеть."
+        case .unknown(let error):
+            return error.localizedDescription
         }
-        
     }
-    
-    // MARK: - Mock Error
-    static var mockError: (String, String){
-        return ("Error","wifi.exclamationmark")
+
+    // MARK: - Firebase error mapping
+    // Используется для конвертации AuthErrorCode → BPError
+
+    static func from(_ error: Error) -> BPError {
+        let nsError = error as NSError
+      guard let authError = AuthErrorCode.Code(rawValue: nsError.code) else {
+            return .unknown(error)
+        }
+        switch authError {
+        case .invalidEmail:             return .invalidEmail
+        case .weakPassword:             return .weakPassword
+        case .emailAlreadyInUse:        return .emailAlreadyInUse
+        case .userNotFound:             return .userNotFound
+        case .wrongPassword:            return .wrongPassword
+        case .networkError:             return .networkError
+        default:                        return .unknown(error)
+        }
     }
 }

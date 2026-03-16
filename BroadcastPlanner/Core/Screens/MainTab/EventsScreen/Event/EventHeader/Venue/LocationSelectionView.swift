@@ -73,8 +73,13 @@ struct LocationSelectionView: View {
                                   images: images)
                     }
                 }
+            } else {
+                vm.updateImages(newImages: [])
             }
         }
+        .onDisappear(perform: {
+            vm.stop()
+        })
         .sheet(isPresented: $vm.isLocationSheetPresented) {
             VenueSelectionSheetView(selectedVenue: vm.venue){ venue in
                 if let venue {
@@ -100,14 +105,14 @@ struct LocationSelectionView: View {
     }
 }
 
-#Preview {
-    let mdm = DataManager(globalDataManager: NetworkManager())
-    mdm.setMember(id: "123")
-    let localEvent: Broadcast = mdm.mainContext.fetchOrCreateObject(withID: "id")
-
-    return BroadcastEditView(broadcast:localEvent)
-        .environmentObject(SessionManager())
-        .environmentObject(GlobalSettings())
-        .environment(\.managedObjectContext, mdm.mainContext)
-        .environmentObject(mdm)
-}
+//#Preview {
+//    let mdm = DataManager(globalDataManager: NetworkManager())
+//    mdm.setMember(id: "123")
+//    let localEvent: Broadcast = mdm.mainContext.fetchOrCreateObject(withID: "id")
+//
+//    return BroadcastEditView(broadcast:localEvent)
+//        .environmentObject(SessionManager())
+//        .environmentObject(GlobalSettings())
+//        .environment(\.managedObjectContext, mdm.mainContext)
+//        .environmentObject(mdm)
+//}

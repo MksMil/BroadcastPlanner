@@ -1,5 +1,5 @@
 import Foundation
-import SwiftUICore
+import SwiftUI
 import CoreData
 
 public class Crew: NSManagedObject {

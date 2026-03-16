@@ -40,18 +40,18 @@ struct BPMessengerView: View {
 //#Preview {
 //    BPMessengerView()
 //}
-#Preview {
-    let dm = DataManager(globalDataManager: NetworkManager())
-    let appState = ApplicationState()
-    dm.networkManager.eventProgressHandler = appState
-    return RootView()
-        .environmentObject(GlobalSettings())
-        .environmentObject(SessionManager())
-        .environmentObject(appState)
-        .environmentObject(Router())
-        .environmentObject(dm)
-        .environment(\.managedObjectContext, dm.mainContext)
-}
+//#Preview {
+//    let dm = DataManager(globalDataManager: NetworkManager())
+//    let appState = ApplicationState()
+//    dm.networkManager.eventProgressHandler = appState
+//    return RootView()
+//        .environmentObject(GlobalSettings())
+//        .environmentObject(SessionManager())
+//        .environmentObject(appState)
+//        .environmentObject(Router())
+//        .environmentObject(dm)
+//        .environment(\.managedObjectContext, dm.mainContext)
+//}
 #endif
 // MARK: - Get message
 struct GetMessageItemView: View {

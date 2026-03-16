@@ -266,7 +266,7 @@ struct AddEditVenueView: View {
                                 imageIds.removeAll { el in
                                     el == idToRemove
                                 }
-                                dataManager.removeImageWithId(id: idToRemove)
+//                                dataManager.removeImageWithId(id: idToRemove)
                                 vm.backgroundImageToRemove = nil
                             }
                         }
@@ -284,7 +284,7 @@ struct AddEditVenueView: View {
                                 schemasIds.removeAll { el in
                                     el == idToRemove
                                 }
-                                dataManager.removeImageWithId(id: idToRemove)
+//                                dataManager.removeImageWithId(id: idToRemove)
                                 vm.selectedEventTemplate = nil
                             }
                         }
@@ -295,48 +295,48 @@ struct AddEditVenueView: View {
         .ignoresSafeArea(.keyboard)
         .navigationBarBackButtonHidden()
         .onReceive(vm.$eventBackgroundUIImage) {uiimage in
-            guard let uiimage else { return }
-            Task{
-                let lastUpdatedValue = Date.now
-                let id = UUID().uuidString
-                schemasIds.append(id)
-                await dataManager.saveNewImage(id: id,uiimage: uiimage, type: GlobalProperties.ImageType.broadcastSchema, parent: venue,lastUpdated: lastUpdatedValue)
-            }
+//            guard let uiimage else { return }
+//            Task{
+//                let lastUpdatedValue = Date.now
+//                let id = UUID().uuidString
+//                schemasIds.append(id)
+//                await dataManager.saveNewImage(id: id,uiimage: uiimage, type: GlobalProperties.ImageType.broadcastSchema, parent: venue,lastUpdated: lastUpdatedValue)
+//            }
         }
         .onReceive(vm.$uiimages) { images in
-            if !images.isEmpty{
-                let lastUpdatedValue = Date.now
-                    for uiimage in images{
-                        Task{
-                            let id = UUID().uuidString
-                            imageIds.append(id)
-                            await dataManager.saveNewImage(id: id,uiimage: uiimage, type: GlobalProperties.ImageType.venue, parent: venue,lastUpdated: lastUpdatedValue)
-                    }
-                }
-            }
+//            if !images.isEmpty{
+//                let lastUpdatedValue = Date.now
+//                    for uiimage in images{
+//                        Task{
+//                            let id = UUID().uuidString
+//                            imageIds.append(id)
+//                            await dataManager.saveNewImage(id: id,uiimage: uiimage, type: GlobalProperties.ImageType.venue, parent: venue,lastUpdated: lastUpdatedValue)
+//                    }
+//                }
+//            }
         }
         .onAppear{
             schemasIds = eventTemplates.map{$0.viewId}
-            appState.primaryAction = {
-                appState.makePrimaryButtonEnabled(false)
-                dataManager.mainContext.performAndWait {
-                    let lastUpdatedValue = Date.now
-                    venue.lastUpdated = lastUpdatedValue
-                    try? dataManager.mainContext.save()
-                    Task{
-                        await dataManager.networkManager.saveData(venue.dto,
-                                                                  withId: venue.viewId,
-                                                                  withType: GlobalProperties.Path.venues)
-                    }
-                }
-                router.stepBack()
-            }
-            appState.secondaryAction = {
-            }
-            appState.stepBackAction = {
-                dataManager.mainContext.rollback()
-                router.stepBack()
-            }
+//            appState.primaryAction = {
+//                appState.makePrimaryButtonEnabled(false)
+//                dataManager.mainContext.performAndWait {
+//                    let lastUpdatedValue = Date.now
+//                    venue.lastUpdated = lastUpdatedValue
+//                    try? dataManager.mainContext.save()
+//                    Task{
+//                        await dataManager.networkManager.saveData(venue.dto,
+//                                                                  withId: venue.viewId,
+//                                                                  withType: GlobalProperties.Path.venues)
+//                    }
+//                }
+//                router.stepBack()
+//            }
+//            appState.secondaryAction = {
+//            }
+//            appState.stepBackAction = {
+//                dataManager.mainContext.rollback()
+//                router.stepBack()
+//            }
         }
         .environmentObject(vm)
     }

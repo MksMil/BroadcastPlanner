@@ -38,7 +38,7 @@ struct NotificationView: View {
             .rotation3DEffect(.degrees(xAngle), axis: (x: 1, y: 0, z: 0))
 
             .onTapGesture {
-                router.routeFromNotification(path: source[counter].route)
+//                router.routeFromNotification(path: source[counter].route)
             }
             .frame(height: fontSize)
             .onReceive(appState.currentTime) { date in

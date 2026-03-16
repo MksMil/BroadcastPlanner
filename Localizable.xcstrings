@@ -26,9 +26,6 @@
     "%lld crews" : {
 
     },
-    "1K" : {
-
-    },
     "10:30 AM" : {
 
     },
@@ -39,9 +36,6 @@
 
     },
     "Add Obvan" : {
-
-    },
-    "Add specialization" : {
 
     },
     "Add Venue" : {
@@ -56,6 +50,9 @@
     "Broadcast" : {
 
     },
+    "Broadcasts" : {
+
+    },
     "Cancel" : {
 
     },
@@ -66,6 +63,9 @@
 
     },
     "Choose Venue" : {
+
+    },
+    "Clear" : {
 
     },
     "Crews: %@" : {
@@ -83,16 +83,10 @@
     "Discard all changes and step back?" : {
 
     },
-    "Done" : {
-
-    },
     "empty" : {
 
     },
     "Forget password" : {
-
-    },
-    "Hello Error" : {
 
     },
     "Hours" : {
@@ -119,6 +113,9 @@
     "Message" : {
 
     },
+    "Messenger" : {
+
+    },
     "Minutes" : {
 
     },
@@ -128,10 +125,19 @@
     "New Broadcast" : {
 
     },
+    "Next" : {
+
+    },
     "Not Registered?   Sign Up!" : {
 
     },
+    "OK" : {
+
+    },
     "Owned by:" : {
+
+    },
+    "Passwords don't match" : {
 
     },
     "Permanently erase the Club in the trash?" : {
@@ -198,6 +204,12 @@
 
     },
     "Welcome!\nselection: %lld" : {
+
+    },
+    "Закрыть" : {
+
+    },
+    "Меню" : {
 
     }
   },

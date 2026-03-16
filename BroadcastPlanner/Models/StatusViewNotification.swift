@@ -6,7 +6,7 @@ struct StatusViewNotification: Identifiable,Equatable {
     let text: String
     let textColor: Color
     let cycle: CycleType
-    let route: RouterPath = .broadcastList
+//    let route: RouterPath = .broadcastList
     
 }
 

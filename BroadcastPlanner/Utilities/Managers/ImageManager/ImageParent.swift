@@ -3,6 +3,7 @@
 ///Every project entity that have LocalImage property conforms to this protocol.
 ///Used in DataManager class in image control section.
 
+// TODO: objectID?
 protocol ImageParent {
     func assignImage(image: LocalImage, ofType: GlobalProperties.ImageType)
 }

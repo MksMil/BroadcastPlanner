@@ -1,6 +1,6 @@
 import SwiftUI
 import Combine
-
+@MainActor
 final class LocationSelectionViewModel: ObservableObject{
     
     @Published var isLocationSheetPresented: Bool = false
@@ -20,16 +20,13 @@ final class LocationSelectionViewModel: ObservableObject{
     var timerCancellable: Cancellable?
     private var cancellables: Set<AnyCancellable> = []
     
-    init(location: Venue?,placeholder: Image = Image(systemName: "photo")){
+    init(location: Venue?,
+         placeholder: Image = Image(systemName: "photo")){
         self.venue = location
         self.placeholder = placeholder
         self.title = location?.viewTitle ?? ""
         self.address = location?.viewAddress ?? ""
     }
-    deinit{
-        stop()
-    }
-    
     
     func start(){
         counter = 0
@@ -70,7 +67,6 @@ final class LocationSelectionViewModel: ObservableObject{
         if images.count > 1 { start() }
     }
     
-    @MainActor
     func update(title: String, address: String, images: [Image]){
         
         self.title = title

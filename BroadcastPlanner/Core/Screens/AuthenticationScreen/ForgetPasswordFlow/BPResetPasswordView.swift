@@ -16,7 +16,7 @@ struct BPResetPasswordView: View {
 //                .padding(.bottom,40)
                 
                 Button {
-                    sessionManager.sendResetPassword(with: email)
+//                    sessionManager.sendResetPassword(with: email)
                 } label: {
                     Text("Send")
                         .font(.title)

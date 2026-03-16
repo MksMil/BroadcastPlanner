@@ -63,26 +63,26 @@ struct ClubCollectionView: View {
         }
         .onAppear {
             selectedClub = nil
-            appState.primaryAction = {
-                visual = 0
-                var clubToRoute: Club!
-                if let club = selectedClub {
-                    clubToRoute = club
-                } else {
-                    dataManager.mainContext.performAndWait {
-                        clubToRoute = dataManager.mainContext.fetchOrCreateObject(
-                            withID: UUID().uuidString
-                    )
-                    }
-                }
-                router.routeTo(path: .addEditClub(clubToRoute))
-            }
-            appState.secondaryAction = {
-                isRemoveClubDialog = true
-            }
-            appState.stepBackAction = {
-                router.stepBack()
-            }
+//            appState.primaryAction = {
+//                visual = 0
+//                var clubToRoute: Club!
+//                if let club = selectedClub {
+//                    clubToRoute = club
+//                } else {
+//                    dataManager.mainContext.performAndWait {
+//                        clubToRoute = dataManager.mainContext.fetchOrCreateObject(
+//                            withID: UUID().uuidString
+//                    )
+//                    }
+//                }
+////                router.routeTo(path: .addEditClub(clubToRoute))
+//            }
+//            appState.secondaryAction = {
+//                isRemoveClubDialog = true
+//            }
+//            appState.stepBackAction = {
+//                router.stepBack()
+//            }
         }
         .navigationBarBackButtonHidden()
         .confirmationDialog(
@@ -91,43 +91,28 @@ struct ClubCollectionView: View {
         ) {
             Button("Remove Club", role: .destructive) {
                 // Handle empty trash action.
-                if let club = selectedClub {
-                    selectedClub = nil
-                    let id = club.viewId
-//                    dataManager.mainContext.performAndWait{
-                        if let imageToRemove = club.imageLogo {
-                            dataManager.removeImage(imageToRemove,fromGlobal: true)
-                        }
-                        dataManager.mainContext.delete(club)
-                        try? dataManager.saveAndPublish(
-                            publish: GlobalProperties.PublishChanges.clubs,
-                            id: []
-                        )
+//                if let club = selectedClub {
+//                    selectedClub = nil
+//                    let id = club.viewId
+////                    dataManager.mainContext.performAndWait{
+//                        if let imageToRemove = club.imageLogo {
+////                            dataManager.removeImage(imageToRemove,fromGlobal: true)
+//                        }
+//                        dataManager.mainContext.delete(club)
+//                        try? dataManager.saveAndPublish(
+//                            publish: GlobalProperties.PublishChanges.clubs,
+//                            id: []
+//                        )
+////                    }
+//                    appState.setIconToPrimaryButton(.plus)
+//                    appState.makeSecondaryButtonEnabled(false)
+//                    //remove from network club
+//                    Task{
+//                        await dataManager.networkManager.removeDataOfType(GlobalProperties.Path.clubs, withId: id)
 //                    }
-                    appState.setIconToPrimaryButton(.plus)
-                    appState.makeSecondaryButtonEnabled(false)
-                    //remove from network club
-                    Task{
-                        await dataManager.networkManager.removeDataOfType(GlobalProperties.Path.clubs, withId: id)
-                    }
-                    
-                }
+//                    
+//                }
             }
         }
     }
 }
-
-#if DEBUG
-    #Preview {
-        let dm = DataManager(globalDataManager: NetworkManager())
-        let appState = ApplicationState()
-        dm.networkManager.eventProgressHandler = appState
-        return RootView()
-            .environmentObject(GlobalSettings())
-            .environmentObject(SessionManager())
-            .environmentObject(appState)
-            .environmentObject(Router())
-            .environmentObject(dm)
-            .environment(\.managedObjectContext, dm.mainContext)
-    }
-#endif

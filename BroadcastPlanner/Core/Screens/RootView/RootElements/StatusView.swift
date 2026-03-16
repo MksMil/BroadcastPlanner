@@ -27,12 +27,12 @@ struct StatusView: View {
             Menu {
                 //Owner Info
                 Button {
-                    if menuState == .settings{
-                        router.routeFrom(from: .settings,
-                                         to: .ownerInfo)
-                    } else {
-                        router.routeTo(path: .ownerInfo)
-                    }
+//                    if menuState == .settings{
+//                        router.routeFrom(from: .settings,
+//                                         to: .ownerInfo)
+//                    } else {
+//                        router.routeTo(path: .ownerInfo)
+//                    }
                 } label: {
                     Label("Info", systemImage: "person")
                 }
@@ -40,12 +40,12 @@ struct StatusView: View {
                 
                 //Settings
                 Button {
-                    if menuState == .info{
-                        router.routeFrom(from: .ownerInfo,
-                                         to: .settings)
-                    } else {
-                        router.routeTo(path: .settings)
-                    }
+//                    if menuState == .info{
+//                        router.routeFrom(from: .ownerInfo,
+//                                         to: .settings)
+//                    } else {
+//                        router.routeTo(path: .settings)
+//                    }
                 } label: {
                     Label("Settings", systemImage: "gear")
                 }
@@ -55,13 +55,13 @@ struct StatusView: View {
                 Button {
                     Task{
                         appState.userOnlineStatus = .offline
-                        do{
-                            try sessionManager.logOut()
+//                        do{
+                            /*try*/ sessionManager.logOut()
                             appState.state = .notAuthorized
-                            router.routeTo(path: RouterPath.authScreen)
-                        }catch {
-                            print("failed to signing out: \(error.localizedDescription)")
-                        }
+//                            router.routeTo(path: RouterPath.authScreen)
+//                        }catch {
+//                            print("failed to signing out: \(error.localizedDescription)")
+//                        }
                     }
                 } label: {
                     Label("Log out", systemImage: "rectangle.portrait.and.arrow.right")

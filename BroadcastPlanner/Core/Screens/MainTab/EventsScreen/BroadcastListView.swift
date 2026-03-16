@@ -60,7 +60,7 @@ struct BroadcastListView: View {
                                 .id(broadcast.viewId)
                                 .onTapGesture {
                                     selectedBroadcast = broadcast
-                                    router.routeTo(path: .createEdit(broadcast))
+//                                    router.routeTo(path: .createEdit(broadcast))
                                 }
                                 .transition(
                                     .move(edge: .top)
@@ -78,16 +78,16 @@ struct BroadcastListView: View {
                 if dataManager.accessLevel < 2 {
                     Button {
                             opacity = 0
-                        Task{
-                            selectedBroadcast = try? await  dataManager.createEventWithCurrentUserOwnerInContextType()
-                            if let selectedBroadcast {
-                                router.routeTo(path: .createEdit(selectedBroadcast))
-                            } else {
-                                withAnimation(.easeOut(duration: 0.1)){
-                                    opacity = 1
-                                }
-                            }
-                        }
+//                        Task{
+//                            selectedBroadcast = try? await  dataManager.createEventWithCurrentUserOwnerInContextType()
+//                            if let selectedBroadcast {
+//                                router.routeTo(path: .createEdit(selectedBroadcast))
+//                            } else {
+//                                withAnimation(.easeOut(duration: 0.1)){
+//                                    opacity = 1
+//                                }
+//                            }
+//                        }
                     } label: {
                         Text("New Broadcast")
                             .font(.title2)
@@ -142,17 +142,3 @@ struct BroadcastListView: View {
     }
 }
 
-#if DEBUG
-#Preview {
-    let dm = DataManager(globalDataManager: NetworkManager())
-    let appState = ApplicationState()
-    dm.networkManager.eventProgressHandler = appState
-    return RootView()
-        .environmentObject(GlobalSettings())
-        .environmentObject(SessionManager())
-        .environmentObject(appState)
-        .environmentObject(Router())
-        .environmentObject(dm)
-        .environment(\.managedObjectContext, dm.mainContext)
-}
-#endif

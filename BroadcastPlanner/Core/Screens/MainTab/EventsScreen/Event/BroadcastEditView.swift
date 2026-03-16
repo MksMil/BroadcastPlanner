@@ -180,9 +180,8 @@ struct BroadcastEditView: View {
                                                           y: 150 * (1 - memberToShow.viewY)))
                                 }
                             }
-                        .border(Color.orange, width: 2)
                         .onTapGesture {
-                            router.routeTo(path: .stadPointsEdit(broadcast))
+//                            router.routeTo(path: .stadPointsEdit(broadcast))
                         }
                         
                         Divider()
@@ -234,7 +233,7 @@ struct BroadcastEditView: View {
                                     ImageWrapper(id: obvan.id, type: .obvan,imageSize: ImageSizes.smallImages)
                                         .scaledToFit()
                                         .onTapGesture {
-                                            router.routeTo(path: .stadPointsEdit(broadcast))
+//                                            router.routeTo(path: .stadPointsEdit(broadcast))
                                         }
                                     SmartCollection(hSpacing: 5, vSpacing: 5){
                                         ForEach(broadcast.crewsForObvan(obvan: obvan)){ crew in
@@ -274,10 +273,10 @@ struct BroadcastEditView: View {
         .navigationBarBackButtonHidden()
         .confirmationDialog("", isPresented: $isBroadcastRemoveConfirm) {
             Button("Delete Broadcast", role: .destructive){
-                Task{
-                   await dataManager.removeBroadcast(broadcast)
-                    router.stepBack()
-                }
+//                Task{
+//                   await dataManager.removeBroadcast(broadcast)
+//                    router.stepBack()
+//                }
             }
         }
         .onAppear{
@@ -289,10 +288,10 @@ struct BroadcastEditView: View {
                     //show error in 'status'
                     //log error
                 }
-                Task{
-                    await dataManager.updateBroadcast(broadcast)
-                }
-                router.stepBack()
+//                Task{
+//                    await dataManager.updateBroadcast(broadcast)
+//                }
+//                router.stepBack()
             }
             appState.secondaryAction = {
                 isBroadcastRemoveConfirm = true
@@ -321,18 +320,3 @@ struct BroadcastEditView: View {
 //        }
     }
 }
-
-#if DEBUG
-#Preview {
-    let dm = DataManager(globalDataManager: NetworkManager())
-    let appState = ApplicationState()
-    dm.networkManager.eventProgressHandler = appState
-    return RootView()
-        .environmentObject(GlobalSettings())
-        .environmentObject(SessionManager())
-        .environmentObject(appState)
-        .environmentObject(Router())
-        .environmentObject(dm)
-        .environment(\.managedObjectContext, dm.mainContext)
-}
-#endif

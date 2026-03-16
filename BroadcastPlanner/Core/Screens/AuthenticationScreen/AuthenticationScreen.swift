@@ -1,192 +1,196 @@
 import AuthenticationServices
-import Combine
-import Firebase
 import GoogleSignIn
 import GoogleSignInSwift
 import SwiftUI
 
 struct AuthenticationScreen: View {
-    @EnvironmentObject var sessionManager: SessionManager
-    @EnvironmentObject var router: Router
-    @EnvironmentObject var appState: ApplicationState
+  @EnvironmentObject var sessionManager: SessionManager
+  @EnvironmentObject var router: Router
 
-    var body: some View {
-        ZStack{
-            MainBackground()
-            ScrollView{
-                VStack(spacing: 5){
-                    // MARK: - Logo
-                    //logo here. circle is just a placeholder
-                    Circle()
-                        .opacity(0.8)
-                        .overlay {
-                            Text("LOGO")
-                                .font(.title)
-                                .bold()
-                                .foregroundStyle(.white)
-                        }
-                        .frame(width: 150, height: 150)
-                    Divider()
-                    
-                    // MARK: - Email/Password Zone
-                    
-                    VStack{
-                        RoundedRectangle(cornerRadius: 5)
-                            .fill( .ultraThinMaterial)
-                            .overlay {
-                                RoundedRectangle(cornerRadius: 5)
-                                    .stroke(.ultraThinMaterial)
-                            }
-                            .overlay {
-                                HStack {
-                                    Text(sessionManager.email.isEmpty ? "login" : sessionManager.email)
-                                        .foregroundStyle(sessionManager.email.isEmpty ? .gray: .primary)
-                                        .padding(.leading, 8)
-                                    Spacer()
-                                }
-                            }
-                            .frame(height: 40)
-                            .onTapGesture {
-                                appState.cleanTFInfo()
-                                appState.fieldType = .email
-                                appState.isSecure = false
-                                appState.promptString = "Enter login / e-mail"
-                                appState.openTextFieldWithAction { email in
-                                    sessionManager.email = email
-                                }
-                            }
-                        
-                        RoundedRectangle(cornerRadius: 5)
-                            .fill( .ultraThinMaterial)
-                            .overlay {
-                                RoundedRectangle(cornerRadius: 5)
-                                    .stroke(.ultraThinMaterial)
-                            }
-                            .overlay {
-                                HStack {
-                                    Text(sessionManager.password.isEmpty ? "password" : (sessionManager.password.map{_ in "*"}).joined())
-                                        .foregroundStyle(sessionManager.password.isEmpty ? .gray: .primary)
-                                        .padding(.leading, 8)
-                                    Spacer()
-                                }
-                            }
-                            .frame(height: 40)
-                            .onTapGesture {
-                                appState.cleanTFInfo()
-                                appState.fieldType = .password
-                                appState.isSecure = true
-                                appState.promptString = "Enter password"
-                                appState.openTextFieldWithAction { pass in
-                                    sessionManager.password = pass
-                                }
-                            }
-                    }
-                    .padding(.horizontal)
-                    .frame(maxWidth: .infinity)
-                    
-                    // MARK: - "Forget password" button
-                    //TODO: forget password flow
-                                    HStack{
-                                        Spacer()
-//                                        NavigationLink {
-//                                            BPResetPasswordView()
-//                                        } label: {
-                                            Text("Forget password")
-//                                        }
-                                    }
-                                    .padding()
-                    
-                    // MARK: - "Sign In"
-                    Button{
-                        Task{
-                            await sessionManager.signInWithEmailAndPassword()
-                        }
-                    } label:{
-                        RoundedRectangle(cornerRadius: 5)
-                            .fill(Color.white.opacity(0.7))
-                            .overlay {
-                                HStack {
-                                    
-                                    Text("Sign In")
-                                        .foregroundStyle(.primary)
-                                        .padding(.leading, 8)
-                                    
-                                }
-                            }
-                            .frame(height: 40)
-                            .padding(.horizontal)
-                            .padding(.vertical,20)
-                    }
-                        
-//                    .padding(.bottom,20)
-//                    .padding(.top,10)
-                    
-                    // MARK: - "Sign in with Google"
-                    
-                    GoogleSignInButton(viewModel: GoogleSignInButtonViewModel(scheme: .light, style: .wide, state: .normal)) {
-                        Task{
-                            await sessionManager.signInWithGoogle()
-                        }
-                        
-                    }
-                    .frame(height: 44)
-                    .frame(width: 200)
-                    .padding(.horizontal)
-                    .padding(.bottom,10)
-                    
-                    
-//                    // MARK: - "Sign in with Apple"
-                    
-                    SignInWithAppleButton { request in
-                        request.requestedScopes = [.fullName, .email]
-                        sessionManager.getRandomNonceString()
-                        request.nonce = sessionManager.getSha256()
-                    } onCompletion: { result in
-                        Task{
-                            do { try await sessionManager.signInWithAppleWithResult(result)
-                            } catch {
-#if DEBUG
-                                print("DEBUG: AuthenticationScreen/signInWithApple failed: \(error.localizedDescription)")
-#endif
-                            }
-                        }
-                    }
-                    .signInWithAppleButtonStyle(.black)
-                    .frame(height: 44)
-                    .frame(width: 200)
-                    .padding(.horizontal)
-                    .padding(.bottom,20)
-                    
-                    // MARK: - "Sign Up" Link
-                    Spacer()
-                    Button{
-                        sessionManager.cleanFields()
-                        router.routeTo(path: RouterPath.sighUp)
-                    } label: {
-                        Text("Not Registered?   Sign Up!")
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                    }
-                }
-                
+  @State private var email: String = ""
+  @State private var password: String = ""
+
+  @FocusState private var focus: Field?
+
+  private enum Field { case email, password }
+
+  var body: some View {
+    ZStack {
+      MainBackground()
+      
+      ScrollView {
+        ZStack {
+          Color.white.opacity(0.01).onTapGesture {
+            focus = nil
+          }
+          
+          
+          VStack(spacing: 5) {
+            
+            // MARK: - Logo
+            Circle()
+              .opacity(0.8)
+              .overlay {
+                Text("LOGO")
+                  .font(.title)
+                  .bold()
+                  .foregroundStyle(.white)
+              }
+              .frame(width: 150, height: 150)
+            
+            Divider()
+            
+            // MARK: - Fields
+            VStack(spacing: 12) {
+              AuthInputField(
+                placeholder: "E-mail",
+                text: $email,
+                icon: "envelope",
+                keyboardType: .emailAddress,
+                returnKeyType: .done,
+                showClearButton: true
+              )
+              .focused($focus, equals: .email)
+              
+              AuthInputField(
+                placeholder: "Password",
+                text: $password,
+                isSecure: true,
+                icon: "lock",
+                returnKeyType: .go
+              ){
+                signIn()
+              }
+              .focused($focus, equals: .password)
             }
-            .scrollDisabled(true)
-            .transitionWithOpacity()
+            .padding(.horizontal)
+            .padding(.top, 8)
+            
+            // MARK: - Forgot password
+            HStack {
+              Spacer()
+              Button("Forget password") {
+                Task { await sessionManager.sendPasswordReset(to: email) }
+              }
+              .font(.footnote)
+              .disabled(email.isEmpty)
+            }
+            .padding(.horizontal)
+            .padding(.top, 4)
+            
+            // MARK: - Sign In
+            Button(action: signIn) {
+              RoundedRectangle(cornerRadius: 8)
+                .fill(Color.white.opacity(0.7))
+                .overlay {
+                  Text("Sign In")
+                    .foregroundStyle(.primary)
+                    .fontWeight(.medium)
+                }
+                .frame(height: 46)
+                .padding(.horizontal)
+            }
+            .padding(.vertical, 16)
+            .disabled(
+              sessionManager.isLoading || email.isEmpty || password.isEmpty
+            )
+            
+            // MARK: - Google
+            GoogleSignInButton(
+              viewModel: GoogleSignInButtonViewModel(
+                scheme: .light,
+                style: .wide,
+                state: .normal
+              )
+            ) {
+              Task { await sessionManager.signInWithGoogle() }
+            }
+            .frame(width: 200, height: 44)
+            .padding(.bottom, 10)
+            
+            // MARK: - Apple
+            SignInWithAppleButton { request in
+              let r = sessionManager.makeAppleRequestSync()
+              request.requestedScopes = r.requestedScopes
+              request.nonce = r.nonce
+            } onCompletion: { result in
+              Task { await sessionManager.signInWithApple(result: result) }
+            }
+            .signInWithAppleButtonStyle(.black)
+            .frame(width: 200, height: 44)
+            .padding(.bottom, 20)
+            
+            // MARK: - Sign Up
+            Spacer()
+            Button {
+              router.authPath.append(.signUp)
+            } label: {
+              Text("Not Registered?   Sign Up!")
+                .frame(maxWidth: .infinity)
+                .padding()
+            }
+          }
         }
-        .ignoresSafeArea(.keyboard)
-        .navigationBarBackButtonHidden()
-        .onDisappear{
-            sessionManager.cleanFields()
-        }
-        
+      }
+      .scrollDisabled(true)
+      .transitionWithOpacity()
+      
+      // MARK: - Loading
+      if sessionManager.isLoading {
+        ProgressView()
+          .progressViewStyle(.circular)
+          .padding(24)
+          .background(
+            .ultraThinMaterial,
+            in: RoundedRectangle(cornerRadius: 12)
+          )
+      }
     }
+    .ignoresSafeArea(.keyboard)
+    .navigationBarBackButtonHidden()
+    .alert(item: $sessionManager.alertItem) { alert in
+      Alert(
+        title: Text(alert.title),
+        message: Text(alert.message),
+        dismissButton: .default(Text("OK"))
+      )
+    }
+    .onDisappear {
+      email = ""
+      password = ""
+      focus = nil
+    }
+    .toolbar {
+          ToolbarItemGroup(placement: .keyboard) {
+            Button(role: .destructive) {
+              if focus == .email { email = "" }
+              else if focus == .password { password = "" }
+            } label: {
+              Text("Clear")
+            }
+            Spacer()
+            Button {
+              if focus == .email { focus = .password }
+              else if focus == .password { focus = nil; signIn() }
+            } label: {
+              Text("Next")
+//              Image(systemName: "arrow.forward.circle.fill")
+//                .imageScale(.large)
+            }
+          }
+        }
+    .animation(.easeInOut(duration: 1), value: focus)
+  }
+
+  private func signIn() {
+    focus = nil
+    Task { await sessionManager.signIn(email: email, password: password) }
+  }
 }
 
 // MARK: - Preview
 #Preview {
-    AuthenticationScreen()
-        .environmentObject(SessionManager())
-        .environmentObject(Router())
-        .environmentObject(ApplicationState())
-    
+  AuthenticationScreen()
+    .environmentObject(SessionManager())
+    .environmentObject(Router())
 }

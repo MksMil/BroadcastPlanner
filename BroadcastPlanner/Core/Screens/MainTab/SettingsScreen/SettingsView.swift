@@ -18,7 +18,7 @@ struct SettingsView: View {
             MainBackground()
             ScrollView{
                 Button {
-                    router.routeTo(path: .updateSessionUserData)
+//                    router.routeTo(path: .updateSessionUserData)
                 } label: {
                     Text("Change E-mail or Password")
                         .frame(maxWidth: .infinity)
@@ -47,12 +47,12 @@ struct SettingsView: View {
                     Task{
                         do {
                             // Create the authorization request.
-                            let request = sessionManager.makeRequest()
+                            let request = sessionManager.makeAppleRequestSync()
                             
                             // Perform the request and await its result.
                             let result = try await authorizationController
                                 .performRequest(request)
-                            sessionManager.linkWithApple(result: result)
+                          await sessionManager.linkWithApple(result: result)
                         } catch {
 #if DEBUG
                             print("DEBUG: Error linking with Apple")
@@ -72,7 +72,7 @@ struct SettingsView: View {
                 
                 //add club
                 Button {
-                    router.routeTo(path: .clubCollection)
+//                    router.routeTo(path: .clubCollection)
                 } label: {
                     Text("Add Club")
                         .frame(maxWidth: .infinity)
@@ -83,7 +83,7 @@ struct SettingsView: View {
                 }
                 //add venue
                 Button {
-                    router.routeTo(path: RouterPath.venueCollection)
+//                    router.routeTo(path: RouterPath.venueCollection)
                 }label: {
                     Text("Add Venue")
                         .frame(maxWidth: .infinity)
@@ -94,7 +94,7 @@ struct SettingsView: View {
                 }
                 //add obvan
                 Button {
-                    router.routeTo(path: RouterPath.obvanCollection)
+//                    router.routeTo(path: RouterPath.obvanCollection)
                 }label: {
                     Text("Add Obvan")
                         .frame(maxWidth: .infinity)
@@ -106,9 +106,9 @@ struct SettingsView: View {
                 //TODO: edit settings view
                 Button {
 //                    router.routeTo(path: RouterPath.venueCollection)
-                    Task{
-                       await dataManager.networkManager.saveGlobalSettingsToFirestore()
-                    }
+//                    Task{
+//                       await dataManager.networkManager.saveGlobalSettingsToFirestore()
+//                    }
                 }label: {
                     Text("Save settings")
                         .frame(maxWidth: .infinity)
@@ -121,20 +121,20 @@ struct SettingsView: View {
                 // MARK: - Delete member
                 Button(role: .destructive) {
                     // TODO: Alert with delete confirmation must have
-                    Task{
-                        do{
-                            try sessionManager.logOut()
-                            try await sessionManager.deleteUser()
-                            appState.state = .notAuthorized
-                            appState.userOnlineStatus = .offline
-                            dataManager.clearData()
-                            router.routeToAuth()
-                        } catch {
-#if DEBUG
-                            print("DEBUG:\(error.localizedDescription)")
-#endif
-                        }
-                    }
+//                    Task{
+//                        do{
+//                            try sessionManager.logOut()
+//                            try await sessionManager.deleteUser()
+//                            appState.state = .notAuthorized
+//                            appState.userOnlineStatus = .offline
+//                            dataManager.clearData()
+//                            router.routeToAuth()
+//                        } catch {
+//#if DEBUG
+//                            print("DEBUG:\(error.localizedDescription)")
+//#endif
+//                        }
+//                    }
                 } label: {
                     Text("Delete account")
                         .frame(maxWidth: .infinity)
@@ -149,29 +149,13 @@ struct SettingsView: View {
         }
         .navigationBarBackButtonHidden()
         .onAppear{
-            appState.primaryAction = {
-            }
-            appState.secondaryAction = {}
-            appState.stepBackAction = {
-                appState.setMenuState(state: .none)
-                router.stepBack()
-            }
+//            appState.primaryAction = {
+//            }
+//            appState.secondaryAction = {}
+//            appState.stepBackAction = {
+//                appState.setMenuState(state: .none)
+//                router.stepBack()
+//            }
         }
     }
 }
-
-#if DEBUG
-#Preview {
-    let dm = DataManager(globalDataManager: NetworkManager())
-    let appState = ApplicationState()
-    dm.networkManager.eventProgressHandler = appState
-    return RootView()
-        .environmentObject(GlobalSettings())
-        .environmentObject(SessionManager())
-        .environmentObject(appState)
-        .environmentObject(Router())
-        .environmentObject(dm)
-        .environment(\.managedObjectContext, dm.mainContext)
-}
-#endif
-

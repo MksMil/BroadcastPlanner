@@ -11,18 +11,6 @@ struct LogoImageView: View {
     let accessAction: (Club)->Void
     let editable: Bool
     
-    
-//    init(club: Club?,excludedClub: Club? = nil,logoSize: Double = 100,editable: Bool = true,
-//         cancelAction: @escaping () -> Void,
-//         accessAction: @escaping (Club) -> Void) {
-//        self.logoSize = logoSize
-//        self.editable = editable
-//        self.cancelAction = cancelAction
-//        self.accessAction = accessAction
-//        self._selectedClub = State(initialValue: club)
-//        self.excludedClub = excludedClub
-//    }
-    
     var body: some View {
         image
             .resizable()

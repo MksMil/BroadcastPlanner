@@ -64,30 +64,30 @@ struct ObvanCollectionView: View {
         }
         .onAppear {
             selectedObvan = nil
-            appState.primaryAction = {
-                visual = 0
-                var obvanToRoute: Obvan!
-                if let obvan = selectedObvan {
-                    obvanToRoute = obvan
-                } else {
-                    dataManager.mainContext.performAndWait {
-                        obvanToRoute = dataManager.mainContext.fetchOrCreateObject(
-                            withID: UUID().uuidString)
-                        let image: LocalImage = dataManager.mainContext.fetchOrCreateObject(withID: obvanToRoute.viewId)
-                        image.type = GlobalProperties.ImageType.obvan.rawValue
-                        obvanToRoute.image = image
-                        image.addToParentObvan(obvanToRoute)
-                        
-                    }
-                }
-                router.routeTo(path: .addEditObvan(obvanToRoute))
-            }
-            appState.secondaryAction = {
-                isRemoveObvanDialog = true
-            }
-            appState.stepBackAction = {
-                router.stepBack()
-            }
+//            appState.primaryAction = {
+//                visual = 0
+//                var obvanToRoute: Obvan!
+//                if let obvan = selectedObvan {
+//                    obvanToRoute = obvan
+//                } else {
+//                    dataManager.mainContext.performAndWait {
+//                        obvanToRoute = dataManager.mainContext.fetchOrCreateObject(
+//                            withID: UUID().uuidString)
+//                        let image: LocalImage = dataManager.mainContext.fetchOrCreateObject(withID: obvanToRoute.viewId)
+//                        image.type = GlobalProperties.ImageType.obvan.rawValue
+//                        obvanToRoute.image = image
+//                        image.addToParentObvan(obvanToRoute)
+//                        
+//                    }
+//                }
+////                router.routeTo(path: .addEditObvan(obvanToRoute))
+//            }
+//            appState.secondaryAction = {
+//                isRemoveObvanDialog = true
+//            }
+//            appState.stepBackAction = {
+//                router.stepBack()
+//            }
         }
         .navigationBarBackButtonHidden()
         .confirmationDialog(
@@ -96,29 +96,29 @@ struct ObvanCollectionView: View {
         ) {
             Button("Remove Obvan", role: .destructive) {
                 // Handle empty trash action.
-                if let obvan = selectedObvan {
-                    selectedObvan = nil
-                    let id = obvan.viewId
-                    let imageId: String? = obvan.image?.viewId
-                    
-                    dataManager.mainContext.performAndWait{
-                        dataManager.mainContext.delete(obvan)
-                        try? dataManager.saveAndPublish(
-                            publish: GlobalProperties.PublishChanges.obvans,
-                            id: []
-                        )
-                    }
-                    appState.setIconToPrimaryButton(.plus)
-                    appState.makeSecondaryButtonEnabled(false)
+//                if let obvan = selectedObvan {
+//                    selectedObvan = nil
+//                    let id = obvan.viewId
+//                    let imageId: String? = obvan.image?.viewId
+//                    
+//                    dataManager.mainContext.performAndWait{
+//                        dataManager.mainContext.delete(obvan)
+//                        try? dataManager.saveAndPublish(
+//                            publish: GlobalProperties.PublishChanges.obvans,
+//                            id: []
+//                        )
+//                    }
+//                    appState.setIconToPrimaryButton(.plus)
+//                    appState.makeSecondaryButtonEnabled(false)
                     //remove from network image & club
-                    Task{
-                        if let imageId{
-                            dataManager.removeImageWithId(id: imageId)
-                        }
-                        await dataManager.networkManager.removeDataOfType(GlobalProperties.Path.obvans, withId: id)
-                    }
+//                    Task{
+//                        if let imageId{
+//                            dataManager.removeImageWithId(id: imageId)
+//                        }
+//                        await dataManager.networkManager.removeDataOfType(GlobalProperties.Path.obvans, withId: id)
+//                    }
                     
-                }
+//                }
             }
         }
     }

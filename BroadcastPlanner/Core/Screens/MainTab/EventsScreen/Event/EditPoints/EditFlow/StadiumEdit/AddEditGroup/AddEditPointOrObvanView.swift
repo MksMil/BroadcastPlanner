@@ -52,45 +52,45 @@ struct AddEditPointOrObvanView: View {
                 dismiss()
             } acceptAction: {
                 //accept
-                switch state {
-                    case .point:
-                        if let point = innerVm.point{
-                            dataManager.updatePoint(point, withNumber: innerVm.number, user: innerVm.selectedUser, optic: innerVm.selectedCameraOptic, placeType: innerVm.selectedSoundPlaceType, windDefence: innerVm.selectedSoundWindDefence, lightType: innerVm.selectedLight)
-                            newPointAction(point)
-                        }
-                    case .obvan:
-                        if let newObvan = innerVm.selectedObvan{
-                            if let obvanToRemove = innerVm.sourceObvan,
-                               newObvan != obvanToRemove{
-                                let id = obvanToRemove.viewId
-                                broadcast.removeFromObvan(obvanToRemove)
-                                obvanToRemove.removeFromBroadcasts(broadcast)
-                                broadcast.viewCrews.forEach { crew in
-                                    if crew.viewObvanId == id{
-                                        dataManager.deleteObject(crew)
-                                    }
-                                }
-                            }
-                            broadcast.addToObvan(newObvan)
-                            newObvan.addToBroadcasts(broadcast)
-                            newObvanAction(newObvan)
-                        }
-                    case .new:
-                        if isPoint {
-                            //create new point
-                            let newPoint: VenuePoint = dataManager.mainContext.fetchOrCreateObject(withID: UUID().uuidString)
-                            dataManager.updatePoint(newPoint, withNumber: innerVm.number, user: innerVm.selectedUser, optic: innerVm.selectedCameraOptic, placeType: innerVm.selectedSoundPlaceType, windDefence: innerVm.selectedSoundWindDefence, lightType: innerVm.selectedLight)
-
-                            newPointAction(newPoint)
-                        } else {
-                            //add obvan create crews
-                            if let newObvan = innerVm.selectedObvan{
-                                broadcast.addToObvan(newObvan)
-                                newObvan.addToBroadcasts(broadcast)
-                                newObvanAction(newObvan)
-                            }
-                        }
-                }
+//                switch state {
+//                    case .point:
+////                        if let point = innerVm.point{
+////                            dataManager.updatePoint(point, withNumber: innerVm.number, user: innerVm.selectedUser, optic: innerVm.selectedCameraOptic, placeType: innerVm.selectedSoundPlaceType, windDefence: innerVm.selectedSoundWindDefence, lightType: innerVm.selectedLight)
+////                            newPointAction(point)
+////                        }
+//                    case .obvan:
+////                        if let newObvan = innerVm.selectedObvan{
+////                            if let obvanToRemove = innerVm.sourceObvan,
+////                               newObvan != obvanToRemove{
+////                                let id = obvanToRemove.viewId
+////                                broadcast.removeFromObvan(obvanToRemove)
+////                                obvanToRemove.removeFromBroadcasts(broadcast)
+////                                broadcast.viewCrews.forEach { crew in
+////                                    if crew.viewObvanId == id{
+////                                        dataManager.deleteObject(crew)
+////                                    }
+////                                }
+////                            }
+////                            broadcast.addToObvan(newObvan)
+////                            newObvan.addToBroadcasts(broadcast)
+////                            newObvanAction(newObvan)
+////                        }
+//                    case .new:
+////                        if isPoint {
+////                            //create new point
+////                            let newPoint: VenuePoint = dataManager.mainContext.fetchOrCreateObject(withID: UUID().uuidString)
+////                            dataManager.updatePoint(newPoint, withNumber: innerVm.number, user: innerVm.selectedUser, optic: innerVm.selectedCameraOptic, placeType: innerVm.selectedSoundPlaceType, windDefence: innerVm.selectedSoundWindDefence, lightType: innerVm.selectedLight)
+////
+////                            newPointAction(newPoint)
+////                        } else {
+////                            //add obvan create crews
+////                            if let newObvan = innerVm.selectedObvan{
+////                                broadcast.addToObvan(newObvan)
+////                                newObvan.addToBroadcasts(broadcast)
+////                                newObvanAction(newObvan)
+////                            }
+////                        }
+//                }
                 dataManager.save()
                 dismiss()
             } content: {
@@ -152,6 +152,7 @@ struct AddEditPointOrObvanView: View {
             }
             .padding(.horizontal)
         }
+        .padding(.bottom,20)
         .onAppear{
             //for alphabet sort of spec positions
             innerVm.source = settings.userSpecialization
@@ -159,18 +160,3 @@ struct AddEditPointOrObvanView: View {
         .environmentObject(innerVm)
     }
 }
-
-#if DEBUG
-#Preview {
-    let dm = DataManager(globalDataManager: NetworkManager())
-    let appState = ApplicationState()
-    dm.networkManager.eventProgressHandler = appState
-    return RootView()
-        .environmentObject(GlobalSettings())
-        .environmentObject(SessionManager())
-        .environmentObject(appState)
-        .environmentObject(Router())
-        .environmentObject(dm)
-        .environment(\.managedObjectContext, dm.mainContext)
-}
-#endif

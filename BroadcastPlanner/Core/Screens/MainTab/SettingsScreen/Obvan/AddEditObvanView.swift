@@ -104,10 +104,10 @@ struct AddEditObvanView: View {
                                               deleteAction: {
                                 if let crewToDelete = vm.selectedCrew{
                                     vm.deleteObvanTemplateCrew(crewToDelete)
-                                    dataManager.mainContext.performAndWait{
-                                        obvan.removeFromCrewTemplates(crewToDelete)
-                                        dataManager.mainContext.delete(crewToDelete)
-                                    }
+//                                    dataManager.mainContext.performAndWait{
+//                                        obvan.removeFromCrewTemplates(crewToDelete)
+//                                        dataManager.mainContext.delete(crewToDelete)
+//                                    }
                                 }
                             },
                                               saveAction: {
@@ -180,11 +180,11 @@ struct AddEditObvanView: View {
         .navigationBarBackButtonHidden()
         .environmentObject(vm)
         .onAppear {
-            Task{
-                if let image = await dataManager.imageCacher.getImage(id: obvan.viewId, size: .originImages){
-                    vm.updateImage(uiimage: image)
-                }
-            }
+//            Task{
+//                if let image = await dataManager.imageCacher.getImage(id: obvan.viewId, size: .originImages){
+//                    vm.updateImage(uiimage: image)
+//                }
+//            }
             vm.saveAction = {
                 if let crew = vm.selectedCrew{
                     crew.updateWithValues(x: vm.coordinateX,
@@ -196,39 +196,39 @@ struct AddEditObvanView: View {
                 }
             }
             vm.source = globalSettings.userSpecialization
-            appState.primaryAction = {
-                //update lastUpdate value
-                let lastUpdatedValue = Date.now
-                obvan.lastUpdated = lastUpdatedValue
-                dataManager.save()
-                //network save
-                let imageDto = obvan.image?.dto
-                let id = obvan.viewId
-                Task{
-                   await dataManager
-                        .networkManager
-                        .saveData(obvan.dto,
-                                  withId: id,
-                                  withType: GlobalProperties.Path.obvans)
-                    if let imageDto{
-                        await dataManager
-                            .networkManager
-                            .saveData(imageDto,
-                                      withId: id,
-                                      withType: GlobalProperties.Path.images)
-                    }
-                    
-                }
-                router.stepBack()
-
-            }
-            appState.secondaryAction = {
-                
-            }
-            appState.stepBackAction = {
-                dataManager.mainContext.rollback()
-                router.stepBack()
-            }
+//            appState.primaryAction = {
+//                //update lastUpdate value
+//                let lastUpdatedValue = Date.now
+//                obvan.lastUpdated = lastUpdatedValue
+//                dataManager.save()
+//                //network save
+//                let imageDto = obvan.image?.dto
+//                let id = obvan.viewId
+//                Task{
+//                   await dataManager
+//                        .networkManager
+//                        .saveData(obvan.dto,
+//                                  withId: id,
+//                                  withType: GlobalProperties.Path.obvans)
+//                    if let imageDto{
+//                        await dataManager
+//                            .networkManager
+//                            .saveData(imageDto,
+//                                      withId: id,
+//                                      withType: GlobalProperties.Path.images)
+//                    }
+//                    
+//                }
+//                router.stepBack()
+//
+//            }
+//            appState.secondaryAction = {
+//                
+//            }
+//            appState.stepBackAction = {
+//                dataManager.mainContext.rollback()
+//                router.stepBack()
+//            }
         }
         .sheet(isPresented: $isEditPressed) {
             List{
@@ -247,14 +247,14 @@ struct AddEditObvanView: View {
 //                                vm.templateCrews = obvan.viewTemplateCrews
 //                                vm.selectedCrew = crew
                             } else {
-                                dataManager.mainContext.performAndWait{
-                                    let id = UUID().uuidString
-                                    let newTemplateCrew: ObvanTemplateCrew = dataManager.mainContext.fetchOrCreateObject(withID: id)
-                                    newTemplateCrew.position = spec
-                                    obvan.addToCrewTemplates(newTemplateCrew)
-                                    vm.addObvanTemplateCrew(newTemplateCrew)
-                                    vm.selectedCrew = newTemplateCrew
-                                }
+//                                dataManager.mainContext.performAndWait{
+//                                    let id = UUID().uuidString
+//                                    let newTemplateCrew: ObvanTemplateCrew = dataManager.mainContext.fetchOrCreateObject(withID: id)
+//                                    newTemplateCrew.position = spec
+//                                    obvan.addToCrewTemplates(newTemplateCrew)
+//                                    vm.addObvanTemplateCrew(newTemplateCrew)
+//                                    vm.selectedCrew = newTemplateCrew
+//                                }
                             }
                             vm.sortCrews()
                             isEditPressed = false
@@ -282,21 +282,21 @@ struct AddEditObvanView: View {
     }
 }
 
-#Preview {
-    let dm = DataManager(globalDataManager: NetworkManager())
-    let appState = ApplicationState()
-    let settings = GlobalSettings()
-    dm.networkManager.eventProgressHandler = appState
-    dm.networkManager.globalSettingsDelegate = settings
-    let obvan = Obvan(context: dm.mainContext)
-    return AddEditObvanView(obvan: obvan)
-        .environmentObject(settings)
-        .environmentObject(SessionManager())
-        .environmentObject(appState)
-        .environmentObject(Router())
-        .environmentObject(dm)
-        .environment(\.managedObjectContext, dm.mainContext)
-
-}
+//#Preview {
+//    let dm = DataManager(globalDataManager: NetworkManager())
+//    let appState = ApplicationState()
+//    let settings = GlobalSettings()
+//    dm.networkManager.eventProgressHandler = appState
+//    dm.networkManager.globalSettingsDelegate = settings
+//    let obvan = Obvan(context: dm.mainContext)
+//    return AddEditObvanView(obvan: obvan)
+//        .environmentObject(settings)
+//        .environmentObject(SessionManager())
+//        .environmentObject(appState)
+//        .environmentObject(Router())
+//        .environmentObject(dm)
+//        .environment(\.managedObjectContext, dm.mainContext)
+//
+//}
 
 

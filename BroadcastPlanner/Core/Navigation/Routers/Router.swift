@@ -1,125 +1,108 @@
 import SwiftUI
-import Combine
 
+// MARK: - AppScreen
+// Три верхнеуровневых состояния приложения.
+// RootView переключает между ними — никакого NavigationStack на этом уровне.
 
-enum RouterPath: Hashable{
-    //app open
-    case animatedStart
-    //!authenticated
-    case authScreen
-    //authenticated
-    case sighUp
-    //flow
-    
-    case broadcastList
-    //create new
-    case createEdit(Broadcast)
-    
-    //...flow
-    case stadPointsEdit(Broadcast)
-//    case carPointsEdit(Bool)
-    
-    
-    
-    
-    //session member progile
-    case ownerInfo
-    //case existing member explore view
-    case memberView
-    
-    case settings
-    //settings
-    case updateSessionUserData
-    
-    case clubCollection
-    case venueCollection
-    case obvanCollection
-    
-    case addEditClub(Club)
-    case addEditVenue(Venue)
-    case addEditObvan(Obvan)
-    
-    case messenger
+enum AppScreen {
+    case splash
+    case auth
+    case main
 }
+
+// MARK: - AuthPath
+// Destinations внутри auth-флоу (живёт здесь, используется в RootView).
+
+enum AuthPath: Hashable {
+    case signUp
+}
+
+// MARK: - BroadcastPath
+// Destinations для таба Broadcasts.
+
+enum BroadcastPath: Hashable {
+    case broadcastList
+    case createEdit(broadcast: Broadcast)
+    case stadPointsEdit(broadcast: Broadcast)
+    case clubCollection
+    case addEditClub(club: Club)
+    case venueCollection
+    case addEditVenue(venue: Venue)
+    case obvanCollection
+    case addEditObvan(obvan: Obvan)
+    case ownerInfo
+    case settings
+    case updateSessionUserData
+}
+
+// MARK: - MessengerPath
+// Destinations для таба Messenger.
+
+enum MessengerPath: Hashable {
+    case messenger
+    // расширяется по мере появления новых экранов в чат-флоу
+}
+
+// MARK: - Router
 
 @MainActor
 final class Router: ObservableObject {
-    
-    @Published var path: NavigationPath = NavigationPath()
 
-    //appState control
-    var listFlow: [RouterPath] = [.broadcastList]
-    var messengerFlow: [RouterPath] = [.messenger]
-    
-    var activeFlow: [RouterPath] = []
-    
-    let pathPubisher = CurrentValueSubject<RouterPath,Never>(.animatedStart)
-    
-    ///routing
-    func executeLastPathFromActiveFlow(){
-        if let last = activeFlow.last {
-            if path.count > 0{
-                path.removeLast()
+    // MARK: App-level state
+    @Published var appScreen: AppScreen = .splash
+
+    // MARK: Tab selection
+    @Published var selectedTab: AppTab = .broadcasts
+
+    // MARK: Per-tab navigation stacks
+    @Published var broadcastPath: [BroadcastPath] = []
+    @Published var messengerPath: [MessengerPath] = []
+
+    // MARK: Auth stack (для перехода SignIn → SignUp)
+    @Published var authPath: [AuthPath] = []
+
+    // MARK: Menu sheet
+    @Published var isMenuPresented: Bool = false
+
+    // MARK: - Helpers
+
+    func showMain() {
+        appScreen = .main
+    }
+
+    func showAuth() {
+        appScreen = .auth
+        // Сбрасываем все стеки при выходе — чтобы при следующем входе стартовать чисто
+        authPath = []
+        broadcastPath = []
+        messengerPath = []
+    }
+
+    // Универсальный pop — работает для активного флоу
+    func stepBack() {
+        switch appScreen {
+        case .auth:
+            if !authPath.isEmpty { authPath.removeLast() }
+        case .main:
+            switch selectedTab {
+            case .broadcasts:
+                if !broadcastPath.isEmpty { broadcastPath.removeLast() }
+            case .messenger:
+                if !messengerPath.isEmpty { messengerPath.removeLast() }
             }
-            path.append(last)
-            publishState()
+        case .splash:
+            break
         }
-    }
-    
-    func stepBack(){
-        guard activeFlow.count > 1 else { return }
-        activeFlow.removeLast()
-        executeLastPathFromActiveFlow()
-    }
-    
-    func routeTo(path: RouterPath){
-        activeFlow.append(path)
-        executeLastPathFromActiveFlow()
-    }
-    func routeToAuth(){ //settings/delete account
-        path.removeLast(path.count)
-        messengerFlow = [.messenger]
-        listFlow = [.broadcastList]
-        activeFlow.removeAll()
-        activeFlow.append(.authScreen)
-        executeLastPathFromActiveFlow()
-        
     }
 
-    func routeFrom(from: RouterPath, to: RouterPath){
-        switch (from,to) {
-            case (.ownerInfo, .settings),
-                (.settings, .ownerInfo):
-                activeFlow.removeLast()
-                activeFlow.append(to)
-                
-            default:
-                activeFlow.append(to)
-        }
-        executeLastPathFromActiveFlow()
-    }
-    
-    func routeFromNotification(path: RouterPath){
-        
-    }
-    
-    func changeToMessanger(){
-        listFlow = activeFlow
-        activeFlow = messengerFlow
-        
-        executeLastPathFromActiveFlow()
-    }
-    func changeToList(){
-        messengerFlow = activeFlow
-        activeFlow = listFlow
-        executeLastPathFromActiveFlow()
-    }
-    
-    func publishState(){
-        if let last = activeFlow.last{
-            pathPubisher.value = last
-        }
+    func showSplash() {
+        appScreen = .splash
     }
 }
 
+// MARK: - AppTab
 
+enum AppTab: Hashable {
+    case broadcasts
+    case messenger
+}

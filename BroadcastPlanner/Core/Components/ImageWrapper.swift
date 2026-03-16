@@ -40,18 +40,25 @@ struct ImageWrapper: View {
                 }
     }
     
-    func update(){
+   @MainActor func update(){
 //        print("start to update image")
-        guard !id.isEmpty else { return }
+     guard !id.isEmpty else {
+//       print("empty id when update image")
+       return
+     }
         if id == "nil" {
+          withAnimation{
             image = Image(systemName: "person.circle")
+          }
         }
         isLoading = true
         Task{
             if let newImage = await dataManager.getImageWithId(id, type: type, size: imageSize){
 //                print("get new image")
                 await MainActor.run {
+                  withAnimation{
                     image = Image(uiImage: newImage)
+                  }
                 }
             } //else {
 //                print("not update image")

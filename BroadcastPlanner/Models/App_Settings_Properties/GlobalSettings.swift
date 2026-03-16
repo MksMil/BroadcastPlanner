@@ -1,6 +1,12 @@
 import Foundation
 import Combine
 
+
+// MARK: - GlobalSettings Delegate Protocol
+protocol GlobalSettingsDelegate: AnyObject {
+    func updateGlobalSettingsArray(name: String, values: [String])
+}
+
 class GlobalSettings: ObservableObject, Codable {
     // MARK: - Properties
     @Published var userSpecialization: [String] = [
@@ -226,4 +232,22 @@ extension GlobalSettings: GlobalSettingsDelegate {
          saveToUserDefaults()
      }
 }
+
+extension GlobalSettings {
+    func values(forKey key: String) -> [String] {
+        switch key {
+        case "userSpecialization": return userSpecialization
+        case "cameraPosition":     return cameraPosition
+        case "opticType":          return opticType
+        case "soundPlaceType":     return soundPlaceType
+        case "windDefenceType":    return windDefenceType
+        case "lightType":          return lightType
+        case "hardwareType":       return hardwareType
+        default:
+            assertionFailure("GlobalSettings: unknown key '\(key)'")
+            return []
+        }
+    }
+}
+
 

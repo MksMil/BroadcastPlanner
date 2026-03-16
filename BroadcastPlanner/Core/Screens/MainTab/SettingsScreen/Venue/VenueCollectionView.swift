@@ -44,29 +44,29 @@ struct VenueCollectionView: View {
             .transitionWithOpacity()
             .onAppear {
                 selectedVenue = nil
-                appState.primaryAction = {
-//                    visual = 0
-                    var venueToRoute: Venue!
-                    if let venue = selectedVenue {
-                        venueToRoute = venue
-                    } else {
-                        dataManager.mainContext.performAndWait {
-                            venueToRoute = dataManager.mainContext.fetchOrCreateObject(
-                                withID: UUID().uuidString
-                        )
-                        }
-                    }
-                    router.routeTo(path: .addEditVenue(venueToRoute))
-                }
-                appState.secondaryAction = {
-                    isRemoveVenueDialog = true
-                    appState.makeSecondaryButtonEnabled(false)
-                    appState.setIconToPrimaryButton(.plus)
-                }
-                appState.stepBackAction = {
-                    //moc.rollback()?
-                    router.stepBack()
-                }
+//                appState.primaryAction = {
+////                    visual = 0
+//                    var venueToRoute: Venue!
+//                    if let venue = selectedVenue {
+//                        venueToRoute = venue
+//                    } else {
+//                        dataManager.mainContext.performAndWait {
+//                            venueToRoute = dataManager.mainContext.fetchOrCreateObject(
+//                                withID: UUID().uuidString
+//                        )
+//                        }
+//                    }
+//                    router.routeTo(path: .addEditVenue(venueToRoute))
+//                }
+//                appState.secondaryAction = {
+//                    isRemoveVenueDialog = true
+//                    appState.makeSecondaryButtonEnabled(false)
+//                    appState.setIconToPrimaryButton(.plus)
+//                }
+//                appState.stepBackAction = {
+//                    //moc.rollback()?
+//                    router.stepBack()
+//                }
             }
             .confirmationDialog(
                 Text("Permanently erase the Venue in the trash?"),
@@ -74,21 +74,21 @@ struct VenueCollectionView: View {
             ) {
                 Button("Remove Venue", role: .destructive) {
                     // Handle empty trash action.
-                    if let selectedVenue {
-                        // TODO: rework to perform in background with ObjectID
-                        let idToRemove = selectedVenue.viewId
-                        let objectIdToRemove = selectedVenue.objectID
-                        let imagesIdToRemove = selectedVenue.viewLocalImages.map{$0.viewId}
-                        self.selectedVenue = nil
+//                    if let selectedVenue {
+//                        // TODO: rework to perform in background with ObjectID
+//                        let idToRemove = selectedVenue.viewId
+//                        let objectIdToRemove = selectedVenue.objectID
+//                        let imagesIdToRemove = selectedVenue.viewLocalImages.map{$0.viewId}
+//                        self.selectedVenue = nil
 
                         
-                        dataManager.removeObjectWithId(id: objectIdToRemove)
-                            //network removing
-                            Task{
-                                await dataManager.networkManager.removeDataOfType(GlobalProperties.Path.venues, withId: idToRemove)
-                            }
-                            dataManager.removeImages(ids: imagesIdToRemove)
-                    }
+//                        dataManager.removeObjectWithId(id: objectIdToRemove)
+//                            //network removing
+//                            Task{
+//                                await dataManager.networkManager.removeDataOfType(GlobalProperties.Path.venues, withId: idToRemove)
+//                            }
+//                            dataManager.removeImages(ids: imagesIdToRemove)
+//                    }
                 }
             }
         }

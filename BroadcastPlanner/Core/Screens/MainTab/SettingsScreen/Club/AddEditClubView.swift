@@ -173,58 +173,44 @@ struct AddEditClubView: View {
         .scrollDisabled(true)
         .navigationBarBackButtonHidden()
         .onAppear{
-            appState.primaryAction = {
-                appState.makePrimaryButtonEnabled(false)
-                
-                dataManager.mainContext.performAndWait {
-                    let lastUpdatedValue = Date.now
-                    club.lastUpdated = lastUpdatedValue
-                    try? dataManager.mainContext.save()
-                    Task{
-                        await dataManager.networkManager.saveData(club.dto,
-                                                                  withId: club.viewId,
-                                                                  withType: GlobalProperties.Path.clubs)
-                    }
-                }
-                router.stepBack()
-            }
-            appState.secondaryAction = {}
-            appState.stepBackAction = {}
+//            appState.primaryAction = {
+//                appState.makePrimaryButtonEnabled(false)
+//                
+//                dataManager.mainContext.performAndWait {
+//                    let lastUpdatedValue = Date.now
+//                    club.lastUpdated = lastUpdatedValue
+//                    try? dataManager.mainContext.save()
+//                    let dto = club.dto
+//                    let viewId = club.viewId
+//                    Task{
+//                        await dataManager.networkManager.saveData(dto,
+//                                                                  withId: viewId,
+//                                                                  withType: GlobalProperties.Path.clubs)
+//                    }
+//                }
+//                router.stepBack()
+//            }
+//            appState.secondaryAction = {}
+//            appState.stepBackAction = {}
         }
         .onReceive(vm.$selectedPhoto) { newValue in
-            Task{
-                guard let item = newValue,
-                      let data = try? await item.loadTransferable(type: Data.self),
-                      let uiimage = UIImage(data: data)
-                else { return }
-                let lastUpdatedValue = Date.now
-                    if club.imageLogo == nil {
-                        await dataManager.saveNewImage(id: club.viewId,uiimage: uiimage, type: GlobalProperties.ImageType.club, parent: club)
-                    } else {
-                        club.imageLogo?.lastUpdated = lastUpdatedValue
-                        await dataManager.updateImageWith(uiimage: uiimage,
-                                                    id: club.viewId,
-                                                    type: GlobalProperties.ImageType.club,
-                                                    lastUpdated: lastUpdatedValue)
-                    }
-            }
+//            Task{ @MainActor in
+//                guard let item = newValue,
+//                      let data = try? await item.loadTransferable(type: Data.self),
+//                      let uiimage = UIImage(data: data)
+//                else { return }
+//                let lastUpdatedValue = Date.now
+//                    if club.imageLogo == nil {
+//                        await dataManager.saveNewImage(id: club.viewId,uiimage: uiimage, type: GlobalProperties.ImageType.club, parent: club)
+//                    } else {
+//                        club.imageLogo?.lastUpdated = lastUpdatedValue
+//                        await dataManager.updateImageWith(uiimage: uiimage,
+//                                                    id: club.viewId,
+//                                                    type: GlobalProperties.ImageType.club,
+//                                                    lastUpdated: lastUpdatedValue)
+//                    }
+//            }
         }
 
     }
 }
-
-#if DEBUG
-#Preview {
-    let dm = DataManager(globalDataManager: NetworkManager())
-    let appState = ApplicationState()
-//    dm.networkManager.eventProgressHandler = appState
-    let club = Club(context: dm.mainContext)
-    return AddEditClubView(club: club)//RootView()
-//        .environmentObject(GlobalSettings())
-//        .environmentObject(SessionManager())
-        .environmentObject(appState)
-        .environmentObject(Router())
-        .environmentObject(dm)
-//        .environment(\.managedObjectContext, dm.mainContext)
-}
-#endif

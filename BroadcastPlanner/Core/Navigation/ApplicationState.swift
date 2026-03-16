@@ -1,5 +1,6 @@
 import SwiftUI
 import Combine
+import UserNotifications
 
 enum AppState {
     case authorized, notAuthorized
@@ -76,6 +77,11 @@ enum TextFieldType: Equatable {
         }
     }
 }
+
+protocol NotificationHandler: AnyObject {
+  func handleNotification(userInfo: [AnyHashable: Any])
+}
+
 class ApplicationState: ObservableObject{
     @Published var state: AppState = .notAuthorized
     @Published var userOnlineStatus: UserOnlineStatus = .offline
@@ -107,7 +113,7 @@ class ApplicationState: ObservableObject{
     }
     
     // MARK: init
-    init(){
+     init(){
         startTimer()
     }
     
@@ -262,46 +268,75 @@ extension ApplicationState: EventsProgressHandler{
 }
 
 // MARK: - Path handler
-extension ApplicationState{
-    func switchStateByPath(_ path: RouterPath){
-        switch path {
-            case .animatedStart:
-                applyAppConfiguration(StateCongiguration.AllDissabledConfiguration)
-//            case .authScreen:
-//                <#code#>
-            case .broadcastList:
-                applyAppConfiguration(StateCongiguration.MainListConfiguration)
-            case .createEdit(_):
-                applyAppConfiguration(StateCongiguration.BroadcastEditViewConfiguration)
-            case .stadPointsEdit(_):
-                applyAppConfiguration(StateCongiguration.StadPointsEditViewConfiguration)
-            case .ownerInfo:
-                applyAppConfiguration(StateCongiguration.OwnerInfoConfiguration)
-//            case .memberView:
-//                <#code#>
-            case .settings:
-                applyAppConfiguration(StateCongiguration.SettingsConfiguration)
-            case .updateSessionUserData:
-                applyAppConfiguration(StateCongiguration.UpdateSessionUserDataConfiguration)
-            case .clubCollection:
-                applyAppConfiguration(StateCongiguration.ClubCollectionConfiguration)
-            case .addEditClub(_):
-                applyAppConfiguration(StateCongiguration.AddEditClubConfiguration)
+//extension ApplicationState{
+//    func switchStateByPath(_ path: RouterPath){
+//        switch path {
+//            case .animatedStart:
+//                applyAppConfiguration(StateCongiguration.AllDissabledConfiguration)
+////            case .authScreen:
+////                <#code#>
+//            case .broadcastList:
+//                applyAppConfiguration(StateCongiguration.MainListConfiguration)
+//            case .createEdit(_):
+//                applyAppConfiguration(StateCongiguration.BroadcastEditViewConfiguration)
+//            case .stadPointsEdit(_):
+//                applyAppConfiguration(StateCongiguration.StadPointsEditViewConfiguration)
+//            case .ownerInfo:
+//                applyAppConfiguration(StateCongiguration.OwnerInfoConfiguration)
+////            case .memberView:
+////                <#code#>
+//            case .settings:
+//                applyAppConfiguration(StateCongiguration.SettingsConfiguration)
+//            case .updateSessionUserData:
+//                applyAppConfiguration(StateCongiguration.UpdateSessionUserDataConfiguration)
+//            case .clubCollection:
+//                applyAppConfiguration(StateCongiguration.ClubCollectionConfiguration)
+//            case .addEditClub(_):
+//                applyAppConfiguration(StateCongiguration.AddEditClubConfiguration)
+//
+//            case .obvanCollection:
+//                applyAppConfiguration(StateCongiguration.ObvanCollectionConfiguration)
+//            case .addEditObvan(_):
+//                applyAppConfiguration(StateCongiguration.AddEditObvanConfiguration)
+//                
+//            case .venueCollection:
+//                applyAppConfiguration(StateCongiguration.VenueCollectionConfiguration)
+//            case .addEditVenue(_):
+//                applyAppConfiguration(StateCongiguration.AddEditVenueConfiguration)
+//                
+//            case .messenger:
+//                applyAppConfiguration(StateCongiguration.MessengerConfiguration)
+//            default: applyAppConfiguration(StateCongiguration.AllDissabledConfiguration)
+//        }
+//    }
+//}
 
-            case .obvanCollection:
-                applyAppConfiguration(StateCongiguration.ObvanCollectionConfiguration)
-            case .addEditObvan(_):
-                applyAppConfiguration(StateCongiguration.AddEditObvanConfiguration)
-                
-            case .venueCollection:
-                applyAppConfiguration(StateCongiguration.VenueCollectionConfiguration)
-            case .addEditVenue(_):
-                applyAppConfiguration(StateCongiguration.AddEditVenueConfiguration)
-                
-            case .messenger:
-                applyAppConfiguration(StateCongiguration.MessengerConfiguration)
-            default: applyAppConfiguration(StateCongiguration.AllDissabledConfiguration)
+// MARK: - NotificationHandler
+extension ApplicationState: NotificationHandler {
+    func handleNotification(userInfo: [AnyHashable: Any]) {
+      // TODO: реализовать после определения структуры userInfo с бэкенда
+              // 1. Парсить тип уведомления (userInfo["type"])
+              // 2. Формировать текст для бегущей строки
+              // 3. Вызвать addNewNotification()
+      
+        // Извлекаем текст из aps
+      /*
+        let aps = userInfo["aps"] as? [String: Any]
+        let alert = aps?["alert"] as? [String: Any]
+        let title = alert?["title"] as? String ?? ""
+        let body = alert?["body"] as? String ?? ""
+        let text = [title, body].filter { !$0.isEmpty }.joined(separator: ": ")
+        
+        // Отправляем в бегущую строку
+        DispatchQueue.main.async {
+            self.addNewNotification(note: StatusViewNotification(
+                id: UUID(),
+                text: text,
+                textColor: .primary,
+                cycle: .once
+            ))
         }
+       */
     }
 }
 

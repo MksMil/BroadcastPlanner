@@ -9,7 +9,7 @@ public struct SelectableSmartCollectionView<T: View,B:View,Prompt: View, Selecta
     
     @Binding public var selectedContent: [SelectableContent]
     @State private var selectedCases: [(SelectableContent,Int)] = []
-    @State public var allCases: [(SelectableContent,Int)] = []
+    @State private var allCases: [(SelectableContent,Int)] = []
     
     @Binding private var isEdit: Bool
     
@@ -23,7 +23,9 @@ public struct SelectableSmartCollectionView<T: View,B:View,Prompt: View, Selecta
     public var verticalPadding: Double = 4
     
     
-    public init(sourceContent: [SelectableContent], selectedContent: Binding<[SelectableContent]>, selectedCases: [(SelectableContent, Int)] = [], allCases: [(SelectableContent, Int)] = [],isEdit: Binding<Bool>, backgroundView: @escaping () -> B, cellView: @escaping (SelectableContent) -> T, promptView: @escaping ()->Prompt) {
+    public init(sourceContent: [SelectableContent], selectedContent: Binding<[SelectableContent]>, selectedCases: [(SelectableContent, Int)] = [],
+                allCases: [(SelectableContent, Int)] = [],isEdit: Binding<Bool>,
+                backgroundView: @escaping () -> B, cellView: @escaping (SelectableContent) -> T, promptView: @escaping ()->Prompt) {
         self.sourceContent = sourceContent
         self._selectedContent = selectedContent
         self.selectedCases = selectedCases

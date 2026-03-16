@@ -1,197 +1,92 @@
-import Combine
 import SwiftUI
+
+// MARK: - RootView
+// Единая точка входа. Переключает между тремя состояниями через ZStack + transition.
+// Никакого NavigationStack на этом уровне — каждое состояние управляет навигацией само.
 
 struct RootView: View {
     @EnvironmentObject var sessionManager: SessionManager
-    @EnvironmentObject var appState: ApplicationState
-    @EnvironmentObject var globalSettings: GlobalSettings
-    @EnvironmentObject var dataManager: DataManager
     @EnvironmentObject var router: Router
+    @EnvironmentObject var dataManager: DataManager
 
-    @State var isStarted: Bool = false
-
-    @State var status: Bool = false
-        
     var body: some View {
+        ZStack {
+            switch router.appScreen {
+            case .splash:
+                AnimatedStart()
+                    .transition(.opacity)
+                    .task { await handleSplash() }
+
+              case .auth:
+                NavigationStack(path: $router.authPath) {
+                  AuthenticationScreen()
+                    .navigationDestination(for: AuthPath.self) { path in
+                      switch path {
+                        case .signUp: SignUpView()
+                      }
+                    }
+                }
+                .transition(.opacity)
+
+            case .main:
+                MainTabView()
+                    .transition(.opacity)
+            }
+        }
+        .animation(.easeInOut(duration: 0.35), value: router.appScreen)
+        // Глобальный sheet для меню — доступен из любого таба
+        .sheet(isPresented: $router.isMenuPresented) {
+            MenuSheetView()
+        }
+        // Реакция на изменение sessionUser (логаут / удаление аккаунта)
+        .onReceive(sessionManager.$sessionUser){ user in
+          guard router.appScreen != .splash else { return }
+          if user == nil {
+              withAnimation { router.showAuth() }
+          }
+        }
         
-        ZStack{
-            MainBackground()
-            ZStack{
-            StatusView()
-                .offset(y: (isStarted && appState.state == .authorized) ? 0: -200)
-                .frame(maxHeight: .infinity,alignment: .top)
-            
-            NavigationStack(path: $router.path) {
-                MainBackground()
-                    .navigationDestination(for: RouterPath.self) { path in
-                        switch path {
-                            case .animatedStart:
-                                AnimatedStart()
-                            case .broadcastList:
-                                BroadcastListView()
-                            case .authScreen:
-                                AuthenticationScreen()
-                            case .sighUp:
-                                SignUpView(){
-                                    Task{
-                                        await sessionManager.signUp()
-                                    }
-                                }
-                            case .ownerInfo:
-                                EditMemberInfoView(member: dataManager.fetchOwner())
-                            case .settings:
-                                SettingsView()
-                                // email/pass update
-                            case .updateSessionUserData:
-                                UpdateSessionUserDataView()
-                                
-                                //club managment
-                            case .clubCollection:
-                                ClubCollectionView()
-                            case .addEditClub(let club):
-                                AddEditClubView(club: club)
-                                //venue managmaent
-                            case .venueCollection:
-                                VenueCollectionView()
-                            case .addEditVenue(let venue):
-                                AddEditVenueView(venue: venue)
-                                //broadcast managment
-                            case .createEdit(let broadcast):
-                                BroadcastEditView(broadcast: broadcast)
-                            case .stadPointsEdit(let broadcast):
-                                BroadcastSchemaEditView(broadcast: broadcast)
-                                //obvan managment
-                            case .obvanCollection:
-                                ObvanCollectionView()
-                            case .addEditObvan(let obvan):
-                                AddEditObvanView(obvan: obvan)
-                                //messenger
-                            case .messenger:
-                                BPMessengerView()
-                            default:
-                                Text("Hello Error")
-                        }
-                    }
-            }
-            .transitionWithOpacity()
-            .padding(.vertical,65)
-            
-            ActionView()
-                .padding(.horizontal)
-                .frame(height: 60)
-                .offset(y: (isStarted && appState.state == .authorized) ? 0: 200)
-                .frame(maxHeight: .infinity,alignment: .bottom)
-        }
-            .padding(.vertical)
     }
-        .onAppear(perform: {
-            router.routeTo(path: .animatedStart)
-        })
-        .task{
-            if sessionManager.sessionUser == nil{
-                await sessionManager.getUserSession()
+
+    // MARK: - Splash logic
+    // Минимум 1.5с сплэша + параллельная проверка сессии.
+    // Переходим только когда оба завершены.
+
+    private func handleSplash() async {
+        async let minDelay: () = Task.sleep(nanoseconds: 1_500_000_000)
+        async let session: () = sessionManager.restoreSession()
+        _ = try? await (minDelay, session)
+
+        withAnimation {
+            if sessionManager.sessionUser != nil {
+                router.showMain()
+              Task{
+                await dataManager.setMember(id: sessionManager.sessionUser!.id)
+              }
+            } else {
+                router.showAuth()
             }
         }
-        .onReceive(sessionManager.$sessionUser) { user in
-                if let user{
-                    dataManager.setMember(id: user.id)
-                    appState.state = .authorized
-                    if isStarted{
-                        appState.isStartAnimationFinishedPublisher.send(true)
-                    }
-                } else {
-                    dataManager.clearData()
-                    sessionManager.cleanFields()
-                    appState.state = .notAuthorized
-                }
-        }
-        .onReceive(appState.isStartAnimationFinishedPublisher, perform: { isStart in
-            if isStart{
-                if appState.state == .authorized{
-                    router.routeTo(path: .broadcastList)
-                } else {
-                    router.routeTo(path: .authScreen)
-                }
-                withAnimation(.spring(duration: 0.7, bounce: 0.2)){
-                    isStarted = true
-                }
-            }
-        })
-        .onReceive(appState.$userOnlineStatus) { value in
-            guard let id = sessionManager.sessionUser?.id else { return }
-            switch value {
-            case .online:
-                Task {
-                    await dataManager.changeOnlineStatus(isOnline: true,id:id)
-                }
-            case .offline:
-                Task {
-                    await dataManager.changeOnlineStatus(isOnline: false,id:id)
-                }
-            }
-        }
-        .onReceive(router.pathPubisher) { path in
-            appState.switchStateByPath(path)
-        }
-        .sheet(isPresented: $appState.isTextFieldShowed) {
-            TextFieldSheetView(
-                source: $appState.textfieldSource,
-                promptSource: appState.promptString,
-                fieldType: appState.fieldType,
-                isSecure: appState.isSecure) {
-                    appState.closeTextField()
-                } doneAction: { value in
-                    appState.doneAction(value)
-                    appState.closeTextField()
-                }
-                .presentationDetents([.height(200)])
-                .presentationDragIndicator(.visible)
-                .presentationBackground(.ultraThinMaterial)
-        }
-        .toolbar {
-            ToolbarItemGroup(placement: .keyboard) {
-                Button("Cancel") {
-                    appState.closeTextField()
-                }
-                ForEach(appState.fieldType.toolbarButtons, id: \.self) { symbol in
-                    Button(symbol) {
-                        appState.textfieldSource += symbol
-                    }
-                }
-                Spacer()
-                Button("Done") {
-                    appState.doneAction(appState.textfieldSource)
-                    appState.closeTextField()
-                }
-            }
-        }
-        .ignoresSafeArea(.keyboard)
     }
 }
+
+
+
+// MARK: - Preview
 
 #if DEBUG
 #Preview {
-    let dm = DataManager(globalDataManager: NetworkManager())
+//  do{
+    let dm = DataManager.preview(networkManager: NetworkManager())
     let appState = ApplicationState()
-    dm.networkManager.eventProgressHandler = appState
     return RootView()
-        .environmentObject(GlobalSettings())
-        .environmentObject(SessionManager())
-        .environmentObject(appState)
-        .environmentObject(Router())
-        .environmentObject(dm)
-        .environment(\.managedObjectContext, dm.mainContext)
+      .environmentObject(SessionManager())
+      .environmentObject(Router())
+      .environmentObject(appState)
+      .environmentObject(dm)
+      .environment(\.managedObjectContext, dm.mainContext)
+//  } catch {
+//    print("error")
+//  }
 }
 #endif
-
-
-
-
-
-
-
-
-
-
-
-

@@ -32,40 +32,40 @@ struct BroadcastSchemaEditView: View {
                 TemplateGroup(templates: templates) { templateToShow in
                     withAnimation {
                         broadcast.cleanVenuePoints()
-                        Task{
-                            let points = await dataManager.makeLocalPointsFromTemplate(templateToShow)
-                            points.forEach { point in
-                                broadcast.addToVenuePoints(point)
-                                point.broadcast = broadcast
-                            }
-                            vm.loadTemplate(points)
-                            vm.selectedTemplate = templateToShow
-                        }
+//                        Task{
+//                            let points = await dataManager.makeLocalPointsFromTemplate(templateToShow)
+//                            points.forEach { point in
+//                                broadcast.addToVenuePoints(point)
+//                                point.broadcast = broadcast
+//                            }
+//                            vm.loadTemplate(points)
+//                            vm.selectedTemplate = templateToShow
+//                        }
                     }
                 } addAction: {
-                    appState.cleanTFInfo()
-                    appState.promptString = "Enter template name here"
-                    appState.fieldType = .custom(["cam"])
-                    appState.openTextFieldWithAction { name in
-                                            Task{
-                                                await dataManager.saveTemplateFromSchema(localPoints: vm.localPoints,
-                                                                                         withName: name)
-                                            }
-                    }
+//                    appState.cleanTFInfo()
+//                    appState.promptString = "Enter template name here"
+//                    appState.fieldType = .custom(["cam"])
+//                    appState.openTextFieldWithAction { name in
+//                                            Task{
+//                                                await dataManager.saveTemplateFromSchema(localPoints: vm.localPoints,
+//                                                                                         withName: name)
+//                                            }
+//                    }
                     
                 } removeAction: {
                     broadcast.cleanVenuePoints()
-                    if let templateToRemove = vm.selectedTemplate, let id = templateToRemove.id, !id.isEmpty{
-                        withAnimation{
-                            vm.setEmptyTemplate()
-                        }
-                        Task{
-                            await dataManager
-                                .fullRemoveObject(templateToRemove,
-                                                  networkPath: GlobalProperties.Path.templates,
-                                                  id: id)
-                        }
-                    }
+//                    if let templateToRemove = vm.selectedTemplate, let id = templateToRemove.id, !id.isEmpty{
+//                        withAnimation{
+//                            vm.setEmptyTemplate()
+//                        }
+//                        Task{
+//                            await dataManager
+//                                .fullRemoveObject(templateToRemove,
+//                                                  networkPath: GlobalProperties.Path.templates,
+//                                                  id: id)
+//                        }
+//                    }
                 } setEmptyTemplateAction: {
                     broadcast.cleanVenuePoints()
                     withAnimation{
@@ -103,37 +103,37 @@ struct BroadcastSchemaEditView: View {
                                     isEditPressed = true
                                 },
                                 deleteAction: {
-                                    if let pointToDelete = vm.selectedVenuePoint{
-                                        //remove point from scene
-                                        vm.deletePoint()
-                                        //remove coredata entity
-                                        dataManager.deleteObject(pointToDelete)
-                                        vm.selectedVenuePoint = nil
-                                    }
-                                    if let obvanToRemove = vm.selectedObvan{
-                                        let id = obvanToRemove.viewId
-                                        vm.selectedObvan = nil
-                                        broadcast.removeFromObvan(obvanToRemove)
-                                        broadcast.viewCrews.forEach { crew in
-                                            if crew.viewObvanId == id{
-                                                dataManager.mainContext.delete(crew)
-                                            }
-                                        }
-                                    }
-                                    broadcast.lastUpdated = .now
+//                                    if let pointToDelete = vm.selectedVenuePoint{
+//                                        //remove point from scene
+//                                        vm.deletePoint()
+//                                        //remove coredata entity
+////                                        dataManager.deleteObject(pointToDelete)
+//                                        vm.selectedVenuePoint = nil
+//                                    }
+//                                    if let obvanToRemove = vm.selectedObvan{
+//                                        let id = obvanToRemove.viewId
+//                                        vm.selectedObvan = nil
+//                                        broadcast.removeFromObvan(obvanToRemove)
+//                                        broadcast.viewCrews.forEach { crew in
+//                                            if crew.viewObvanId == id{
+//                                                dataManager.mainContext.delete(crew)
+//                                            }
+//                                        }
+//                                    }
+//                                    broadcast.lastUpdated = .now
                                 },
                                 saveAction: {
-                                    if let point = vm.selectedVenuePoint{
-                                        point.updateValues( x: vm.coordinateX,
-                                                            y: vm.coordinateY,
-                                                            rotation: Double(vm.rotation),
-                                                            scaleFactor: vm.scaleFactor,
-                                                            in: dataManager.mainContext)
-                                        vm.save()
-                                    }
-                                    if vm.selectedObvan != nil{
-                                        vm.selectedObvan = nil
-                                    }
+//                                    if let point = vm.selectedVenuePoint{
+//                                        point.updateValues( x: vm.coordinateX,
+//                                                            y: vm.coordinateY,
+//                                                            rotation: Double(vm.rotation),
+//                                                            scaleFactor: vm.scaleFactor,
+//                                                            in: dataManager.mainContext)
+//                                        vm.save()
+//                                    }
+//                                    if vm.selectedObvan != nil{
+//                                        vm.selectedObvan = nil
+//                                    }
                                 },
                                 editAction: {
                                     isEditPressed = true
@@ -255,19 +255,19 @@ struct BroadcastSchemaEditView: View {
         .onAppear{
             let predicate = NSPredicate(format: "broadcasts CONTAINS %@", broadcast)
             obvans.nsPredicate = predicate
-            appState.setTitle("\(broadcast.venue?.viewTitle ?? "") \( BPDateFormater.format(date: broadcast.viewDate))")
-            appState.primaryAction = {
-                let screenshot = vm.makeSceneScreenshot()
-                dataManager.assignSnapshot(screenshot,
-                                           toBroadcast: broadcast)
-                router.stepBack()
-            }
-            appState.secondaryAction = {
-                dataManager.rollBackMoc()
-            }
-            appState.stepBackAction = {
-                isConfirmDiscardChanges = true
-            }
+//            appState.setTitle("\(broadcast.venue?.viewTitle ?? "") \( BPDateFormater.format(date: broadcast.viewDate))")
+//            appState.primaryAction = {
+//                let screenshot = vm.makeSceneScreenshot()
+////                dataManager.assignSnapshot(screenshot,
+////                                           toBroadcast: broadcast)
+////                router.stepBack()
+//            }
+//            appState.secondaryAction = {
+//                dataManager.rollBackMoc()
+//            }
+//            appState.stepBackAction = {
+//                isConfirmDiscardChanges = true
+//            }
             
         }
         .ignoresSafeArea(.keyboard)
@@ -275,7 +275,7 @@ struct BroadcastSchemaEditView: View {
         .confirmationDialog("", isPresented: $isConfirmDiscardChanges) {
             Button("Discard all changes and step back?",role: .destructive){
                 dataManager.rollBackMoc()
-                router.stepBack()
+//                router.stepBack()
             }
         }
         .sheet(isPresented: $isEditPressed) {
@@ -308,34 +308,19 @@ struct BroadcastSchemaEditView: View {
             }
         }
         .environmentObject(vm)
-        .onReceive(vm.$selectedObvan) { obvan in
-            if obvan == nil , vm.selectedVenuePoint == nil{
-                appState.makePrimaryButtonEnabled(true)
-            } else {
-                appState.makePrimaryButtonEnabled(false)
-            }
-        }
-        .onReceive(vm.$selectedVenuePoint) { point in
-            if point == nil , vm.selectedObvan == nil{
-                appState.makePrimaryButtonEnabled(true)
-            } else {
-                appState.makePrimaryButtonEnabled(false)
-            }
-        }
+//        .onReceive(vm.$selectedObvan) { obvan in
+//            if obvan == nil , vm.selectedVenuePoint == nil{
+//                appState.makePrimaryButtonEnabled(true)
+//            } else {
+//                appState.makePrimaryButtonEnabled(false)
+//            }
+//        }
+//        .onReceive(vm.$selectedVenuePoint) { point in
+//            if point == nil , vm.selectedObvan == nil{
+//                appState.makePrimaryButtonEnabled(true)
+//            } else {
+//                appState.makePrimaryButtonEnabled(false)
+//            }
+//        }
     }
 }
-
-#if DEBUG
-#Preview {
-    let dm = DataManager(globalDataManager: NetworkManager())
-    let appState = ApplicationState()
-    dm.networkManager.eventProgressHandler = appState
-    return RootView()
-        .environmentObject(GlobalSettings())
-        .environmentObject(SessionManager())
-        .environmentObject(appState)
-        .environmentObject(Router())
-        .environmentObject(dm)
-        .environment(\.managedObjectContext, dm.mainContext)
-}
-#endif

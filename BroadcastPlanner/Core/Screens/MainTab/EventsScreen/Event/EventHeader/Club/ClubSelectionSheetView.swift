@@ -78,7 +78,7 @@ struct ClubSelectionSheetView: View {
                 }
                 .disabled(selectedClub == nil)
             }
-            .padding(.top,20)
+            .padding(.vertical)
         }
         .task{
             guard let excludedClub, let id = excludedClub.id, !id.isEmpty else { return }

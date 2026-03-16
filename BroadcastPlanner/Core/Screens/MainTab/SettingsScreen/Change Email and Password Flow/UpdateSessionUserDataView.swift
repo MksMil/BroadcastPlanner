@@ -215,16 +215,16 @@ struct UpdateSessionUserDataView: View {
         }
         .onAppear{
             
-            appState.primaryAction = {
-                Task{
-                    await sessionManager.updateEmailOrPassword(newEmailValue: newEmailValue, newPasswordValue: newPasswordValue)
-                }
-                router.stepBack()
-            }
-            appState.secondaryAction = {}
-            appState.stepBackAction = {
-                router.stepBack()
-            }
+//            appState.primaryAction = {
+//                Task{
+//                    await sessionManager.updateEmailOrPassword(newEmailValue: newEmailValue, newPasswordValue: newPasswordValue)
+//                }
+//                router.stepBack()
+//            }
+//            appState.secondaryAction = {}
+//            appState.stepBackAction = {
+//                router.stepBack()
+//            }
             
             
         }
@@ -233,61 +233,61 @@ struct UpdateSessionUserDataView: View {
     
     func validate()->Bool{
         // old email
-        
-        if !oldEmailValue.isEmpty{
-            if oldEmailValue == sessionManager.email{
-                //old email confirm
-                oldEmailinfoMessage = "old email is valid"
-                isOldEmailValid = true
-            } else {
-                isOldEmailValid = false
-                oldEmailinfoMessage = "old email not valid"
-            }
-        } else {
-            isOldEmailValid = true
-            oldEmailinfoMessage = ""
-        }
-        
-        //new email
-        if !newEmailValue.isEmpty{
-            if newEmailValue.isValidEmail(){
-                newEmailinfoMessage = "looks like email"
-                isNewEmailValid = true
-            } else {
-                isNewEmailValid = false
-                newEmailinfoMessage = "wrong email signature"
-            }
-        } else {
-            isNewEmailValid = true
-            newEmailinfoMessage = ""
-        }
-        
-        //old password
-        if !oldPasswordValue.isEmpty{
-            if oldPasswordValue == sessionManager.password{
-                oldPasswordinfoMessage = "password confirmation done"
-                isOldPasswordValid = true
-            } else {
-                isOldPasswordValid = false
-                oldPasswordinfoMessage = "wrong password confirmation"
-            }
-        } else {
-            isOldPasswordValid = true
-            oldPasswordinfoMessage = ""
-        }
-        
-        if !newPasswordValue.isEmpty{
-            if newPasswordValue.count > 5{
-                newPasswordinfoMessage = "that is new password !"
-                isNewPasswordValid = true
-            } else {
-                newPasswordinfoMessage = "minimum 6 characters in password"
-                isNewPasswordValid = false
-            }
-        } else {
-            isNewPasswordValid = true
-            newPasswordinfoMessage = ""
-        }
+//        
+//        if !oldEmailValue.isEmpty{
+//            if oldEmailValue == sessionManager.email{
+//                //old email confirm
+//                oldEmailinfoMessage = "old email is valid"
+//                isOldEmailValid = true
+//            } else {
+//                isOldEmailValid = false
+//                oldEmailinfoMessage = "old email not valid"
+//            }
+//        } else {
+//            isOldEmailValid = true
+//            oldEmailinfoMessage = ""
+//        }
+//        
+//        //new email
+//        if !newEmailValue.isEmpty{
+//            if newEmailValue.isValidEmail(){
+//                newEmailinfoMessage = "looks like email"
+//                isNewEmailValid = true
+//            } else {
+//                isNewEmailValid = false
+//                newEmailinfoMessage = "wrong email signature"
+//            }
+//        } else {
+//            isNewEmailValid = true
+//            newEmailinfoMessage = ""
+//        }
+//        
+//        //old password
+//        if !oldPasswordValue.isEmpty{
+//            if oldPasswordValue == sessionManager.password{
+//                oldPasswordinfoMessage = "password confirmation done"
+//                isOldPasswordValid = true
+//            } else {
+//                isOldPasswordValid = false
+//                oldPasswordinfoMessage = "wrong password confirmation"
+//            }
+//        } else {
+//            isOldPasswordValid = true
+//            oldPasswordinfoMessage = ""
+//        }
+//        
+//        if !newPasswordValue.isEmpty{
+//            if newPasswordValue.count > 5{
+//                newPasswordinfoMessage = "that is new password !"
+//                isNewPasswordValid = true
+//            } else {
+//                newPasswordinfoMessage = "minimum 6 characters in password"
+//                isNewPasswordValid = false
+//            }
+//        } else {
+//            isNewPasswordValid = true
+//            newPasswordinfoMessage = ""
+//        }
         
         return (isOldPasswordValid && isNewEmailValid && isOldEmailValid && isNewPasswordValid && (!newEmailValue.isEmpty || !newPasswordValue.isEmpty) && !oldEmailValue.isEmpty && !oldPasswordValue.isEmpty)
 

@@ -1,10 +1,3 @@
-//
-//  View+Ext.swift
-//  BroadcastPlanner
-//
-//  Created by Миляев Максим on 23.09.2024.
-//
-
 import SwiftUI
 
 extension View{
@@ -17,4 +10,20 @@ extension View{
         self.frame(maxHeight: .infinity, alignment: alignment)
     }
     
+}
+
+
+// MARK: - onChange compat (iOS 16 / iOS 17+)
+
+extension View {
+  @ViewBuilder
+  func onChangeCompat<T: Equatable>(of value: T, perform: @escaping (T) -> Void)
+    -> some View
+  {
+    if #available(iOS 17, *) {
+      self.onChange(of: value) { _, newValue in perform(newValue) }
+    } else {
+      self.onChange(of: value, perform: perform)
+    }
+  }
 }
