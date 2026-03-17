@@ -27,12 +27,12 @@ struct VenueCollectionView: View {
                             withAnimation {
                                 if selectedVenue == venue {
                                     selectedVenue = nil
-                                    appState.setIconToPrimaryButton(.plus)
-                                    appState.makeSecondaryButtonEnabled(false)
+//                                    appState.setIconToPrimaryButton(.plus)
+//                                    appState.makeSecondaryButtonEnabled(false)
                                 } else {
                                     selectedVenue = venue
-                                    appState.setIconToPrimaryButton(.edit)
-                                    appState.makeSecondaryButtonEnabled(true)
+//                                    appState.setIconToPrimaryButton(.edit)
+//                                    appState.makeSecondaryButtonEnabled(true)
                                 }
                             }
                         }

@@ -73,4 +73,20 @@ final class LocationSelectionViewModel: ObservableObject{
         self.address = address
         updateImages(newImages: images)
     }
+  
+  func loadImagesForVenue(_ venue: Venue, using dataManager: DataManager) async {
+      var images: [Image] = []
+      for localImage in venue.viewLocalImages {
+          try? Task.checkCancellation()
+          if let uiimage = await dataManager.getImageWithId(
+              localImage.viewId,
+              type: .venue,
+              size: .mediumImages
+          ) {
+              images.append(Image(uiImage: uiimage))
+          }
+      }
+      update(title: venue.viewTitle, address: venue.viewAddress, images: images)
+      isLocationSheetPresented = false
+  }
 }

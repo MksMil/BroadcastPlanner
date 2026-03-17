@@ -147,7 +147,7 @@ final class GlobalSettingsService: GlobalSettingsServiceProtocol {
           return
       }
       await MainActor.run {
-          delegate?.updateGlobalSettingsArray(name: key, values: dto.values)
+        delegate?.updateGlobalSettingsArray(name: key, values: dto.values)
       }
       logger.debug("Loaded settings key '\(key)': \(dto.values.count) values")
   }

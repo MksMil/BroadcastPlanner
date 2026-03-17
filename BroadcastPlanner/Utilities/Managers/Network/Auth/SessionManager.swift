@@ -30,15 +30,22 @@ final class SessionManager: ObservableObject {
     // MARK: - Email / Password
 
     func signUp(email: String, password: String) async {
-        await perform {
-            try await self.authService.signUp(email: email, password: password)
-        }
+      do{
+        _ = try await self.authService.signUp(email: email, password: password)
+        sessionUser = try await self.authService.signIn(email: email, password: password)
+      } catch {
+        alertItem = .from(error)
+      }
+      
     }
 
     func signIn(email: String, password: String) async {
-        await perform {
-            try await self.authService.signIn(email: email, password: password)
-        }
+      do{
+        self.sessionUser = try await self.authService.signIn(email: email, password: password)
+      } catch {
+        alertItem = .from(error)
+      }
+        
     }
 
     func sendPasswordReset(to email: String) async {

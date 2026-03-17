@@ -86,16 +86,16 @@ struct AddEditObvanView: View {
                                                 )
                                         }
                                 }
-                                .onTapGesture {
-                                    appState.cleanTFInfo()
-                                    appState.fieldType = .custom([])
-                                    appState.isSecure = false
-                                    appState.textfieldSource = vm.title
-                                    appState.promptString = "Enter new Title"
-                                    appState.openTextFieldWithAction { title in
-                                        vm.title = title
-                                    }
-                                }
+//                                .onTapGesture {
+//                                    appState.cleanTFInfo()
+//                                    appState.fieldType = .custom([])
+//                                    appState.isSecure = false
+//                                    appState.textfieldSource = vm.title
+//                                    appState.promptString = "Enter new Title"
+//                                    appState.openTextFieldWithAction { title in
+//                                        vm.title = title
+//                                    }
+//                                }
                             
                             ObvanControlPanel(isEdit: $vm.isEdit,
                                               addAction: {

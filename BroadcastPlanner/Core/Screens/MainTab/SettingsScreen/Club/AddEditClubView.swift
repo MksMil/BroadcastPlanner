@@ -60,16 +60,16 @@ struct AddEditClubView: View {
                                 }
                             }
                             .frame(height: 40)
-                            .onTapGesture {
-                                appState.cleanTFInfo()
-                                appState.fieldType = .custom([])
-                                appState.isSecure = false
-                                appState.textfieldSource = club.viewTitle
-                                appState.promptString = "Enter new Title"
-                                appState.openTextFieldWithAction { title in
-                                    club.title = title
-                                }
-                            }
+//                            .onTapGesture {
+//                                appState.cleanTFInfo()
+//                                appState.fieldType = .custom([])
+//                                appState.isSecure = false
+//                                appState.textfieldSource = club.viewTitle
+//                                appState.promptString = "Enter new Title"
+//                                appState.openTextFieldWithAction { title in
+//                                    club.title = title
+//                                }
+//                            }
                         
                         DividerWithText(text: "contacts phone")
                         //contacts
@@ -94,16 +94,16 @@ struct AddEditClubView: View {
                                 }
                             }
                             .frame(height: 40)
-                            .onTapGesture {
-                                appState.cleanTFInfo()
-                                appState.fieldType = .phone
-                                appState.isSecure = false
-                                appState.textfieldSource = club.viewContacts
-                                appState.promptString = "Enter phone number for contact"
-                                appState.openTextFieldWithAction { number in
-                                    club.contacts = number
-                                }
-                            }
+//                            .onTapGesture {
+//                                appState.cleanTFInfo()
+//                                appState.fieldType = .phone
+//                                appState.isSecure = false
+//                                appState.textfieldSource = club.viewContacts
+//                                appState.promptString = "Enter phone number for contact"
+//                                appState.openTextFieldWithAction { number in
+//                                    club.contacts = number
+//                                }
+//                            }
                         
                         //url
                         DividerWithText(text: "club link")
@@ -128,16 +128,16 @@ struct AddEditClubView: View {
                                 }
                             }
                             .frame(height: 40)
-                            .onTapGesture {
-                                appState.cleanTFInfo()
-                                appState.fieldType = .email
-                                appState.isSecure = false
-                                appState.textfieldSource = club.viewUrl
-                                appState.promptString = "Enter home page link"
-                                appState.openTextFieldWithAction { url in
-                                    club.urlString = url
-                                }
-                            }
+//                            .onTapGesture {
+//                                appState.cleanTFInfo()
+//                                appState.fieldType = .email
+//                                appState.isSecure = false
+//                                appState.textfieldSource = club.viewUrl
+//                                appState.promptString = "Enter home page link"
+//                                appState.openTextFieldWithAction { url in
+//                                    club.urlString = url
+//                                }
+//                            }
                         
                         //Venue
                         //                    DividerWithText(text: "home location")

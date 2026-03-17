@@ -24,25 +24,25 @@ struct ObvanCollectionView: View {
                         ObvanCollectionCellView(title: obvan.viewName,
                                                 count: obvan.viewTemplateCrews.count,
                                                 isSelected: obvan == selectedObvan)
-                        .onTapGesture {
-                            withAnimation {
-                                if selectedObvan == obvan {
-                                    //isEdit = false
-                                    selectedObvan = nil
-                                    appState.setIconToPrimaryButton(.plus)
-                                    appState.makeSecondaryButtonEnabled(
-                                        false
-                                    )
-                                } else {
-                                    //isEdit = true
-                                    selectedObvan = obvan
-                                    appState.setIconToPrimaryButton(.edit)
-                                    appState.makeSecondaryButtonEnabled(
-                                        true
-                                    )
-                                }
-                            }
-                        }
+//                        .onTapGesture {
+//                            withAnimation {
+//                                if selectedObvan == obvan {
+//                                    //isEdit = false
+//                                    selectedObvan = nil
+//                                    appState.setIconToPrimaryButton(.plus)
+//                                    appState.makeSecondaryButtonEnabled(
+//                                        false
+//                                    )
+//                                } else {
+//                                    //isEdit = true
+//                                    selectedObvan = obvan
+//                                    appState.setIconToPrimaryButton(.edit)
+//                                    appState.makeSecondaryButtonEnabled(
+//                                        true
+//                                    )
+//                                }
+//                            }
+//                        }
                     }
                 }
                 .padding(10)
@@ -56,8 +56,8 @@ struct ObvanCollectionView: View {
             .onTapGesture {
                 withAnimation {
                     selectedObvan = nil
-                    appState.setIconToPrimaryButton(.plus)
-                    appState.makeSecondaryButtonEnabled(false)
+//                    appState.setIconToPrimaryButton(.plus)
+//                    appState.makeSecondaryButtonEnabled(false)
                 }
             }
             .transitionWithOpacity()

@@ -29,7 +29,10 @@
 		29389C3C2B8EE62F003EF60C /* UIKit+ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29389C3B2B8EE62F003EF60C /* UIKit+ext.swift */; };
 		293C66CB2F61648F00991B67 /* UpdateDelegateProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 293C66C92F61648F00991B67 /* UpdateDelegateProtocol.swift */; };
 		293C66DE2F62AB0200991B67 /* GlobalSettingsArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 293C66DD2F62AB0200991B67 /* GlobalSettingsArray.swift */; };
+		293C66FF2F64042000991B67 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 293C66FE2F64042000991B67 /* MainTabView.swift */; };
+		293C67052F68635800991B67 /* BroadcastListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 293C67042F68635800991B67 /* BroadcastListViewModel.swift */; };
 		29418D922C6CCDAE007CC6F3 /* FiltersEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29418D912C6CCDAE007CC6F3 /* FiltersEnums.swift */; };
+		294520472F69A02400351490 /* BroadcastEditViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 294520462F69A02400351490 /* BroadcastEditViewModel.swift */; };
 		294D97A72B3B2AEC00057F70 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 294D97A62B3B2AEC00057F70 /* FirebaseAuth */; };
 		29553BFB2B9073C100C7FE6A /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 29553BFA2B9073C100C7FE6A /* FirebaseFirestore */; };
 		29553BFD2B9073C100C7FE6A /* FirebaseFirestoreCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 29553BFC2B9073C100C7FE6A /* FirebaseFirestoreCombine-Community */; };
@@ -47,7 +50,6 @@
 		2967DF1B2B639A90003956FD /* Error+Modifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2967DF1A2B639A90003956FD /* Error+Modifier.swift */; };
 		2967DF212B64F69B003956FD /* KeyboardAdaptiveModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2967DF202B64F69B003956FD /* KeyboardAdaptiveModifier.swift */; };
 		297507BE2C9426B400E58091 /* SaveEditControlPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 297507BD2C9426B400E58091 /* SaveEditControlPanelView.swift */; };
-		29778E242C0B85FC006EF6CE /* BPResetPasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29778E232C0B85FC006EF6CE /* BPResetPasswordView.swift */; };
 		298932682AE24D7000BD93CA /* BPError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 298932672AE24D7000BD93CA /* BPError.swift */; };
 		299190292C8A064400D2CDDC /* String+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 299190282C8A064400D2CDDC /* String+Ext.swift */; };
 		299277982B7629FD00B8F892 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 299277972B7629FD00B8F892 /* GoogleService-Info.plist */; };
@@ -109,7 +111,10 @@
 		29389C3B2B8EE62F003EF60C /* UIKit+ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIKit+ext.swift"; sourceTree = "<group>"; };
 		293C66C92F61648F00991B67 /* UpdateDelegateProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateDelegateProtocol.swift; sourceTree = "<group>"; };
 		293C66DD2F62AB0200991B67 /* GlobalSettingsArray.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalSettingsArray.swift; sourceTree = "<group>"; };
+		293C66FE2F64042000991B67 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		293C67042F68635800991B67 /* BroadcastListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BroadcastListViewModel.swift; sourceTree = "<group>"; };
 		29418D912C6CCDAE007CC6F3 /* FiltersEnums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FiltersEnums.swift; sourceTree = "<group>"; };
+		294520462F69A02400351490 /* BroadcastEditViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BroadcastEditViewModel.swift; sourceTree = "<group>"; };
 		2955C9622B4B8C8C003F9ADC /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		2955C9692B4E416D003F9ADC /* AuthenticationScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationScreen.swift; sourceTree = "<group>"; };
 		2955C9782B50FDEF003F9ADC /* SignUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpView.swift; sourceTree = "<group>"; };
@@ -123,7 +128,6 @@
 		2967DF1A2B639A90003956FD /* Error+Modifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Error+Modifier.swift"; sourceTree = "<group>"; };
 		2967DF202B64F69B003956FD /* KeyboardAdaptiveModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardAdaptiveModifier.swift; sourceTree = "<group>"; };
 		297507BD2C9426B400E58091 /* SaveEditControlPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveEditControlPanelView.swift; sourceTree = "<group>"; };
-		29778E232C0B85FC006EF6CE /* BPResetPasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPResetPasswordView.swift; sourceTree = "<group>"; };
 		298932672AE24D7000BD93CA /* BPError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPError.swift; sourceTree = "<group>"; };
 		299190282C8A064400D2CDDC /* String+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Ext.swift"; sourceTree = "<group>"; };
 		299277972B7629FD00B8F892 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -208,14 +212,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		290B816E2AD7FCBC00B858F1 /* EventsScreen */ = {
+		290B816E2AD7FCBC00B858F1 /* BroadcastsScreen */ = {
 			isa = PBXGroup;
 			children = (
+				293C67042F68635800991B67 /* BroadcastListViewModel.swift */,
 				29AECAE92CEB357C00CAD02C /* ListCell */,
 				290B816F2AD7FCE700B858F1 /* BroadcastListView.swift */,
 				2951142F2C4E71FF005E4BF8 /* Event */,
 			);
-			path = EventsScreen;
+			path = BroadcastsScreen;
 			sourceTree = "<group>";
 		};
 		290B81732AD9148200B858F1 /* Motion */ = {
@@ -340,6 +345,7 @@
 		2951142F2C4E71FF005E4BF8 /* Event */ = {
 			isa = PBXGroup;
 			children = (
+				294520462F69A02400351490 /* BroadcastEditViewModel.swift */,
 				29D141FA2E5DEF5C0032277A /* ImageWidthPreferenceKey.swift */,
 				2994DE662C157C9F00DF9060 /* BroadcastEditView.swift */,
 				290127A92CCFD5300054B2D7 /* EventHeader */,
@@ -353,7 +359,6 @@
 			isa = PBXGroup;
 			children = (
 				2955C9692B4E416D003F9ADC /* AuthenticationScreen.swift */,
-				29778E042C0A36AC006EF6CE /* ForgetPasswordFlow */,
 				2955C9702B4EE217003F9ADC /* RegistrationFlow */,
 				29F42B582B88B9E70024B764 /* WelcomeFLow */,
 			);
@@ -391,10 +396,11 @@
 			isa = PBXGroup;
 			children = (
 				291EB4F12DC0AE1900FCDA75 /* NetworkTestScreen */,
-				290B816E2AD7FCBC00B858F1 /* EventsScreen */,
+				290B816E2AD7FCBC00B858F1 /* BroadcastsScreen */,
 				291E72C42BBE8961008092D7 /* PersonalScreen */,
 				291E72C12BBE8575008092D7 /* MessengerScreen */,
 				2955C97A2B5186FD003F9ADC /* SettingsScreen */,
+				293C66FE2F64042000991B67 /* MainTabView.swift */,
 			);
 			path = MainTab;
 			sourceTree = "<group>";
@@ -433,14 +439,6 @@
 				2967DF182B61109B003956FD /* UpdateSessionUserDataView.swift */,
 			);
 			path = "Change Email and Password Flow";
-			sourceTree = "<group>";
-		};
-		29778E042C0A36AC006EF6CE /* ForgetPasswordFlow */ = {
-			isa = PBXGroup;
-			children = (
-				29778E232C0B85FC006EF6CE /* BPResetPasswordView.swift */,
-			);
-			path = ForgetPasswordFlow;
 			sourceTree = "<group>";
 		};
 		298932662AE24D5700BD93CA /* Error */ = {
@@ -776,6 +774,7 @@
 				292D664F2BD7998A009A2187 /* SmartCollection.swift in Sources */,
 				2963DDC32C8848F00030DAC6 /* BroadcastSchemaEditViewModel.swift in Sources */,
 				292D664E2BD7998A009A2187 /* SelectableSmartCollectionView.swift in Sources */,
+				293C67052F68635800991B67 /* BroadcastListViewModel.swift in Sources */,
 				295943292C64EA8700C2B27C /* BPDateFormater.swift in Sources */,
 				2967DF1B2B639A90003956FD /* Error+Modifier.swift in Sources */,
 				2994DE672C157C9F00DF9060 /* BroadcastEditView.swift in Sources */,
@@ -793,6 +792,7 @@
 				29FFDAB82ADBC2F1005AD50F /* MainBackground.swift in Sources */,
 				29F7CF122CA15861009C303E /* View+Ext.swift in Sources */,
 				2916E62C2C58B83E0025DCC6 /* AnimatedStart.swift in Sources */,
+				293C66FF2F64042000991B67 /* MainTabView.swift in Sources */,
 				298932682AE24D7000BD93CA /* BPError.swift in Sources */,
 				29BD5DE02E507A9C00EB8328 /* ImageWrapper.swift in Sources */,
 				2955C96A2B4E416D003F9ADC /* AuthenticationScreen.swift in Sources */,
@@ -801,6 +801,7 @@
 				29D1697A2B85D4F800A70638 /* HaptickEngine.swift in Sources */,
 				299190292C8A064400D2CDDC /* String+Ext.swift in Sources */,
 				291339152E17D11900F14F30 /* CycleType.swift in Sources */,
+				294520472F69A02400351490 /* BroadcastEditViewModel.swift in Sources */,
 				291CDA5C2DDF3CF900724F53 /* SelectableModifier.swift in Sources */,
 				293C66CB2F61648F00991B67 /* UpdateDelegateProtocol.swift in Sources */,
 				29E10F642C21696B00A35A4B /* GlobalSettings.swift in Sources */,
@@ -813,7 +814,6 @@
 				29418D922C6CCDAE007CC6F3 /* FiltersEnums.swift in Sources */,
 				290F598A2CE63006002EAA4A /* EditMemberViewModel.swift in Sources */,
 				290FF3B72B5E90240096D655 /* BPErrorView.swift in Sources */,
-				29778E242C0B85FC006EF6CE /* BPResetPasswordView.swift in Sources */,
 				29E10F662C2169C400A35A4B /* GlobalProperties.swift in Sources */,
 				291E72C32BBE859F008092D7 /* BPMessengerView.swift in Sources */,
 				29E5B83C2E2B7CCB00CDAF8E /* Sequence+Ext.swift in Sources */,

@@ -9,7 +9,7 @@ struct NotificationView: View {
     
     @State private var counter: Int = 0
     
-    @State var source: [StatusViewNotification] = [
+    var source: [StatusViewNotification] = [
         StatusViewNotification(id: UUID(), text: "Hello user",textColor:Color.primary, cycle: .loop),
         StatusViewNotification(id: UUID(), text: "Data loaded",textColor:Color.secondary, cycle: .once),
         StatusViewNotification(id: UUID(), text: "Data Synced",textColor:Color.secondary, cycle: .once),
@@ -17,7 +17,7 @@ struct NotificationView: View {
         StatusViewNotification(id: UUID(), text: "New event created",textColor:Color.green, cycle: .once),
         StatusViewNotification(id: UUID(), text: "Next event: 21.12.2025  15:00",textColor:Color.brown, cycle: .loop)
     ]
-    let delay: Double = 8
+    let delay: Double = 2
     let animationDuration: Double = 0.5
     let fontSize: Double = 18.0
     
@@ -69,13 +69,13 @@ struct NotificationView: View {
                 }
             }
         //source changes here
-            .onReceive(appState.notificationPublisher) { note in
-                if source.count > 0{
-                    source.insert(note, at: 1)
-                } else {
-                    source.append(note)
-                }
-            }
+//            .onReceive(appState.notificationPublisher) { note in
+//                if source.count > 0{
+//                    source.insert(note, at: 1)
+//                } else {
+//                    source.append(note)
+//                }
+//            }
         
     }
 }

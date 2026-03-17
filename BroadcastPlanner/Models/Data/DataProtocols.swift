@@ -119,12 +119,12 @@ extension NSManagedObjectContext {
         request.fetchLimit = 1
         var object: T
         if let existing = try? fetch(request).first as? T{
-            print("existing with id: \(id)")
+//            print("existing with id: \(id)")
             object = existing
         } else {
             object = T(context: self)
             object.id = id
-            print("new object created, id: \(id)")
+//            print("new object created, id: \(id)")
         }
         return object
     }

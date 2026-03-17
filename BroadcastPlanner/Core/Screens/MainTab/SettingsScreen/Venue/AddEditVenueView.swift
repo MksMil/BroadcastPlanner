@@ -67,16 +67,16 @@ struct AddEditVenueView: View {
                             }
                         }
                         .frame(height: 40)
-                        .onTapGesture {
-                            appState.cleanTFInfo()
-                            appState.fieldType = .custom([])
-                            appState.isSecure = false
-                            appState.textfieldSource = venue.viewTitle
-                            appState.promptString = "Enter new Title"
-                            appState.openTextFieldWithAction { title in
-                                venue.title = title
-                            }
-                        }
+//                        .onTapGesture {
+//                            appState.cleanTFInfo()
+//                            appState.fieldType = .custom([])
+//                            appState.isSecure = false
+//                            appState.textfieldSource = venue.viewTitle
+//                            appState.promptString = "Enter new Title"
+//                            appState.openTextFieldWithAction { title in
+//                                venue.title = title
+//                            }
+//                        }
                     
                     DividerWithText(text: "address")
                     
@@ -101,16 +101,16 @@ struct AddEditVenueView: View {
                             }
                         }
                         .frame(height: 40)
-                        .onTapGesture {
-                            appState.cleanTFInfo()
-                            appState.fieldType = .custom([])
-                            appState.isSecure = false
-                            appState.textfieldSource = venue.viewAddress
-                            appState.promptString = "Enter address"
-                            appState.openTextFieldWithAction { address in
-                                venue.address = address
-                            }
-                        }
+//                        .onTapGesture {
+//                            appState.cleanTFInfo()
+//                            appState.fieldType = .custom([])
+//                            appState.isSecure = false
+//                            appState.textfieldSource = venue.viewAddress
+//                            appState.promptString = "Enter address"
+//                            appState.openTextFieldWithAction { address in
+//                                venue.address = address
+//                            }
+//                        }
 
                    
                     DividerWithText(text: "Add Venue images")

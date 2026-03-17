@@ -133,7 +133,7 @@ struct AuthenticationScreen: View {
         }
       }
       .scrollDisabled(true)
-      .transitionWithOpacity()
+//      .transitionWithOpacity()
       
       // MARK: - Loading
       if sessionManager.isLoading {

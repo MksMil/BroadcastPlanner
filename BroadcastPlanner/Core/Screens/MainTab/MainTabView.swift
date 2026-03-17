@@ -5,40 +5,56 @@ import SwiftUI
 // Каждый таб держит свой path — переключение не сбрасывает историю соседнего.
 
 struct MainTabView: View {
+    @EnvironmentObject var appState: ApplicationState
     @EnvironmentObject var router: Router
     @EnvironmentObject var sessionManager: SessionManager
     @EnvironmentObject var dataManager: DataManager
 
     var body: some View {
-        TabView(selection: $router.selectedTab) {
-
+      ZStack{
+        VStack(spacing: 0){
+          StatusView()
+          TabView(selection: $router.selectedTab) {
+            
             // MARK: - Broadcasts tab
             NavigationStack(path: $router.broadcastPath) {
-                BroadcastListView()
-                    .navigationDestination(for: BroadcastPath.self) { path in
-                        broadcastDestination(path)
-                    }
+              BroadcastListView(
+                viewModel: BroadcastListViewModel(
+                  broadcastRepository: dataManager.broadcasts,
+                  memberRepository: dataManager.members,
+                  router: router
+                )
+              )
+              .navigationDestination(for: BroadcastPath.self) { path in
+                broadcastDestination(path)
+              }
             }
             .tabItem {
-                Label("Broadcasts", systemImage: "antenna.radiowaves.left.and.right")
+              Label("Broadcasts", systemImage: "antenna.radiowaves.left.and.right")
             }
             .tag(AppTab.broadcasts)
-
+            
             // MARK: - Messenger tab
             NavigationStack(path: $router.messengerPath) {
-                BPMessengerView()
-                    .navigationDestination(for: MessengerPath.self) { path in
-                        messengerDestination(path)
-                    }
+              BPMessengerView()
+                .navigationDestination(for: MessengerPath.self) { path in
+                  messengerDestination(path)
+                }
             }
             .tabItem {
-                Label("Messenger", systemImage: "message")
+              Label("Messenger", systemImage: "message")
             }
             .tag(AppTab.messenger)
+          }
         }
+      }
+      .onReceive(appState.$userOnlineStatus, perform: { isOnline in
+        
+      })
         // Кнопка профиля — toolbar, видна в обоих табах через NavigationStack
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
+              
                 Button {
                     router.isMenuPresented = true
                 } label: {
@@ -55,9 +71,15 @@ struct MainTabView: View {
     private func broadcastDestination(_ path: BroadcastPath) -> some View {
         switch path {
         case .broadcastList:
-            BroadcastListView()
+            BroadcastListView(
+              viewModel: BroadcastListViewModel(
+                broadcastRepository: dataManager.broadcasts,
+                memberRepository: dataManager.members,
+                router: router))
         case .createEdit(let broadcast):
-            BroadcastEditView(broadcast: broadcast)
+            BroadcastEditView(broadcast: broadcast,
+                              dataManager: dataManager,
+                              router: router)
         case .stadPointsEdit(let broadcast):
             BroadcastSchemaEditView(broadcast: broadcast)
         case .clubCollection:
@@ -76,8 +98,8 @@ struct MainTabView: View {
             EditMemberInfoView()//member: dataManager.fetchOwner())
         case .settings:
             SettingsView()
-        case .updateSessionUserData:
-            UpdateSessionUserDataView()
+//        case .updateSessionUserData:
+//            UpdateSessionUserDataView()
         }
     }
 

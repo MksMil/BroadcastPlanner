@@ -110,7 +110,7 @@ final class BroadcastRepository: BroadcastRepositoryProtocol {
         // Сохранить превью схемы стадиона
         if let previewId = broadcast.venueSchemaPreview?.viewId,
            !previewId.isEmpty,
-           let uiimage = await imageCacher.getOrigin(id: previewId) {
+           let uiimage = await imageCacher.getImage(id: previewId, size: .originImages) {
             do {
                 try await networkManager.storage.uploadImage(
                     id: previewId,
@@ -144,7 +144,7 @@ final class BroadcastRepository: BroadcastRepositoryProtocol {
                 )
             }
 
-            if let uiimage = await imageCacher.getOrigin(id: previewId) {
+          if let uiimage = await imageCacher.getImage(id: previewId, size: .originImages) {
                 do {
                     try await networkManager.storage.uploadImage(
                         id: previewId,

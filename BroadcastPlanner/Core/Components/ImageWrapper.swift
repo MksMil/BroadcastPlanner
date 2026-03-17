@@ -32,7 +32,6 @@ struct ImageWrapper: View {
                     update()
                 }
                 .onReceive(dataManager.updatePublisher) { value in
-//                    print("wrapper received \(value) with id: \(id)")
                     guard !id.isEmpty else { return }
                     if value.0 == .images, value.1.contains(id){
                         update()
@@ -41,9 +40,7 @@ struct ImageWrapper: View {
     }
     
    @MainActor func update(){
-//        print("start to update image")
      guard !id.isEmpty else {
-//       print("empty id when update image")
        return
      }
         if id == "nil" {
@@ -54,15 +51,12 @@ struct ImageWrapper: View {
         isLoading = true
         Task{
             if let newImage = await dataManager.getImageWithId(id, type: type, size: imageSize){
-//                print("get new image")
                 await MainActor.run {
                   withAnimation{
                     image = Image(uiImage: newImage)
                   }
                 }
-            } //else {
-//                print("not update image")
-//            }
+            }
             await MainActor.run {
                 isLoading = false
             }

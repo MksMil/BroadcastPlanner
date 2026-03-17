@@ -9,7 +9,7 @@ import OSLog
 final class DataManager: ObservableObject {
 
     // MARK: - Public services
-
+    let networkManager: NetworkManager
     let stack: CoreDataStackProtocol
     let coreDataService: CoreDataServiceProtocol
     let members: MemberRepositoryProtocol
@@ -37,7 +37,9 @@ final class DataManager: ObservableObject {
     init(
         networkManager: NetworkManager,
         stack: CoreDataStackProtocol? = nil
+        
     ) throws {
+        self.networkManager = networkManager
         let resolvedStack = try stack ?? CoreDataStack()
         self.stack = resolvedStack
         self.logger = LoggerFactory.logger(for: .storage)
@@ -115,13 +117,23 @@ final class DataManager: ObservableObject {
         // MARK: Publishers
         makePublishers()
 
-        // MARK: Старт сети
-        Task {
-            try? await networkManager.start()
-        }
+       
 
         logger.info("DataManager initialized")
     }
+  
+  func configure(
+    appState: ApplicationState,
+    globalSettings: GlobalSettings,
+    notificationHandler: NotificationHandler
+  ) {
+    networkManager.eventProgressHandler = appState
+    networkManager.globalSettings.delegate = globalSettings
+//    // MARK: Старт сети
+//    Task {
+//        try? await networkManager.start()
+//    }
+  }
 
     // MARK: - Publishers
 
@@ -141,14 +153,33 @@ final class DataManager: ObservableObject {
 // MARK: - Convenience API
 // Тонкие обёртки для обратной совместимости с вьюхами
 // Постепенно заменяются прямыми вызовами сервисов
-
 extension DataManager {
+  func setOnlineStatus(isOnline: Bool) async {
+    guard !currentId.isEmpty else { return }
+    do{
+      if isOnline {
+        //      await dataManager.members.setMember(id: memberId)
+        try await networkManager.presence.goOnline(id: currentId)
+      } else {
+        try await networkManager.presence.goOffline(id: currentId)
+      }
+    } catch {
+      //error handling
+    }
+    
+  }
+}
+extension DataManager {
+  func startNetwork() throws {
+    Task{
+      try? await networkManager.start()
+    }
+    
+  }
+  // MARK: Старт сети
+
 
     // MARK: - User
-
-    func setMember(id: String) async {
-        await members.setMember(id: id)
-    }
 
     func clearData() {
         members.clearCurrentUser()
@@ -286,7 +317,7 @@ extension DataManager {
       do{
         try coreDataService.save()
       } catch {
-        print("error")
+        logger.error("\(error)")
       }
     }
 

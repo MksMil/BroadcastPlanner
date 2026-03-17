@@ -13,8 +13,8 @@ struct BroadcastPlannerApp: App {
   @StateObject private var sessionManager: SessionManager = SessionManager()
   @StateObject private var globalSettings = GlobalSettings()
   @StateObject var router: Router = Router()
-  @StateObject var dataSourceContainer: DataSourceContainer =
-    DataSourceContainer()
+  @StateObject var dataCoordinator: DataCoordinator =
+    DataCoordinator()
 
   var body: some Scene {
 
@@ -22,32 +22,36 @@ struct BroadcastPlannerApp: App {
       RootView()
         .onAppear {
           delegate.notificationHandler = appState
-          dataSourceContainer
+          dataCoordinator
             .configure(
               appState: appState,
               globalSettings: globalSettings,
               notificationHandler: appState
             )
         }
-        .onChange(
+        .onChangeCompat(
           of: scenePhase,
           perform: { phase in
-            if appState.state == .authorized {
+            if !dataCoordinator.dataManager.currentId.isEmpty {
               switch phase {
               case .active:
                 //send online status
                 #if DEBUG
                   print("scene in foreground: send online status")
                 #endif
-                appState.userOnlineStatus = .online
-              case .background, .inactive:
+                  Task{
+                    await dataCoordinator.dataManager.setOnlineStatus(isOnline: true)
+                  }
+                case .background, .inactive:
                 //send offline status
                 #if DEBUG
                   print(
                     "scene in background or inactive state: send offline status"
                   )
                 #endif
-                appState.userOnlineStatus = .offline
+                  Task{
+                    await dataCoordinator.dataManager.setOnlineStatus(isOnline: false)
+                  }
               @unknown default:
                 #if DEBUG
                   print("scene in unknown phase: send unknown status")
@@ -60,10 +64,10 @@ struct BroadcastPlannerApp: App {
         .environmentObject(globalSettings)
         .environmentObject(appState)
         .environmentObject(router)
-        .environmentObject(dataSourceContainer.dataManager)
+        .environmentObject(dataCoordinator.dataManager)
         .environment(
           \.managedObjectContext,
-          dataSourceContainer.dataManager.mainContext
+           dataCoordinator.dataManager.mainContext
         )
     }
   }

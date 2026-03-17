@@ -23,25 +23,25 @@ struct ClubCollectionView: View {
                         ClubSheetCellView(id: club.viewId,
                                           title: club.viewTitle,
                                           isSelected: selectedClub == club)
-                        .onTapGesture {
-                            withAnimation {
-                                if selectedClub == club {
-                                    //isEdit = false
-                                    selectedClub = nil
-                                    appState.setIconToPrimaryButton(.plus)
-                                    appState.makeSecondaryButtonEnabled(
-                                        false
-                                    )
-                                } else {
-                                    //isEdit = true
-                                    selectedClub = club
-                                    appState.setIconToPrimaryButton(.edit)
-                                    appState.makeSecondaryButtonEnabled(
-                                        true
-                                    )
-                                }
-                            }
-                        }
+//                        .onTapGesture {
+//                            withAnimation {
+//                                if selectedClub == club {
+//                                    //isEdit = false
+//                                    selectedClub = nil
+//                                    appState.setIconToPrimaryButton(.plus)
+//                                    appState.makeSecondaryButtonEnabled(
+//                                        false
+//                                    )
+//                                } else {
+//                                    //isEdit = true
+//                                    selectedClub = club
+//                                    appState.setIconToPrimaryButton(.edit)
+//                                    appState.makeSecondaryButtonEnabled(
+//                                        true
+//                                    )
+//                                }
+//                            }
+//                        }
                     }
                 }
                 .padding(10)
@@ -52,13 +52,13 @@ struct ClubCollectionView: View {
             .frame(maxWidth: .infinity,maxHeight: .infinity,alignment: .top)
             .padding(.horizontal, 5)
             .padding(.vertical, 5)
-            .onTapGesture {
-                withAnimation {
-                    selectedClub = nil
-                    appState.setIconToPrimaryButton(.plus)
-                    appState.makeSecondaryButtonEnabled(false)
-                }
-            }
+//            .onTapGesture {
+//                withAnimation {
+//                    selectedClub = nil
+//                    appState.setIconToPrimaryButton(.plus)
+//                    appState.makeSecondaryButtonEnabled(false)
+//                }
+//            }
             .transitionWithOpacity()
         }
         .onAppear {

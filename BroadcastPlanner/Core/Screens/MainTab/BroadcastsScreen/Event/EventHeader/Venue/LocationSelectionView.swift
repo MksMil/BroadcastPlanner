@@ -55,50 +55,38 @@ struct LocationSelectionView: View {
             .padding(.top,offset + 10)
             .disabled(!editable)
         }
-        .task{
-            if let venue {
-                Task{
-                    var images: [Image] = []
-                    for localImage in venue.viewLocalImages{
-                        if let uiimage = await dataManager
-                            .getImageWithId(localImage.viewId,
-                                            type: GlobalProperties.ImageType.venue,
-                                            size: ImageSizes.originImages){
-                            images.append(Image(uiImage: uiimage))
-                        }
-                    }
-                   await MainActor.run {
-                        vm.update(title: venue.viewTitle,
-                                  address: venue.viewAddress,
-                                  images: images)
-                    }
-                }
-            } else {
+        .task {
+            guard let venue else {
                 vm.updateImages(newImages: [])
+                return
             }
+            // убираем вложенный Task — используем .task напрямую
+            var images: [Image] = []
+            for localImage in venue.viewLocalImages {
+                // проверяем отмену между итерациями
+                try? Task.checkCancellation()
+                if let uiimage = await dataManager.getImageWithId(
+                    localImage.viewId,
+                    type: .venue,
+                    size: .mediumImages  // ← originImages для фона избыточно, mediumImages достаточно
+                ) {
+                    images.append(Image(uiImage: uiimage))
+                }
+            }
+            vm.update(title: venue.viewTitle,
+                      address: venue.viewAddress,
+                      images: images)
         }
         .onDisappear(perform: {
             vm.stop()
         })
         .sheet(isPresented: $vm.isLocationSheetPresented) {
             VenueSelectionSheetView(selectedVenue: vm.venue){ venue in
-                if let venue {
-                    Task{
-                        var images: [Image] = []
-                        for localImage in venue.viewLocalImages{
-                            if let uiimage = await dataManager.getImageWithId(localImage.viewId, type: GlobalProperties.ImageType.venue, size: ImageSizes.originImages){
-                                images.append(Image(uiImage: uiimage))
-                            }
-                        }
-                       await MainActor.run {
-                            vm.update(title: venue.viewTitle,
-                                      address: venue.viewAddress,
-                                      images: images)
-                            acceptAction(venue)
-                            vm.isLocationSheetPresented = false
-                        }
-                    }
-                }
+              guard let venue else { return }
+                  Task {
+                      await vm.loadImagesForVenue(venue, using: dataManager)
+                      acceptAction(venue)
+                  }
             }
             .presentationDragIndicator(.visible)
         }

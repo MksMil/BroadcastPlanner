@@ -71,6 +71,9 @@
     "Crews: %@" : {
 
     },
+    "Delete" : {
+
+    },
     "Delete account" : {
 
     },
@@ -84,6 +87,9 @@
 
     },
     "empty" : {
+
+    },
+    "Error" : {
 
     },
     "Forget password" : {
@@ -158,7 +164,7 @@
     "Remove" : {
 
     },
-    "Remove  %@ from owners?" : {
+    "Remove %@ from owners?" : {
 
     },
     "Remove %@ template!" : {
@@ -170,6 +176,9 @@
     "Remove Obvan" : {
 
     },
+    "Remove owner" : {
+
+    },
     "Remove Photo" : {
 
     },
@@ -177,9 +186,6 @@
 
     },
     "Save settings" : {
-
-    },
-    "Send" : {
 
     },
     "Settings" : {

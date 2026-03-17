@@ -2,8 +2,6 @@ import CoreData
 import OSLog
 import UIKit
 
-// MARK: - Protocol
-
 // MARK: - Protocol — обновлённые сигнатуры
 @MainActor
 protocol ImageRepositoryProtocol: AnyObject, Sendable {
