@@ -16,21 +16,18 @@ protocol NotificationHandler: AnyObject {
 }
 
 class ApplicationState: ObservableObject{
-  @Published var userOnlineStatus: UserOnlineStatus = .offline
   
+  var user: MemberDTO = MemberDTO()
+  
+  @Published var userOnlineStatus: UserOnlineStatus = .offline
   var state: AppState = .notAuthorized {
     didSet {
       userOnlineStatus = state == .authorized ? .online: .offline
     }
   }
-  
-//  let presenceService: PresenceService
-  
+  weak var router: Router?
   var isSecure: Bool = false
-  var promptString: String = "Enter your information here!"
-  
-  let networkStatusPublisher = PassthroughSubject<Bool,Never>()
-  
+  var backAction: ()->Void = {} 
   // MARK: init
   init(){
     startTimer()
@@ -41,22 +38,17 @@ class ApplicationState: ObservableObject{
     stopTimer()
   }
   
-  // MARK: - Title
-  
-  let titlePublisher = CurrentValueSubject<String, Never>("")
-  
-  func setTitle(_ newTitle: String){
-    if titlePublisher.value != newTitle{
-      titlePublisher.value = newTitle
+  @MainActor
+  func setRouter(router: Router){
+    self.router = router
+    setDefaultBackAction()
+  }
+  @MainActor
+  func setDefaultBackAction(){
+    if let router {
+      backAction = router.stepBack
     }
   }
-  
-  // MARK: - MainNotifications
-  let notificationPublisher = CurrentValueSubject<StatusViewNotification,Never>(StatusViewNotification(id: UUID(), text: "Hello",textColor: Color.primary,cycle: .once))
-  func addNewNotification(note: StatusViewNotification){
-    notificationPublisher.value = note
-  }
-  
   // MARK: - Timer
   let currentTime:  PassthroughSubject = PassthroughSubject<Date,Never>()
   var timer: Cancellable?
@@ -71,6 +63,35 @@ class ApplicationState: ObservableObject{
   func stopTimer(){
     timer?.cancel()
   }
+  
+  // MARK: - Title
+  
+  let titlePublisher = CurrentValueSubject<String, Never>("Приветствую!")
+  
+  func setTitle(_ newTitle: StatusViewTitleCase){
+    var resultString: String
+    switch newTitle {
+      case .notFiltered:
+        resultString = newTitle.rawValue
+      case .userOwned:
+        resultString = newTitle.rawValue
+      case .userParticipation:
+        resultString = newTitle.rawValue
+      case .base:
+        resultString = newTitle.rawValue + " \(user.firstName)"
+    }
+        if titlePublisher.value != resultString{
+      titlePublisher.value = resultString
+    }
+  }
+  
+  // MARK: - MainNotifications
+  let notificationPublisher = CurrentValueSubject<StatusViewNotification,Never>(StatusViewNotification(id: UUID(), text: "Hello",textColor: Color.primary,cycle: .once))
+  func addNewNotification(note: StatusViewNotification){
+    notificationPublisher.value = note
+  }
+  
+  
 }
 
 // MARK: - Progress show

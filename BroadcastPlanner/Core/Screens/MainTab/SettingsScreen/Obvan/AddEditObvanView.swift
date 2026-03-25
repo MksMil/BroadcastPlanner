@@ -145,27 +145,27 @@ struct AddEditObvanView: View {
                             .frame(width: geo.size.width * 3 / 5)
                             VStack{
                                 
-                                BPEditEventControlPanel(
-                                    scaleUpAction: { vm.scaleUp() },
-                                    scaleDownAction: { vm.scaleDown() },
-                                    resetScaleAction: { vm.resetScale() })
-                                
-                                BPJoystick(
-                                    upAction: vm.moveUp,
-                                    downAction: vm.moveDown,
-                                    leftAction: vm.moveLeft,
-                                    rightAction: vm.moveRight,
-                                    rotationLeft: vm.rotateCounterClockwise,
-                                    rotationRight: vm.rotateClockwise,
-                                    swap: vm.swap,
-                                    scaleUp: vm.scaleUpPoint,
-                                    scaleDown: vm.scaleDownPoint
-                                )
-                                .aspectRatio(1, contentMode: .fit)
-                                .padding(15)
-                                .overlay {
-                                    RoundedRectangle(cornerRadius: 5).stroke(.white.opacity(0.4), lineWidth: 2)
-                                }
+//                                BPEditEventControlPanel(
+//                                    scaleUpAction: { vm.scaleUp() },
+//                                    scaleDownAction: { vm.scaleDown() },
+//                                    resetScaleAction: { vm.resetScale() })
+//                                
+//                                BPJoystick(
+//                                    upAction: vm.moveUp,
+//                                    downAction: vm.moveDown,
+//                                    leftAction: vm.moveLeft,
+//                                    rightAction: vm.moveRight,
+//                                    rotationLeft: vm.rotateCounterClockwise,
+//                                    rotationRight: vm.rotateClockwise,
+//                                    swap: vm.swap,
+//                                    scaleUp: vm.scaleUpPoint,
+//                                    scaleDown: vm.scaleDownPoint
+//                                )
+//                                .aspectRatio(1, contentMode: .fit)
+//                                .padding(15)
+//                                .overlay {
+//                                    RoundedRectangle(cornerRadius: 5).stroke(.white.opacity(0.4), lineWidth: 2)
+//                                }
                                 Spacer()
                             }
                             .frame(width: geo.size.width * 2 / 5)

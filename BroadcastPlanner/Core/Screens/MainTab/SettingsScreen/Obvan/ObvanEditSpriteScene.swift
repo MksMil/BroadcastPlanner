@@ -2,7 +2,9 @@ import SwiftUI
 import SpriteKit
 
 class ObvanEditSpriteScene: SKScene{
-
+  private enum SceneState{
+    case idle, touchingNewPoint, touchingSelectedPoint, movedPoint, movingCam
+}
     enum NodeType: String {
         case background  = "_background"
         case number = "_spriteNumber"
@@ -10,7 +12,7 @@ class ObvanEditSpriteScene: SKScene{
     }
     
     //crew and cam movement control
-    var sceneState: SceneState = .idle
+    private var sceneState: SceneState = .idle
     //delegate
     weak var crewDelegate: ObvanEditDelegate?
     

@@ -1,48 +1,29 @@
-import SwiftUI
 import Combine
+import SwiftUI
 
 struct BackwardButton: View {
-    @EnvironmentObject var router: Router
-    @EnvironmentObject var appState: ApplicationState
-    
-//    @State private var isBackwardEnabled: Bool = false
-//    @State private var isBackwardVisible: Bool = false
-//    @State private var isDis: Bool = false
-    var body: some View {
-        Button {
-          router.stepBack()
-//            isDis = true
-//            appState.stepBackAction()
-//            makeEnabled()
-        } label: {
-            Image(systemName: "chevron.backward.circle")
-                .font(.system(size: 50))
-        }
-//        .offset(x: isBackwardVisible ? 0:-100)
-//        .disabled(!isBackwardEnabled)
-//        .disabled(isDis)
-//        .onReceive(appState.isBacwardButtonEnabledPublisher) { enable in
-//            withAnimation {
-//                if isBackwardEnabled != enable{
-//                    isBackwardEnabled = enable
-//                }
-//            }
-//        }
-//        .onReceive(appState.isBackwardButtonVisiblePublisher) { visible in
-//                withAnimation {
-//                if isBackwardVisible != visible{
-//                    isBackwardVisible = visible
-//                }
-//            }
-//        }
-    }
-//    private func makeEnabled(){
-//        Task{
-//            try? await Task.sleep(nanoseconds: 500_000_000)
-//            withAnimation{
-//                isDis = false
-//            }
-//        }
-//    }
+  private enum BackwardButtonState: Equatable {
+    case enabledState
+    case dissabledState
+  }
 
+  @State private var state: BackwardButtonState = .dissabledState
+
+  var statePublisher: AnyPublisher<Bool, Never>
+  let backAction: () -> Void
+
+  var body: some View {
+    Button {
+      backAction()
+    } label: {
+      Image(systemName: "chevron.backward.circle")
+        .font(.system(size: 50))
+    }
+    .offset(x: state == .enabledState ? 0 : -100)
+    .disabled(state == .dissabledState)
+    .animation(.easeInOut(duration: 0.1), value: state)
+    .onReceive(statePublisher) { isCanBack in
+      state = isCanBack ? .enabledState : .dissabledState
+    }
+  }
 }

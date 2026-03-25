@@ -1,0 +1,507 @@
+import CoreData
+
+public class Broadcast: NSManagedObject {
+
+}
+
+extension Broadcast {
+
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<Broadcast> {
+        return NSFetchRequest<Broadcast>(entityName: "Broadcast")
+    }
+
+    @NSManaged public var date: Date?
+    @NSManaged public var id: String?
+    @NSManaged public var lastUpdated: Date?
+    @NSManaged public var crews: NSSet?
+    @NSManaged public var guestClub: Club?
+    @NSManaged public var homeClub: Club?
+    @NSManaged public var obvan: NSSet?
+    @NSManaged public var obvanPreview: NSSet?
+    @NSManaged public var owners: NSSet?
+    @NSManaged public var venue: Venue?
+    @NSManaged public var venuePoints: NSSet?
+    @NSManaged public var venueSchemaPreview: LocalImage?
+}
+
+// MARK: Generated accessors for crews
+extension Broadcast {
+
+    @objc(addCrewsObject:)
+    @NSManaged public func addToCrews(_ value: Crew)
+
+    @objc(removeCrewsObject:)
+    @NSManaged public func removeFromCrews(_ value: Crew)
+
+    @objc(addCrews:)
+    @NSManaged public func addToCrews(_ values: NSSet)
+
+    @objc(removeCrews:)
+    @NSManaged public func removeFromCrews(_ values: NSSet)
+
+}
+
+// MARK: Generated accessors for obvan
+extension Broadcast {
+
+    @objc(addObvanObject:)
+    @NSManaged public func addToObvan(_ value: Obvan)
+
+    @objc(removeObvanObject:)
+    @NSManaged public func removeFromObvan(_ value: Obvan)
+
+    @objc(addObvan:)
+    @NSManaged public func addToObvan(_ values: NSSet)
+
+    @objc(removeObvan:)
+    @NSManaged public func removeFromObvan(_ values: NSSet)
+
+}
+
+// MARK: Generated accessors for obvanPreview
+extension Broadcast {
+
+    @objc(addObvanPreviewObject:)
+    @NSManaged public func addToObvanPreview(_ value: LocalImage)
+
+    @objc(removeObvanPreviewObject:)
+    @NSManaged public func removeFromObvanPreview(_ value: LocalImage)
+
+    @objc(addObvanPreview:)
+    @NSManaged public func addToObvanPreview(_ values: NSSet)
+
+    @objc(removeObvanPreview:)
+    @NSManaged public func removeFromObvanPreview(_ values: NSSet)
+
+}
+
+// MARK: Generated accessors for owners
+extension Broadcast {
+
+    @objc(addOwnersObject:)
+    @NSManaged public func addToOwners(_ value: Member)
+
+    @objc(removeOwnersObject:)
+    @NSManaged public func removeFromOwners(_ value: Member)
+
+    @objc(addOwners:)
+    @NSManaged public func addToOwners(_ values: NSSet)
+
+    @objc(removeOwners:)
+    @NSManaged public func removeFromOwners(_ values: NSSet)
+
+}
+
+// MARK: Generated accessors for venuePoints
+extension Broadcast {
+
+    @objc(addVenuePointsObject:)
+    @NSManaged public func addToVenuePoints(_ value: VenuePoint)
+
+    @objc(removeVenuePointsObject:)
+    @NSManaged public func removeFromVenuePoints(_ value: VenuePoint)
+
+    @objc(addVenuePoints:)
+    @NSManaged public func addToVenuePoints(_ values: NSSet)
+
+    @objc(removeVenuePoints:)
+    @NSManaged public func removeFromVenuePoints(_ values: NSSet)
+
+}
+
+extension Broadcast: ImageParent{
+    func assignImage(image: LocalImage, ofType: GlobalProperties.ImageType) {
+        if ofType == .venuePreview{
+            venueSchemaPreview = image
+            image.parentVenuePreview = self
+        }
+    }
+}
+
+extension Broadcast : Identifiable {
+    var viewId: String {
+        id ?? ""
+    }
+    var viewDate: Date{
+        date ?? Date()
+    }
+
+    var viewOwners: [Member] {
+        owners?.allObjects.compactMap{$0 as? Member} ?? []
+    }
+    
+    var viewVenuePoints: [VenuePoint]{
+        venuePoints?.allObjects.compactMap{$0 as? VenuePoint} ?? []
+    }
+    
+    var viewCrews: [Crew]{
+        crews?.allObjects.compactMap{$0 as? Crew} ?? []
+    }
+  
+ 
+    var viewObvans: [Obvan] {
+        obvan?.allObjects as? [Obvan] ?? []
+    }
+    
+    var viewTitle: String {
+        guard let title = venue?.title else { return "Broadcast venue"}
+        return title
+    }
+    
+    var viewAddress: String {
+        guard let address = venue?.address else { return "Broadcast address"}
+        return address
+    }
+    
+    var homeImageId : String {
+        homeClub?.imageLogo?.viewId ?? ""
+    }
+    
+    var guestImageId : String {
+        guestClub?.imageLogo?.viewId ?? ""
+    }
+    
+    var viewVenueImageIds: [String] {
+        venue?.viewLocalImages.map{$0.viewId} ?? []
+    }
+    
+    var viewVenueSchemaPreviewId: String {
+        venueSchemaPreview?.viewId ?? ""
+    }
+    
+    var viewObvanPreviews: [LocalImage] {
+        obvanPreview?.allObjects as? [LocalImage] ?? []
+    }
+    var viewLastUpdated: Date{
+        lastUpdated ?? .now
+    }
+    
+    var dto: BroadcastDTO  {
+        var broadcast = BroadcastDTO(id: viewId,
+                                     date: viewDate,
+                                     lastUpdated: viewLastUpdated,
+                                     obvanId: viewObvans.map{$0.viewId},
+                                     venuePoints: viewVenuePoints.compactMap{$0.dto},
+                                     crews: viewCrews.compactMap{ $0.dto},
+                                     venueID: venue?.id,
+                                     homeClubId: homeClub?.id,
+                                     guestClubId: guestClub?.id,
+                                     venuePreviewId: venueSchemaPreview?.id,
+                                     obvanPreviewId: viewObvanPreviews.map{$0.viewId})
+        broadcast.ownersIds = viewOwners.map({$0.viewId})
+        return broadcast
+    }
+    
+    var isExpired: Bool {
+        if let date, date < Date.now{
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    func status(id: String) -> BroadcastStatus{
+        guard !id.isEmpty else { return .none}
+        if viewOwners.contains(where: { member in
+            member.viewId == id
+        }){
+            return .currentMemberOwned
+        }
+        if viewMembers.contains(where: { member in
+            member.viewId == id
+        }){
+            return .currentMemberParticipated
+        }
+        return .none
+    }
+    
+    var viewMembers: [Member] {
+        var result: [Member] = []
+        viewCrews.forEach {
+            if let member = $0.member{
+                result.append(member)
+            }
+        }
+        viewVenuePoints.forEach{
+          if let member = $0.member{
+              result.append(member)
+            }
+        }
+        return result.uniqued()
+    }
+    
+    func crewsCountForObvan(obvan: Obvan) -> Int{
+        viewCrews.filter({$0.obvanId == obvan.viewId && $0.member != nil}).count
+    }
+    
+    func crewsForObvan(obvan: Obvan) -> [Crew]{
+            viewCrews.filter({ crew in
+                crew.obvanId == obvan.viewId && crew.member != nil
+            })
+    }
+}
+
+// MARK: - Update
+extension Broadcast: CoreDataUpdatable{
+    func updateFromDTO(_ dto: BroadcastDTO,in context: NSManagedObjectContext) {
+       
+        self.id = dto.id
+        self.date = dto.date
+        self.lastUpdated = dto.lastUpdated
+        
+        //unlink home club
+        if let homeClub{
+            homeClub.removeFromHomeBroadcasts(self)
+            self.homeClub = nil
+        }
+        //add new home club
+        if let dtoHomeClubId = dto.homeClubId, !dtoHomeClubId.isEmpty{
+            let newClub: Club = context.fetchOrCreateObject(withID: dtoHomeClubId)
+            self.homeClub = newClub
+            newClub.addToHomeBroadcasts(self)
+        }
+        //unlink guest club
+        if let guestClub{
+            guestClub.removeFromGuestBroadcasts(self)
+            self.guestClub = nil
+        }
+        //add new guest club
+        if let dtoGuestClubId = dto.guestClubId, !dtoGuestClubId.isEmpty{
+            let newClub: Club = context.fetchOrCreateObject(withID: dtoGuestClubId)
+            self.guestClub = newClub
+            newClub.addToGuestBroadcasts(self)
+        }
+            //unlink venue
+        if let venue {
+            venue.removeFromBroadcasts(self)
+            self.venue = nil
+        }
+        // add new venue
+        if let venueID = dto.venueID, !venueID.isEmpty{
+            let newVenue: Venue = context.fetchOrCreateObject(withID: venueID)
+            newVenue.addToBroadcasts(self)
+            self.venue = newVenue
+        }
+        // clean obvans
+        unlinkObvans()
+        //add new obvans
+        dto.obvanId.forEach{
+            if !$0.isEmpty{
+                let newObvan: Obvan = context.fetchOrCreateObject(withID: $0)
+                newObvan.addToBroadcasts(self)
+                addToObvan(newObvan)
+            }
+        }
+        //add new venue preview
+        if let venuePreviewId = dto.venuePreviewId, !venuePreviewId.isEmpty{
+            let newPreview: LocalImage = context.fetchOrCreateObject(withID: venuePreviewId)
+            if let venueSchemaPreview, venueSchemaPreview.viewId != newPreview.viewId{
+                context.delete(venueSchemaPreview)
+            }
+            newPreview.parentVenuePreview = self
+            newPreview.type = GlobalProperties.ImageType.venuePreview.rawValue
+            self.venueSchemaPreview = newPreview
+        } else {
+            //clean venue preview
+            if let venueSchemaPreview {
+                context.delete(venueSchemaPreview)
+                self.venueSchemaPreview = nil
+            }
+        }
+
+        //add new obvan previews
+        _ = viewObvanPreviews.map{
+            if !dto.obvanPreviewId.contains($0.viewId){
+                removeFromObvanPreview($0)
+                context.delete($0)
+            }
+        }
+        
+        for id in dto.obvanPreviewId{
+            if !id.isEmpty{
+                let image: LocalImage = context.fetchOrCreateObject(withID: id)
+                image.type = GlobalProperties.ImageType.obvanPreview.rawValue
+                self.addToObvanPreview(image)
+                image.parentObvanPreview = self
+            }
+        }
+            
+        //unlink owners
+       unlinkOwners()
+        //add new owners
+        dto.ownersIds.forEach{
+            if !$0.isEmpty {
+                let member: Member = context.fetchOrCreateObject(withID: $0)
+                member.addToOwnedBroadcasts(self)
+                addToOwners(member)
+            }
+        }
+        //clean venue points
+        cleanVenuePoints()
+        //add new venue points
+        dto.venuePoints.forEach{
+            let point = context.makeObjectFromDTO($0)
+            addToVenuePoints(point)
+            point.broadcast = self
+        }
+        //clean crews
+        cleanCrews()
+        //add new crews
+        dto.crews.forEach{
+            let crew = context.makeObjectFromDTO($0)
+            addToCrews(crew)
+            crew.broadcast = self
+        }
+    }
+    
+    func updateValues(date: Date? = nil,
+                      lastUpdated: Date = .now,
+                      homeClub: Club? = nil,
+                      guestClub: Club? = nil,
+                      venue: Venue? = nil,
+                      obvans: [Obvan]? = nil,
+                      venuePreview: LocalImage? = nil,
+                      obvanPreview: [LocalImage]? = nil,
+                      owners: [Member]? = nil,
+                      venuePoints:[VenuePoint]? = nil,
+                      crews: [Crew]? = nil,
+                      in context: NSManagedObjectContext ){
+        if let date {
+            self.date = date
+        }
+        
+        self.lastUpdated = lastUpdated
+        
+        if let homeClub {
+            if let oldClub = self.homeClub{
+                oldClub.removeFromHomeBroadcasts(self)
+            }
+            homeClub.addToHomeBroadcasts(self)
+            self.homeClub = homeClub
+        }
+        if let guestClub {
+            if let oldClub = self.guestClub{
+                oldClub.removeFromGuestBroadcasts(self)
+            }
+            guestClub.addToGuestBroadcasts(self)
+            self.guestClub = guestClub
+        }
+        if let venue {
+            if let oldVenue = self.venue{
+                oldVenue.removeFromBroadcasts(self)
+            }
+            venue.addToBroadcasts(self)
+            self.venue = venue
+        }
+        
+        if let obvans{
+            unlinkObvans()
+            obvans.forEach{
+                addToObvan($0)
+                $0.addToBroadcasts(self)
+            }
+        }
+        
+        if let venuePreview {
+            if let oldPreview = self.venueSchemaPreview {
+                context.delete(oldPreview)
+            }
+            venuePreview.parentVenuePreview = self
+            self.venueSchemaPreview = venuePreview
+        }
+
+        //add new obvan previews, and remove not existings
+        if let obvanPreview {
+            _ = viewObvanPreviews.map{
+                if !obvanPreview.contains($0){
+                    removeFromObvanPreview($0)
+                    context.delete($0)
+                }
+            }
+            obvanPreview.forEach {
+                addToObvanPreview($0)
+                $0.parentObvanPreview = self
+            }
+        }
+        
+        if let owners{
+            unlinkOwners()
+            owners.forEach{
+                addToOwners($0)
+                $0.addToOwnedBroadcasts(self)
+            }
+        }
+        if let venuePoints{
+            cleanVenuePoints()
+            venuePoints.forEach{
+                $0.broadcast = self
+                addToVenuePoints($0)
+            }
+        }
+        if let crews {
+            cleanCrews()
+            crews.forEach{
+                $0.broadcast = self
+                addToCrews($0)
+            }
+        }
+    }
+    
+    func unlinkObvans(){
+        viewObvans.forEach{
+            $0.removeFromBroadcasts(self)
+            removeFromObvan($0)
+        }
+    }
+    func cleanVenuePoints(){
+        guard let context = self.managedObjectContext else { return }
+        viewVenuePoints.forEach{
+            removeFromVenuePoints($0)
+            context.delete($0)
+        }
+    }
+    func cleanCrews(obvanId: String? = nil){
+        guard let context = self.managedObjectContext else { return }
+        viewCrews.forEach{ crew in
+            removeFromCrews(crew)
+            context.delete(crew)
+        }
+    }
+    func cleanObvanPreviews(){
+        guard let context = self.managedObjectContext else { return }
+
+        viewObvanPreviews.forEach{ obvanPreview in
+            removeFromObvanPreview(obvanPreview)
+            context.delete(obvanPreview)
+        }
+    }
+    
+    func unlinkOwners(){
+        viewOwners.forEach {
+            $0.removeFromOwnedBroadcasts(self)
+            removeFromOwners($0)
+        }
+    }
+}
+
+// MARK: - Remove
+extension Broadcast{
+    public override func prepareForDeletion() {
+        super.prepareForDeletion()
+        if let context = self.managedObjectContext{
+            if let venueSchemaPreview {
+                self.venueSchemaPreview = nil
+                context.delete(venueSchemaPreview)
+            }
+            cleanObvanPreviews()
+            unlinkObvans()
+            cleanCrews()
+            cleanVenuePoints()
+            unlinkOwners()
+        }
+    }
+}
+
+
+
+

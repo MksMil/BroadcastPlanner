@@ -1,7 +1,6 @@
-import Firebase
-import GoogleSignIn
+
 import SwiftUI
-import UserNotifications
+
 
 @main
 struct BroadcastPlannerApp: App {
@@ -9,7 +8,6 @@ struct BroadcastPlannerApp: App {
   @Environment(\.scenePhase) var scenePhase
 
   @StateObject var appState: ApplicationState = ApplicationState()
-
   @StateObject private var sessionManager: SessionManager = SessionManager()
   @StateObject private var globalSettings = GlobalSettings()
   @StateObject var router: Router = Router()
@@ -21,6 +19,7 @@ struct BroadcastPlannerApp: App {
     WindowGroup {
       RootView()
         .onAppear {
+          appState.setRouter(router: router)
           delegate.notificationHandler = appState
           dataCoordinator
             .configure(

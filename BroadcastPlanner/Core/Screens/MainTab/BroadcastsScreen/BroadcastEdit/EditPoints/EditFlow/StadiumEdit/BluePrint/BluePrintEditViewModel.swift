@@ -1,0 +1,433 @@
+import UIKit
+import SpriteKit
+import Combine
+
+@MainActor
+protocol BlueprintDataDelegate: AnyObject {
+  
+  func selectUnitFromRenderer(_ unit: (any BluePrintEditable)?)
+  func deselectUnitFromRenderer()
+  
+  func updateUnit(x: CGFloat,
+                  y: CGFloat,
+                  scaleFactor: CGFloat,
+                  rotation: CGFloat) //x,y,rotation,scaleFactor
+}
+@MainActor
+protocol BluePrintRendererDataSource: AnyObject {
+  func unit(for id: String) -> LayoutRenderUnit?
+  var units: [LayoutRenderUnit] { get }
+  var backgroundImage: UIImage? { get }
+}
+
+enum LayoutType: String {
+  //aux - rawValue - name for icon in tabbar
+  case venue = "sportscourt"
+  case obvan = "truck.box.fill"
+}
+
+class LayoutState: Identifiable, Hashable {
+  var id: String
+  var lastSelected: LayoutRenderUnit? = nil// for state resume
+  var units: [LayoutRenderUnit]
+  let layoutType: LayoutType
+  var backgroundImage: UIImage?
+  
+  init(id: String, units: [LayoutRenderUnit], layoutType: LayoutType, backgroundImage: UIImage? = nil) {
+    self.id = id
+    self.units = units
+    self.layoutType = layoutType
+    self.backgroundImage = backgroundImage
+  }
+  
+  // Hashable
+     func hash(into hasher: inout Hasher) {
+         hasher.combine(id)
+     }
+     
+     // Equatable — требуется для Hashable
+     static func == (lhs: LayoutState, rhs: LayoutState) -> Bool {
+         lhs.id == rhs.id
+     }
+}
+
+@MainActor
+final class BluePrintEditViewModel: ObservableObject {
+  private enum SelectionSource {
+      case vm
+      case renderer
+  }
+  
+  let broadcast: Broadcast
+  let dataManager: DataManager
+  let router: Router
+  let renderDelegate: BluePrintRenderDelegate
+  let scene: SKScene
+  
+  //State
+  @Published var selectedState: LayoutState? {
+    willSet{
+      // templateGroup availability
+      isTemplateGroupAvailable = newValue?.layoutType == .venue
+      selectedState?.lastSelected = selectedUnit
+    }
+    didSet {
+      if oldValue?.id != selectedState?.id {
+        filterPointsWithCase()
+        renderDelegate.updateScene()
+        selectedUnit = selectedState?.lastSelected
+      }
+    }
+  }
+  @Published var states: [LayoutState] = []
+  //Unit
+  @Published var selectedUnit: LayoutRenderUnit?{
+    didSet {
+      // Изменение пришло из VM (например, тап в списке)
+      // — нужно обновить сцену
+      guard lastSelectionSource == .vm else {
+        lastSelectionSource = .vm  // сбрасываем для следующего раза
+        return
+      }
+      renderDelegate.deselectUnitToRenderer()
+      if let unit = selectedUnit {
+        renderDelegate.selectUnitToRenderer(id: unit.id)
+      }
+    }
+  }
+  private var lastSelectionSource: SelectionSource = .vm
+  
+  //Template
+  @Published var selectedTemplate: Template?
+  
+  //view visual state
+  @Published var newTemplateName: String = "new template"
+  @Published var isTemplateGroupAvailable = true
+  @Published var isLoading: Bool = true
+  @Published var isDeleteConfirm: Bool = false //confirmation
+  @Published var isSaving: Bool = false // progressView on saveButton
+  @Published var isSaved: Bool = true
+  @Published var isConfirmDiscardChangesOrSave: Bool = false //step backconfirmation
+  @Published var isEdit: Bool = false
+  
+  //filter
+  @Published var filteredUnits:[LayoutRenderUnit] = []
+  @Published var stadiumFilter: BPEventPlanPointStadiumFilter = .all{
+      didSet{
+          filterPointsWithCase()
+          selectedUnit = nil
+          renderDelegate.updateScene()
+      }
+  }
+  
+  // MARK: Init
+  init(broadcast: Broadcast, dataManager: DataManager, router: Router) {
+    self.broadcast = broadcast
+    self.dataManager = dataManager
+    self.router = router
+    let renderer = BluePrintRenderer()
+    self.renderDelegate = renderer
+    self.scene = renderer
+    
+    renderer.dataSource = self
+    renderer.dataDelegate = self
+    Task{ @MainActor in
+      await self.setupStates()
+      if let state = states.first{
+        self.isLoading = false
+        selectedState = state          // willSet → renderDelegate.updateScene()
+        filterPointsWithCase()
+      } else {
+        isLoading = false
+        renderDelegate.updateScene()   // states пустые — рисуем пустую сцену
+      }
+    }
+  }
+}
+// MARK: - States managment
+extension BluePrintEditViewModel{
+  
+  func setupStates() async{
+    //bg image
+    var image: UIImage
+    if let cachedImage = await dataManager.getImageWithId(broadcast.venue?.viewSchemaId ?? "", type: .broadcastSchema, size: .largeImages){
+      image = cachedImage
+    } else {
+      image = UIImage(named: "stadium") ?? UIImage()
+    }
+    
+    var units: [LayoutRenderUnit] = []
+    
+    for unit in broadcast.viewVenuePoints{
+      let layoutunit = LayoutRenderUnit(
+        id: unit.viewId,
+        coordinateX: unit.viewX,
+        coordinateY: unit.viewY,
+        scaleFactor: unit.viewScaleFactor,
+        rotation: unit.viewRotation,
+        number: unit.viewNumber,
+        personId: unit.viewMemberId,
+        camera: unit.camera?.optic,
+        sound:  unit.sound?.placeType,
+        light: unit.light?.lightType,
+        hardware: nil,
+        task: unit.task,
+        description: unit.pointDescription,
+        image: nil
+      )
+      units.append(layoutunit)
+    }
+    let venueState = LayoutState(id: UUID().uuidString,
+                                 units: units,
+                                 layoutType: .venue,
+                                 backgroundImage: image)
+    states.append(venueState)
+    
+    let v3 = LayoutState(id: UUID().uuidString,
+                           units: units,
+                           layoutType: .obvan,
+                           backgroundImage: image)
+    states.append(v3)
+
+    //states for obvans
+    for obvan in broadcast.viewObvans{
+      units = []
+      if let cachedImage = await dataManager.getImageWithId(obvan.viewImageId, type: .obvan, size: .largeImages){
+        image = cachedImage
+      } else {
+        image = UIImage(named: "empty_obvan") ?? UIImage()
+      }
+      let filtered = broadcast.viewCrews.filter { $0.viewObvanId == obvan.viewId }
+
+      units = await withTaskGroup(of: LayoutRenderUnit.self) { group in
+          for crew in filtered {
+              group.addTask {
+                let image = await self.dataManager.getImageWithId(
+                      crew.viewMemberId,
+                      type: .member,
+                      size: .smallImages
+                  )
+                  return LayoutRenderUnit(
+                      id: crew.viewId,
+                      coordinateX: crew.viewX,
+                      coordinateY: crew.viewY,
+                      scaleFactor: crew.viewScaleFactor,
+                      rotation: crew.viewRotation,
+                      
+                      number: nil,
+                      personId: crew.member?.id,
+                      camera: nil,
+                      sound:  nil,
+                      light: nil,
+                      hardware: crew.hardware?.type,
+                      task: crew.task,
+                      description: crew.description,
+                      image: image
+                  )
+              }
+          }
+          var collected: [LayoutRenderUnit] = []
+          for await unit in group {
+              collected.append(unit)
+          }
+          return collected
+      }
+      let obvanState = LayoutState(id: obvan.viewId,
+                                   units: units,
+                                   layoutType: .obvan,
+                                   backgroundImage: image)
+      states.append(obvanState)
+    }
+  }
+  func clear(){
+    if let selectedState {
+      selectedUnit = nil
+      selectedState.units = []
+      filterPointsWithCase()
+      renderDelegate.updateScene()
+    }
+  }
+}
+
+
+//MARK: - BlueprintDataDelegate (update flow from SKScene)
+extension BluePrintEditViewModel: BlueprintDataDelegate{
+  
+  func selectUnitFromRenderer(_ unit: (any BluePrintEditable)?) {
+      lastSelectionSource = .renderer   // помечаем — изменение пришло из сцены
+      if let unit = unit as? LayoutRenderUnit {
+          selectedUnit = unit           // didSet видит .renderer → не трогает сцену
+      }
+  }
+
+  func deselectUnitFromRenderer() {
+      lastSelectionSource = .renderer
+      selectedUnit = nil
+  }
+  
+  func updateUnit(x: CGFloat,
+                  y: CGFloat,
+                  scaleFactor: CGFloat,
+                  rotation: CGFloat) {
+    
+    isSaved = false
+    selectedUnit?.coordinateX = x
+    selectedUnit?.coordinateY = y
+    selectedUnit?.rotation = rotation
+    selectedUnit?.scaleFactor = scaleFactor
+  }
+}
+
+// MARK: - BluePrintRendererDataSource
+extension BluePrintEditViewModel: BluePrintRendererDataSource {
+    var units: [LayoutRenderUnit] {
+         filteredUnits
+     }
+     var backgroundImage: UIImage? {
+         selectedState?.backgroundImage
+     }
+    func unit(for id: String) -> LayoutRenderUnit? {
+      filteredUnits.first { $0.id == id }
+    }
+}
+//MARK: - filter
+extension BluePrintEditViewModel{
+  func filterPointsWithCase(){
+    switch stadiumFilter {
+      case .all:
+        filteredUnits = selectedState?.units ?? []
+      case .cam:
+        filteredUnits = selectedState?.units.filter{$0.camera != nil} ?? []
+      case .person:
+        filteredUnits = selectedState?.units.filter{$0.personId != nil} ?? []
+      case .mic:
+        filteredUnits = selectedState?.units.filter{$0.sound != nil} ?? []
+      case .light:
+        filteredUnits = selectedState?.units.filter{$0.light != nil} ?? []
+    }
+  }
+}
+
+//MARK: - Actions
+extension BluePrintEditViewModel{
+  func addUnit(){
+    //data come from outside
+    let unit = LayoutRenderUnit(id: UUID().uuidString,
+                                coordinateX: 0,
+                                coordinateY: 0,
+                                scaleFactor: 1,
+                                rotation: 0,
+                                number: 0,
+                                personId: nil,
+                                camera: nil,
+                                sound: nil,
+                                light: nil,
+                                hardware: nil,
+                                task: nil,
+                                description: nil)
+    isSaved = false
+    selectedState?.units.append(unit)
+    filterPointsWithCase()
+    if filteredUnits.contains(unit){
+      renderDelegate.addUnit(layoutUnit: unit)
+      selectedUnit = unit
+    }
+  }
+  func save(){
+    isSaving = true
+    //save flow
+    //
+    dataManager.saveFromStates(states: states,
+                               withBroadcastId: broadcast.objectID)
+    isSaved = true
+    isSaving = false
+  }
+  
+  func delete(){
+    if let selectedUnit {
+      isSaved = false
+      renderDelegate.deleteUnit(id: selectedUnit.id)
+      selectedState?.units.removeAll{$0.id == selectedUnit.id}
+      filterPointsWithCase()
+      self.selectedUnit = nil
+    }
+  }
+  
+  func goBack(){
+    print("go back action: isSaved - \(isSaved)")
+    if isSaved{
+      //screenshot
+      router.stepBack()
+    } else {
+      isConfirmDiscardChangesOrSave = true
+    }
+  }
+  
+  func discardChangesAndGoBack(){
+    dataManager.rollBackMoc()
+    router.stepBack()
+  }
+  
+  func saveAndGoBack(){
+    //screenshot
+    save()
+    router.stepBack()
+  }
+}
+
+// MARK: - Template
+extension BluePrintEditViewModel{
+  func loadTemplate(template: Template){
+    //make units from template
+    selectedTemplate = template
+    newTemplateName = template.viewName
+    var units: [LayoutRenderUnit] = []
+    for point in template.viewTemplatePoints{
+      let unit = LayoutRenderUnit(id: UUID().uuidString,
+                                  coordinateX: point.viewX,
+                                  coordinateY: point.viewY,
+                                  scaleFactor: CGFloat(point.scaleFactor),
+                                  rotation: CGFloat(point.rotation),
+                                  number: Int(point.number),
+                                  personId: nil,
+                                  camera: point.camera ,
+                                  sound: point.sound,
+                                  light: point.light,
+                                  hardware: nil,
+                                  task: point.task,
+                                  description: point.description)
+      units.append(unit)
+    }
+    if selectedState?.layoutType != .venue{
+      selectedState = states.first{$0.layoutType == .venue}
+    }
+    if selectedState != nil{
+      selectedState?.units = units
+      filterPointsWithCase()
+      renderDelegate.updateScene()
+    }
+    
+    
+    //remove new units to state.units
+  }
+  func saveTemplateWithName(_ name: String) async{
+    //make template from state
+    //save template to db & netwotk
+    if selectedState?.layoutType != .venue{
+      selectedState = states.first{$0.layoutType == .venue}
+    }
+    if selectedState != nil{
+      selectedState?.units = units
+      filterPointsWithCase()
+      await dataManager.saveTemplateFromSchema(units: selectedState?.units ?? [], withName: name)
+    }
+  }
+  func deleteTemplate(){
+    if let selectedTemplate {
+      dataManager.deleteTemplate(template: selectedTemplate)
+      clear()
+    }
+    //remove selected template from db + save context
+  }
+  
+}

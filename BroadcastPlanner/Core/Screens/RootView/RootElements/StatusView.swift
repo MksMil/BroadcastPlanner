@@ -2,81 +2,86 @@ import Combine
 import SwiftUI
 
 struct StatusView: View {
-    @EnvironmentObject var router: Router
-    @EnvironmentObject var dataManager: DataManager
-    @EnvironmentObject var appState: ApplicationState
-    @EnvironmentObject var sessionManager: SessionManager
-        
-    
-    var body: some View {
-      ZStack{
-        MainBackground()
-          
-        HStack{
-          BackwardButton()
-            .frame(width: 50, height: 50)
-          Spacer()
-          /// element with app's status / errors / notifications etc.
-          VStack(spacing: 0){
-            //status view title here
-            TitleView(titlePublisher: appState
+  @EnvironmentObject var router: Router
+  @EnvironmentObject var dataManager: DataManager
+  @EnvironmentObject var appState: ApplicationState
+  @EnvironmentObject var sessionManager: SessionManager
+
+  var body: some View {
+    ZStack {
+      MainBackground()
+
+      HStack {
+        BackwardButton(
+          statePublisher: router.$canMoveBack.eraseToAnyPublisher()
+        ) {
+          appState.backAction()
+        }
+        .frame(width: 50, height: 50)
+        Spacer()
+        /// element with app's status / errors / notifications etc.
+        VStack(spacing: 0) {
+          //status view title here
+          TitleView(
+            titlePublisher: appState
               .titlePublisher
-              .eraseToAnyPublisher())
-            NotificationView()
-          }
-          .frame(height: 50)
-          ///
-          Spacer()
-          Menu {
-            //Owner Info
-            Button {
-              router.showUserInfo()
-            } label: {
-              Label("Info", systemImage: "person")
-            }
-//            .disabled(menuState == .info)
-            
-            //Settings
-            Button {
-              router.showSettings()
-            } label: {
-              Label("Settings", systemImage: "gear")
-            }
-//            .disabled(menuState == .settings)
-            
-            //LogOut
-            Button {
-              Task{
-                appState.userOnlineStatus = .offline
-                //                        do{
-                /*try*/ sessionManager.logOut()
-//                appState.state = .notAuthorized
-                //                            router.routeTo(path: RouterPath.authScreen)
-                //                        }catch {
-                //                            print("failed to signing out: \(error.localizedDescription)")
-                //                        }
-              }
-            } label: {
-              Label("Log out", systemImage: "rectangle.portrait.and.arrow.right")
-            }
-            
+              .eraseToAnyPublisher()
+          )
+          NotificationView()
+        }
+        .frame(height: 50)
+        ///
+        Spacer()
+        Menu {
+          //Owner Info
+          Button {
+            router.showUserInfo()
           } label: {
-            ImageWrapper(id: dataManager.currentId, type: .member, imageSize: ImageSizes.smallImages, placeHolder: "person.circle")
-              .aspectRatio(contentMode: .fill)
-              .frame(width: 50, height: 50)
-              .clipShape(Circle())
-              .overlay {
-                Circle().stroke(Color.white, lineWidth: 2)
-              }
+            Label("Info", systemImage: "person")
+          }
+          //            .disabled(menuState == .info)
+
+          //Settings
+          Button {
+            router.showSettings()
+          } label: {
+            Label("Settings", systemImage: "gear")
+          }
+          //            .disabled(menuState == .settings)
+
+          //LogOut
+          Button {
+            Task {
+              appState.userOnlineStatus = .offline
+              sessionManager.logOut()
+            }
+
+          } label: {
+            Label("Log out", systemImage: "rectangle.portrait.and.arrow.right")
+          }
+
+        } label: {
+          ImageWrapper(
+            id: dataManager.currentId,
+            type: .member,
+            imageSize: ImageSizes.smallImages,
+            placeHolder: "person.circle"
+          )
+          .aspectRatio(contentMode: .fill)
+          .frame(width: 50, height: 50)
+          .clipShape(Circle())
+          .overlay {
+            Circle().stroke(Color.white, lineWidth: 2)
           }
         }
-        .padding(.horizontal)
       }
-      .frame(height: 60)
-      
-//        .onReceive(appState.menuStatePublisher) { menuState in
-//            self.menuState = menuState
-//        }        
+      .padding(.horizontal)
     }
+    .frame(height: 60)
+
+    //        .onReceive(appState.menuStatePublisher) { menuState in
+    //            self.menuState = menuState
+    //        }
+  }
 
 }

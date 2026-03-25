@@ -56,5 +56,3 @@ struct BPEventFilterCaseTabView<T: Customfilter>: View  where T.RawValue: String
 //   return BPEditStadiumView(event: localEvent)
 //        .environmentObject(mdm)
 //}
-
-

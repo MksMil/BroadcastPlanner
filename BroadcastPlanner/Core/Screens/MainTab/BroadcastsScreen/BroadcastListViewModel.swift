@@ -1,5 +1,4 @@
 import Combine
-// BroadcastListViewModel.swift
 import SwiftUI
 
 @MainActor
@@ -54,6 +53,14 @@ final class BroadcastListViewModel: ObservableObject {
     }
   }
   
+  //delete
+  func delete(broadcast: Broadcast) {
+    Task {
+      await broadcastRepository.removeBroadcast(broadcast.objectID)
+      
+    }
+  }
+  
   // MARK: - CoreData predicates update for filter cases
   func predicate(for filter: FilterEventOwnerCases, expired: Bool) -> NSCompoundPredicate {
       let corePredicate: NSPredicate
@@ -62,9 +69,9 @@ final class BroadcastListViewModel: ObservableObject {
           corePredicate = NSPredicate(format: "id != %@", "")
       case .userOwned:
           corePredicate = NSPredicate(format: "ANY owners.id == %@", currentUserId)
-      case .userPartisipation:
+      case .userParticipation:
           corePredicate = NSPredicate(
-              format: "SUBQUERY(venuePoints, $point, ANY $point.members.id == %@).@count > 0 OR SUBQUERY(crews, $crew, $crew.member.id == %@).@count > 0",
+              format: "SUBQUERY(venuePoints, $point, $point.member.id == %@).@count > 0 OR SUBQUERY(crews, $crew, $crew.member.id == %@).@count > 0",
               currentUserId, currentUserId
           )
       }
@@ -75,11 +82,11 @@ final class BroadcastListViewModel: ObservableObject {
       return NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
   }
 
-  func title(for filter: FilterEventOwnerCases) -> String {
+  func title(for filter: FilterEventOwnerCases) -> StatusViewTitleCase {
       switch filter {
-      case .notFiltered: return "All Events"
-      case .userOwned: return "My owned broadcasts"
-      case .userPartisipation: return "My participation"
+        case .notFiltered: return .notFiltered
+        case .userOwned: return .userOwned
+        case .userParticipation: return .userParticipation
       }
   }
 }

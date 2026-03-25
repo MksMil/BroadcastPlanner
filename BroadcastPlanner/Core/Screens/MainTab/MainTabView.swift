@@ -1,22 +1,24 @@
 import SwiftUI
+// 49 — стандартная высота UITabBar в iOS (константа Apple).
+
 
 // MARK: - MainTabView
-// Два независимых NavigationStack внутри TabView.
-// Каждый таб держит свой path — переключение не сбрасывает историю соседнего.
-
 struct MainTabView: View {
     @EnvironmentObject var appState: ApplicationState
     @EnvironmentObject var router: Router
     @EnvironmentObject var sessionManager: SessionManager
     @EnvironmentObject var dataManager: DataManager
 
-    var body: some View {
-      ZStack{
-        VStack(spacing: 0){
+  var body: some View {
+    
+      ZStack(alignment: .bottom) {
+        MainBackground()
+          .ignoresSafeArea()
+        VStack(spacing: 0) {
           StatusView()
+          
           TabView(selection: $router.selectedTab) {
             
-            // MARK: - Broadcasts tab
             NavigationStack(path: $router.broadcastPath) {
               BroadcastListView(
                 viewModel: BroadcastListViewModel(
@@ -25,43 +27,78 @@ struct MainTabView: View {
                   router: router
                 )
               )
-              .navigationDestination(for: BroadcastPath.self) { path in
-                broadcastDestination(path)
+              .navigationDestination(for: BroadcastPath.self) {
+                broadcastDestination($0)
               }
-            }
-            .tabItem {
-              Label("Broadcasts", systemImage: "antenna.radiowaves.left.and.right")
             }
             .tag(AppTab.broadcasts)
             
-            // MARK: - Messenger tab
             NavigationStack(path: $router.messengerPath) {
               BPMessengerView()
-                .navigationDestination(for: MessengerPath.self) { path in
-                  messengerDestination(path)
+                .navigationDestination(for: MessengerPath.self) {
+                  messengerDestination($0)
                 }
-            }
-            .tabItem {
-              Label("Messenger", systemImage: "message")
             }
             .tag(AppTab.messenger)
           }
+          .toolbar(.hidden, for: .tabBar) // скрываем стандартный
         }
+        .padding(.bottom, 17)
+        // Кастомный таббар поверх контента
+        customTabBar
       }
-      .onReceive(appState.$userOnlineStatus, perform: { isOnline in
-        
-      })
-        // Кнопка профиля — toolbar, видна в обоих табах через NavigationStack
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-              
-                Button {
-                    router.isMenuPresented = true
-                } label: {
-                    Image(systemName: "person.circle")
-                        .imageScale(.large)
+      
+    
+  }
+
+    // MARK: - Custom Tab Bar
+
+    private var customTabBar: some View {
+        HStack(spacing: 0) {
+            tabBarButton(
+                tab: .broadcasts,
+                icon: "sportscourt",
+                label: "Broadcasts"
+            )
+
+            Divider()
+                .frame(height: 24)
+                .overlay(Color.white.opacity(0.4))
+
+            tabBarButton(
+                tab: .messenger,
+                icon: "message",
+                label: "Messenger"
+            )
+        }
+        .frame(height: 50)
+        .frame(maxWidth: .infinity)
+        .background {
+            RoundedRectangle(cornerRadius: 14)
+                .fill(.ultraThinMaterial)
+                .overlay {
+                    RoundedRectangle(cornerRadius: 14)
+                        .stroke(Color.white.opacity(0.5), lineWidth: 1)
                 }
+        }
+        .padding(.horizontal, 16)
+        .padding(.bottom, 8)
+    }
+
+    private func tabBarButton(tab: AppTab, icon: String, label: String) -> some View {
+        Button {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                router.selectedTab = tab
             }
+        } label: {
+            VStack(spacing: 4) {
+                Image(systemName: router.selectedTab == tab ? "\(icon).fill" : icon)
+                    .font(.system(size: 18, weight: .medium))
+                Text(label)
+                    .font(.system(size: 11, weight: .medium))
+            }
+            .foregroundStyle(router.selectedTab == tab ? .primary : .secondary)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
 
@@ -76,12 +113,13 @@ struct MainTabView: View {
                 broadcastRepository: dataManager.broadcasts,
                 memberRepository: dataManager.members,
                 router: router))
-        case .createEdit(let broadcast):
+        case .createEdit(let broadcast, let isNew):
             BroadcastEditView(broadcast: broadcast,
+                              isNew: isNew,
                               dataManager: dataManager,
                               router: router)
         case .stadPointsEdit(let broadcast):
-            BroadcastSchemaEditView(broadcast: broadcast)
+            BluePrintEditView(broadcast: broadcast,dataManager: dataManager,router: router)
         case .clubCollection:
             ClubCollectionView()
         case .addEditClub(let club):

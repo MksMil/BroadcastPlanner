@@ -1,6 +1,7 @@
 import SwiftUI
 
 // MARK: - AppScreen
+
 // Три верхнеуровневых состояния приложения.
 // RootView переключает между ними — никакого NavigationStack на этом уровне.
 
@@ -8,6 +9,11 @@ enum AppScreen {
   case splash
   case auth
   case main
+}
+
+enum AppTab: Hashable {
+  case broadcasts
+  case messenger
 }
 
 // MARK: - AuthPath
@@ -22,7 +28,7 @@ enum AuthPath: Hashable {
 
 enum BroadcastPath: Hashable {
   case broadcastList
-  case createEdit(broadcast: Broadcast)
+  case createEdit(broadcast: Broadcast, isNew: Bool)
   case stadPointsEdit(broadcast: Broadcast)
   case clubCollection
   case addEditClub(club: Club)
@@ -52,21 +58,45 @@ final class Router: ObservableObject {
   @Published var appScreen: AppScreen = .splash
 
   // MARK: Tab selection
-  @Published var selectedTab: AppTab = .broadcasts
+  @Published var selectedTab: AppTab = .broadcasts{
+    didSet{
+      canMoveBack(tab: selectedTab)
+    }
+  }
 
   // MARK: Per-tab navigation stacks
-  @Published var broadcastPath: [BroadcastPath] = []
-  @Published var messengerPath: [MessengerPath] = []
+  @Published var broadcastPath: [BroadcastPath] = []{
+    didSet{
+      canMoveBack(tab: .broadcasts)
+          }
+  }
+  @Published var messengerPath: [MessengerPath] = [] {
+    didSet{
+      canMoveBack(tab: .messenger)
+    }
+  }
+  func canMoveBack(tab: AppTab){
+    if selectedTab == .broadcasts{
+      self.canMoveBack = !(broadcastPath.count < 1)
+    }
+    if selectedTab == .messenger{
+      self.canMoveBack = !(messengerPath.count < 1)
+    }
 
+  }
   // MARK: Auth stack (для перехода SignIn → SignUp)
   @Published var authPath: [AuthPath] = []
 
   // MARK: Menu sheet
   @Published var isMenuPresented: Bool = false
   @Published var isUserInfoPresent: Bool = false
+  
+  @Published var canMoveBack: Bool = false
+  
 
   // MARK: - Helpers
-
+  
+  
   func showMain() {
     appScreen = .main
   }
@@ -108,7 +138,24 @@ final class Router: ObservableObject {
 
 // MARK: - AppTab
 
-enum AppTab: Hashable {
-  case broadcasts
-  case messenger
+
+
+// MARK: - BroadcastListRouting Protocol
+@MainActor
+protocol BroadcastListRouting: AnyObject {
+  func openBroadcast(_ broadcast: Broadcast)
+  func openNewBroadcast(_ broadcast: Broadcast)
+  func openEditPoints(_ broadcast: Broadcast)
+}
+
+extension Router: BroadcastListRouting {
+  func openBroadcast(_ broadcast: Broadcast) {
+    broadcastPath.append(.createEdit(broadcast: broadcast,isNew: false))
+  }
+  func openNewBroadcast(_ broadcast: Broadcast) {
+    broadcastPath.append(.createEdit(broadcast: broadcast,isNew: true))
+  }
+  func openEditPoints(_ broadcast: Broadcast){
+    broadcastPath.append(.stadPointsEdit(broadcast: broadcast))
+  }
 }

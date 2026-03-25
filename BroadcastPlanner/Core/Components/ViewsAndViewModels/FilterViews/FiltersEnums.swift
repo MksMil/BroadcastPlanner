@@ -26,12 +26,12 @@ enum BPEventPlanPointCarFilter: String, Customfilter//CaseIterable,Identifiable,
 }
 
 enum FilterEventOwnerCases: String, Customfilter {
-    case notFiltered = "list.bullet" /*"calendar"*/ /*"rectangle.stack.fill"*/
-    case userOwned = "crown.fill" /*"pencil.and.list.clipboard"*/ /*"person.2.fill"*/
-    case userPartisipation = "person.fill.checkmark" /*"calendar.badge.checkmark"*/ /*"person.badge.key.fill"*/
-    
-    var id: Self { self }
-    // TODO: case with caledar date : filter with date ( case calendar(let date) )
+  case notFiltered    = "square.stack"
+  case userParticipation = "figure.wave"
+  case userOwned      = "star.fill"
+  
+  var id: Self { self }
+  // TODO: case with caledar date : filter with date ( case calendar(let date) )
 }
 
 enum FilterEventUserCases: String, Customfilter {

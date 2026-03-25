@@ -32,6 +32,9 @@
     "Accept" : {
 
     },
+    "Add" : {
+
+    },
     "Add Club" : {
 
     },
@@ -48,9 +51,6 @@
 
     },
     "Broadcast" : {
-
-    },
-    "Broadcasts" : {
 
     },
     "Cancel" : {
@@ -81,6 +81,9 @@
 
     },
     "Delete Point" : {
+
+    },
+    "Delete selected unit?" : {
 
     },
     "Discard all changes and step back?" : {
@@ -117,9 +120,6 @@
 
     },
     "Message" : {
-
-    },
-    "Messenger" : {
 
     },
     "Minutes" : {
@@ -183,6 +183,12 @@
 
     },
     "Remove Venue" : {
+
+    },
+    "Save" : {
+
+    },
+    "Save changes and step back?" : {
 
     },
     "Save settings" : {

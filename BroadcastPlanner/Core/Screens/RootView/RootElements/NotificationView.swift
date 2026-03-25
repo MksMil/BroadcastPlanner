@@ -85,8 +85,7 @@ struct NotificationView: View {
     RootView()
         .environmentObject(GlobalSettings())
         .environmentObject(SessionManager())
-        .environmentObject(ApplicationState())
-        .environmentObject(Router())
+        
 }
 //#Preview {
 //    NotificationView()

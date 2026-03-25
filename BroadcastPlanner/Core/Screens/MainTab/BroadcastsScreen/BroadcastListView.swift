@@ -51,7 +51,7 @@ struct BroadcastListView: View {
                     }
                 
                 ScrollView {
-                    VStack {
+                    LazyVStack {
                       ForEach(broadcasts) { broadcast in
                         MainEventListCell(broadcast: broadcast, currentUserId: viewModel.currentUserId,
                                           timerPublisher: appState.currentTime.eraseToAnyPublisher())
@@ -72,22 +72,28 @@ struct BroadcastListView: View {
                   
                 }
                 .padding(.horizontal, 8)
+              Spacer()
               if viewModel.canCreateBroadcast{
-                    Button {
-                         Task { await viewModel.createAndOpen() }
-                    } label: {
-                        Text("New Broadcast")
-                            .font(.title2)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background {
-                                RoundedRectangle(cornerRadius: 15).fill(
-                                    Color.white
-                                )
-                            }
-                    }
-                    .padding(.bottom)
-                    .padding(.horizontal)
+                Button {
+                           Task { await viewModel.createAndOpen() }
+                       } label: {
+                           HStack {
+                               Image(systemName: "plus.circle")
+                                   .font(.system(size: 18, weight: .medium))
+                               Text("New Broadcast")
+                                   .font(.headline)
+                           }
+                           .foregroundStyle(.primary)
+                           .frame(maxWidth: .infinity)
+                           .frame(height: 50)
+                       }
+                       .background(.ultraThinMaterial)
+                       .clipShape(RoundedRectangle(cornerRadius: 14))
+                       .overlay {
+                           RoundedRectangle(cornerRadius: 14)
+                               .stroke(Color.white.opacity(0.5), lineWidth: 1)
+                       }
+                       .padding(.horizontal, 16)
                 }
             }
             .navigationBarBackButtonHidden()
@@ -102,3 +108,9 @@ struct BroadcastListView: View {
       }
 }
 
+enum StatusViewTitleCase: String {
+  case notFiltered = "Все трансляции"
+  case userOwned = "Мои трансляции"
+  case userParticipation = "Я учавствую"
+  case base = "Приветствую"
+}

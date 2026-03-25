@@ -60,14 +60,13 @@ struct RootView: View {
         }
       }
       if router.appScreen == .auth, let user = user {
-        router.showMain()
-        Task {
-          await dataManager.members.setMember(id: user.id)
-          await dataManager.setOnlineStatus(isOnline: true)
-        }
+        goMain(user: user)
       }
     }
+    
   }
+    
+
 
   // MARK: - Splash logic
   // Минимум 1.5с сплэша + параллельная проверка сессии.
@@ -80,14 +79,23 @@ struct RootView: View {
 
     withAnimation {
       if let user = sessionManager.sessionUser {
-        router.showMain()
-        Task {
-          await dataManager.members.setMember(id: user.id)
-          await dataManager.setOnlineStatus(isOnline: true)
-        }
+        goMain(user: user)
       } else {
         router.showAuth()
       }
+    }
+  }
+  
+  func goMain(user: SessionUser){
+    
+    router.showMain()
+    Task {
+      let dto = await dataManager.members.setMember(id: user.id)
+      if let dto {
+        appState.user = dto
+        appState.setTitle(.base)
+      }
+      await dataManager.setOnlineStatus(isOnline: true)
     }
   }
 }
@@ -96,13 +104,10 @@ struct RootView: View {
 
 #if DEBUG
   #Preview {
-    //  do{
+    
     let dm = DataManager.preview(networkManager: NetworkManager())
-    let appState = ApplicationState()
     return RootView()
       .environmentObject(SessionManager())
-      .environmentObject(Router())
-      .environmentObject(appState)
       .environmentObject(dm)
       .environment(\.managedObjectContext, dm.mainContext)
   }
