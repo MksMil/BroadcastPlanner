@@ -385,7 +385,7 @@ extension BluePrintEditViewModel{
                                 rotation: 0,
                                 number: 0,
                                 personId: nil,
-                                camera: "x14",
+                                camera: nil,
                                 sound: nil,
                                 light: nil,
                                 hardware: nil,
