@@ -245,6 +245,7 @@
 		293C7DEB2D53610B00B62960 /* StadiumEdit */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = StadiumEdit; sourceTree = "<group>"; };
 		29476BE82DA553B0007DFA88 /* Cells */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Cells; sourceTree = "<group>"; };
 		295C87232DDB0D5A003B01B0 /* TabViewListGeneric */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = TabViewListGeneric; sourceTree = "<group>"; };
+		299337B72FB5C12700FFA89F /* PointDescription */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = PointDescription; sourceTree = "<group>"; };
 		299B455E2DE04934000D1F4B /* SelectablesWrappers */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = SelectablesWrappers; sourceTree = "<group>"; };
 		29B505BD2CB6B3C9003A1E3F /* BroadcastPlannerUnitTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = BroadcastPlannerUnitTests; sourceTree = "<group>"; };
 		29BE3AF42CAD57E600BDEF82 /* Data */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Data; sourceTree = "<group>"; };
@@ -570,7 +571,7 @@
 			path = AuthenticationScreen;
 			sourceTree = "<group>";
 		};
-		2955C96B2B4ECADA003F9ADC /* ViewsAndViewModels */ = {
+		2955C96B2B4ECADA003F9ADC /* Views */ = {
 			isa = PBXGroup;
 			children = (
 				299B455E2DE04934000D1F4B /* SelectablesWrappers */,
@@ -586,7 +587,7 @@
 				2994DE6D2C16F18D00DF9060 /* BPJoystick.swift */,
 				29C37D3E2E20FFE200CBA6A4 /* OpacityViewTransitionModifier.swift */,
 			);
-			path = ViewsAndViewModels;
+			path = Views;
 			sourceTree = "<group>";
 		};
 		2955C9702B4EE217003F9ADC /* RegistrationFlow */ = {
@@ -742,10 +743,11 @@
 				295C87232DDB0D5A003B01B0 /* TabViewListGeneric */,
 				2916E62B2C58B83E0025DCC6 /* AnimatedStart.swift */,
 				292E4C622D0C3E9D0046CABA /* Logo */,
-				2955C96B2B4ECADA003F9ADC /* ViewsAndViewModels */,
+				2955C96B2B4ECADA003F9ADC /* Views */,
 				290B81762AD91FF200B858F1 /* Modifiers */,
 				29FFDAB62ADBC2C3005AD50F /* Backgrounds */,
 				29BD5DDF2E507A9C00EB8328 /* ImageWrapper.swift */,
+				299337B72FB5C12700FFA89F /* PointDescription */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -856,6 +858,7 @@
 				293C7DEB2D53610B00B62960 /* StadiumEdit */,
 				29476BE82DA553B0007DFA88 /* Cells */,
 				295C87232DDB0D5A003B01B0 /* TabViewListGeneric */,
+				299337B72FB5C12700FFA89F /* PointDescription */,
 				299B455E2DE04934000D1F4B /* SelectablesWrappers */,
 				29BE3AF42CAD57E600BDEF82 /* Data */,
 				29C37D402E21121100CBA6A4 /* Club */,

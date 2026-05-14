@@ -25,6 +25,10 @@ enum LayoutType: String {
   case venue = "sportscourt"
   case obvan = "truck.box.fill"
 }
+enum LayoutFilter: Codable, Hashable {
+    case stadium(BPEventPlanPointStadiumFilter)
+    case obvan(BPObvanPositionFilter)
+}
 
 class LayoutState: Identifiable, Hashable {
   var id: String
@@ -32,12 +36,16 @@ class LayoutState: Identifiable, Hashable {
   var units: [LayoutRenderUnit]
   let layoutType: LayoutType
   var backgroundImage: UIImage?
+  var activeFilter: LayoutFilter
   
   init(id: String, units: [LayoutRenderUnit], layoutType: LayoutType, backgroundImage: UIImage? = nil) {
     self.id = id
     self.units = units
     self.layoutType = layoutType
     self.backgroundImage = backgroundImage
+    self.activeFilter = layoutType == .venue
+                ? .stadium(.all)
+                : .obvan(.all)
   }
   
   // Hashable
@@ -112,13 +120,13 @@ final class BluePrintEditViewModel: ObservableObject {
   
   //filter
   @Published var filteredUnits:[LayoutRenderUnit] = []
-  @Published var stadiumFilter: BPEventPlanPointStadiumFilter = .all{
-      didSet{
-          filterPointsWithCase()
-          selectedUnit = nil
-          renderDelegate.updateScene()
-      }
-  }
+//  @Published var stadiumFilter: BPEventPlanPointStadiumFilter = .all{
+//      didSet{
+//          filterPointsWithCase()
+//          selectedUnit = nil
+//          renderDelegate.updateScene()
+//      }
+//  }
   
   // MARK: Init
   init(broadcast: Broadcast, dataManager: DataManager, router: Router) {
@@ -166,6 +174,8 @@ extension BluePrintEditViewModel{
         scaleFactor: unit.viewScaleFactor,
         rotation: unit.viewRotation,
         number: unit.viewNumber,
+        firstName: unit.member?.viewFirstName ?? "",
+        lastName: unit.member?.viewLastName ?? "",
         personId: unit.viewMemberId,
         camera: unit.camera?.optic,
         sound:  unit.sound?.placeType,
@@ -215,6 +225,9 @@ extension BluePrintEditViewModel{
                       rotation: crew.viewRotation,
                       
                       number: nil,
+                      position: crew.position,
+                      firstName: crew.member?.viewFirstName ?? "",
+                      lastName: crew.member?.viewLastName ?? "",
                       personId: crew.member?.id,
                       camera: nil,
                       sound:  nil,
@@ -292,19 +305,72 @@ extension BluePrintEditViewModel: BluePrintRendererDataSource {
 }
 //MARK: - filter
 extension BluePrintEditViewModel{
-  func filterPointsWithCase(){
-    switch stadiumFilter {
-      case .all:
-        filteredUnits = selectedState?.units ?? []
-      case .cam:
-        filteredUnits = selectedState?.units.filter{$0.camera != nil} ?? []
-      case .person:
-        filteredUnits = selectedState?.units.filter{$0.personId != nil} ?? []
-      case .mic:
-        filteredUnits = selectedState?.units.filter{$0.sound != nil} ?? []
-      case .light:
-        filteredUnits = selectedState?.units.filter{$0.light != nil} ?? []
+//  func filterPointsWithCase(){
+//    switch stadiumFilter {
+//      case .all:
+//        filteredUnits = selectedState?.units ?? []
+//      case .cam:
+//        filteredUnits = selectedState?.units.filter{$0.camera != nil} ?? []
+//      case .person:
+//        filteredUnits = selectedState?.units.filter{$0.personId != nil} ?? []
+//      case .mic:
+//        filteredUnits = selectedState?.units.filter{$0.sound != nil} ?? []
+//      case .light:
+//        filteredUnits = selectedState?.units.filter{$0.light != nil} ?? []
+//    }
+//  }
+  
+  func filterPointsWithCase() {
+      guard let state = selectedState else {
+          filteredUnits = []
+          return
+      }
+      switch state.activeFilter {
+      case .stadium(let filter):
+          filteredUnits = applyStadiumFilter(filter, to: state.units)
+      case .obvan(let filter):
+          filteredUnits = applyObvanFilter(filter, to: state.units)
+      }
+  }
+
+  private func applyStadiumFilter(_ filter: BPEventPlanPointStadiumFilter,
+                                   to units: [LayoutRenderUnit]) -> [LayoutRenderUnit] {
+      switch filter {
+        case .all:
+          return units
+        case .cam:
+          return units.filter{$0.camera != nil}
+        case .person:
+          return units.filter{$0.personId != nil}
+        case .mic:
+          return units.filter{$0.sound != nil}
+        case .light:
+          return units.filter{$0.light != nil}
+      }
+  }
+
+  private func applyObvanFilter(_ filter: BPObvanPositionFilter,
+                                 to units: [LayoutRenderUnit]) -> [LayoutRenderUnit] {
+    switch filter {
+      case .all:       return units
+      case .director: return units.filter { ($0.position == "Main director") || ($0.position == "Replay director") || ($0.position == "Director") }
+//      case .assistant: return units.filter { ($0.position == "Replay director") || ($0.position == "Director") }
+      case .soundDirector:     return units.filter { ($0.position == "Sound director") || ($0.position == "Main sound director") }
+      case .graphicEd:     return units.filter { $0.position == "Graphics operator" }
+      case .replayOp:     return units.filter {$0.position == "Replay operator" }
     }
+
+  }
+  func setStadiumFilter(_ filter: BPEventPlanPointStadiumFilter) {
+      selectedState?.activeFilter = .stadium(filter)
+      selectedUnit = nil
+      filterPointsWithCase()
+  }
+
+  func setObvanFilter(_ filter: BPObvanPositionFilter) {
+      selectedState?.activeFilter = .obvan(filter)
+      selectedUnit = nil
+      filterPointsWithCase()
   }
 }
 
@@ -319,7 +385,7 @@ extension BluePrintEditViewModel{
                                 rotation: 0,
                                 number: 0,
                                 personId: nil,
-                                camera: nil,
+                                camera: "x14",
                                 sound: nil,
                                 light: nil,
                                 hardware: nil,

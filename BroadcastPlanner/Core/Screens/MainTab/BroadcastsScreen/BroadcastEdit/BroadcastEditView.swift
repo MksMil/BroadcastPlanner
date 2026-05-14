@@ -41,6 +41,7 @@ struct BroadcastEditView: View {
         saveDeleteGroup
       }
       .transitionWithOpacity()
+        
     }
     .navigationBarBackButtonHidden()
     .confirmationDialog(
@@ -74,9 +75,7 @@ struct BroadcastEditView: View {
     .onAppear {
       appState.backAction = vm.cancel
     }
-    .onDisappear {
-//      appState.setDefaultBackAction()
-    }
+    
   }
 
   // MARK: - Header
@@ -204,7 +203,7 @@ struct BroadcastEditView: View {
         imageSize: .originImages
       )
       .scaledToFit()
-      .frame(height: 150)
+      .frame(height: 100)
       .background(
         GeometryReader { geo in
           Color.clear.preference(
