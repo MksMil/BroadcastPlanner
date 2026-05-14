@@ -24,6 +24,16 @@ enum BPEventPlanPointCarFilter: String, Customfilter//CaseIterable,Identifiable,
     
     var id: Self { self }
 }
+enum BPObvanPositionFilter: String, Customfilter {
+    case all          = "square.grid.3x3.fill"
+    case director     = "megaphone.fill"
+//    case assistant    = "person.badge.plus"
+    case replayOp     = "arrow.counterclockwise.circle"
+    case graphicEd    = "pencil.and.outline"
+    case soundDirector = "waveform.and.mic"
+    
+    var id: Self { self }
+}
 
 enum FilterEventOwnerCases: String, Customfilter {
   case notFiltered    = "square.stack"

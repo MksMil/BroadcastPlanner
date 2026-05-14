@@ -16,7 +16,7 @@ struct TextSourceElement: Identifiable, Hashable {
 
 
 struct PointDescriptionView<T: Identifiable, TSource: Identifiable,
-                              CellLayout: View, SourceCellLayout: View,StatusLayout: View>: View
+                              CellLayout: View, SourceCellLayout: View>: View
   where T: Hashable,TSource:Hashable{
   
   let source: [TSource]
@@ -29,12 +29,10 @@ struct PointDescriptionView<T: Identifiable, TSource: Identifiable,
   
   let contentCell: (T)->CellLayout
   let sourceCell: (TSource)->SourceCellLayout
-  let statusLayout: ()->StatusLayout
   
   var body: some View {
     VStack(spacing: spacing){
       
-      statusLayout()
       
       ViewWithCarousel(source: sourceForCells,
                        current: $currentCell) {
@@ -78,6 +76,7 @@ struct ViewWithCarousel<T: Identifiable, V: View>: View where T: Hashable {
                   .tag(Optional(el))
               }
             }
+//            .animation(.easeInOut, value: $current.wrappedValue)
             .tabViewStyle(.page(indexDisplayMode: .never))
             .frame(maxHeight: .infinity)
             

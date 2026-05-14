@@ -9,6 +9,10 @@ struct MainTabView: View {
     @EnvironmentObject var sessionManager: SessionManager
     @EnvironmentObject var dataManager: DataManager
 
+  init() {
+      UITabBar.appearance().isHidden = true
+  }
+  
   var body: some View {
     
       ZStack(alignment: .bottom) {
@@ -41,14 +45,12 @@ struct MainTabView: View {
             }
             .tag(AppTab.messenger)
           }
-          .toolbar(.hidden, for: .tabBar) // скрываем стандартный
-        }
         .padding(.bottom, 17)
         // Кастомный таббар поверх контента
         customTabBar
       }
-      
-    
+      }
+//      .toolbar(.hidden, for: .tabBar) // скрываем стандартный
   }
 
     // MARK: - Custom Tab Bar

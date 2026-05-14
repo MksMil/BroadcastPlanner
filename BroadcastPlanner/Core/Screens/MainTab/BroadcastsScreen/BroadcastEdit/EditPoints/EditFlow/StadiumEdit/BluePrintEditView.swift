@@ -12,6 +12,25 @@ struct BluePrintEditView: View {
   @FetchRequest<Template>(sortDescriptors: []) var templates
   @FetchRequest<Obvan>(sortDescriptors: []) var obvans
   
+  private var stadiumFilterBinding: Binding<BPEventPlanPointStadiumFilter> {
+      Binding(
+          get: {
+              if case .stadium(let f) = vm.selectedState?.activeFilter { return f }
+              return .all
+          },
+          set: { vm.setStadiumFilter($0) }
+      )
+  }
+
+  private var obvanFilterBinding: Binding<BPObvanPositionFilter> {
+      Binding(
+          get: {
+              if case .obvan(let f) = vm.selectedState?.activeFilter { return f }
+              return .all
+          },
+          set: { vm.setObvanFilter($0) }
+      )
+  }
   init(broadcast: Broadcast,
        dataManager: DataManager,
        router: Router) {
@@ -28,25 +47,26 @@ struct BluePrintEditView: View {
       
       VStack(spacing: 0) {
         //template group
-        TemplateGroup(templates: templates) { templateToShow in
-          withAnimation {
-            vm.loadTemplate(template: templateToShow)
-          }
-        } addAction: {
-          Task{
-           await vm.saveTemplateWithName(vm.newTemplateName)
-          }
-          
-        } removeAction: {
-          vm.deleteTemplate()
-        } setEmptyTemplateAction: {
-          broadcast.cleanVenuePoints()
-          withAnimation{
-            vm.clear()
-          }
-        }
-        .padding(.vertical, 15)
-        
+//        TemplateGroup(templates: templates) { templateToShow in
+//          withAnimation {
+//            vm.loadTemplate(template: templateToShow)
+//          }
+//        } addAction: {
+//          Task{
+//           await vm.saveTemplateWithName(vm.newTemplateName)
+//          }
+//        } removeAction: {
+//          withAnimation{
+//            vm.deleteTemplate()
+//          }
+//        } setEmptyTemplateAction: {
+//          broadcast.cleanVenuePoints()
+//          withAnimation{
+//            vm.clear()
+//          }
+//        }
+//        .padding(.vertical, 15)
+        Spacer()
         //SKView
         SpriteView(
           scene: vm.scene,
@@ -55,68 +75,78 @@ struct BluePrintEditView: View {
         .aspectRatio(1.5, contentMode: .fit)
         .frame(maxWidth: .infinity)
         .clipShape(RoundedRectangle(cornerRadius: 10))
+//        .frame(maxWidth: .infinity, maxHeight: .infinity)
+//                        .clipShape(RoundedRectangle(cornerRadius: 10))
 
         Spacer()
-        HStack{
-          BPEventFilterCaseTabView(selectedTab: $vm.stadiumFilter){}
-            .padding(3)
-            .background {
-              RoundedRectangle(cornerRadius: 5).fill(.ultraThinMaterial)
-            }
-            .overlay {
-              RoundedRectangle(cornerRadius: 5).stroke(Color.white, lineWidth: 1)
-            }
-          
-          BPEditEventControlPanel(delegate: vm.renderDelegate)
-        }
-        HStack{
-          PointDescriptionView(source: vm.states,
-                               currentSource: $vm.selectedState,
-                               sourceForCells: vm.filteredUnits,
-                               currentCell: $vm.selectedUnit,
-                               spacing: 0,
-                               menuHeight: 40) { unit in
-            ZStack{
-              Color.orange
-              Text("\(unit.id)")
-                .font(.callout)
-            }
-            .onTapGesture {
-              vm.selectedUnit = vm.selectedUnit != nil ? nil: unit
-            }
-            
-//            .padding(2)
-          } sourceCell: { state in
-            ZStack{
-//              Color.green
-              Image(systemName: state.layoutType.rawValue)
-                .font(.system(size: 22))
-                .offset(y: -3)
-//                .resizable()
-//                .scaledToFit()
-//              Text("\(state.layoutType.rawValue)")
-            }
-//            .frame(height: 40)
-//            .padding(2)
-          } statusLayout: {
-            EmptyView()
-              .frame(width: 0, height: 0)
-//            ZStack{
-//              Color.gray
-//              Text("Status here")
-//            }
-//            .padding(2)
+        VStack(spacing:6){
+          HStack(spacing: 6){
+            filterBlock
+            TemplateMenuButton(
+              templates: templates,
+              chooseAction: { vm.loadTemplate(template: $0) },
+              addAction: { name in              // ← имя приходит из sheet
+                Task { await vm.saveTemplateWithName(name) }
+              },
+              removeAction: { withAnimation { vm.deleteTemplate() } },
+              setEmptyTemplateAction: { withAnimation { vm.clear() } }
+            )
+            .frame(maxWidth: .infinity)
           }
-          .border(Color.white.opacity(0.3), width: 2)
-          .padding()
-
-          BPJoystick(delegate: vm.renderDelegate)
-            .aspectRatio(1, contentMode: .fit)
-            .padding(15)
-            .overlay {
-              RoundedRectangle(cornerRadius: 5).stroke(.white.opacity(0.4), lineWidth: 2)
+          .frame(height: 40)
+          HStack(spacing: 6){
+            PointDescriptionView(source: vm.states,
+                                 currentSource: $vm.selectedState,
+                                 sourceForCells: vm.filteredUnits,
+                                 currentCell: $vm.selectedUnit,
+                                 spacing: 0,
+                                 menuHeight: 40) { unit in
+              //descriptrion cell
+              PointDescriptionCell(image: unit.image,
+                                   firstName: "FirstName",
+                                   lastName: "LastName",
+                                   number: unit.number,
+                                   camera: unit.camera,
+                                   sound: unit.sound,
+                                   light: unit.light,
+                                   unitDescription: "")
+              .onTapGesture {
+                vm.selectedUnit = vm.selectedUnit != nil ? nil: unit
+              }
+            } sourceCell: { state in
+              ZStack{
+                // source cell
+                Image(systemName: state.layoutType.rawValue)
+                  .font(.system(size: 22))
+                  .offset(y: -3)
+              }
             }
+            .border(Color.white.opacity(0.3), width: 2)
+//            .layoutPriority(2)
+            VStack(spacing: 6){
+              Spacer()
+                .frame(minHeight: 0)
+                .layoutPriority(0)
+              BPJoystick(delegate: vm.renderDelegate)
+                .aspectRatio(1, contentMode: .fit)
+                .padding(5)
+                .overlay {
+                  RoundedRectangle(cornerRadius: 5).stroke(.white.opacity(0.4), lineWidth: 2)
+                }
+//                .border(.green, width: 2)
+                .layoutPriority(1)
+              BPEditEventControlPanel(delegate: vm.renderDelegate)
+              //              Spacer()
+//                .border(.blue, width: 2)
+                .layoutPriority(1)
+            }
+//            .border(.red, width: 2)
+//            .frame(width: 130)
+//            .layoutPriority(1)
+          }
         }
+
+        .padding(.vertical,6)
 
         saveDeleteGroup
       }
@@ -145,50 +175,6 @@ struct BluePrintEditView: View {
         vm.delete()
       }
     }
-//    .sheet(isPresented: $isEditPressed) {
-//      if vm.selectedVenuePoint != nil{
-//        AddEditPointOrObvanView(state: .point,
-//                                broadcast: broadcast,
-//                                selectedPoint: vm.selectedVenuePoint,
-//                                selectedObvan: nil) { updatedPoint in
-//          vm.updatePoint(updatedPoint)
-//        } newObvanAction: { _ in }
-//          .presentationBackground(Color.mainBackground)
-//          .presentationDragIndicator(.visible)
-//      } else if vm.selectedObvan != nil{
-//        AddEditPointOrObvanView(state: .obvan,
-//                                broadcast: broadcast,
-//                                selectedPoint: nil,
-//                                selectedObvan: vm.selectedObvan) { _ in} newObvanAction: { obvan in
-//          vm.selectedObvan = obvan
-//        }
-//                                .presentationBackground(Color.mainBackground)
-//                                .presentationDragIndicator(.visible)
-//      } else {
-//        AddEditPointOrObvanView(state: .new, broadcast: broadcast, selectedPoint: nil, selectedObvan: nil, newPointAction: { newVenuePoint in
-//          broadcast.addToVenuePoints(newVenuePoint)
-//          newVenuePoint.broadcast = broadcast
-//          vm.addPoint(point: newVenuePoint)
-//        }, newObvanAction: { _ in })
-//        .presentationBackground(Color.mainBackground)
-//        .presentationDragIndicator(.visible)
-//      }
-//    }
-
-    //        .onReceive(vm.$selectedObvan) { obvan in
-    //            if obvan == nil , vm.selectedVenuePoint == nil{
-    //                appState.makePrimaryButtonEnabled(true)
-    //            } else {
-    //                appState.makePrimaryButtonEnabled(false)
-    //            }
-    //        }
-    //        .onReceive(vm.$selectedVenuePoint) { point in
-    //            if point == nil , vm.selectedObvan == nil{
-    //                appState.makePrimaryButtonEnabled(true)
-    //            } else {
-    //                appState.makePrimaryButtonEnabled(false)
-    //            }
-    //        }
   }
   
   // MARK: - Toolbar
@@ -271,5 +257,27 @@ struct BluePrintEditView: View {
         }
     }
   }
-  
+  private var filterBlock: some View {
+      Group {
+          switch vm.selectedState?.activeFilter {
+          case .stadium:
+              BPEventFilterCaseTabView(selectedTab: stadiumFilterBinding) {}
+          case .obvan:
+              BPEventFilterCaseTabView(selectedTab: obvanFilterBinding) {}
+          case .none:
+              EmptyView()
+          }
+      }
+      .padding(3)
+      .background {
+          RoundedRectangle(cornerRadius: 10)
+              .fill(.ultraThinMaterial)
+              .overlay {
+                  RoundedRectangle(cornerRadius: 10)
+                      .stroke(Color.white.opacity(0.5), lineWidth: 1)
+              }
+      }
+      .frame(height: 40)
+  }
 }
+

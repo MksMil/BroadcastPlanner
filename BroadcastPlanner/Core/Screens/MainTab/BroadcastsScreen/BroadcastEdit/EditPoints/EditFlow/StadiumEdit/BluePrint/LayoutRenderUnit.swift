@@ -14,6 +14,9 @@ protocol BluePrintEditMovable {
 protocol BluePrintVisualRepresentable{
   //visual
   var number: Int?      {get set}
+  var position: String? { get set}
+  var firstName: String?{ get set}
+  var lastName: String? { get set}
   var personId: String? {get set}
   var camera: String?   {get set}
   var sound: String?    {get set}
@@ -36,6 +39,9 @@ class LayoutRenderUnit: Identifiable, Hashable, BluePrintEditable{
   
   //visual
   var number: Int?
+  var position: String?
+  var firstName: String?
+  var lastName: String?
   var personId: String?
   var camera: String?
   var sound: String?
@@ -52,6 +58,9 @@ class LayoutRenderUnit: Identifiable, Hashable, BluePrintEditable{
     scaleFactor: CGFloat,
     rotation: CGFloat,
     number: Int?,
+    position: String? = "",
+    firstName: String? = "",
+    lastName: String? = "",
     personId: String?,
     camera: String?,
     sound: String?,
@@ -67,6 +76,9 @@ class LayoutRenderUnit: Identifiable, Hashable, BluePrintEditable{
     self.scaleFactor = scaleFactor
     self.rotation = rotation
     self.number = number
+    self.position = position
+    self.firstName = firstName
+    self.lastName = lastName
     self.personId = personId
     self.camera = camera
     self.sound = sound

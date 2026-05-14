@@ -124,6 +124,7 @@ extension Crew: CoreDataUpdatable{
     self.coordinateY = Float(unit.coordinateY)
     self.scaleFactor = Float(unit.scaleFactor)
     self.rotation = Int16(unit.rotation)
+    self.position = unit.position
     self.task = unit.task
     if let unitHardware = unit.hardware{
       
