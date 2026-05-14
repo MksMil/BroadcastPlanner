@@ -94,6 +94,7 @@
 		298932682AE24D7000BD93CA /* BPError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 298932672AE24D7000BD93CA /* BPError.swift */; };
 		299190292C8A064400D2CDDC /* String+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 299190282C8A064400D2CDDC /* String+Ext.swift */; };
 		299277982B7629FD00B8F892 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 299277972B7629FD00B8F892 /* GoogleService-Info.plist */; };
+		299337BB2FB5C2F600FFA89F /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 299337BA2FB5C2F600FFA89F /* README.md */; };
 		2994DE672C157C9F00DF9060 /* BroadcastEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2994DE662C157C9F00DF9060 /* BroadcastEditView.swift */; };
 		2994DE6E2C16F18E00DF9060 /* BPJoystick.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2994DE6D2C16F18D00DF9060 /* BPJoystick.swift */; };
 		29AE68742BE24F9300DE8FAB /* Chat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29AE68732BE24F9300DE8FAB /* Chat.swift */; };
@@ -212,6 +213,7 @@
 		299190282C8A064400D2CDDC /* String+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Ext.swift"; sourceTree = "<group>"; };
 		299277972B7629FD00B8F892 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		299277992B762A4100B8F892 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		299337BA2FB5C2F600FFA89F /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		2994DE662C157C9F00DF9060 /* BroadcastEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BroadcastEditView.swift; sourceTree = "<group>"; };
 		2994DE6D2C16F18D00DF9060 /* BPJoystick.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPJoystick.swift; sourceTree = "<group>"; };
 		29AE68732BE24F9300DE8FAB /* Chat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chat.swift; sourceTree = "<group>"; };
@@ -686,6 +688,7 @@
 				29B505BD2CB6B3C9003A1E3F /* BroadcastPlannerUnitTests */,
 				29C041BD2AC556CE008B3E1F /* Products */,
 				29EBCDEC2B762C5A00696C25 /* Frameworks */,
+				299337BA2FB5C2F600FFA89F /* README.md */,
 			);
 			sourceTree = "<group>";
 		};
@@ -941,6 +944,7 @@
 			files = (
 				29C041C82AC556D2008B3E1F /* Preview Assets.xcassets in Resources */,
 				299277982B7629FD00B8F892 /* GoogleService-Info.plist in Resources */,
+				299337BB2FB5C2F600FFA89F /* README.md in Resources */,
 				29C041C42AC556D2008B3E1F /* Assets.xcassets in Resources */,
 				2955C9632B4B8C8C003F9ADC /* Localizable.xcstrings in Resources */,
 			);
