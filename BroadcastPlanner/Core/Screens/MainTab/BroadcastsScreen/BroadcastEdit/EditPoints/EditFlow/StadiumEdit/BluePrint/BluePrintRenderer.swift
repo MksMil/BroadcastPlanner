@@ -68,7 +68,7 @@ class BluePrintRenderer: SKScene, BluePrintRenderDelegate {
   }
 
   //sprite temp names ... -> in settings to global control
-  let personSpriteName = "person"
+  let personSpriteName = "person.fill"
   let camSpriteName = "cam2"
   let soundSpriteName = "mic1"
   let lightSpriteName = "light2"
@@ -240,7 +240,7 @@ extension BluePrintRenderer {
     } else {
       rotation = unit.rotation * Constants.rotationAngle
     }
-    if unit.camera != nil {
+    if unit.camera != nil, unit.camera != "Empty" {
       addSpriteWithName(
         camSpriteName,
         andType: .camera,
@@ -248,7 +248,7 @@ extension BluePrintRenderer {
         toZone: .main,
         rotation: rotation
       )
-      if unit.sound != nil {
+      if unit.sound != nil, unit.sound != "Empty" {
         addSpriteWithName(
           soundSpriteName,
           andType: .sound,
@@ -257,7 +257,7 @@ extension BluePrintRenderer {
           rotation: rotation
         )
       }
-      if unit.light != nil {
+      if unit.light != nil, unit.light != "Empty" {
         addSpriteWithName(
           lightSpriteName,
           andType: .light,
@@ -266,7 +266,16 @@ extension BluePrintRenderer {
           rotation: rotation
         )
       }
-    } else if unit.sound != nil {
+      if unit.personId != nil {
+        addSpriteWithName(
+          personSpriteName,
+          andType: .person,
+          toNode: node,
+          toZone: .leftDown,
+          rotation: rotation
+        )
+      }
+    } else if unit.sound != nil, unit.sound != "Empty" {
       addSpriteWithName(
         soundSpriteName,
         andType: .sound,
@@ -274,7 +283,7 @@ extension BluePrintRenderer {
         toZone: .main,
         rotation: rotation
       )
-    } else if unit.light != nil {
+    } else if unit.light != nil, unit.light != "Empty" {
       addSpriteWithName(
         lightSpriteName,
         andType: .light,
@@ -329,7 +338,14 @@ extension BluePrintRenderer {
         if let existing = node.childNode(withName: type.rawValue) as? SKSpriteNode {
             resultNode = existing
         } else {
-            let texture = SKTexture(imageNamed: name)
+          
+          var texture: SKTexture = SKTexture(imageNamed: name)
+          if name == personSpriteName, let txt = textureFromSFSymbol(named: personSpriteName){
+            texture = txt
+          } else {
+            texture = SKTexture(imageNamed: name)
+          }
+              
             resultNode = SKSpriteNode(texture: texture, size: newSize)
         }
 

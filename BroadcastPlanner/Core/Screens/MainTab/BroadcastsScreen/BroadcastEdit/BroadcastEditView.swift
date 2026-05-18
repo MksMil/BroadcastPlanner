@@ -236,7 +236,7 @@ struct BroadcastEditView: View {
         .opacity(vm.broadcast.viewVenuePoints.count > 0 ? 1 : 0)
         .padding(.horizontal, 5)
 
-      SmartCollection(hSpacing: 5, vSpacing: 5) {
+      SmartCollectionLayout(hSpacing: 5, vSpacing: 5) {
         ForEach(vm.broadcast.viewVenuePoints.sorted { $0.number < $1.number }) {
           point in
           LogoInWhiteRectView(id: point.viewMemberId)
@@ -277,7 +277,7 @@ struct BroadcastEditView: View {
             ImageWrapper(id: obvan.id, type: .obvan, imageSize: .smallImages)
               .scaledToFit()
 
-            SmartCollection(hSpacing: 5, vSpacing: 5) {
+            SmartCollectionLayout(hSpacing: 5, vSpacing: 5) {
               ForEach(vm.broadcast.crewsForObvan(obvan: obvan)) { crew in
                 LogoInWhiteRectView(id: crew.member?.id ?? "")
                   .frame(width: 30, height: 30)

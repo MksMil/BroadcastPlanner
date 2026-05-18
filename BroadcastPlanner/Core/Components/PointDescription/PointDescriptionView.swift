@@ -76,7 +76,6 @@ struct ViewWithCarousel<T: Identifiable, V: View>: View where T: Hashable {
                   .tag(Optional(el))
               }
             }
-//            .animation(.easeInOut, value: $current.wrappedValue)
             .tabViewStyle(.page(indexDisplayMode: .never))
             .frame(maxHeight: .infinity)
             

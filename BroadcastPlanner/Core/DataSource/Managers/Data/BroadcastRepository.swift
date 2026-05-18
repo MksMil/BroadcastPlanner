@@ -280,7 +280,8 @@ final class BroadcastRepository: BroadcastRepositoryProtocol {
     var points: [VenuePoint] = []
     
     for unit in units {
-      let point: VenuePoint = stack.mainContext.fetchOrCreateObject(withID: unit.id)
+      let point: VenuePoint = VenuePoint(context: stack.mainContext)
+      point.id = unit.id
       point.fromLayoutUnit(unit, context: stack.mainContext)
       points.append(point)
     }

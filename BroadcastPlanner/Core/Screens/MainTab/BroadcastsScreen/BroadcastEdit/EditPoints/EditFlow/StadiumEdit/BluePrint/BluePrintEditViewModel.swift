@@ -116,7 +116,17 @@ final class BluePrintEditViewModel: ObservableObject {
   @Published var isSaving: Bool = false // progressView on saveButton
   @Published var isSaved: Bool = true
   @Published var isConfirmDiscardChangesOrSave: Bool = false //step backconfirmation
-  @Published var isEdit: Bool = false
+  @Published var isEdit: Bool = false {
+    didSet{
+      if !isEdit{
+        isSaved = false
+        renderDelegate.updateScene()
+        if let id = selectedUnit?.id{
+          renderDelegate.selectUnitToRenderer(id: id)
+        }
+      }
+    }
+  }
   
   //filter
   @Published var filteredUnits:[LayoutRenderUnit] = []
@@ -178,12 +188,15 @@ extension BluePrintEditViewModel{
         lastName: unit.member?.viewLastName ?? "",
         personId: unit.viewMemberId,
         camera: unit.camera?.optic,
-        sound:  unit.sound?.placeType,
+        sound:  unit.sound?.windDefence,
+        soundPlace: unit.sound?.placeType,
         light: unit.light?.lightType,
         hardware: nil,
         task: unit.task,
         description: unit.pointDescription,
-        image: nil
+        image: await dataManager.getImageWithId(unit.viewMemberId,
+                                                type: .member,
+                                                size: .smallImages)
       )
       units.append(layoutunit)
     }
@@ -231,6 +244,7 @@ extension BluePrintEditViewModel{
                       personId: crew.member?.id,
                       camera: nil,
                       sound:  nil,
+                      soundPlace: nil,
                       light: nil,
                       hardware: crew.hardware?.type,
                       task: crew.task,
@@ -305,20 +319,6 @@ extension BluePrintEditViewModel: BluePrintRendererDataSource {
 }
 //MARK: - filter
 extension BluePrintEditViewModel{
-//  func filterPointsWithCase(){
-//    switch stadiumFilter {
-//      case .all:
-//        filteredUnits = selectedState?.units ?? []
-//      case .cam:
-//        filteredUnits = selectedState?.units.filter{$0.camera != nil} ?? []
-//      case .person:
-//        filteredUnits = selectedState?.units.filter{$0.personId != nil} ?? []
-//      case .mic:
-//        filteredUnits = selectedState?.units.filter{$0.sound != nil} ?? []
-//      case .light:
-//        filteredUnits = selectedState?.units.filter{$0.light != nil} ?? []
-//    }
-//  }
   
   func filterPointsWithCase() {
       guard let state = selectedState else {
@@ -383,16 +383,18 @@ extension BluePrintEditViewModel{
                                 coordinateY: 0,
                                 scaleFactor: 1,
                                 rotation: 0,
-                                number: 0,
+                                number: (selectedState?.units.count ?? 0) + 1,
                                 personId: nil,
                                 camera: nil,
                                 sound: nil,
+                                soundPlace: nil,
                                 light: nil,
                                 hardware: nil,
                                 task: nil,
                                 description: nil)
     isSaved = false
     selectedState?.units.append(unit)
+    selectedState?.units.sort { $0.number ?? 0 < $1.number ?? 0 }
     filterPointsWithCase()
     if filteredUnits.contains(unit){
       renderDelegate.addUnit(layoutUnit: unit)
@@ -457,7 +459,8 @@ extension BluePrintEditViewModel{
                                   number: Int(point.number),
                                   personId: nil,
                                   camera: point.camera ,
-                                  sound: point.sound,
+                                  sound: nil,
+                                  soundPlace: point.sound,
                                   light: point.light,
                                   hardware: nil,
                                   task: point.task,

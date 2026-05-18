@@ -1,5 +1,4 @@
 import SwiftUI
-import Combine
 
 struct PointEditUserCellView: View {
     let name: String
@@ -15,7 +14,6 @@ struct PointEditUserCellView: View {
                     .minimumScaleFactor(0.2)
                     .frame(height: 20)
             }
-//        }
             .padding(5)
     }
 }

@@ -32,6 +32,7 @@ struct ImageWrapper: View {
                     update()
                 }
                 .onReceive(dataManager.updatePublisher) { value in
+                  
                     guard !id.isEmpty else { return }
                     if value.0 == .images, value.1.contains(id){
                         update()

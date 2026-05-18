@@ -45,7 +45,7 @@ public struct SelectableSmartCollectionView<T: View,B:View,Prompt: View, Selecta
                     .transition(.opacity)
                     .padding(.top,verticalPadding)
             }
-            SmartCollection(hSpacing: 4, vSpacing: 4){
+            SmartCollectionLayout(hSpacing: 4, vSpacing: 4){
                 ForEach(allCases.indices,id:\.self) { index in
                     cellView(allCases[index].0)
                         .onTapGesture {

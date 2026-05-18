@@ -69,14 +69,14 @@ struct TemplateMenuButton: View {
             .foregroundStyle(.black)
             .padding(.horizontal, 8)
             .padding(.vertical, 8)
-            .background {
-                RoundedRectangle(cornerRadius: 7)
-                    .fill(.ultraThinMaterial)
-                    .overlay {
-                        RoundedRectangle(cornerRadius: 7)
-                            .stroke(Color.white.opacity(0.4), lineWidth: 1)
-                    }
-            }
+            .background(
+                   RoundedRectangle(cornerRadius: 7)
+                       .fill(.ultraThinMaterial)
+                       .overlay(
+                           RoundedRectangle(cornerRadius: 7)
+                               .stroke(Color.white.opacity(0.4), lineWidth: 1)
+                       )
+               )
         }
         .confirmationDialog("", isPresented: $isRemoveConfirmation) {
             Button("удалить шаблон \(title)?", role: .destructive) {
@@ -87,6 +87,7 @@ struct TemplateMenuButton: View {
         .sheet(isPresented: $isAddSheetShowed) {
             templateNameSheet
         }
+        .compositingGroup()
     }
 
     private var templateNameSheet: some View {
@@ -105,10 +106,10 @@ struct TemplateMenuButton: View {
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 10)
-                .background {
+                .background(
                     RoundedRectangle(cornerRadius: 8)
                         .fill(.ultraThinMaterial)
-                }
+                )
 
                 Button("сохранить") {
                     guard !newTemplateName.trimmingCharacters(in: .whitespaces).isEmpty
@@ -120,14 +121,14 @@ struct TemplateMenuButton: View {
                 .foregroundStyle(.primary)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 10)
-                .background {
+                .background(
                     RoundedRectangle(cornerRadius: 8)
                         .fill(.ultraThinMaterial)
-                        .overlay {
+                        .overlay(
                             RoundedRectangle(cornerRadius: 8)
                                 .stroke(Color.white.opacity(0.5), lineWidth: 1)
-                        }
-                }
+                        )
+                )
             }
         }
         .padding(24)

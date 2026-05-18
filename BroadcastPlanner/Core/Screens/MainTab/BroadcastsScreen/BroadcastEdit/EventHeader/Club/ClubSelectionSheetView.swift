@@ -30,7 +30,7 @@ struct ClubSelectionSheetView: View {
                 Divider()
                     .padding(8)
                 ScrollView{
-                    SmartCollection(hSpacing: 5, vSpacing: 5) {
+                    SmartCollectionLayout(hSpacing: 5, vSpacing: 5) {
                         ForEach(clubs) { club in
                             ClubSheetCellView(id: club.viewId,
                                               title: club.viewTitle,

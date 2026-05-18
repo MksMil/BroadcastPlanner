@@ -24,7 +24,7 @@
 		291EB4EE2DBFB22500FCDA75 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 291EB4ED2DBFB22500FCDA75 /* FirebaseDatabase */; };
 		291EB4F02DBFB22500FCDA75 /* FirebaseDatabaseSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 291EB4EF2DBFB22500FCDA75 /* FirebaseDatabaseSwift */; };
 		292D664E2BD7998A009A2187 /* SelectableSmartCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 292D66442BD79989009A2187 /* SelectableSmartCollectionView.swift */; };
-		292D664F2BD7998A009A2187 /* SmartCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 292D66452BD79989009A2187 /* SmartCollection.swift */; };
+		292D664F2BD7998A009A2187 /* SmartCollectionLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 292D66452BD79989009A2187 /* SmartCollectionLayout.swift */; };
 		293752AA2BF8CD950044924D /* BPEventFilterCaseTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 293752A92BF8CD950044924D /* BPEventFilterCaseTabView.swift */; };
 		29389C3C2B8EE62F003EF60C /* UIKit+ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29389C3B2B8EE62F003EF60C /* UIKit+ext.swift */; };
 		293C66DE2F62AB0200991B67 /* GlobalSettingsArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 293C66DD2F62AB0200991B67 /* GlobalSettingsArray.swift */; };
@@ -97,6 +97,7 @@
 		299337BB2FB5C2F600FFA89F /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 299337BA2FB5C2F600FFA89F /* README.md */; };
 		2994DE672C157C9F00DF9060 /* BroadcastEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2994DE662C157C9F00DF9060 /* BroadcastEditView.swift */; };
 		2994DE6E2C16F18E00DF9060 /* BPJoystick.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2994DE6D2C16F18D00DF9060 /* BPJoystick.swift */; };
+		29A086422FBAE7AE00400094 /* FlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29A086412FBAE7AE00400094 /* FlowLayout.swift */; };
 		29AE68742BE24F9300DE8FAB /* Chat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29AE68732BE24F9300DE8FAB /* Chat.swift */; };
 		29AE68762BE24F9A00DE8FAB /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29AE68752BE24F9A00DE8FAB /* Message.swift */; };
 		29BD5DE02E507A9C00EB8328 /* ImageWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29BD5DDF2E507A9C00EB8328 /* ImageWrapper.swift */; };
@@ -146,7 +147,7 @@
 		291E72CA2BBEDF23008092D7 /* EditMemberInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditMemberInfoView.swift; sourceTree = "<group>"; };
 		291E72CE2BBEEBDD008092D7 /* SpecializationCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecializationCellView.swift; sourceTree = "<group>"; };
 		292D66442BD79989009A2187 /* SelectableSmartCollectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelectableSmartCollectionView.swift; sourceTree = "<group>"; };
-		292D66452BD79989009A2187 /* SmartCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SmartCollection.swift; sourceTree = "<group>"; };
+		292D66452BD79989009A2187 /* SmartCollectionLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SmartCollectionLayout.swift; sourceTree = "<group>"; };
 		293752A92BF8CD950044924D /* BPEventFilterCaseTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPEventFilterCaseTabView.swift; sourceTree = "<group>"; };
 		29389C3B2B8EE62F003EF60C /* UIKit+ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIKit+ext.swift"; sourceTree = "<group>"; };
 		293C66DD2F62AB0200991B67 /* GlobalSettingsArray.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalSettingsArray.swift; sourceTree = "<group>"; };
@@ -216,6 +217,7 @@
 		299337BA2FB5C2F600FFA89F /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		2994DE662C157C9F00DF9060 /* BroadcastEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BroadcastEditView.swift; sourceTree = "<group>"; };
 		2994DE6D2C16F18D00DF9060 /* BPJoystick.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BPJoystick.swift; sourceTree = "<group>"; };
+		29A086412FBAE7AE00400094 /* FlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowLayout.swift; sourceTree = "<group>"; };
 		29AE68732BE24F9300DE8FAB /* Chat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chat.swift; sourceTree = "<group>"; };
 		29AE68752BE24F9A00DE8FAB /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		29B505BC2CB6B3C9003A1E3F /* BroadcastPlannerUnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BroadcastPlannerUnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -370,7 +372,8 @@
 			isa = PBXGroup;
 			children = (
 				292D66442BD79989009A2187 /* SelectableSmartCollectionView.swift */,
-				292D66452BD79989009A2187 /* SmartCollection.swift */,
+				292D66452BD79989009A2187 /* SmartCollectionLayout.swift */,
+				29A086412FBAE7AE00400094 /* FlowLayout.swift */,
 			);
 			path = Layout;
 			sourceTree = "<group>";
@@ -968,7 +971,7 @@
 				2955C9822B57C1BE003F9ADC /* SessionModel.swift in Sources */,
 				293752AA2BF8CD950044924D /* BPEventFilterCaseTabView.swift in Sources */,
 				291E72CF2BBEEBDD008092D7 /* SpecializationCellView.swift in Sources */,
-				292D664F2BD7998A009A2187 /* SmartCollection.swift in Sources */,
+				292D664F2BD7998A009A2187 /* SmartCollectionLayout.swift in Sources */,
 				2963DDC32C8848F00030DAC6 /* BroadcastSchemaEditViewModel.swift in Sources */,
 				292D664E2BD7998A009A2187 /* SelectableSmartCollectionView.swift in Sources */,
 				293C67052F68635800991B67 /* BroadcastListViewModel.swift in Sources */,
@@ -1019,6 +1022,7 @@
 				294520CA2F6A895500351490 /* NotificationView.swift in Sources */,
 				294520CB2F6A895500351490 /* PimaryActionButton.swift in Sources */,
 				294520CC2F6A895500351490 /* SecondaryActionButton.swift in Sources */,
+				29A086422FBAE7AE00400094 /* FlowLayout.swift in Sources */,
 				294520CD2F6A895500351490 /* StatusView.swift in Sources */,
 				294520CE2F6A895500351490 /* TitleView.swift in Sources */,
 				294520CF2F6A895500351490 /* RootView.swift in Sources */,

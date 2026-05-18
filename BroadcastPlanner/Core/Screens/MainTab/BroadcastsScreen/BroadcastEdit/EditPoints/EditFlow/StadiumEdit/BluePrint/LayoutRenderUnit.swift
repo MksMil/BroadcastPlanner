@@ -45,6 +45,7 @@ class LayoutRenderUnit: Identifiable, Hashable, BluePrintEditable{
   var personId: String?
   var camera: String?
   var sound: String?
+  var soundPlace: String?
   var light: String?
   var hardware: String?
   
@@ -64,6 +65,7 @@ class LayoutRenderUnit: Identifiable, Hashable, BluePrintEditable{
     personId: String?,
     camera: String?,
     sound: String?,
+    soundPlace: String?,
     light: String?,
     hardware: String?,
     task: String?,
@@ -82,6 +84,7 @@ class LayoutRenderUnit: Identifiable, Hashable, BluePrintEditable{
     self.personId = personId
     self.camera = camera
     self.sound = sound
+    self.soundPlace = soundPlace
     self.light = light
     self.hardware = hardware
     self.task = task

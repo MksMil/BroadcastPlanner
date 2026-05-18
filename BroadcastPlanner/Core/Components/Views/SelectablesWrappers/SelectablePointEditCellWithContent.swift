@@ -1,7 +1,7 @@
 import SwiftUI
 // wrapper to reduce selectupdate render
 struct SelectablePointEditCellWithContent<V: View, T: Equatable>: View {
-    @EnvironmentObject var vm: AddEditPointOrObvanViewModel
+    @EnvironmentObject var vm: UnitEditViewModel
     @StateObject var selectController: SelectableCellController = SelectableCellController()
     let val: T
     let publishType: PointEditPublishType
@@ -40,11 +40,10 @@ struct SelectablePointEditCellWithContent<V: View, T: Equatable>: View {
                 switch publishType {
                     case .number:
                         if vm.number == val as? Int{
-                            print("number check in selectable cell")
                             selectController.setSelect(true, tapped: false)
                         }
                     case .user:
-                        if vm.selectedUser == val as? Member{
+                    if vm.selectedUserId == (val as? Member)?.id{
                             selectController.setSelect(true,tapped: false)
                         }
                     case .optic:

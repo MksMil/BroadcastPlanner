@@ -4,9 +4,6 @@
     "" : {
 
     },
-    ":%@" : {
-
-    },
     "?" : {
 
     },
@@ -90,6 +87,9 @@
 
     },
     "Discard all changes and step back?" : {
+
+    },
+    "Edit" : {
 
     },
     "empty" : {

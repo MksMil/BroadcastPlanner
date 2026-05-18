@@ -11,7 +11,8 @@ struct BluePrintEditView: View {
   
   @FetchRequest<Template>(sortDescriptors: []) var templates
   @FetchRequest<Obvan>(sortDescriptors: []) var obvans
-  
+  @FetchRequest<Member>(sortDescriptors: [SortDescriptor(\.lastName, order: .forward)]) var availableUsers
+
   private var stadiumFilterBinding: Binding<BPEventPlanPointStadiumFilter> {
       Binding(
           get: {
@@ -46,28 +47,7 @@ struct BluePrintEditView: View {
       MainBackground()
       
       VStack(spacing: 0) {
-        //template group
-//        TemplateGroup(templates: templates) { templateToShow in
-//          withAnimation {
-//            vm.loadTemplate(template: templateToShow)
-//          }
-//        } addAction: {
-//          Task{
-//           await vm.saveTemplateWithName(vm.newTemplateName)
-//          }
-//        } removeAction: {
-//          withAnimation{
-//            vm.deleteTemplate()
-//          }
-//        } setEmptyTemplateAction: {
-//          broadcast.cleanVenuePoints()
-//          withAnimation{
-//            vm.clear()
-//          }
-//        }
-//        .padding(.vertical, 15)
-        Spacer()
-        //SKView
+
         SpriteView(
           scene: vm.scene,
           debugOptions: [.showsFPS, .showsNodeCount]
@@ -75,26 +55,11 @@ struct BluePrintEditView: View {
         .aspectRatio(1.5, contentMode: .fit)
         .frame(maxWidth: .infinity)
         .clipShape(RoundedRectangle(cornerRadius: 10))
-//        .frame(maxWidth: .infinity, maxHeight: .infinity)
-//                        .clipShape(RoundedRectangle(cornerRadius: 10))
 
-        Spacer()
-        VStack(spacing:6){
-          HStack(spacing: 6){
-            filterBlock
-            TemplateMenuButton(
-              templates: templates,
-              chooseAction: { vm.loadTemplate(template: $0) },
-              addAction: { name in              // ← имя приходит из sheet
-                Task { await vm.saveTemplateWithName(name) }
-              },
-              removeAction: { withAnimation { vm.deleteTemplate() } },
-              setEmptyTemplateAction: { withAnimation { vm.clear() } }
-            )
-            .frame(maxWidth: .infinity)
-          }
-          .frame(height: 40)
-          HStack(spacing: 6){
+        HStack(spacing: 6){
+          VStack(spacing:6){
+          filterBlock
+            
             PointDescriptionView(source: vm.states,
                                  currentSource: $vm.selectedState,
                                  sourceForCells: vm.filteredUnits,
@@ -102,14 +67,15 @@ struct BluePrintEditView: View {
                                  spacing: 0,
                                  menuHeight: 40) { unit in
               //descriptrion cell
-              PointDescriptionCell(image: unit.image,
-                                   firstName: "FirstName",
-                                   lastName: "LastName",
-                                   number: unit.number,
-                                   camera: unit.camera,
-                                   sound: unit.sound,
-                                   light: unit.light,
-                                   unitDescription: "")
+              PointDescriptionCell(
+                image: unit.image,
+                firstName: unit.firstName,
+                lastName: unit.lastName,
+                number: unit.number,
+                camera: unit.camera,
+                sound: unit.sound,
+                light: unit.light,
+                unitDescription: unit.description)
               .onTapGesture {
                 vm.selectedUnit = vm.selectedUnit != nil ? nil: unit
               }
@@ -121,31 +87,37 @@ struct BluePrintEditView: View {
                   .offset(y: -3)
               }
             }
-            .border(Color.white.opacity(0.3), width: 2)
-//            .layoutPriority(2)
-            VStack(spacing: 6){
-              Spacer()
-                .frame(minHeight: 0)
-                .layoutPriority(0)
-              BPJoystick(delegate: vm.renderDelegate)
-                .aspectRatio(1, contentMode: .fit)
-                .padding(5)
-                .overlay {
-                  RoundedRectangle(cornerRadius: 5).stroke(.white.opacity(0.4), lineWidth: 2)
+            .overlay {
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.white.opacity(0.3), lineWidth: 2)
                 }
-//                .border(.green, width: 2)
-                .layoutPriority(1)
-              BPEditEventControlPanel(delegate: vm.renderDelegate)
-              //              Spacer()
-//                .border(.blue, width: 2)
-                .layoutPriority(1)
-            }
-//            .border(.red, width: 2)
-//            .frame(width: 130)
-//            .layoutPriority(1)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+          }
+          
+          VStack(spacing:6){
+            TemplateMenuButton(
+              templates: templates,
+              chooseAction: { vm.loadTemplate(template: $0) },
+              addAction: { name in              // ← имя приходит из sheet
+                Task { await vm.saveTemplateWithName(name) }
+              },
+              removeAction: { withAnimation { vm.deleteTemplate() } },
+              setEmptyTemplateAction: { withAnimation { vm.clear() } }
+            )
+            .frame(height: 40)
+            .frame(maxWidth: .infinity)
+            BPJoystick(delegate: vm.renderDelegate)
+              .aspectRatio(1, contentMode: .fit)
+              .padding(5)
+              .frame(maxWidth:.infinity,maxHeight: .infinity)
+              .overlay {
+                RoundedRectangle(cornerRadius: 5).stroke(.white.opacity(0.4), lineWidth: 2)
+              }
+              .layoutPriority(1)
+            BPEditEventControlPanel(delegate: vm.renderDelegate)
+              .layoutPriority(1)
           }
         }
-
         .padding(.vertical,6)
 
         saveDeleteGroup
@@ -175,12 +147,16 @@ struct BluePrintEditView: View {
         vm.delete()
       }
     }
+    .sheet(isPresented: $vm.isEdit) {
+      UnitEditView(vm: UnitEditViewModel(unit: vm.selectedUnit,dataManager: vm.dataManager, availableUsers: availableUsers), state: vm.selectedState)
+    }
+    
   }
   
   // MARK: - Toolbar
   private var saveDeleteGroup: some View {
     HStack(spacing: 0) {
-      
+      Spacer()
       // Delete — левая часть, деструктивная, визуально приглушена
       Button(role: .destructive) {
                       vm.isDeleteConfirm = true
@@ -193,16 +169,17 @@ struct BluePrintEditView: View {
         }
         .foregroundStyle(.red.opacity(0.8))
         .frame(maxHeight: .infinity)
-        .padding(.horizontal, 24)
+//        .padding(.horizontal, 24)
         .opacity(vm.selectedUnit == nil ? 0.5: 1)
       }
       .disabled(vm.selectedUnit == nil)
       
-      Divider()
-        .frame(height: 24)
-        .overlay(Color.white.opacity(0.4))
-      
       Spacer()
+      Divider()
+        .frame(width: 2,height: 40)
+        .overlay(Color.white.opacity(0.5))
+      Spacer()
+      
       //add
       Button{
         vm.addUnit()
@@ -215,13 +192,36 @@ struct BluePrintEditView: View {
         }
         .foregroundStyle(.black)
         .frame(maxHeight: .infinity)
-        .padding(.horizontal, 24)
+//        .padding(.horizontal, 24)
       }
       
+      Spacer()
       Divider()
-        .frame(height: 24)
-        .overlay(Color.white.opacity(0.4))
+        .frame(width: 2,height: 40)
+        .overlay(Color.white.opacity(0.5))
+      Spacer()
       
+      //edit
+      Button{
+        vm.isEdit = true
+      } label: {
+        HStack(spacing: 6) {
+          Image(systemName: "square.and.pencil")
+            .font(.system(size: 16, weight: .medium))
+          Text("Edit")
+            .font(.system(size: 15, weight: .medium))
+        }
+        .foregroundStyle(.black)
+        .frame(maxHeight: .infinity)
+//        .padding(.horizontal, 24)
+        .opacity(vm.selectedUnit == nil ? 0.5: 1)
+      }
+      .disabled(vm.selectedUnit == nil)
+      
+      Spacer()
+      Divider()
+        .frame(width: 2,height: 40)
+        .overlay(Color.white.opacity(0.5))
       Spacer()
       
       // Save — правая часть, акцентная
@@ -241,11 +241,13 @@ struct BluePrintEditView: View {
           .foregroundStyle(vm.isSaved ? Color.black : Color.green)
           .opacity(vm.isSaved ? 0.5: 1)
           .frame(maxHeight: .infinity)
-          .padding(.horizontal, 24)
+//          .padding(.horizontal, 24)
         }
         .disabled(vm.isSaved)
       }
+      Spacer()
     }
+    .minimumScaleFactor(0.5)
     .frame(height: 50)
     .frame(maxWidth: .infinity)
     .background {

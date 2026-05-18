@@ -100,7 +100,7 @@ struct BPUserProfileView: View {
     }
     @ViewBuilder func specializationSection() -> some View {
         VStack{
-            SmartCollection(hSpacing: 5, vSpacing: 5){
+            SmartCollectionLayout(hSpacing: 5, vSpacing: 5){
                 ForEach(user.viewSpecialization,id: \.self) { text in
                     SpecializationCellView(cellWidth: 100,text: text)
                 }
