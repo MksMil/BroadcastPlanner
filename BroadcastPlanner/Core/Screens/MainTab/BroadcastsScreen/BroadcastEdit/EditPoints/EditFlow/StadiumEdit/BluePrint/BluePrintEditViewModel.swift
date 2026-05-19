@@ -127,6 +127,7 @@ final class BluePrintEditViewModel: ObservableObject {
       }
     }
   }
+  @Published var isAddObvanSheetShow: Bool = false
   
   //filter
   @Published var filteredUnits:[LayoutRenderUnit] = []
@@ -206,64 +207,9 @@ extension BluePrintEditViewModel{
                                  backgroundImage: image)
     states.append(venueState)
     
-    let v3 = LayoutState(id: UUID().uuidString,
-                           units: units,
-                           layoutType: .obvan,
-                           backgroundImage: image)
-    states.append(v3)
-
-    //states for obvans
+    //TODO: states for obvans
     for obvan in broadcast.viewObvans{
-      units = []
-      if let cachedImage = await dataManager.getImageWithId(obvan.viewImageId, type: .obvan, size: .largeImages){
-        image = cachedImage
-      } else {
-        image = UIImage(named: "empty_obvan") ?? UIImage()
-      }
-      let filtered = broadcast.viewCrews.filter { $0.viewObvanId == obvan.viewId }
-
-      units = await withTaskGroup(of: LayoutRenderUnit.self) { group in
-          for crew in filtered {
-              group.addTask {
-                let image = await self.dataManager.getImageWithId(
-                      crew.viewMemberId,
-                      type: .member,
-                      size: .smallImages
-                  )
-                  return LayoutRenderUnit(
-                      id: crew.viewId,
-                      coordinateX: crew.viewX,
-                      coordinateY: crew.viewY,
-                      scaleFactor: crew.viewScaleFactor,
-                      rotation: crew.viewRotation,
-                      
-                      number: nil,
-                      position: crew.position,
-                      firstName: crew.member?.viewFirstName ?? "",
-                      lastName: crew.member?.viewLastName ?? "",
-                      personId: crew.member?.id,
-                      camera: nil,
-                      sound:  nil,
-                      soundPlace: nil,
-                      light: nil,
-                      hardware: crew.hardware?.type,
-                      task: crew.task,
-                      description: crew.description,
-                      image: image
-                  )
-              }
-          }
-          var collected: [LayoutRenderUnit] = []
-          for await unit in group {
-              collected.append(unit)
-          }
-          return collected
-      }
-      let obvanState = LayoutState(id: obvan.viewId,
-                                   units: units,
-                                   layoutType: .obvan,
-                                   backgroundImage: image)
-      states.append(obvanState)
+      await addObvanState(obvan)
     }
   }
   func clear(){
@@ -499,4 +445,68 @@ extension BluePrintEditViewModel{
     //remove selected template from db + save context
   }
   
+}
+
+// MARK: - Obvan section
+extension BluePrintEditViewModel {
+  func addObvan(_ obvan: Obvan) {
+    isSaved = false
+    Task{
+     await addObvanState(obvan)
+    }
+  }
+  
+  func addObvanState(_ obvan: Obvan) async {
+    let image: UIImage
+    var units:[LayoutRenderUnit] = []
+    if let cachedImage = await dataManager.getImageWithId(obvan.viewImageId, type: .obvan, size: .largeImages){
+      image = cachedImage
+    } else {
+      image = UIImage(named: "empty_obvan") ?? UIImage()
+    }
+    let filtered = broadcast.viewCrews.filter { $0.viewObvanId == obvan.viewId }
+
+    units = await withTaskGroup(of: LayoutRenderUnit.self) { group in
+        for crew in filtered {
+            group.addTask {
+              let image = await self.dataManager.getImageWithId(
+                    crew.viewMemberId,
+                    type: .member,
+                    size: .smallImages
+                )
+                return LayoutRenderUnit(
+                    id: crew.viewId,
+                    coordinateX: crew.viewX,
+                    coordinateY: crew.viewY,
+                    scaleFactor: crew.viewScaleFactor,
+                    rotation: crew.viewRotation,
+                    
+                    number: nil,
+                    position: crew.position,
+                    firstName: crew.member?.viewFirstName ?? "",
+                    lastName: crew.member?.viewLastName ?? "",
+                    personId: crew.member?.id,
+                    camera: nil,
+                    sound:  nil,
+                    soundPlace: nil,
+                    light: nil,
+                    hardware: crew.hardware?.type,
+                    task: crew.task,
+                    description: crew.description,
+                    image: image
+                )
+            }
+        }
+        var collected: [LayoutRenderUnit] = []
+        for await unit in group {
+            collected.append(unit)
+        }
+        return collected
+    }
+    let obvanState = LayoutState(id: obvan.viewId,
+                                 units: units,
+                                 layoutType: .obvan,
+                                 backgroundImage: image)
+    states.append(obvanState)
+  }
 }

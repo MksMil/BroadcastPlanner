@@ -2,7 +2,10 @@ import SpriteKit
 import SwiftUI
 
 struct BluePrintEditView: View {
+  //TODO: move to vm
   
+
+   
   @EnvironmentObject var appState: ApplicationState
   @EnvironmentObject var settings: GlobalSettings
   @StateObject var vm: BluePrintEditViewModel
@@ -86,6 +89,9 @@ struct BluePrintEditView: View {
                   .font(.system(size: 22))
                   .offset(y: -3)
               }
+            } addSourceAction: {
+              //TODO: from vm
+              vm.isAddObvanSheetShow = true
             }
             .overlay {
                     RoundedRectangle(cornerRadius: 12)
@@ -125,11 +131,7 @@ struct BluePrintEditView: View {
       .padding(.horizontal)
       .transitionWithOpacity()
     }
- 
     .onAppear{
-      let predicate = NSPredicate(format: "broadcasts CONTAINS %@", broadcast)
-      obvans.nsPredicate = predicate
-      //            appState.setTitle("\(broadcast.venue?.viewTitle ?? "") \( BPDateFormater.format(date: broadcast.viewDate))")
       appState.backAction = {vm.goBack()}
     }
     .ignoresSafeArea(.keyboard)
@@ -150,6 +152,17 @@ struct BluePrintEditView: View {
     .sheet(isPresented: $vm.isEdit) {
       UnitEditView(vm: UnitEditViewModel(unit: vm.selectedUnit,dataManager: vm.dataManager, availableUsers: availableUsers), state: vm.selectedState)
     }
+    .sheet(isPresented: $vm.isAddObvanSheetShow) {
+      ObvanPickerSheet(
+          vm: ObvanPickerViewModel(
+            obvans: Array(obvans),
+            alreadyAdded: broadcast.viewObvans,
+            dataManager: vm.dataManager
+          )
+        ) { obvan in
+          vm.addObvan(obvan)
+        }
+    }
     
   }
   
@@ -157,7 +170,6 @@ struct BluePrintEditView: View {
   private var saveDeleteGroup: some View {
     HStack(spacing: 0) {
       Spacer()
-      // Delete — левая часть, деструктивная, визуально приглушена
       Button(role: .destructive) {
                       vm.isDeleteConfirm = true
       } label: {
@@ -169,7 +181,6 @@ struct BluePrintEditView: View {
         }
         .foregroundStyle(.red.opacity(0.8))
         .frame(maxHeight: .infinity)
-//        .padding(.horizontal, 24)
         .opacity(vm.selectedUnit == nil ? 0.5: 1)
       }
       .disabled(vm.selectedUnit == nil)
@@ -192,7 +203,6 @@ struct BluePrintEditView: View {
         }
         .foregroundStyle(.black)
         .frame(maxHeight: .infinity)
-//        .padding(.horizontal, 24)
       }
       
       Spacer()
@@ -216,6 +226,7 @@ struct BluePrintEditView: View {
 //        .padding(.horizontal, 24)
         .opacity(vm.selectedUnit == nil ? 0.5: 1)
       }
+      
       .disabled(vm.selectedUnit == nil)
       
       Spacer()
@@ -224,7 +235,6 @@ struct BluePrintEditView: View {
         .overlay(Color.white.opacity(0.5))
       Spacer()
       
-      // Save — правая часть, акцентная
       if vm.isSaving {
         ProgressView()
           .padding(.horizontal, 24)
@@ -241,7 +251,6 @@ struct BluePrintEditView: View {
           .foregroundStyle(vm.isSaved ? Color.black : Color.green)
           .opacity(vm.isSaved ? 0.5: 1)
           .frame(maxHeight: .infinity)
-//          .padding(.horizontal, 24)
         }
         .disabled(vm.isSaved)
       }

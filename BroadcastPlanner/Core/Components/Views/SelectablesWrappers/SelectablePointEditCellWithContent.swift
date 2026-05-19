@@ -8,13 +8,16 @@ struct SelectablePointEditCellWithContent<V: View, T: Equatable>: View {
     let content: ()->V
     
     var body: some View {
-        RoundedRectangle(cornerRadius: 8).fill(selectController.selected ?  .white.opacity(0.4):.clear)
-            .overlay(content: {
-                RoundedRectangle(cornerRadius: 8).stroke(Color.black.opacity(0.5), lineWidth: 1)
-            })
-            .overlay(content: {
-                content()
-            })
+      RoundedRectangle(cornerRadius: 8)
+          .fill(selectController.selected ? .ultraThinMaterial : Material.ultraThin)
+          .overlay {
+              RoundedRectangle(cornerRadius: 8)
+                  .stroke(
+                      selectController.selected ? Color.primary.opacity(0.7) : Color.primary.opacity(0.1),
+                      lineWidth: selectController.selected ? 2 : 0.5
+                  )
+          }
+          .overlay { content() }
             .onReceive(vm.publisher) { value in
                 if value.0 == publishType, let selectedValue = value.1 as? T {
                     selectController.setSelect(val == selectedValue,tapped: true){
