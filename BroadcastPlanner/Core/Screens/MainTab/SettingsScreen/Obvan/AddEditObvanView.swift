@@ -3,300 +3,390 @@ import SpriteKit
 import _PhotosUI_SwiftUI
 
 struct AddEditObvanView: View {
-    
-    @EnvironmentObject var appState: ApplicationState
-    @EnvironmentObject var globalSettings: GlobalSettings
-    @EnvironmentObject var dataManager: DataManager
-
-    @EnvironmentObject var router: Router
+  @EnvironmentObject var appState: ApplicationState
     @StateObject var vm: AddEditObvanViewModel
-    
-    @State var isEditPressed: Bool = false
     let obvan: Obvan
     
-    init(obvan: Obvan){
+    init(obvan: Obvan,dataManager: DataManager,
+         router: Router, settings: GlobalSettings){
         self.obvan = obvan
-        self._vm = StateObject(wrappedValue: AddEditObvanViewModel(obvan: obvan))
+      
+        self._vm = StateObject(wrappedValue: AddEditObvanViewModel(
+          obvan: obvan, dataManager: dataManager,
+          router: router, settings: settings))
     }
     
-    var body: some View {
-        ZStack{
-         MainBackground()
-//            ScrollView{
-            VStack(spacing: 0){
-                //scscene
-                SpriteView(scene: vm.renderObvanScene,
-                           debugOptions: [.showsFPS,.showsNodeCount])
-                .frame(height: 250)
-                .frame(maxWidth: .infinity)
-                .overlay(content: {
-                    RoundedRectangle(cornerRadius: 5).stroke( Color.black)
-                })
-                .padding(.horizontal)
-                
-                GeometryReader{ geo in
-                    
-                    //control panel
-                    VStack(spacing: 0){
-                        HStack {
-                            
-                            PhotosPicker(selection: $vm.selectedPhoto) {
-                                //photo.artframe
-                                Image(systemName: "photo.artframe")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .bold()
-                                    .padding(5)
-                                    .frame(width: 40, height: 40)
-                                    .background {
-                                        RoundedRectangle(cornerRadius: 5)
-                                            .fill(
-                                                .ultraThickMaterial
-                                                    .opacity(0.3)
-                                            )
-                                            .overlay {
-                                                RoundedRectangle(cornerRadius: 5)
-                                                    .stroke(
-                                                        .ultraThickMaterial
-                                                            .opacity(0.5),
-                                                        lineWidth: 2
-                                                    )
-                                            }
-                                    }
-                            }
-                            Text(vm.title.isEmpty ? "add name": vm.title)
-                                .font(.system(size: 20))
-                                .foregroundStyle(vm.title.isEmpty ? .secondary: .primary)
-                                .bold()
-                                .minimumScaleFactor(0.3)
-                                .frame(height: 40)
-                                .frame(maxWidth: .infinity)
-                                .background {
-                                    RoundedRectangle(cornerRadius: 5)
-                                        .fill(
-                                            .ultraThickMaterial
-                                                .opacity(0.3)
-                                        )
-                                        .overlay {
-                                            RoundedRectangle(cornerRadius: 5)
-                                                .stroke(
-                                                    .ultraThickMaterial
-                                                        .opacity(0.5),
-                                                    lineWidth: 2
-                                                )
-                                        }
-                                }
-//                                .onTapGesture {
-//                                    appState.cleanTFInfo()
-//                                    appState.fieldType = .custom([])
-//                                    appState.isSecure = false
-//                                    appState.textfieldSource = vm.title
-//                                    appState.promptString = "Enter new Title"
-//                                    appState.openTextFieldWithAction { title in
-//                                        vm.title = title
-//                                    }
-//                                }
-                            
-                            ObvanControlPanel(isEdit: $vm.isEdit,
-                                              addAction: {
-                                isEditPressed = true
-                            },
-                                              deleteAction: {
-                                if let crewToDelete = vm.selectedCrew{
-                                    vm.deleteObvanTemplateCrew(crewToDelete)
-//                                    dataManager.mainContext.performAndWait{
-//                                        obvan.removeFromCrewTemplates(crewToDelete)
-//                                        dataManager.mainContext.delete(crewToDelete)
-//                                    }
-                                }
-                            },
-                                              saveAction: {
-                                if vm.selectedCrew != nil{
-                                    vm.deselectCrewForRenderer()
-                                }
-                            },
-                                              editAction: {
-                                isEditPressed = true
-                            }
-                            )
-                            .frame(width: geo.size.width * 2 / 5)
-                        }
-                        .frame(height: 40)
-                        .padding(.vertical,8)
-                        
-                        HStack{
-                            VStack{
-                                ScrollView{
-                                    ForEach(vm.sortedCrews){ crew in
-                                        ObvanTemplateCrewCell(crewPosition: crew.viewPosition, isSelected: crew == vm.selectedCrew)
-                                            .onTapGesture {
-                                                withAnimation{
-                                                    if vm.selectedCrew == crew{
-                                                        vm.deselectCrewForRenderer()
-                                                    } else {
-                                                        vm.selectTemplateObvanCrew(crew)
-                                                    }
-                                                }
-                                            }
-                                            .animation(.easeInOut, value: vm.selectedCrew)
-                                    }
-                                }
-                            }
-                            .frame(width: geo.size.width * 3 / 5)
-                            VStack{
-                                
-//                                BPEditEventControlPanel(
-//                                    scaleUpAction: { vm.scaleUp() },
-//                                    scaleDownAction: { vm.scaleDown() },
-//                                    resetScaleAction: { vm.resetScale() })
-//                                
-//                                BPJoystick(
-//                                    upAction: vm.moveUp,
-//                                    downAction: vm.moveDown,
-//                                    leftAction: vm.moveLeft,
-//                                    rightAction: vm.moveRight,
-//                                    rotationLeft: vm.rotateCounterClockwise,
-//                                    rotationRight: vm.rotateClockwise,
-//                                    swap: vm.swap,
-//                                    scaleUp: vm.scaleUpPoint,
-//                                    scaleDown: vm.scaleDownPoint
-//                                )
-//                                .aspectRatio(1, contentMode: .fit)
-//                                .padding(15)
-//                                .overlay {
-//                                    RoundedRectangle(cornerRadius: 5).stroke(.white.opacity(0.4), lineWidth: 2)
-//                                }
-                                Spacer()
-                            }
-                            .frame(width: geo.size.width * 2 / 5)
-                        }
-                    }
+  var body: some View {
+    ZStack{
+      MainBackground()
+      
+      VStack(spacing: 0){
+        SpriteView(scene: vm.scene,
+                   debugOptions: [.showsFPS,.showsNodeCount])
+        .aspectRatio(1.5, contentMode: .fit)
+        .frame(maxWidth: .infinity)
+        .clipShape(RoundedRectangle(cornerRadius: 10))
+        
+        descriptionGroup
+        
+        HStack{
+          if vm.renderUnits.isEmpty {
+            Spacer()
+              .frame(maxWidth: .infinity)
+          }
+          ScrollView{
+            ForEach(vm.renderUnits){ crew in
+              ObvanTemplateCrewCell(crewPosition: crew.description,
+                                    isSelected: crew == vm.selectedUnit)
+              .onTapGesture {
+                withAnimation{
+                  vm.selectedUnit = vm.selectedUnit == crew ? nil: crew
                 }
-                .padding(.horizontal)
+              }
+              .animation(.easeInOut, value: vm.selectedUnit)
             }
-            .transitionWithOpacity()
+          }
+          controlGroup
         }
-        .ignoresSafeArea(.keyboard)
-        .navigationBarBackButtonHidden()
-        .environmentObject(vm)
-        .onAppear {
-//            Task{
-//                if let image = await dataManager.imageCacher.getImage(id: obvan.viewId, size: .originImages){
-//                    vm.updateImage(uiimage: image)
-//                }
-//            }
-            vm.saveAction = {
-                if let crew = vm.selectedCrew{
-                    crew.updateWithValues(x: vm.coordinateX,
-                                          y: vm.coordinateY,
-                                          rotation: Double(vm.rotation),
-                                          scaleFactor: vm.scaleFactor,
-                                          in: dataManager.mainContext)
-                    
-                }
-            }
-            vm.source = globalSettings.userSpecialization
-//            appState.primaryAction = {
-//                //update lastUpdate value
-//                let lastUpdatedValue = Date.now
-//                obvan.lastUpdated = lastUpdatedValue
-//                dataManager.save()
-//                //network save
-//                let imageDto = obvan.image?.dto
-//                let id = obvan.viewId
-//                Task{
-//                   await dataManager
-//                        .networkManager
-//                        .saveData(obvan.dto,
-//                                  withId: id,
-//                                  withType: GlobalProperties.Path.obvans)
-//                    if let imageDto{
-//                        await dataManager
-//                            .networkManager
-//                            .saveData(imageDto,
-//                                      withId: id,
-//                                      withType: GlobalProperties.Path.images)
-//                    }
-//                    
-//                }
-//                router.stepBack()
+        .padding(.bottom, 6)
+          
+        saveDeleteGroup
+      }
+      .padding(.horizontal)
+      .transitionWithOpacity()
+      .ignoresSafeArea(.keyboard)
+      .navigationBarBackButtonHidden()
+      .onAppear{
+        appState.backAction = {vm.goBack()}
+      }
+      .sheet(isPresented: $vm.isEdit) {
+          ObvanPositionPickerSheet(
+              positions: vm.positions,
+              selected: vm.selectedUnit?.description
+          ) { position in
+              vm.setPosition(position)
+          }
+      }
+    }
+  }
+  // MARK: - Toolbar
+  private var saveDeleteGroup: some View {
+    HStack(spacing: 0) {
+      Spacer()
+      Button(role: .destructive) {
+        vm.isDeleteConfirm = true
+      } label: {
+        HStack(spacing: 6) {
+          Image(systemName: "trash")
+            .font(.system(size: 16, weight: .medium))
+          Text("Delete")
+            .font(.system(size: 15, weight: .medium))
+        }
+        .foregroundStyle(.red.opacity(0.8))
+        .frame(maxHeight: .infinity)
+        .opacity(vm.selectedUnit == nil ? 0.5: 1)
+      }
+      .disabled(vm.selectedUnit == nil)
+      
+      Spacer()
+      Divider()
+        .frame(width: 2,height: 40)
+        .overlay(Color.white.opacity(0.5))
+      Spacer()
+      
+      //add
+      Button{
+        vm.addUnit()
+        vm.isEdit = true
+      } label: {
+        HStack(spacing: 6) {
+          Image(systemName: "plus")
+            .font(.system(size: 16, weight: .medium))
+          Text("Add")
+            .font(.system(size: 15, weight: .medium))
+        }
+        .foregroundStyle(.black)
+        .frame(maxHeight: .infinity)
+      }
+      
+      Spacer()
+      Divider()
+        .frame(width: 2,height: 40)
+        .overlay(Color.white.opacity(0.5))
+      Spacer()
+      
+      //edit
+      Button{
+        vm.isEdit = true
+      } label: {
+        HStack(spacing: 6) {
+          Image(systemName: "square.and.pencil")
+            .font(.system(size: 16, weight: .medium))
+          Text("Edit")
+            .font(.system(size: 15, weight: .medium))
+        }
+        .foregroundStyle(.black)
+        .frame(maxHeight: .infinity)
+        //        .padding(.horizontal, 24)
+        .opacity(vm.selectedUnit == nil ? 0.5: 1)
+      }
+      
+      .disabled(vm.selectedUnit == nil)
+      
+      Spacer()
+      Divider()
+        .frame(width: 2,height: 40)
+        .overlay(Color.white.opacity(0.5))
+      Spacer()
+      
+      if vm.isSaving {
+        ProgressView()
+          .padding(.horizontal, 24)
+      } else {
+        Button {
+          vm.save()
+        } label: {
+          HStack(spacing: 6) {
+            Image(systemName: "checkmark")
+              .font(.system(size: 16, weight: .semibold))
+            Text("Save")
+              .font(.system(size: 15, weight: .semibold))
+          }
+          .foregroundStyle(vm.isSaved ? Color.black : Color.green)
+          .opacity(vm.isSaved ? 0.5: 1)
+          .frame(maxHeight: .infinity)
+        }
+        .disabled(vm.isSaved)
+      }
+      Spacer()
+    }
+    .minimumScaleFactor(0.5)
+    .frame(height: 50)
+    .frame(maxWidth: .infinity)
+    .background {
+      RoundedRectangle(cornerRadius: 14)
+        .fill(.ultraThinMaterial)
+        .overlay {
+          RoundedRectangle(cornerRadius: 14)
+            .stroke(Color.white.opacity(0.5), lineWidth: 1)
+        }
+    }
+  }
+  // MARK: - Description and photo picker
+//  private var descriptionGroup: some View {
+//    HStack {
+//      PhotosPicker(selection: $vm.selectedPhoto) {
+//        Image(systemName: "photo.artframe")
+//          .resizable()
+//          .scaledToFit()
+//          .bold()
+//          .padding(5)
+//          .frame(width: 40, height: 40)
+//          .background {
+//            RoundedRectangle(cornerRadius: 5)
+//              .fill(
+//                .ultraThickMaterial
+//                  .opacity(0.3)
+//              )
+//              .overlay {
+//                RoundedRectangle(cornerRadius: 5)
+//                  .stroke(
+//                    .ultraThickMaterial
+//                      .opacity(0.5),
+//                    lineWidth: 2
+//                  )
+//              }
+//          }
+//      }
+//      TextField("Obvan name", text: $vm.obvanName)
+//                  .padding(.horizontal, 10)
+//                  .frame(height: 40)
+//                  .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
+//                  .overlay {
+//                      RoundedRectangle(cornerRadius: 8)
+//                          .stroke(Color.white.opacity(0.5), lineWidth: 1)
+//                  }
 //
-//            }
-//            appState.secondaryAction = {
-//                
-//            }
-//            appState.stepBackAction = {
-//                dataManager.mainContext.rollback()
-//                router.stepBack()
-//            }
-        }
-        .sheet(isPresented: $isEditPressed) {
-            List{
-                ForEach(globalSettings.userSpecialization, id:\.self){ spec in
-                    HStack{
-                        Text(spec)
-                     Spacer()
-                        if spec == vm.selectedCrew?.viewPosition{
-                            Image(systemName: "checkmark")
-                        }
-                    }
-                        .onTapGesture {
-                            if let crew = vm.selectedCrew{
-                                    crew.updateWithValues(position: spec,
-                                                          in: dataManager.mainContext)
-//                                vm.templateCrews = obvan.viewTemplateCrews
-//                                vm.selectedCrew = crew
-                            } else {
-//                                dataManager.mainContext.performAndWait{
-//                                    let id = UUID().uuidString
-//                                    let newTemplateCrew: ObvanTemplateCrew = dataManager.mainContext.fetchOrCreateObject(withID: id)
-//                                    newTemplateCrew.position = spec
-//                                    obvan.addToCrewTemplates(newTemplateCrew)
-//                                    vm.addObvanTemplateCrew(newTemplateCrew)
-//                                    vm.selectedCrew = newTemplateCrew
-//                                }
-                            }
-                            vm.sortCrews()
-                            isEditPressed = false
-                        }
-                }
-            }
-            .presentationDragIndicator(.visible)
-            
-        }
-        .onReceive(vm.$title) { title in
-            obvan.name = title
-        }
-        .onReceive(vm.$selectedPhoto) { newImage in
-            Task{
-                guard let item = newImage,
-                      let data = try? await item.loadTransferable(type: Data.self),
-                      let image = UIImage(data: data)
-                else { return }
-                
-                vm.updateImage(uiimage: image)
-                
-                await dataManager.updateImageWith(uiimage: image, id: obvan.viewId, type: .obvan, lastUpdated: .now)
-            }
-        }
+//              TextField("Broadcaster", text: $vm.broadcaster)
+//                  .padding(.horizontal, 10)
+//                  .frame(height: 40)
+//                  .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
+//                  .overlay {
+//                      RoundedRectangle(cornerRadius: 8)
+//                          .stroke(Color.white.opacity(0.5), lineWidth: 1)
+//                  }
+//      
+//    }
+//    .frame(height: 40)
+//    .padding(.vertical,6)
+//  }
+  private var descriptionGroup: some View {
+      HStack(spacing: 6) {
+          PhotosPicker(selection: $vm.selectedPhoto) {
+              Image(systemName: "photo.artframe")
+                  .resizable()
+                  .scaledToFit()
+                  .bold()
+                  .padding(8)
+                  .frame(width: 40, height: 40)
+                  .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
+                  .overlay {
+                      RoundedRectangle(cornerRadius: 8)
+                          .stroke(Color.white.opacity(0.5), lineWidth: 1)
+                  }
+          }
+
+          TextField("Obvan name", text: $vm.obvanName)
+              .padding(.horizontal, 10)
+              .frame(height: 40)
+              .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
+              .overlay {
+                  RoundedRectangle(cornerRadius: 8)
+                      .stroke(Color.white.opacity(0.5), lineWidth: 1)
+              }
+
+          TextField("Broadcaster", text: $vm.broadcaster)
+          .font(.system(size: 10))
+              .padding(.horizontal, 10)
+              .frame(height: 40)
+              .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
+              .overlay {
+                  RoundedRectangle(cornerRadius: 8)
+                      .stroke(Color.white.opacity(0.5), lineWidth: 1)
+              }
+      }
+      .padding(.vertical, 6)
+  }
+    // MARK: - Control
+    private var controlGroup: some View {
+      VStack(spacing: 6){
+        BPJoystick(delegate: vm.renderDelegate)
+          .aspectRatio(1, contentMode: .fit)
+          .padding(5)
+          .frame(maxWidth:.infinity,maxHeight: .infinity)
+          .overlay {
+            RoundedRectangle(cornerRadius: 5).stroke(.white.opacity(0.4), lineWidth: 2)
+          }
+        BPEditEventControlPanel(delegate: vm.renderDelegate)
+      }
     }
 }
 
-//#Preview {
-//    let dm = DataManager(globalDataManager: NetworkManager())
-//    let appState = ApplicationState()
-//    let settings = GlobalSettings()
-//    dm.networkManager.eventProgressHandler = appState
-//    dm.networkManager.globalSettingsDelegate = settings
-//    let obvan = Obvan(context: dm.mainContext)
-//    return AddEditObvanView(obvan: obvan)
-//        .environmentObject(settings)
-//        .environmentObject(SessionManager())
-//        .environmentObject(appState)
-//        .environmentObject(Router())
-//        .environmentObject(dm)
-//        .environment(\.managedObjectContext, dm.mainContext)
-//
+#Preview {
+  let dc = DataCoordinator()
+  let settings = GlobalSettings()
+  
+  let obvan = Obvan(context: dc.dataManager.mainContext)
+  return AddEditObvanView(obvan: obvan,
+                          dataManager: dc.dataManager,
+                          router: Router(),settings: settings)
+    .environment(\.managedObjectContext, dc.dataManager.mainContext)
+
+}
+
+
+//struct ObvanTemplateCrewCell: View {
+//    let crewPosition: String?
+//    let isSelected: Bool
+//    
+//    var body: some View {
+//        
+//        Text(crewPosition ?? "Unknown")
+//            .padding(.vertical,3)
+//            .frame(maxWidth: .infinity)
+//            .background {
+//                RoundedRectangle(cornerRadius: 5)
+//                    .fill(
+//                        .ultraThickMaterial
+//                            .opacity(0.3)
+//                    )
+//                    .overlay {
+//                        RoundedRectangle(cornerRadius: 5)
+//                            .stroke(
+//                                .ultraThickMaterial
+//                                    .opacity(0.5),
+//                                lineWidth: 2
+//                            )
+//                    }
+//            }
+//            .opacity(isSelected ? 1: 0.6)
+//    }
 //}
+struct ObvanTemplateCrewCell: View {
+    let crewPosition: String?
+    let isSelected: Bool
 
+    var body: some View {
+        Text(crewPosition ?? "Unknown")
+            .font(.system(size: 13, weight: .medium))
+            .lineLimit(1)
+            .minimumScaleFactor(0.7)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 6)
+            .frame(maxWidth: .infinity)
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
+            .overlay {
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(
+                        isSelected ? Color.primary.opacity(0.4) : Color.white.opacity(0.4),
+                        lineWidth: isSelected ? 2 : 0.5
+                    )
+            }
+            .opacity(isSelected ? 1 : 0.7)
+    }
+}
+struct ObvanPositionPickerSheet: View {
+    let positions: [String]
+    let selected: String?
+    let onSelect: (String) -> Void
+    @Environment(\.dismiss) var dismiss
 
+    var body: some View {
+        ZStack {
+            MainBackground()
+            VStack(spacing: 0) {
+                Text("выбери позицию")
+                    .font(.system(size: 13))
+                    .foregroundStyle(.secondary)
+                    .padding(.top, 8)
+                    .padding(.bottom, 12)
+
+                FlowLayout(spacing: 8) {
+                    ForEach(positions, id: \.self) { position in
+                        let isSelected = position == selected
+                        Text(position)
+                            .font(.system(size: 13, weight: .medium))
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .background(
+                                isSelected
+                                    ? Color.white.opacity(0.7)
+                                    : Color.white.opacity(0.2),
+                                in: RoundedRectangle(cornerRadius: 8)
+                            )
+                            .overlay {
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(
+                                        isSelected
+                                            ? Color.primary.opacity(0.4)
+                                            : Color.white.opacity(0.4),
+                                        lineWidth: isSelected ? 2 : 0.5
+                                    )
+                            }
+                            .onTapGesture {
+                                onSelect(position)
+                                dismiss()
+                            }
+                    }
+                }
+                .padding(.horizontal, 16)
+                .padding(.bottom, 16)
+
+                Spacer()
+            }
+        }
+        .presentationDetents([.medium])
+        .presentationDragIndicator(.visible)
+        .presentationBackground { MainBackground() }
+    }
+}

@@ -4,10 +4,11 @@ import SwiftUI
 
 // MARK: - MainTabView
 struct MainTabView: View {
-    @EnvironmentObject var appState: ApplicationState
-    @EnvironmentObject var router: Router
-    @EnvironmentObject var sessionManager: SessionManager
-    @EnvironmentObject var dataManager: DataManager
+  @EnvironmentObject var appState: ApplicationState
+  @EnvironmentObject var router: Router
+  @EnvironmentObject var sessionManager: SessionManager
+  @EnvironmentObject var dataManager: DataManager
+  @EnvironmentObject var settings: GlobalSettings
 
   init() {
       UITabBar.appearance().isHidden = true
@@ -133,7 +134,7 @@ struct MainTabView: View {
         case .obvanCollection:
             ObvanCollectionView()
         case .addEditObvan(let obvan):
-            AddEditObvanView(obvan: obvan)
+            AddEditObvanView(obvan: obvan,dataManager: dataManager,router: router,settings: settings)
         case .ownerInfo:
             EditMemberInfoView()//member: dataManager.fetchOwner())
         case .settings:

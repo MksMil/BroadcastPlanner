@@ -3,222 +3,288 @@ import _PhotosUI_SwiftUI
 import UIKit
 import Combine
 
+@MainActor
+class AddEditObvanViewModel: ObservableObject{
+  private enum SelectionSource {
+      case vm
+      case renderer
+  }
+  
+  @Published var selectedPhoto: PhotosPickerItem?{
+    didSet{
+      Task{
+          guard let item = selectedPhoto,
+                let data = try? await item.loadTransferable(type: Data.self),
+                let image = UIImage(data: data)
+          else { return }
+          
+          uiimage = image
+          
+          await dataManager.updateImageWith(uiimage: image, id: obvan.viewId, type: .obvan, lastUpdated: .now)
+      }
+    }
+  }
+  @Published var uiimage: UIImage? {
+    didSet{
+      renderDelegate.updateScene()
+    }
+  }
+  
+  let obvan: Obvan
+  let dataManager: DataManager
+  let router: Router
+  let settings: GlobalSettings
+  let renderDelegate: BluePrintRenderDelegate
+  let scene: SKScene
 
-protocol ObvanEditDelegate: AnyObject {
-    func selectCrewtWithId(_ id: String)
-    func deselectCrew() //id?
-    func saveCrewAction()
-    func updateTemplateCrew(x: Double?, y: Double?, rotation: Double?, scaleFactor: Double?) //x,y,rotation,scaleFactor
+  private var lastSelectionSource: SelectionSource = .vm
+  @Published var selectedUnit: LayoutRenderUnit?{
+    didSet {
+      // Изменение пришло из VM (например, тап в списке)
+      // — нужно обновить сцену
+      guard lastSelectionSource == .vm else {
+        lastSelectionSource = .vm  // сбрасываем для следующего раза
+        return
+      }
+      renderDelegate.deselectUnitToRenderer()
+      if let unit = selectedUnit {
+        renderDelegate.selectUnitToRenderer(id: unit.id)
+      }
+    }
+  }
+  
+  @Published var isLoading: Bool = true
+  @Published var isDeleteConfirm: Bool = false //confirmation
+  @Published var isSaving: Bool = false // progressView on saveButton
+  @Published var isSaved: Bool = true
+  @Published var isConfirmDiscardChangesOrSave: Bool = false //step backconfirmation
+  @Published var isEdit: Bool = false {
+    didSet{
+      if !isEdit{
+        isSaved = false
+        renderDelegate.updateScene()
+        if let id = selectedUnit?.id{
+          renderDelegate.selectUnitToRenderer(id: id)
+        }
+      }
+    }
+  }
+  @Published var isAddObvanSheetShow: Bool = false
+
+  @Published var obvanName: String = ""
+  @Published var broadcaster: String = ""
+  
+  @Published var renderUnits: [LayoutRenderUnit] = []
+  @Published var positions: [String]
+  var templateCrews: [ObvanTemplateCrew] = []{
+    didSet{
+      //            sortCrews()
+    }
+  }
+    
+  init(obvan: Obvan,
+       dataManager: DataManager,
+       router: Router,
+       settings: GlobalSettings){
+    self.obvan = obvan
+    self.dataManager = dataManager
+    self.router = router
+    self.settings = settings
+    self.positions = settings.userSpecialization
+    let renderer = BluePrintRenderer()
+    self.renderDelegate = renderer
+    self.scene = renderer
+    
+    renderer.dataSource = self
+    renderer.dataDelegate = self
+    
+    setup()
+  }
+  
+  func setup(){
+    obvanName = obvan.viewName.isEmpty ? "" : obvan.viewName
+    broadcaster = obvan.viewBroadcasterName.isEmpty ? "" : obvan.viewBroadcasterName
+    
+    let crews = obvan.viewTemplateCrews
+    var units: [LayoutRenderUnit] = []
+    for crew in crews {
+      units.append(LayoutRenderUnit(id: UUID().uuidString,
+                                    coordinateX: crew.viewX,
+                                    coordinateY: crew.viewY,
+                                    scaleFactor: crew.viewScaleFactor,
+                                    rotation: CGFloat(crew.rotation),
+                                    number: nil,
+                                    personId: UUID().uuidString,
+                                    camera: nil,
+                                    sound: nil,
+                                    soundPlace: nil,
+                                    light: nil,
+                                    hardware: nil,
+                                    task: nil,
+                                    description: crew.viewPosition))
+        }
+    Task{
+      if let image = await dataManager.getImageWithId(obvan.viewImageId, type: .obvan, size: .mediumImages){
+        self.uiimage = image
+      }
+      renderUnits = units
+      renderDelegate.updateScene()
+    }
+    
+  }
+    // MARK: scene screenshot
+//    func makeSceneScreenshot()-> UIImage?{
+//        guard let view = renderObvanScene.view else {
+//                print("Сцена не привязана к SKView.")
+//                return nil
+//            }
+//            
+//            guard let texture = view.texture(from: renderObvanScene) else {
+//                print("Не удалось создать текстуру из сцены.")
+//                return nil
+//            }
+//            
+//            let size = CGSize(width: texture.size().width, height: texture.size().height)
+//            let rect = CGRect(origin: .zero, size: size)
+//            
+//            UIGraphicsBeginImageContextWithOptions(size, false, UIScreen.main.scale)
+//            UIImage(cgImage: texture.cgImage()).draw(in: rect)
+//            let image = UIGraphicsGetImageFromCurrentImageContext()
+//            UIGraphicsEndImageContext()
+//            
+//            return image
+//    }
 }
 
 
-class AddEditObvanViewModel: ObservableObject{
-    @Published var selectedPhoto: PhotosPickerItem? 
-    
-    @Published var uiimage: UIImage?
-
-    var source: [String] = [] {
-        didSet{
-            sortCrews()
-        }
+//MARK: - Actions
+extension AddEditObvanViewModel{
+  func addUnit(){
+    //data come from outside
+    let unit = LayoutRenderUnit(id: UUID().uuidString,
+                                coordinateX: 0,
+                                coordinateY: 0,
+                                scaleFactor: 1,
+                                rotation: 0,
+                                number: nil,
+                                personId: UUID().uuidString,
+                                camera: nil,
+                                sound: nil,
+                                soundPlace: nil,
+                                light: nil,
+                                hardware: nil,
+                                task: nil,
+                                description: "Unknown")
+    isSaved = false
+    renderUnits.append(unit)
+    renderDelegate.addUnit(layoutUnit: unit)
+    selectedUnit = unit
+  }
+  func setPosition(_ position: String?){
+    selectedUnit?.description = position
+  }
+  
+  func save(){
+    isSaving = true
+    //save flow
+    //
+    Task{
+      await dataManager.updateObvanTemplateCrews(obvanObjectID: obvan.objectID, units: renderUnits, image: uiimage)
+      isSaved = true
+      isSaving = false
     }
-    var coordinateX: Double = 0
-    var coordinateY: Double = 0
-    var rotation: Int = 0
-    var scaleFactor: Double = 0
-    @Published var title: String = ""
-    
-    @Published var selectedCrew: ObvanTemplateCrew?
-    @Published var isEdit: Bool = false
-    //filter?
-    
-    let obvan: Obvan
-    var templateCrews: [ObvanTemplateCrew] = []{
-        didSet{
-            sortCrews()
-        }
+  }
+  
+  func delete(){
+    if let selectedUnit {
+      isSaved = false
+      renderDelegate.deleteUnit(id: selectedUnit.id)
+      renderUnits.removeAll{$0.id == selectedUnit.id}
+      self.selectedUnit = nil
     }
-
-    @Published var sortedCrews: [ObvanTemplateCrew] = []
-    let renderObvanScene: ObvanEditSpriteScene
-    var saveAction: (()->())?
-    func sortCrews(){
-        sortedCrews = templateCrews.sorted { first, second in
-            source.lastIndex(of: first.viewPosition) ?? 0 < source.lastIndex(of: second.viewPosition) ?? 0
-        }
+  }
+  
+  func goBack(){
+    if isSaved{
+      //screenshot
+      router.stepBack()
+    } else {
+      isConfirmDiscardChangesOrSave = true
     }
-    
-    init(obvan: Obvan){
-        self.obvan = obvan
-        self.renderObvanScene = ObvanEditSpriteScene()
-        self.renderObvanScene.crewDelegate = self
-        self.templateCrews = obvan.viewTemplateCrews
-        self.renderObvanScene.crews = templateCrews
-        self.title = obvan.viewName
-    }
-    
-    @MainActor
-    func updateImage( uiimage: UIImage?){
-        if let uiimage{
-            self.uiimage = uiimage
-            self.renderObvanScene.backImage = uiimage
-        }
-    }
-    
-    // MARK: scene screenshot
+  }
+  
+  func discardChangesAndGoBack(){
+    dataManager.rollBackMoc()
+    router.stepBack()
+  }
+  
+  func saveAndGoBack(){
+    save()
+    router.stepBack()
+  }
+  
+  // MARK: scene screenshot
     func makeSceneScreenshot()-> UIImage?{
-        guard let view = renderObvanScene.view else {
+        guard let view = scene.view else {
                 print("Сцена не привязана к SKView.")
                 return nil
             }
-            
-            guard let texture = view.texture(from: renderObvanScene) else {
+
+            guard let texture = view.texture(from: scene) else {
                 print("Не удалось создать текстуру из сцены.")
                 return nil
             }
-            
+
             let size = CGSize(width: texture.size().width, height: texture.size().height)
             let rect = CGRect(origin: .zero, size: size)
-            
+
             UIGraphicsBeginImageContextWithOptions(size, false, UIScreen.main.scale)
             UIImage(cgImage: texture.cgImage()).draw(in: rect)
             let image = UIGraphicsGetImageFromCurrentImageContext()
             UIGraphicsEndImageContext()
-            
+
             return image
     }
 }
-// MARK: - TemplateObvanCrew managment
-extension AddEditObvanViewModel {
-    @MainActor
-    func addObvanTemplateCrew(_ obvanCrew: ObvanTemplateCrew){
-        templateCrews.append(obvanCrew)
-        renderObvanScene.addCrew(obvanCrew, select: true)
-        selectedCrew = obvanCrew
-        renderObvanScene.updateCameraWithNewNode()
-        isEdit = true
-    }
-    
-    func deleteObvanTemplateCrew(_ crewToDelete: ObvanTemplateCrew){
-        renderObvanScene.removeSelectedCrew()
-            templateCrews.removeAll { crew in
-                crewToDelete.viewId == crew.viewId
-        }
-        isEdit = false
-        selectedCrew = nil
-    }
-    func selectTemplateObvanCrew(_ obvanCrew: ObvanTemplateCrew){
-        selectedCrew = obvanCrew
-        coordinateX = obvanCrew.viewX
-        coordinateY = obvanCrew.viewY
-        rotation = Int(obvanCrew.viewRotation)
-        scaleFactor = obvanCrew.viewScaleFactor
-        renderObvanScene.select(crew: obvanCrew)
-        isEdit = true
-    }
-    
-    func deselect(){
-        renderObvanScene.deselect()
-        selectedCrew = nil
-        isEdit = false
-    }
-}
-// MARK: - ObvanEditDelegate
-extension AddEditObvanViewModel: ObvanEditDelegate{
-    func saveCrewAction() {
-       saveAction?()
-    }
-    
-    func selectCrewtWithId(_ id: String) {
-        selectedCrew = templateCrews.first(where: {$0.viewId == id})
-        isEdit = true
-    }
-    
-    func deselectCrew() {
-        if selectedCrew != nil {
-            saveAction?()
-            selectedCrew = nil
-        }
-        isEdit = false
-    }
-    
-    func deselectCrewForRenderer() {
-        if selectedCrew != nil {
-            saveAction?()
-            selectedCrew = nil
-            renderObvanScene.deselect()
-        }
-        isEdit = false
-    }
-    
-    func updateTemplateCrew(x: Double?, y: Double?, rotation: Double?, scaleFactor: Double?) {
-        if let x {
-            coordinateX = x
-        }
-        if let y {
-            coordinateY = y
-        }
-        if let rotation {
-            self.rotation = Int(rotation)
-        }
-        if let scaleFactor {
-            self.scaleFactor = scaleFactor
-        }
-        saveAction?()
-    }
+
+
+
+// MARK: - BluePrintRendererDataSource
+extension AddEditObvanViewModel: BluePrintRendererDataSource{
+  func unit(for id: String) -> LayoutRenderUnit? {
+    renderUnits.first { $0.id == id }
+  }
+  
+  var units: [LayoutRenderUnit] {
+    renderUnits
+  }
+  
+  var backgroundImage: UIImage? {
+    uiimage
+  }
 }
 
-// MARK: - Scaling scenes
-extension AddEditObvanViewModel {
-    func scaleUp(){
-        renderObvanScene.scaleUp()
+// MARK: - BlueprintDataDelegate
+extension AddEditObvanViewModel: BlueprintDataDelegate {
+  func selectUnitFromRenderer(_ unit: (any BluePrintEditable)?) {
+    if let selected = unit as? LayoutRenderUnit{
+      lastSelectionSource = .renderer
+      selectedUnit = selected
     }
-    
-    func scaleDown(){
-        renderObvanScene.scaleDown()
-    }
-    
-    func resetScale(){
-        renderObvanScene.resetScale()
-    }
-}
-
-// MARK: - Control (move,scale,rotate) TemplateCrew in Obvan Edit Scene
-extension AddEditObvanViewModel{
-    func moveUp(){
-        renderObvanScene.moveUP()
-    }
-    
-    func moveDown(){
-        renderObvanScene.moveDown()
-    }
-    
-    func moveLeft(){
-        renderObvanScene.moveLeft()
-    }
-    
-    func moveRight(){
-        renderObvanScene.moveRight()
-    }
-    
-    func rotateCounterClockwise(){
-        renderObvanScene.rotateCounterClockwiseSelectedPointCameraNode()
-    }
-    
-    func rotateClockwise(){
-        renderObvanScene.rotateClockwiseSelectedPointCameraNode()
-    }
-    
-    func swap(){
-        renderObvanScene.swapSelectedPointCameraNode()
-    }
-    
-    func scaleUpPoint(){
-        renderObvanScene.scaleUpSelectedPoint()
-    }
-    
-    func scaleDownPoint(){
-        renderObvanScene.scaleDownSelectedPoint()
-    }
-    
+  }
+  
+  func deselectUnitFromRenderer() {
+    lastSelectionSource = .renderer
+    selectedUnit = nil
+  }
+  
+  func updateUnit(x: CGFloat, y: CGFloat, scaleFactor: CGFloat, rotation: CGFloat) {
+    isSaved = false
+    selectedUnit?.coordinateX = x
+    selectedUnit?.coordinateY = y
+    selectedUnit?.scaleFactor = scaleFactor
+    selectedUnit?.rotation = rotation
+  }
+  
+  
 }

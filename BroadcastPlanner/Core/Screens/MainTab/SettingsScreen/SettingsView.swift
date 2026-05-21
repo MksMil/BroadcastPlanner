@@ -94,7 +94,7 @@ struct SettingsView: View {
                 }
                 //add obvan
                 Button {
-//                    router.routeTo(path: RouterPath.obvanCollection)
+                  router.routeToObvanList()
                 }label: {
                     Text("Add Obvan")
                         .frame(maxWidth: .infinity)

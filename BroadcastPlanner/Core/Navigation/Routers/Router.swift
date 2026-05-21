@@ -46,6 +46,8 @@ enum BroadcastPath: Hashable {
 
 enum MessengerPath: Hashable {
   case messenger
+  case obvanCollection
+  case addEditObvan(obvan: Obvan)
   // расширяется по мере появления новых экранов в чат-флоу
 }
 
@@ -157,5 +159,33 @@ extension Router: BroadcastListRouting {
   }
   func openEditPoints(_ broadcast: Broadcast){
     broadcastPath.append(.stadPointsEdit(broadcast: broadcast))
+  }
+}
+
+// MARK: - Settings routing
+@MainActor
+protocol ObvanListRouting {
+  func routeToObvanList()
+  func routeToEditObvan(obvan: Obvan)
+}
+
+extension Router: ObvanListRouting {
+  func routeToObvanList(){
+    if selectedTab == .broadcasts{
+      broadcastPath.append(.obvanCollection)
+    } else if selectedTab == .messenger {
+      messengerPath.append(.obvanCollection)
+    } else {
+      return
+    }
+  }
+  func routeToEditObvan(obvan: Obvan) {
+    if selectedTab == .broadcasts{
+      broadcastPath.append(.addEditObvan(obvan: obvan))
+    } else if selectedTab == .messenger {
+      messengerPath.append(.addEditObvan(obvan: obvan))
+    } else {
+      return
+    }
   }
 }

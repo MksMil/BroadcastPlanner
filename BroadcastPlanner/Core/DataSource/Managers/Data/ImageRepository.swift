@@ -67,7 +67,7 @@ protocol ImageRepositoryProtocol: AnyObject, Sendable {
     type: GlobalProperties.ImageType,
     parentObjectID: NSManagedObjectID?,
     lastUpdated: Date = .now
-  ) async {
+  ) async  {
     guard let uiimage, !id.isEmpty else {
       logger.warning("saveNewImage: invalid input — id: \(id)")
       return

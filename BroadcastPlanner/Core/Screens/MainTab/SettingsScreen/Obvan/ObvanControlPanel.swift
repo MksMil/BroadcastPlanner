@@ -132,6 +132,6 @@ struct ObvanControlPanel: View {
     }
 }
 
-//#Preview {
-//    ObvanControlPanel()
-//}
+#Preview {
+  ObvanControlPanel(isEdit: .constant(true), addAction: {}, deleteAction: {}, saveAction: {}, editAction: {})
+}

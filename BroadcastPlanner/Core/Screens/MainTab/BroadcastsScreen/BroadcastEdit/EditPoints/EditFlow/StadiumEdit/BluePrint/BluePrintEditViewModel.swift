@@ -227,9 +227,9 @@ extension BluePrintEditViewModel{
 extension BluePrintEditViewModel: BlueprintDataDelegate{
   
   func selectUnitFromRenderer(_ unit: (any BluePrintEditable)?) {
-      lastSelectionSource = .renderer   // помечаем — изменение пришло из сцены
       if let unit = unit as? LayoutRenderUnit {
-          selectedUnit = unit           // didSet видит .renderer → не трогает сцену
+        lastSelectionSource = .renderer   // помечаем — изменение пришло из сцены
+        selectedUnit = unit           // didSet видит .renderer → не трогает сцену
       }
   }
 
@@ -368,7 +368,6 @@ extension BluePrintEditViewModel{
   }
   
   func goBack(){
-    print("go back action: isSaved - \(isSaved)")
     if isSaved{
       //screenshot
       router.stepBack()
@@ -384,9 +383,35 @@ extension BluePrintEditViewModel{
   
   func saveAndGoBack(){
     //screenshot
+    let image = makeSceneScreenshot()
+    dataManager.assignSnapshot(image,
+                               toBroadcastObjectID: broadcast.objectID)
     save()
     router.stepBack()
   }
+  
+  // MARK: scene screenshot
+    func makeSceneScreenshot()-> UIImage?{
+        guard let view = scene.view else {
+                print("Сцена не привязана к SKView.")
+                return nil
+            }
+
+            guard let texture = view.texture(from: scene) else {
+                print("Не удалось создать текстуру из сцены.")
+                return nil
+            }
+
+            let size = CGSize(width: texture.size().width, height: texture.size().height)
+            let rect = CGRect(origin: .zero, size: size)
+
+            UIGraphicsBeginImageContextWithOptions(size, false, UIScreen.main.scale)
+            UIImage(cgImage: texture.cgImage()).draw(in: rect)
+            let image = UIGraphicsGetImageFromCurrentImageContext()
+            UIGraphicsEndImageContext()
+
+            return image
+    }
 }
 
 // MARK: - Template

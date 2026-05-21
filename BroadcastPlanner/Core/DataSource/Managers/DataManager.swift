@@ -16,6 +16,7 @@ final class DataManager: ObservableObject {
     let broadcasts: BroadcastRepositoryProtocol
     let images: ImageRepositoryProtocol
     let sync: SyncServiceProtocol
+  // TODO: obvanRepository
 
     // Обратная совместимость — прямой доступ к контексту
     // пока вьюхи не переведены на сервисы
@@ -213,7 +214,7 @@ extension DataManager {
         broadcasts.assignSnapshot(image, toBroadcastObjectID: toBroadcastObjectID)
     }
 
-    // MARK: - Points / Templates
+    // MARK: - Units / Obvan / Templates
 
   func saveTemplateFromSchema(
     units: [BluePrintEditable],
@@ -242,7 +243,35 @@ extension DataManager {
       }
     }
   }
-   
+  
+  //from settings -> obvan settings
+  func updateObvanTemplateCrews(
+      obvanObjectID: NSManagedObjectID,
+      units: [LayoutRenderUnit],
+      image: UIImage?
+  ) async {
+      await saveNewImage(
+          uiimage: image,
+          type: .obvan,
+          parentObjectID: obvanObjectID
+      )
+    // TODO: move to obvan repository
+      let context = stack.mainContext
+      guard let obvan = context.object(with: obvanObjectID) as? Obvan else { return }
+      obvan.cleanTemplateCrews()
+      for unit in units {
+          let templateCrew = ObvanTemplateCrew(context: context)
+          templateCrew.id = UUID().uuidString
+          templateCrew.coordinateX = Float(unit.coordinateX)
+          templateCrew.coordinateY = Float(unit.coordinateY)
+          templateCrew.scaleFactor = Float(unit.scaleFactor)
+          templateCrew.rotation = Int16(unit.rotation)
+          templateCrew.position = unit.description ?? "Unknown"
+          templateCrew.parentObvan = obvan
+          obvan.addToCrewTemplates(templateCrew)
+      }
+      save()
+  }
 
     // MARK: - Images
 
