@@ -4,35 +4,32 @@ import _PhotosUI_SwiftUI
 
 struct AddEditObvanView: View {
   @EnvironmentObject var appState: ApplicationState
-    @StateObject var vm: AddEditObvanViewModel
-    let obvan: Obvan
-    
-    init(obvan: Obvan,dataManager: DataManager,
-         router: Router, settings: GlobalSettings){
-        self.obvan = obvan
-      
-        self._vm = StateObject(wrappedValue: AddEditObvanViewModel(
-          obvan: obvan, dataManager: dataManager,
-          router: router, settings: settings))
-    }
-    
+  @StateObject var vm: AddEditObvanViewModel
+  let obvan: Obvan?
+  
+  init(obvan: Obvan?,dataManager: DataManager,
+       router: Router, settings: GlobalSettings){
+    self.obvan = obvan
+    self._vm = StateObject(wrappedValue: AddEditObvanViewModel(
+      obvan: obvan, dataManager: dataManager,
+      router: router, settings: settings))
+  }
+  
   var body: some View {
     ZStack{
       MainBackground()
-      
       VStack(spacing: 0){
-        SpriteView(scene: vm.scene,
-                   debugOptions: [.showsFPS,.showsNodeCount])
-        .aspectRatio(1.5, contentMode: .fit)
-        .frame(maxWidth: .infinity)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
+        SpriteView(scene: vm.scene)
+          .aspectRatio(1.5, contentMode: .fit)
+          .frame(maxWidth: .infinity)
+          .clipShape(RoundedRectangle(cornerRadius: 10))
         
         descriptionGroup
         
         HStack{
           if vm.renderUnits.isEmpty {
             Spacer()
-              .frame(maxWidth: .infinity)
+              .frame(maxWidth: .infinity,maxHeight: .infinity)
           }
           ScrollView{
             ForEach(vm.renderUnits){ crew in
@@ -49,27 +46,45 @@ struct AddEditObvanView: View {
           controlGroup
         }
         .padding(.bottom, 6)
-          
+        .frame(maxWidth: .infinity)
         saveDeleteGroup
       }
-      .padding(.horizontal)
       .transitionWithOpacity()
-      .ignoresSafeArea(.keyboard)
       .navigationBarBackButtonHidden()
       .onAppear{
         appState.backAction = {vm.goBack()}
       }
-      .sheet(isPresented: $vm.isEdit) {
-          ObvanPositionPickerSheet(
-              positions: vm.positions,
-              selected: vm.selectedUnit?.description
-          ) { position in
-              vm.setPosition(position)
-          }
+      .confirmationDialog(
+        Text("Permanently erase the Obvan in the trash?"),
+        isPresented: $vm.isDeleteConfirm
+      ) {
+        Button("Remove Obvan", role: .destructive) {
+          
+        }
       }
+      .confirmationDialog("", isPresented: $vm.isConfirmDiscardChangesOrSave) {
+        Button("Save changes and step back?"){
+          Task{
+            await vm.saveAndGoBack()
+          }
+        }
+        Button("Discard all changes and step back?",role: .destructive){
+          vm.discardChangesAndGoBack()
+        }
+      }
+      .sheet(isPresented: $vm.isEdit) {
+        ObvanPositionPickerSheet(
+          positions: vm.positions,
+          selected: vm.selectedUnit?.description
+        ) { position in
+          vm.setPosition(position)
+        }
+      }
+      .padding(.horizontal)
     }
+    .ignoresSafeArea(.keyboard)
   }
-  // MARK: - Toolbar
+  // MARK: Toolbar group
   private var saveDeleteGroup: some View {
     HStack(spacing: 0) {
       Spacer()
@@ -144,7 +159,9 @@ struct AddEditObvanView: View {
           .padding(.horizontal, 24)
       } else {
         Button {
-          vm.save()
+          Task{
+            await vm.save()
+          }
         } label: {
           HStack(spacing: 6) {
             Image(systemName: "checkmark")
@@ -172,54 +189,7 @@ struct AddEditObvanView: View {
         }
     }
   }
-  // MARK: - Description and photo picker
-//  private var descriptionGroup: some View {
-//    HStack {
-//      PhotosPicker(selection: $vm.selectedPhoto) {
-//        Image(systemName: "photo.artframe")
-//          .resizable()
-//          .scaledToFit()
-//          .bold()
-//          .padding(5)
-//          .frame(width: 40, height: 40)
-//          .background {
-//            RoundedRectangle(cornerRadius: 5)
-//              .fill(
-//                .ultraThickMaterial
-//                  .opacity(0.3)
-//              )
-//              .overlay {
-//                RoundedRectangle(cornerRadius: 5)
-//                  .stroke(
-//                    .ultraThickMaterial
-//                      .opacity(0.5),
-//                    lineWidth: 2
-//                  )
-//              }
-//          }
-//      }
-//      TextField("Obvan name", text: $vm.obvanName)
-//                  .padding(.horizontal, 10)
-//                  .frame(height: 40)
-//                  .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
-//                  .overlay {
-//                      RoundedRectangle(cornerRadius: 8)
-//                          .stroke(Color.white.opacity(0.5), lineWidth: 1)
-//                  }
-//
-//              TextField("Broadcaster", text: $vm.broadcaster)
-//                  .padding(.horizontal, 10)
-//                  .frame(height: 40)
-//                  .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
-//                  .overlay {
-//                      RoundedRectangle(cornerRadius: 8)
-//                          .stroke(Color.white.opacity(0.5), lineWidth: 1)
-//                  }
-//      
-//    }
-//    .frame(height: 40)
-//    .padding(.vertical,6)
-//  }
+ // MARK: description and photopicker
   private var descriptionGroup: some View {
       HStack(spacing: 6) {
           PhotosPicker(selection: $vm.selectedPhoto) {
@@ -236,28 +206,32 @@ struct AddEditObvanView: View {
                   }
           }
 
-          TextField("Obvan name", text: $vm.obvanName)
-              .padding(.horizontal, 10)
-              .frame(height: 40)
-              .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
-              .overlay {
-                  RoundedRectangle(cornerRadius: 8)
-                      .stroke(Color.white.opacity(0.5), lineWidth: 1)
-              }
-
-          TextField("Broadcaster", text: $vm.broadcaster)
+        TextField("Obvan name", text: $vm.obvanName)
+          .textInputAutocapitalization(.never)
+          .autocorrectionDisabled()
+          .padding(.horizontal, 10)
+          .frame(height: 40)
+          .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
+          .overlay {
+            RoundedRectangle(cornerRadius: 8)
+              .stroke(Color.white.opacity(0.5), lineWidth: 1)
+          }
+        
+        TextField("Broadcaster", text: $vm.broadcaster)
+          .textInputAutocapitalization(.never)
+          .autocorrectionDisabled()
           .font(.system(size: 10))
-              .padding(.horizontal, 10)
-              .frame(height: 40)
-              .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
-              .overlay {
-                  RoundedRectangle(cornerRadius: 8)
-                      .stroke(Color.white.opacity(0.5), lineWidth: 1)
-              }
+          .padding(.horizontal, 10)
+          .frame(height: 40)
+          .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
+          .overlay {
+            RoundedRectangle(cornerRadius: 8)
+              .stroke(Color.white.opacity(0.5), lineWidth: 1)
+          }
       }
       .padding(.vertical, 6)
   }
-    // MARK: - Control
+    // MARK: Control group
     private var controlGroup: some View {
       VStack(spacing: 6){
         BPJoystick(delegate: vm.renderDelegate)
@@ -284,34 +258,6 @@ struct AddEditObvanView: View {
 
 }
 
-
-//struct ObvanTemplateCrewCell: View {
-//    let crewPosition: String?
-//    let isSelected: Bool
-//    
-//    var body: some View {
-//        
-//        Text(crewPosition ?? "Unknown")
-//            .padding(.vertical,3)
-//            .frame(maxWidth: .infinity)
-//            .background {
-//                RoundedRectangle(cornerRadius: 5)
-//                    .fill(
-//                        .ultraThickMaterial
-//                            .opacity(0.3)
-//                    )
-//                    .overlay {
-//                        RoundedRectangle(cornerRadius: 5)
-//                            .stroke(
-//                                .ultraThickMaterial
-//                                    .opacity(0.5),
-//                                lineWidth: 2
-//                            )
-//                    }
-//            }
-//            .opacity(isSelected ? 1: 0.6)
-//    }
-//}
 struct ObvanTemplateCrewCell: View {
     let crewPosition: String?
     let isSelected: Bool
@@ -335,6 +281,7 @@ struct ObvanTemplateCrewCell: View {
             .opacity(isSelected ? 1 : 0.7)
     }
 }
+
 struct ObvanPositionPickerSheet: View {
     let positions: [String]
     let selected: String?

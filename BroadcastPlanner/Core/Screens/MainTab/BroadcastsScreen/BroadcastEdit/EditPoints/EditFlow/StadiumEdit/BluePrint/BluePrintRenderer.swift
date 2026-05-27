@@ -13,6 +13,9 @@ protocol BluePrintRenderDelegate: AnyObject, BPJoystickExecutable{
   //selection
   func selectUnitToRenderer(id: String)
   func deselectUnitToRenderer()
+  
+  //screenshot
+  func resetScale(immediately: Bool)
 }
 
 class BluePrintRenderer: SKScene, BluePrintRenderDelegate {
@@ -152,7 +155,11 @@ class BluePrintRenderer: SKScene, BluePrintRenderDelegate {
       y: size.height / 2
     )
     backGroundNode.zPosition = 1
+    
+    let scale = min(size.width / backGroundNode.size.width, size.height / backGroundNode.size.height)
+    let size = CGSize(width: backGroundNode.size.width * scale, height: backGroundNode.size.height * scale)
     backGroundNode.scale(to: size)
+    
     addChild(backGroundNode)
   }
 }

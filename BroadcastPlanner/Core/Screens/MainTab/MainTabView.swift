@@ -18,7 +18,7 @@ struct MainTabView: View {
     
       ZStack(alignment: .bottom) {
         MainBackground()
-          .ignoresSafeArea()
+//          .ignoresSafeArea()
         VStack(spacing: 0) {
           StatusView()
           
@@ -37,6 +37,7 @@ struct MainTabView: View {
               }
             }
             .tag(AppTab.broadcasts)
+            .ignoresSafeArea(.keyboard)
             
             NavigationStack(path: $router.messengerPath) {
               BPMessengerView()
@@ -47,11 +48,11 @@ struct MainTabView: View {
             .tag(AppTab.messenger)
           }
         .padding(.bottom, 17)
-        // Кастомный таббар поверх контента
-        customTabBar
+
+          customTabBar
       }
       }
-//      .toolbar(.hidden, for: .tabBar) // скрываем стандартный
+      .ignoresSafeArea(.keyboard)
   }
 
     // MARK: - Custom Tab Bar
@@ -132,7 +133,7 @@ struct MainTabView: View {
         case .addEditVenue(let venue):
             AddEditVenueView(venue: venue)
         case .obvanCollection:
-            ObvanCollectionView()
+            ObvanCollectionView(dataManager: dataManager, router: router)
         case .addEditObvan(let obvan):
             AddEditObvanView(obvan: obvan,dataManager: dataManager,router: router,settings: settings)
         case .ownerInfo:
@@ -151,6 +152,10 @@ struct MainTabView: View {
         switch path {
         case .messenger:
             BPMessengerView()
+          case .obvanCollection:
+            ObvanCollectionView(dataManager: dataManager, router: router)
+          case .addEditObvan(let obvan):
+              AddEditObvanView(obvan: obvan,dataManager: dataManager,router: router,settings: settings)
         }
     }
 }

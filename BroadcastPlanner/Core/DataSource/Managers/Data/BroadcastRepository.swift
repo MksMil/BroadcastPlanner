@@ -18,8 +18,11 @@ protocol BroadcastRepositoryProtocol: AnyObject {
     func removeBroadcast(_ broadcastObjectID: NSManagedObjectID) async
 
     /// Сохранить скриншот схемы стадиона
-    func assignSnapshot(_ image: UIImage?, toBroadcastObjectID: NSManagedObjectID)
-
+  func assignSnapshot(_ image: UIImage?,imageType: GlobalProperties.ImageType, toBroadcastObjectID: NSManagedObjectID)
+  ///добавить машину в броадкаст
+  func addObvan(withObjectID obvanObjectID: NSManagedObjectID, toBroadcast broadcastObjectID: NSManagedObjectID)
+  func removeObvan(withObjectID obvanObjectID: NSManagedObjectID, fromBroadcast broadcastObjectID: NSManagedObjectID)
+  
     /// Сохранить шаблон из текущей схемы
     func saveTemplateFromSchema(
         units: [BluePrintEditable],
@@ -70,7 +73,6 @@ final class BroadcastRepository: BroadcastRepositoryProtocol {
     }
 
     // MARK: - Update broadcast to firebase
-
     func updateBroadcast(_ broadcastObjectID: NSManagedObjectID) async {
         guard let broadcast = try? stack.mainContext.existingObject(
             with: broadcastObjectID
@@ -201,25 +203,32 @@ final class BroadcastRepository: BroadcastRepositoryProtocol {
     // MARK: - Assign snapshot
 
     func assignSnapshot(_ image: UIImage?,
+                        imageType: GlobalProperties.ImageType,
                         toBroadcastObjectID: NSManagedObjectID) {
         guard let image,
               let broadcast = try? stack.mainContext.existingObject(
                 with: toBroadcastObjectID
-              ) as? Broadcast,
-              let id = broadcast.id,
-              !id.isEmpty
+              ) as? Broadcast
         else { return }
-
+        
+      let id = UUID().uuidString
         let lastUpdated = Date.now
         let localImage: LocalImage = stack.mainContext.makeObjectFromDTO(
             ImageDTO(
                 id: id,
-                type: GlobalProperties.ImageType.venuePreview.rawValue,
+                type: imageType.rawValue,
                 lastUpdated: lastUpdated
             )
         )
+      if imageType == .venuePreview{
         broadcast.venueSchemaPreview = localImage
         localImage.parentVenuePreview = broadcast
+      } else if imageType == .obvanPreview{
+        broadcast.addToObvanPreview(localImage)
+        localImage.parentObvanPreview = broadcast
+      } else {
+        return
+      }
 
         do {
             try stack.save()
@@ -231,13 +240,13 @@ final class BroadcastRepository: BroadcastRepositoryProtocol {
             await imageCacher.saveImage(
                 uiimage: image,
                 id: id,
-                type: .venuePreview
+                type: imageType
             )
             do {
                 try await networkManager.storage.uploadImage(
                     id: id,
                     uiimage: image,
-                    type: .venuePreview,
+                    type: imageType,
                     lastUpdated: lastUpdated
                 )
             } catch {
@@ -248,7 +257,30 @@ final class BroadcastRepository: BroadcastRepositoryProtocol {
         }
         logger.debug("assignSnapshot: assigned to broadcast id: \(id)")
     }
- 
+  
+  
+  // MARK: - assign Obvan
+  func addObvan(withObjectID obvanObjectID: NSManagedObjectID, toBroadcast broadcastObjectID: NSManagedObjectID){
+    guard let broadcast = try? stack.mainContext.existingObject(
+        with: broadcastObjectID
+    ) as? Broadcast, let obvan = try? stack.mainContext.existingObject(with: obvanObjectID) as? Obvan else {
+        logger.warning("updateBroadcast: broadcast or obvan not found")
+        return
+    }
+    broadcast.addToObvan(obvan)
+    obvan.addToBroadcasts(broadcast)
+  }
+  
+  func removeObvan(withObjectID obvanObjectID: NSManagedObjectID, fromBroadcast broadcastObjectID: NSManagedObjectID){
+    guard let broadcast = try? stack.mainContext.existingObject(
+        with: broadcastObjectID
+    ) as? Broadcast, let obvan = try? stack.mainContext.existingObject(with: obvanObjectID) as? Obvan else {
+        logger.warning("updateBroadcast: broadcast not found")
+        return
+    }
+    broadcast.removeFromObvan(obvan)
+    obvan.removeFromBroadcasts(broadcast)
+  }
   // MARK: - Update point
   func updateCrewsFromUnits(_ units:[LayoutRenderUnit],
                             toBroadcastWithId broadcastObjectID: NSManagedObjectID){
@@ -266,7 +298,8 @@ final class BroadcastRepository: BroadcastRepositoryProtocol {
       crews.append(crew)
     }
     
-    broadcast.updateValues(crews: crews,in: stack.mainContext)
+    broadcast.updateValues(crews: crews,
+                           in: stack.mainContext)
     
   }
   func updateVenuePointsFromUnits(_ units: [LayoutRenderUnit],
@@ -286,7 +319,8 @@ final class BroadcastRepository: BroadcastRepositoryProtocol {
       points.append(point)
     }
     
-    broadcast.updateValues(venuePoints: points,in: stack.mainContext)
+    broadcast.updateValues(venuePoints: points,
+                           in: stack.mainContext)
   }
   
     // MARK: - Save template from schema

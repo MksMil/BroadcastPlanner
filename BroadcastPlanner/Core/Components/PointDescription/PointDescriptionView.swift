@@ -43,11 +43,7 @@ struct PointDescriptionView<T: Identifiable, TSource: Identifiable,
                        .frame(maxHeight: .infinity)
                        .layoutPriority(2)
       Divider()
-//      ViewWithCarousel(source: source, current: $currentSource) { sourceValue in
-//        sourceCell(sourceValue)
-//      }
-//      .frame(height: menuHeight)
-//      .layoutPriority(1)
+
       HStack(spacing: 4) {
           ViewWithCarousel(source: source, current: $currentSource) { sourceValue in
               sourceCell(sourceValue)
@@ -116,11 +112,6 @@ struct ViewWithCarousel<T: Identifiable, V: View>: View where T: Hashable {
         }
         .transition(.opacity)
 
-//        .task {
-//          if current == nil || !source.contains(where: { $0.id == current?.id }) {
-//                  current = source.first
-//              }
-//        }
     }
 }
 

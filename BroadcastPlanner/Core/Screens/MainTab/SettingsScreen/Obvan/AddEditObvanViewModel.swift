@@ -20,12 +20,13 @@ class AddEditObvanViewModel: ObservableObject{
           
           uiimage = image
           
-          await dataManager.updateImageWith(uiimage: image, id: obvan.viewId, type: .obvan, lastUpdated: .now)
+          await dataManager.updateImageWith(uiimage: image, id: obvan.viewId , type: .obvan, lastUpdated: .now)
       }
     }
   }
   @Published var uiimage: UIImage? {
     didSet{
+      isSaved = false
       renderDelegate.updateScene()
     }
   }
@@ -71,8 +72,16 @@ class AddEditObvanViewModel: ObservableObject{
   }
   @Published var isAddObvanSheetShow: Bool = false
 
-  @Published var obvanName: String = ""
-  @Published var broadcaster: String = ""
+  @Published var obvanName: String = ""{
+    didSet{
+      isSaved = false
+    }
+  }
+  @Published var broadcaster: String = ""{
+    didSet{
+      isSaved = false
+    }
+  }
   
   @Published var renderUnits: [LayoutRenderUnit] = []
   @Published var positions: [String]
@@ -82,12 +91,18 @@ class AddEditObvanViewModel: ObservableObject{
     }
   }
     
-  init(obvan: Obvan,
+  init(obvan: Obvan?,
        dataManager: DataManager,
        router: Router,
        settings: GlobalSettings){
-    self.obvan = obvan
     self.dataManager = dataManager
+    if let obvan {
+      self.obvan = obvan
+    } else {
+      let context = dataManager.stack.mainContext
+      self.obvan = Obvan(context: context)
+      self.obvan.id = UUID().uuidString
+    }
     self.router = router
     self.settings = settings
     self.positions = settings.userSpecialization
@@ -99,6 +114,7 @@ class AddEditObvanViewModel: ObservableObject{
     renderer.dataDelegate = self
     
     setup()
+    isSaved = true
   }
   
   func setup(){
@@ -124,36 +140,15 @@ class AddEditObvanViewModel: ObservableObject{
                                     description: crew.viewPosition))
         }
     Task{
-      if let image = await dataManager.getImageWithId(obvan.viewImageId, type: .obvan, size: .mediumImages){
+      if let image = await dataManager.getImageWithId(obvan.viewImageId, type: .obvan, size: .originImages){
         self.uiimage = image
+        self.isSaved = true
       }
       renderUnits = units
       renderDelegate.updateScene()
     }
     
   }
-    // MARK: scene screenshot
-//    func makeSceneScreenshot()-> UIImage?{
-//        guard let view = renderObvanScene.view else {
-//                print("Сцена не привязана к SKView.")
-//                return nil
-//            }
-//            
-//            guard let texture = view.texture(from: renderObvanScene) else {
-//                print("Не удалось создать текстуру из сцены.")
-//                return nil
-//            }
-//            
-//            let size = CGSize(width: texture.size().width, height: texture.size().height)
-//            let rect = CGRect(origin: .zero, size: size)
-//            
-//            UIGraphicsBeginImageContextWithOptions(size, false, UIScreen.main.scale)
-//            UIImage(cgImage: texture.cgImage()).draw(in: rect)
-//            let image = UIGraphicsGetImageFromCurrentImageContext()
-//            UIGraphicsEndImageContext()
-//            
-//            return image
-//    }
 }
 
 
@@ -184,15 +179,17 @@ extension AddEditObvanViewModel{
     selectedUnit?.description = position
   }
   
-  func save(){
+  func save() async {
     isSaving = true
     //save flow
     //
-    Task{
-      await dataManager.updateObvanTemplateCrews(obvanObjectID: obvan.objectID, units: renderUnits, image: uiimage)
+    obvan.name = obvanName
+    obvan.broadcaster = broadcaster
+    
+      await dataManager.updateObvanTemplateCrews(obvan: obvan, units: renderUnits, image: uiimage)
       isSaved = true
       isSaving = false
-    }
+    
   }
   
   func delete(){
@@ -206,7 +203,6 @@ extension AddEditObvanViewModel{
   
   func goBack(){
     if isSaved{
-      //screenshot
       router.stepBack()
     } else {
       isConfirmDiscardChangesOrSave = true
@@ -218,8 +214,8 @@ extension AddEditObvanViewModel{
     router.stepBack()
   }
   
-  func saveAndGoBack(){
-    save()
+  func saveAndGoBack() async {
+    await save()
     router.stepBack()
   }
   

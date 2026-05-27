@@ -1,159 +1,113 @@
 import SwiftUI
+@MainActor
+class ObvanCollectionViewModel: ObservableObject {
+  private let dataManager: DataManager
+  private let router: Router
+  
+  @Published var isRemoveObvanDialog: Bool = false
+  @Published var images: [String: UIImage] = [:] 
+
+
+  init(dataManager: DataManager, router: Router) {
+    self.dataManager = dataManager
+    self.router = router
+  }
+  
+  func loadImages(obvans: [Obvan]) async {
+      for obvan in obvans {
+          guard !obvan.viewImageId.isEmpty else { continue }
+          let image = await dataManager.getImageWithId(
+              obvan.viewImageId,
+              type: .obvan,
+              size: .smallImages
+          )
+          if let image {
+              images[obvan.viewId] = image
+          }
+      }
+  }
+  
+  
+  func goBack() {
+    router.stepBack()
+  }
+  
+  func editSelectedObvan(obvan: Obvan){
+      router.routeToEditObvan(obvan: obvan)
+  }
+  
+  func addNewObvan(){
+    router.routeToEditObvan(obvan: nil)
+  }
+}
 
 struct ObvanCollectionView: View {
-    @EnvironmentObject var appState: ApplicationState
-    @EnvironmentObject var globalSettings: GlobalSettings
-    @EnvironmentObject var dataManager: DataManager
-
-    @EnvironmentObject var router: Router
-    
-    @FetchRequest<Obvan>(sortDescriptors: []) var obvans
-    
-    @State private var isEdit: Bool = false
-    @State private var isRemoveObvanDialog: Bool = false
-    @State private var visual: Double = 1
-    @State private var selectedObvan: Obvan?
+  @EnvironmentObject var appState: ApplicationState
+  @StateObject private var vm: ObvanCollectionViewModel
+  
+  @FetchRequest<Obvan>(sortDescriptors: []) var obvans
+  
+  init(dataManager: DataManager, router: Router){
+    self._vm = StateObject(wrappedValue: ObvanCollectionViewModel(dataManager: dataManager, router: router))
+  }
     
     var body: some View {
         ZStack {
             MainBackground()
+          VStack(spacing: 6){
             ScrollView{
-                VStack{
-                    ForEach(obvans) { obvan in
-                        //TODO: make cell
-                        ObvanCollectionCellView(title: obvan.viewName,
-                                                count: obvan.viewTemplateCrews.count,
-                                                isSelected: obvan == selectedObvan)
-//                        .onTapGesture {
-//                            withAnimation {
-//                                if selectedObvan == obvan {
-//                                    //isEdit = false
-//                                    selectedObvan = nil
-//                                    appState.setIconToPrimaryButton(.plus)
-//                                    appState.makeSecondaryButtonEnabled(
-//                                        false
-//                                    )
-//                                } else {
-//                                    //isEdit = true
-//                                    selectedObvan = obvan
-//                                    appState.setIconToPrimaryButton(.edit)
-//                                    appState.makeSecondaryButtonEnabled(
-//                                        true
-//                                    )
-//                                }
-//                            }
-//                        }
+              VStack{
+                ForEach(obvans) { obvan in
+                  ObvanPickerCell(obvan: obvan,
+                                  image: vm.images[obvan.viewId])
+                  .onTapGesture {
+                    withAnimation {
+                      vm.editSelectedObvan(obvan: obvan)
                     }
+                  }
                 }
-                .padding(10)
+              }
+              .padding(10)
             }
-            .opacity(visual)
             .scrollContentBackground(.hidden)
             .scrollIndicators(.never)
             .frame(maxWidth: .infinity,maxHeight: .infinity,alignment: .top)
             .padding(.horizontal, 5)
             .padding(.vertical, 5)
-            .onTapGesture {
-                withAnimation {
-                    selectedObvan = nil
-//                    appState.setIconToPrimaryButton(.plus)
-//                    appState.makeSecondaryButtonEnabled(false)
-                }
-            }
+            
+            Button {
+              vm.addNewObvan()
+                   } label: {
+                       HStack {
+                           Image(systemName: "plus.circle")
+                               .font(.system(size: 18, weight: .medium))
+                           Text("New Obvan")
+                               .font(.headline)
+                       }
+                       .foregroundStyle(.primary)
+                       .frame(maxWidth: .infinity)
+                       .frame(height: 50)
+                   }
+                   .background(.ultraThinMaterial)
+                   .clipShape(RoundedRectangle(cornerRadius: 14))
+                   .overlay {
+                       RoundedRectangle(cornerRadius: 14)
+                           .stroke(Color.white.opacity(0.5), lineWidth: 1)
+                   }
+                   .padding(.horizontal, 16)
+          }
             .transitionWithOpacity()
         }
-        .onAppear {
-            selectedObvan = nil
-//            appState.primaryAction = {
-//                visual = 0
-//                var obvanToRoute: Obvan!
-//                if let obvan = selectedObvan {
-//                    obvanToRoute = obvan
-//                } else {
-//                    dataManager.mainContext.performAndWait {
-//                        obvanToRoute = dataManager.mainContext.fetchOrCreateObject(
-//                            withID: UUID().uuidString)
-//                        let image: LocalImage = dataManager.mainContext.fetchOrCreateObject(withID: obvanToRoute.viewId)
-//                        image.type = GlobalProperties.ImageType.obvan.rawValue
-//                        obvanToRoute.image = image
-//                        image.addToParentObvan(obvanToRoute)
-//                        
-//                    }
-//                }
-////                router.routeTo(path: .addEditObvan(obvanToRoute))
-//            }
-//            appState.secondaryAction = {
-//                isRemoveObvanDialog = true
-//            }
-//            appState.stepBackAction = {
-//                router.stepBack()
-//            }
+        .onAppear{
+          appState.backAction = vm.goBack
+        }
+        .task(id: obvans.map(\.viewId)) {
+           await vm.loadImages(obvans: Array(obvans))
         }
         .navigationBarBackButtonHidden()
-        .confirmationDialog(
-            Text("Permanently erase the Obvan in the trash?"),
-            isPresented: $isRemoveObvanDialog
-        ) {
-            Button("Remove Obvan", role: .destructive) {
-                // Handle empty trash action.
-//                if let obvan = selectedObvan {
-//                    selectedObvan = nil
-//                    let id = obvan.viewId
-//                    let imageId: String? = obvan.image?.viewId
-//                    
-//                    dataManager.mainContext.performAndWait{
-//                        dataManager.mainContext.delete(obvan)
-//                        try? dataManager.saveAndPublish(
-//                            publish: GlobalProperties.PublishChanges.obvans,
-//                            id: []
-//                        )
-//                    }
-//                    appState.setIconToPrimaryButton(.plus)
-//                    appState.makeSecondaryButtonEnabled(false)
-                    //remove from network image & club
-//                    Task{
-//                        if let imageId{
-//                            dataManager.removeImageWithId(id: imageId)
-//                        }
-//                        await dataManager.networkManager.removeDataOfType(GlobalProperties.Path.obvans, withId: id)
-//                    }
-                    
-//                }
-            }
-        }
     }
 }
 
 //#Preview {
 //    ObvanCollectionView()
 //}
-
-struct ObvanCollectionCellView: View {
-    let title: String
-    let count: Int
-    let isSelected: Bool
-    
-    var body: some View {
-        VStack(alignment: .leading,spacing: 2){
-            Text(title)
-                .font(.title)
-                .bold()
-                .minimumScaleFactor(0.4)
-            
-            Text("\(count) crews")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-        }
-        .frame(maxWidth: .infinity,
-               alignment: .leading)
-        .padding(.vertical,8)
-        .padding(.horizontal,12)
-        .background {
-            RoundedRectangle(cornerRadius: 5).fill(.ultraThinMaterial)
-        }
-        .padding(.horizontal)
-        .padding(.vertical,5)
-        .scaleEffect(isSelected ? 1.05: 1)
-        .opacity(isSelected ? 1 : 0.65)
-    }
-}

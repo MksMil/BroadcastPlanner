@@ -31,6 +31,7 @@ struct RootView: View {
         MainTabView()
       }
     }
+    .ignoresSafeArea(.keyboard)
     .animation(.easeInOut(duration: 0.35), value: router.appScreen)
     // Глобальный sheet для меню — доступен из любого таба
     .sheet(isPresented: $router.isMenuPresented) {

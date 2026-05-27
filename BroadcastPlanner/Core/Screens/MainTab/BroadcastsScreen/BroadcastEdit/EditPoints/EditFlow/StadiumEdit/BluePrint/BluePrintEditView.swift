@@ -2,12 +2,8 @@ import SpriteKit
 import SwiftUI
 
 struct BluePrintEditView: View {
-  //TODO: move to vm
   
-
-   
   @EnvironmentObject var appState: ApplicationState
-  @EnvironmentObject var settings: GlobalSettings
   @StateObject var vm: BluePrintEditViewModel
   
   let broadcast: Broadcast
@@ -50,18 +46,15 @@ struct BluePrintEditView: View {
       MainBackground()
       
       VStack(spacing: 0) {
-
-        SpriteView(
-          scene: vm.scene,
-          debugOptions: [.showsFPS, .showsNodeCount]
-        )
+        
+        SpriteView(scene: vm.scene)
         .aspectRatio(1.5, contentMode: .fit)
         .frame(maxWidth: .infinity)
         .clipShape(RoundedRectangle(cornerRadius: 10))
-
+        
         HStack(spacing: 6){
           VStack(spacing:6){
-          filterBlock
+            filterBlock
             
             PointDescriptionView(source: vm.states,
                                  currentSource: $vm.selectedState,
@@ -94,38 +87,15 @@ struct BluePrintEditView: View {
               vm.isAddObvanSheetShow = true
             }
             .overlay {
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color.white.opacity(0.3), lineWidth: 2)
-                }
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+              RoundedRectangle(cornerRadius: 12)
+                .stroke(Color.white.opacity(0.3), lineWidth: 2)
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 12))
           }
-          
-          VStack(spacing:6){
-            TemplateMenuButton(
-              templates: templates,
-              chooseAction: { vm.loadTemplate(template: $0) },
-              addAction: { name in              // ← имя приходит из sheet
-                Task { await vm.saveTemplateWithName(name) }
-              },
-              removeAction: { withAnimation { vm.deleteTemplate() } },
-              setEmptyTemplateAction: { withAnimation { vm.clear() } }
-            )
-            .frame(height: 40)
-            .frame(maxWidth: .infinity)
-            BPJoystick(delegate: vm.renderDelegate)
-              .aspectRatio(1, contentMode: .fit)
-              .padding(5)
-              .frame(maxWidth:.infinity,maxHeight: .infinity)
-              .overlay {
-                RoundedRectangle(cornerRadius: 5).stroke(.white.opacity(0.4), lineWidth: 2)
-              }
-              .layoutPriority(1)
-            BPEditEventControlPanel(delegate: vm.renderDelegate)
-              .layoutPriority(1)
-          }
+          controlGroup
         }
         .padding(.vertical,6)
-
+        
         saveDeleteGroup
       }
       .padding(.horizontal)
@@ -165,13 +135,40 @@ struct BluePrintEditView: View {
     }
     
   }
+  // MARK: ControlGroup
+  private var controlGroup: some View {
+    VStack(spacing:6){
+      TemplateMenuButton(
+        templates: templates,
+        chooseAction: { vm.loadTemplate(template: $0) },
+        addAction: { name in
+          Task { await vm.saveTemplateWithName(name) }
+        },
+        removeAction: { withAnimation { vm.deleteTemplate() } },
+        setEmptyTemplateAction: { withAnimation { vm.clear() } }
+      )
+      .frame(height: 40)
+      .frame(maxWidth: .infinity)
+      BPJoystick(delegate: vm.renderDelegate)
+        .aspectRatio(1, contentMode: .fit)
+        .padding(5)
+        .frame(maxWidth:.infinity,maxHeight: .infinity)
+        .overlay {
+          RoundedRectangle(cornerRadius: 5).stroke(.white.opacity(0.4), lineWidth: 2)
+        }
+        .layoutPriority(1)
+      BPEditEventControlPanel(delegate: vm.renderDelegate)
+        .layoutPriority(1)
+    }
+  }
   
-  // MARK: - Toolbar
+  // MARK: Toolbar
   private var saveDeleteGroup: some View {
     HStack(spacing: 0) {
       Spacer()
+      
       Button(role: .destructive) {
-                      vm.isDeleteConfirm = true
+        vm.isDeleteConfirm = true
       } label: {
         HStack(spacing: 6) {
           Image(systemName: "trash")
@@ -186,9 +183,11 @@ struct BluePrintEditView: View {
       .disabled(vm.selectedUnit == nil)
       
       Spacer()
+      
       Divider()
         .frame(width: 2,height: 40)
         .overlay(Color.white.opacity(0.5))
+      
       Spacer()
       
       //add
@@ -206,9 +205,11 @@ struct BluePrintEditView: View {
       }
       
       Spacer()
+      
       Divider()
         .frame(width: 2,height: 40)
         .overlay(Color.white.opacity(0.5))
+      
       Spacer()
       
       //edit
@@ -223,16 +224,16 @@ struct BluePrintEditView: View {
         }
         .foregroundStyle(.black)
         .frame(maxHeight: .infinity)
-//        .padding(.horizontal, 24)
         .opacity(vm.selectedUnit == nil ? 0.5: 1)
       }
-      
       .disabled(vm.selectedUnit == nil)
       
       Spacer()
+      
       Divider()
         .frame(width: 2,height: 40)
         .overlay(Color.white.opacity(0.5))
+      
       Spacer()
       
       if vm.isSaving {
@@ -240,7 +241,9 @@ struct BluePrintEditView: View {
           .padding(.horizontal, 24)
       } else {
         Button {
-          vm.save()
+          Task{
+           await vm.save()
+          }
         } label: {
           HStack(spacing: 6) {
             Image(systemName: "checkmark")
@@ -268,6 +271,8 @@ struct BluePrintEditView: View {
         }
     }
   }
+  
+  // MARK: filter
   private var filterBlock: some View {
       Group {
           switch vm.selectedState?.activeFilter {

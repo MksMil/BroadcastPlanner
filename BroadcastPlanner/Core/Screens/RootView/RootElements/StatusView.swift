@@ -39,7 +39,6 @@ struct StatusView: View {
           } label: {
             Label("Info", systemImage: "person")
           }
-          //            .disabled(menuState == .info)
 
           //Settings
           Button {
@@ -47,7 +46,6 @@ struct StatusView: View {
           } label: {
             Label("Settings", systemImage: "gear")
           }
-          //            .disabled(menuState == .settings)
 
           //LogOut
           Button {
@@ -74,14 +72,12 @@ struct StatusView: View {
             Circle().stroke(Color.white, lineWidth: 2)
           }
         }
+        .compositingGroup()
       }
       .padding(.horizontal)
     }
     .frame(height: 60)
 
-    //        .onReceive(appState.menuStatePublisher) { menuState in
-    //            self.menuState = menuState
-    //        }
   }
 
 }

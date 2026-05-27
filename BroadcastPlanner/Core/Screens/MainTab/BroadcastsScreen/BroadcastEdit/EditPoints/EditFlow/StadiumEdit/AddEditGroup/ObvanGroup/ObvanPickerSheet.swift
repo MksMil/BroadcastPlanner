@@ -75,7 +75,7 @@ struct ObvanPickerSheet: View {
     }
 }
 
-private struct ObvanPickerCell: View {
+struct ObvanPickerCell: View {
     let obvan: Obvan
     let image: UIImage?
 

@@ -210,8 +210,22 @@ extension DataManager {
         await broadcasts.removeBroadcast(broadcastObjectID)
     }
 
-    func assignSnapshot(_ image: UIImage?, toBroadcastObjectID: NSManagedObjectID) {
-        broadcasts.assignSnapshot(image, toBroadcastObjectID: toBroadcastObjectID)
+    func assignSnapshot(_ image: UIImage?,
+                        type: LayoutType,
+                        toBroadcastObjectID: NSManagedObjectID) {
+      var imageType: GlobalProperties.ImageType
+      
+      if type == .venue{
+        imageType = .venuePreview
+      } else if type == .obvan{
+        imageType = .obvanPreview
+      } else {
+        return
+      }
+        broadcasts.assignSnapshot(image,
+                                  imageType: imageType,
+                                  toBroadcastObjectID: toBroadcastObjectID)
+      
     }
 
     // MARK: - Units / Obvan / Templates
@@ -236,9 +250,16 @@ extension DataManager {
         case .venue:
           broadcasts.updateVenuePointsFromUnits(state.units,
                                                 toBroadcastWithId: broadcastId)
+          assignSnapshot(state.lastStateScreenshot,
+                         type: .venue,
+                         toBroadcastObjectID: broadcastId)
         case .obvan:
           broadcasts.updateCrewsFromUnits(state.units,
                                                 toBroadcastWithId: broadcastId)
+          assignSnapshot(state.lastStateScreenshot,
+                         type: .obvan,
+                         toBroadcastObjectID: broadcastId)
+          
           // TODO: Add obvan to broadcast! (state.id -> obvan.id)
       }
     }
@@ -246,18 +267,18 @@ extension DataManager {
   
   //from settings -> obvan settings
   func updateObvanTemplateCrews(
-      obvanObjectID: NSManagedObjectID,
+      obvan: Obvan,
       units: [LayoutRenderUnit],
       image: UIImage?
   ) async {
       await saveNewImage(
           uiimage: image,
           type: .obvan,
-          parentObjectID: obvanObjectID
+          parentObjectID: obvan.objectID
       )
     // TODO: move to obvan repository
       let context = stack.mainContext
-      guard let obvan = context.object(with: obvanObjectID) as? Obvan else { return }
+      
       obvan.cleanTemplateCrews()
       for unit in units {
           let templateCrew = ObvanTemplateCrew(context: context)
@@ -271,6 +292,17 @@ extension DataManager {
           obvan.addToCrewTemplates(templateCrew)
       }
       save()
+    print("start to save")
+    let dto = obvan.dto
+    let id = obvan.viewId
+    do{
+      try await networkManager.firestore.save(dto,
+                                              id: id,
+                                              path: .obvans)
+    } catch {
+      logger.error("updateObvan: failed - \(error.localizedDescription)")
+    }
+    logger.info("updateObvan: completed id: \(id)")
   }
 
     // MARK: - Images

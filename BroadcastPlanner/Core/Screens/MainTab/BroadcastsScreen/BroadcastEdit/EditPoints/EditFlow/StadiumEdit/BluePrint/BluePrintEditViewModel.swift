@@ -37,6 +37,7 @@ class LayoutState: Identifiable, Hashable {
   let layoutType: LayoutType
   var backgroundImage: UIImage?
   var activeFilter: LayoutFilter
+  var lastStateScreenshot: UIImage?
   
   init(id: String, units: [LayoutRenderUnit], layoutType: LayoutType, backgroundImage: UIImage? = nil) {
     self.id = id
@@ -46,6 +47,7 @@ class LayoutState: Identifiable, Hashable {
     self.activeFilter = layoutType == .venue
                 ? .stadium(.all)
                 : .obvan(.all)
+    self.lastStateScreenshot = backgroundImage
   }
   
   // Hashable
@@ -73,6 +75,7 @@ final class BluePrintEditViewModel: ObservableObject {
   let scene: SKScene
   
   //State
+  // TODO: bugggs иногда скриншот обвана сохраняется в веньюПревью
   @Published var selectedState: LayoutState? {
     willSet{
       // templateGroup availability
@@ -80,6 +83,7 @@ final class BluePrintEditViewModel: ObservableObject {
       selectedState?.lastSelected = selectedUnit
     }
     didSet {
+      oldValue?.lastStateScreenshot = makeSceneScreenshot()
       if oldValue?.id != selectedState?.id {
         filterPointsWithCase()
         renderDelegate.updateScene()
@@ -169,7 +173,7 @@ extension BluePrintEditViewModel{
   func setupStates() async{
     //bg image
     var image: UIImage
-    if let cachedImage = await dataManager.getImageWithId(broadcast.venue?.viewSchemaId ?? "", type: .broadcastSchema, size: .largeImages){
+    if let cachedImage = await dataManager.getImageWithId(broadcast.venue?.viewSchemaId ?? "", type: .broadcastSchema, size: .originImages){
       image = cachedImage
     } else {
       image = UIImage(named: "stadium") ?? UIImage()
@@ -187,7 +191,7 @@ extension BluePrintEditViewModel{
         number: unit.viewNumber,
         firstName: unit.member?.viewFirstName ?? "",
         lastName: unit.member?.viewLastName ?? "",
-        personId: unit.viewMemberId,
+        personId: unit.member?.id,
         camera: unit.camera?.optic,
         sound:  unit.sound?.windDefence,
         soundPlace: unit.sound?.placeType,
@@ -206,8 +210,10 @@ extension BluePrintEditViewModel{
                                  layoutType: .venue,
                                  backgroundImage: image)
     states.append(venueState)
-    
-    //TODO: states for obvans
+    if broadcast.venueSchemaPreview == nil {
+      dataManager.broadcasts.assignSnapshot(image,
+                                            imageType: .venuePreview, toBroadcastObjectID: broadcast.objectID)
+    }
     for obvan in broadcast.viewObvans{
       await addObvanState(obvan)
     }
@@ -347,9 +353,11 @@ extension BluePrintEditViewModel{
       selectedUnit = unit
     }
   }
-  func save(){
+  func save() async {
     isSaving = true
     //save flow
+
+    selectedState?.lastStateScreenshot = makeSceneScreenshot()
     //
     dataManager.saveFromStates(states: states,
                                withBroadcastId: broadcast.objectID)
@@ -369,7 +377,6 @@ extension BluePrintEditViewModel{
   
   func goBack(){
     if isSaved{
-      //screenshot
       router.stepBack()
     } else {
       isConfirmDiscardChangesOrSave = true
@@ -382,16 +389,21 @@ extension BluePrintEditViewModel{
   }
   
   func saveAndGoBack(){
-    //screenshot
-    let image = makeSceneScreenshot()
-    dataManager.assignSnapshot(image,
-                               toBroadcastObjectID: broadcast.objectID)
-    save()
-    router.stepBack()
+    Task{
+      await save()
+      router.stepBack()
+    }
   }
   
   // MARK: scene screenshot
+  func prepareForScreenshot(){
+    lastSelectionSource = .vm
+    selectedUnit = nil
+    renderDelegate.resetScale(immediately: true)
+  }
+  
     func makeSceneScreenshot()-> UIImage?{
+        prepareForScreenshot()
         guard let view = scene.view else {
                 print("Сцена не привязана к SKView.")
                 return nil
@@ -478,19 +490,27 @@ extension BluePrintEditViewModel {
     isSaved = false
     Task{
      await addObvanState(obvan)
+      dataManager.broadcasts.addObvan(withObjectID: obvan.objectID,
+                                      toBroadcast: broadcast.objectID)
     }
+  }
+  func removeObvan(_ obvan: Obvan){
+    dataManager.broadcasts.removeObvan(withObjectID: obvan.objectID,
+                                       fromBroadcast: broadcast.objectID)
   }
   
   func addObvanState(_ obvan: Obvan) async {
-    let image: UIImage
+    var image: UIImage
     var units:[LayoutRenderUnit] = []
-    if let cachedImage = await dataManager.getImageWithId(obvan.viewImageId, type: .obvan, size: .largeImages){
+    if let cachedImage = await dataManager.getImageWithId(obvan.viewImageId, type: .obvan, size: .originImages){
       image = cachedImage
     } else {
       image = UIImage(named: "empty_obvan") ?? UIImage()
     }
     let filtered = broadcast.viewCrews.filter { $0.viewObvanId == obvan.viewId }
-
+    
+    let templateCrews = obvan.viewTemplateCrews
+    
     units = await withTaskGroup(of: LayoutRenderUnit.self) { group in
         for crew in filtered {
             group.addTask {

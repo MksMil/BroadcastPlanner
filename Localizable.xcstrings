@@ -23,9 +23,6 @@
     "%lld" : {
 
     },
-    "%lld crews" : {
-
-    },
     "10:30 AM" : {
 
     },
@@ -51,6 +48,9 @@
 
     },
     "Broadcast" : {
+
+    },
+    "Broadcaster" : {
 
     },
     "Cancel" : {
@@ -131,10 +131,16 @@
     "New Broadcast" : {
 
     },
+    "New Obvan" : {
+
+    },
     "Next" : {
 
     },
     "Not Registered?   Sign Up!" : {
+
+    },
+    "Obvan name" : {
 
     },
     "OK" : {
@@ -219,6 +225,9 @@
 
     },
     "выбери обван" : {
+
+    },
+    "выбери позицию" : {
 
     },
     "Закрыть" : {

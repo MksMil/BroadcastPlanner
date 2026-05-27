@@ -35,7 +35,7 @@ enum BroadcastPath: Hashable {
   case venueCollection
   case addEditVenue(venue: Venue)
   case obvanCollection
-  case addEditObvan(obvan: Obvan)
+  case addEditObvan(obvan: Obvan?)
   case ownerInfo
   case settings
 //  case updateSessionUserData
@@ -47,7 +47,7 @@ enum BroadcastPath: Hashable {
 enum MessengerPath: Hashable {
   case messenger
   case obvanCollection
-  case addEditObvan(obvan: Obvan)
+  case addEditObvan(obvan: Obvan?)
   // расширяется по мере появления новых экранов в чат-флоу
 }
 
@@ -77,15 +77,6 @@ final class Router: ObservableObject {
       canMoveBack(tab: .messenger)
     }
   }
-  func canMoveBack(tab: AppTab){
-    if selectedTab == .broadcasts{
-      self.canMoveBack = !(broadcastPath.count < 1)
-    }
-    if selectedTab == .messenger{
-      self.canMoveBack = !(messengerPath.count < 1)
-    }
-
-  }
   // MARK: Auth stack (для перехода SignIn → SignUp)
   @Published var authPath: [AuthPath] = []
 
@@ -93,11 +84,19 @@ final class Router: ObservableObject {
   @Published var isMenuPresented: Bool = false
   @Published var isUserInfoPresent: Bool = false
   
+  //
   @Published var canMoveBack: Bool = false
-  
+  func canMoveBack(tab: AppTab){
+    if selectedTab == .broadcasts{
+      self.canMoveBack = !(broadcastPath.count < 1)
+    }
+    if selectedTab == .messenger{
+      self.canMoveBack = !(messengerPath.count < 1)
+    }
+    
+  }
 
   // MARK: - Helpers
-  
   
   func showMain() {
     appScreen = .main
@@ -166,11 +165,12 @@ extension Router: BroadcastListRouting {
 @MainActor
 protocol ObvanListRouting {
   func routeToObvanList()
-  func routeToEditObvan(obvan: Obvan)
+  func routeToEditObvan(obvan: Obvan?)
 }
 
 extension Router: ObvanListRouting {
   func routeToObvanList(){
+    defer{ isMenuPresented = false}
     if selectedTab == .broadcasts{
       broadcastPath.append(.obvanCollection)
     } else if selectedTab == .messenger {
@@ -179,7 +179,7 @@ extension Router: ObvanListRouting {
       return
     }
   }
-  func routeToEditObvan(obvan: Obvan) {
+  func routeToEditObvan(obvan: Obvan?) {
     if selectedTab == .broadcasts{
       broadcastPath.append(.addEditObvan(obvan: obvan))
     } else if selectedTab == .messenger {
