@@ -230,6 +230,40 @@ extension DataManager {
 
     // MARK: - Units / Obvan / Templates
 
+  func removeObvan(_ obvan: Obvan)async {
+
+    let id = obvan.viewId
+    print("removed obvan id = \(id)")
+    let previewId = obvan.image?.objectID
+    
+
+    // Удалить превью параллельно
+    await withTaskGroup(of: Void.self) { group in
+        if let previewId {
+            group.addTask {
+              await self.images.removeImage(objectID: previewId,
+                                            fromGlobal: true)
+            }
+        }
+    }
+    // Удалить локально
+    stack.mainContext.delete(obvan)
+    do {
+        try stack.save()
+    } catch {
+        logger.error("removeObvan: save failed — \(error.localizedDescription)")
+    }
+
+    // Удалить из сети
+    do {
+        try await networkManager.firestore.remove(id: id, path: .obvans)
+    } catch {
+        logger.error("removeObvan: network remove failed — \(error.localizedDescription)")
+    }
+
+    logger.info("removeObvan: removed id: \(id)")
+}
+  
   func saveTemplateFromSchema(
     units: [BluePrintEditable],
     withName name: String

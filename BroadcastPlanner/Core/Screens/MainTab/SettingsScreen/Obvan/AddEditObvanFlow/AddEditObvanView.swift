@@ -27,21 +27,53 @@ struct AddEditObvanView: View {
         descriptionGroup
         
         HStack{
-          if vm.renderUnits.isEmpty {
-            Spacer()
-              .frame(maxWidth: .infinity,maxHeight: .infinity)
-          }
-          ScrollView{
-            ForEach(vm.renderUnits){ crew in
-              ObvanTemplateCrewCell(crewPosition: crew.description,
-                                    isSelected: crew == vm.selectedUnit)
-              .onTapGesture {
-                withAnimation{
-                  vm.selectedUnit = vm.selectedUnit == crew ? nil: crew
-                }
-              }
-              .animation(.easeInOut, value: vm.selectedUnit)
+          VStack{
+            if vm.renderUnits.isEmpty {
+              Spacer()
+                .frame(maxWidth: .infinity,maxHeight: .infinity)
             }
+            ScrollView{
+              ForEach(vm.renderUnits){ crew in
+                ObvanTemplateCrewCell(crewPosition: crew.description,
+                                      isSelected: crew == vm.selectedUnit)
+                .onTapGesture {
+                  withAnimation{
+                    vm.selectedUnit = vm.selectedUnit == crew ? nil: crew
+                  }
+                }
+                .animation(.easeInOut, value: vm.selectedUnit)
+              }
+            }
+            Button {
+              vm.isDeleteConfirm = true
+            } label: {
+              HStack{
+                Image(systemName: "bus")
+                Text("Remove Obvan")
+                  .foregroundStyle(Color.red)
+              }
+              .padding(.horizontal, 10)
+              .padding(.vertical, 5)
+                .background {
+                  RoundedRectangle(cornerRadius: 5)
+                    .fill(
+                      .ultraThickMaterial
+                        .opacity(0.3)
+                    )
+                    .overlay {
+                      RoundedRectangle(cornerRadius: 5)
+                        .stroke(
+                          .ultraThickMaterial
+                            .opacity(0.5),
+                          lineWidth: 2
+                        )
+                    }
+                }
+                .imageScale(.large)
+                .frame(maxWidth: .infinity)
+            }
+            
+
           }
           controlGroup
         }
@@ -59,7 +91,7 @@ struct AddEditObvanView: View {
         isPresented: $vm.isDeleteConfirm
       ) {
         Button("Remove Obvan", role: .destructive) {
-          
+          vm.removeObvan()
         }
       }
       .confirmationDialog("", isPresented: $vm.isConfirmDiscardChangesOrSave) {
@@ -89,7 +121,7 @@ struct AddEditObvanView: View {
     HStack(spacing: 0) {
       Spacer()
       Button(role: .destructive) {
-        vm.isDeleteConfirm = true
+        vm.delete()
       } label: {
         HStack(spacing: 6) {
           Image(systemName: "trash")
@@ -241,99 +273,22 @@ struct AddEditObvanView: View {
           .overlay {
             RoundedRectangle(cornerRadius: 5).stroke(.white.opacity(0.4), lineWidth: 2)
           }
-        BPEditEventControlPanel(delegate: vm.renderDelegate)
+        ScaleSceneControlPanelView(delegate: vm.renderDelegate)
       }
     }
 }
 
-#Preview {
-  let dc = DataCoordinator()
-  let settings = GlobalSettings()
-  
-  let obvan = Obvan(context: dc.dataManager.mainContext)
-  return AddEditObvanView(obvan: obvan,
-                          dataManager: dc.dataManager,
-                          router: Router(),settings: settings)
-    .environment(\.managedObjectContext, dc.dataManager.mainContext)
+//#Preview {
+//  let dc = DataCoordinator()
+//  let settings = GlobalSettings()
+//  
+//  let obvan = Obvan(context: dc.dataManager.mainContext)
+//  return AddEditObvanView(obvan: obvan,
+//                          dataManager: dc.dataManager,
+//                          router: Router(),settings: settings)
+//    .environment(\.managedObjectContext, dc.dataManager.mainContext)
+//
+//}
 
-}
 
-struct ObvanTemplateCrewCell: View {
-    let crewPosition: String?
-    let isSelected: Bool
 
-    var body: some View {
-        Text(crewPosition ?? "Unknown")
-            .font(.system(size: 13, weight: .medium))
-            .lineLimit(1)
-            .minimumScaleFactor(0.7)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 6)
-            .frame(maxWidth: .infinity)
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
-            .overlay {
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(
-                        isSelected ? Color.primary.opacity(0.4) : Color.white.opacity(0.4),
-                        lineWidth: isSelected ? 2 : 0.5
-                    )
-            }
-            .opacity(isSelected ? 1 : 0.7)
-    }
-}
-
-struct ObvanPositionPickerSheet: View {
-    let positions: [String]
-    let selected: String?
-    let onSelect: (String) -> Void
-    @Environment(\.dismiss) var dismiss
-
-    var body: some View {
-        ZStack {
-            MainBackground()
-            VStack(spacing: 0) {
-                Text("выбери позицию")
-                    .font(.system(size: 13))
-                    .foregroundStyle(.secondary)
-                    .padding(.top, 8)
-                    .padding(.bottom, 12)
-
-                FlowLayout(spacing: 8) {
-                    ForEach(positions, id: \.self) { position in
-                        let isSelected = position == selected
-                        Text(position)
-                            .font(.system(size: 13, weight: .medium))
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 8)
-                            .background(
-                                isSelected
-                                    ? Color.white.opacity(0.7)
-                                    : Color.white.opacity(0.2),
-                                in: RoundedRectangle(cornerRadius: 8)
-                            )
-                            .overlay {
-                                RoundedRectangle(cornerRadius: 8)
-                                    .stroke(
-                                        isSelected
-                                            ? Color.primary.opacity(0.4)
-                                            : Color.white.opacity(0.4),
-                                        lineWidth: isSelected ? 2 : 0.5
-                                    )
-                            }
-                            .onTapGesture {
-                                onSelect(position)
-                                dismiss()
-                            }
-                    }
-                }
-                .padding(.horizontal, 16)
-                .padding(.bottom, 16)
-
-                Spacer()
-            }
-        }
-        .presentationDetents([.medium])
-        .presentationDragIndicator(.visible)
-        .presentationBackground { MainBackground() }
-    }
-}

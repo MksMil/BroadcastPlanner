@@ -507,47 +507,65 @@ extension BluePrintEditViewModel {
     } else {
       image = UIImage(named: "empty_obvan") ?? UIImage()
     }
-    let filtered = broadcast.viewCrews.filter { $0.viewObvanId == obvan.viewId }
+//    let filtered = broadcast.viewCrews.filter { $0.viewObvanId == obvan.viewId }
     
     let templateCrews = obvan.viewTemplateCrews
     
-    units = await withTaskGroup(of: LayoutRenderUnit.self) { group in
-        for crew in filtered {
-            group.addTask {
-              let image = await self.dataManager.getImageWithId(
-                    crew.viewMemberId,
-                    type: .member,
-                    size: .smallImages
-                )
-                return LayoutRenderUnit(
-                    id: crew.viewId,
-                    coordinateX: crew.viewX,
-                    coordinateY: crew.viewY,
-                    scaleFactor: crew.viewScaleFactor,
-                    rotation: crew.viewRotation,
-                    
-                    number: nil,
-                    position: crew.position,
-                    firstName: crew.member?.viewFirstName ?? "",
-                    lastName: crew.member?.viewLastName ?? "",
-                    personId: crew.member?.id,
-                    camera: nil,
-                    sound:  nil,
-                    soundPlace: nil,
-                    light: nil,
-                    hardware: crew.hardware?.type,
-                    task: crew.task,
-                    description: crew.description,
-                    image: image
-                )
-            }
-        }
-        var collected: [LayoutRenderUnit] = []
-        for await unit in group {
-            collected.append(unit)
-        }
-        return collected
+    units = templateCrews.map{ crew in
+      LayoutRenderUnit(id: UUID().uuidString,
+                              coordinateX: crew.viewX,
+                              coordinateY: crew.viewY,
+                              scaleFactor: crew.viewScaleFactor,
+                              rotation: crew.viewRotation,
+                              number: nil,
+                              personId: nil,
+                              camera: nil,
+                              sound: nil,
+                              soundPlace: nil,
+                              light: nil,
+                              hardware: nil,
+                              task: nil,
+                              description: crew.viewPosition)
     }
+    
+//    units = await withTaskGroup(of: LayoutRenderUnit.self) { group in
+//        for crew in templateCrews {
+//            group.addTask {
+////              let image = await self.dataManager.getImageWithId(
+////                crew.,
+////                    type: .member,
+////                    size: .smallImages
+////                )
+////                return LayoutRenderUnit(
+////                    id: crew.viewId,
+////                    coordinateX: crew.viewX,
+////                    coordinateY: crew.viewY,
+////                    scaleFactor: crew.viewScaleFactor,
+////                    rotation: crew.viewRotation,
+////                    
+////                    number: nil,
+////                    position: crew.position,
+////                    firstName: crew.member?.viewFirstName ?? "",
+////                    lastName: crew.member?.viewLastName ?? "",
+////                    personId: crew.member?.id,
+////                    camera: nil,
+////                    sound:  nil,
+////                    soundPlace: nil,
+////                    light: nil,
+////                    hardware: crew.hardware?.type,
+////                    task: crew.task,
+////                    description: crew.description,
+////                    image: nil
+////                )
+////              return
+//            }
+//        }
+//        var collected: [LayoutRenderUnit] = []
+//        for await unit in group {
+//            collected.append(unit)
+//        }
+//        return collected
+//    }
     let obvanState = LayoutState(id: obvan.viewId,
                                  units: units,
                                  layoutType: .obvan,

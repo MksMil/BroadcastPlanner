@@ -10,8 +10,14 @@ struct ImageWrapper: View {
     
     @State private var image: Image
     @State private var isLoading: Bool = false
+  
+    @State private var isLoaded: Bool = false
     
-    init(id: String?, type: GlobalProperties.ImageType,imageSize: ImageSizes, placeHolder: String = "photo", image: Image = Image(systemName: "photo")) {
+    init(id: String?,
+         type: GlobalProperties.ImageType,
+         imageSize: ImageSizes,
+         placeHolder: String = "photo",
+         image: Image = Image(systemName: "photo")) {
         self.id = id ?? ""
         self.type = type
         self.imageSize = imageSize
@@ -20,24 +26,26 @@ struct ImageWrapper: View {
     }
     
     var body: some View {
-            image
-                .resizable()
-                .opacity(isLoading ? 0.3: 1)
-                .overlay{
-                    if isLoading{
-                        ProgressView()
-                    }
-                }
-                .task{
-                    update()
-                }
-                .onReceive(dataManager.updatePublisher) { value in
-                  
-                    guard !id.isEmpty else { return }
-                    if value.0 == .images, value.1.contains(id){
-                        update()
-                    }
-                }
+      Group{
+        if isLoading{
+          ProgressView()
+        } else {
+          image
+            .resizable()
+            .padding(isLoaded ? 0: 8)
+            .opacity(!isLoaded ? 0.3: 1)
+        }
+      }
+      .task{
+        update()
+      }
+      .onReceive(dataManager.updatePublisher) { value in
+        
+        guard !id.isEmpty else { return }
+        if value.0 == .images, value.1.contains(id){
+          update()
+        }
+      }
     }
     
    @MainActor func update(){
@@ -55,6 +63,7 @@ struct ImageWrapper: View {
                 await MainActor.run {
                   withAnimation{
                     image = Image(uiImage: newImage)
+                    isLoaded = true
                   }
                 }
             }

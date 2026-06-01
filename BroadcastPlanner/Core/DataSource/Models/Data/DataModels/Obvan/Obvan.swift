@@ -172,7 +172,8 @@ extension Obvan{
             }
             cleanTemplateCrews()
             viewBroadcasts.forEach {
-                $0.obvan = nil
+                $0.cleanCrews(obvanId: id)
+                $0.removeFromObvan(self)
                 removeFromBroadcasts($0)
             }
     }

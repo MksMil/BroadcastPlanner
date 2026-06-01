@@ -46,44 +46,29 @@ struct BluePrintEditView: View {
       MainBackground()
       
       VStack(spacing: 0) {
-        
+        //TODO:make async? or reload animation
         SpriteView(scene: vm.scene)
         .aspectRatio(1.5, contentMode: .fit)
         .frame(maxWidth: .infinity)
         .clipShape(RoundedRectangle(cornerRadius: 10))
         
+        
         HStack(spacing: 6){
           VStack(spacing:6){
             filterBlock
             
-            PointDescriptionView(source: vm.states,
-                                 currentSource: $vm.selectedState,
-                                 sourceForCells: vm.filteredUnits,
-                                 currentCell: $vm.selectedUnit,
-                                 spacing: 0,
-                                 menuHeight: 40) { unit in
-              //descriptrion cell
-              PointDescriptionCell(
-                image: unit.image,
-                firstName: unit.firstName,
-                lastName: unit.lastName,
-                number: unit.number,
-                camera: unit.camera,
-                sound: unit.sound,
-                light: unit.light,
-                unitDescription: unit.description)
-              .onTapGesture {
-                vm.selectedUnit = vm.selectedUnit != nil ? nil: unit
-              }
+            LayoutStateDescriptionView(source: vm.states,
+                                       currentSource: $vm.selectedState,
+                                       spacing: 0,
+                                       menuHeight: 40) {
+              stateLayoutContent
             } sourceCell: { state in
               ZStack{
-                // source cell
                 Image(systemName: state.layoutType.rawValue)
                   .font(.system(size: 22))
                   .offset(y: -3)
               }
             } addSourceAction: {
-              //TODO: from vm
               vm.isAddObvanSheetShow = true
             }
             .overlay {
@@ -91,6 +76,7 @@ struct BluePrintEditView: View {
                 .stroke(Color.white.opacity(0.3), lineWidth: 2)
             }
             .clipShape(RoundedRectangle(cornerRadius: 12))
+            .animation(.easeIn(duration: 0.3), value: vm.selectedState)
           }
           controlGroup
         }
@@ -123,8 +109,8 @@ struct BluePrintEditView: View {
       UnitEditView(vm: UnitEditViewModel(unit: vm.selectedUnit,dataManager: vm.dataManager, availableUsers: availableUsers), state: vm.selectedState)
     }
     .sheet(isPresented: $vm.isAddObvanSheetShow) {
-      ObvanPickerSheet(
-          vm: ObvanPickerViewModel(
+      ObvanPickerSheetView(
+          vm: ObvanPickerSheetViewModel(
             obvans: Array(obvans),
             alreadyAdded: broadcast.viewObvans,
             dataManager: vm.dataManager
@@ -135,6 +121,45 @@ struct BluePrintEditView: View {
     }
     
   }
+  // MARK: State Layout Content
+  private var stateLayoutContent: some View {
+    Group{
+      if let state = vm.selectedState{
+        //for venue units
+        if state.layoutType == .venue{
+          ViewWithCarousel(source: state.units,
+                           current: $vm.selectedUnit) { unit in
+            PointDescriptionCell(
+              image: unit.image,
+              firstName: unit.firstName,
+              lastName: unit.lastName,
+              number: unit.number,
+              camera: unit.camera,
+              sound: unit.sound,
+              light: unit.light,
+              unitDescription: unit.description)
+            .onTapGesture {
+              vm.selectedUnit = vm.selectedUnit != nil ? nil: unit
+            }
+          }
+        } else {
+          //for obvan units
+          ScrollView{
+            VStack{
+              ForEach(state.units){ unit in
+                // TODO: make a cell!
+                Text("\(unit.description ?? "empty")")
+              }
+            }
+          }
+        }
+      } else {
+        ProgressView()
+      }
+    }
+    .frame(maxWidth: .infinity)
+  }
+  
   // MARK: ControlGroup
   private var controlGroup: some View {
     VStack(spacing:6){
@@ -157,7 +182,7 @@ struct BluePrintEditView: View {
           RoundedRectangle(cornerRadius: 5).stroke(.white.opacity(0.4), lineWidth: 2)
         }
         .layoutPriority(1)
-      BPEditEventControlPanel(delegate: vm.renderDelegate)
+      ScaleSceneControlPanelView(delegate: vm.renderDelegate)
         .layoutPriority(1)
     }
   }

@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct BPEditEventControlPanel: View {
+struct ScaleSceneControlPanelView: View {
 
   var delegate: (any BPJoystickExecutable)
 

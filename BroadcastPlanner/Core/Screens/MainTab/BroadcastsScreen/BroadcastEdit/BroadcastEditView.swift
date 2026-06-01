@@ -185,11 +185,11 @@ struct BroadcastEditView: View {
   // MARK: - Venue schema + OB vans
 
   private var venueAndObvansSection: some View {
-    HStack(spacing: 5) {
+    HStack(alignment: .top, spacing: 5) {
       venueSchemaColumn
       Divider()
         .opacity(vm.broadcast.viewObvans.count > 0 ? 1 : 0)
-        .offset(x: -10)
+//        .offset(x: -10)
       obvansColumn
     }
     .frame(maxWidth: .infinity)
@@ -204,30 +204,6 @@ struct BroadcastEditView: View {
       )
       .scaledToFit()
       .frame(height: 100)
-      .background(
-        GeometryReader { geo in
-          Color.clear.preference(
-            key: ImageWidthPreferenceKey.self,
-            value: geo.size.width
-          )
-        }
-      )
-      .onPreferenceChange(ImageWidthPreferenceKey.self) { newWidth in
-        if let newWidth { vm.updateImageWidth(newWidth) }
-      }
-      .overlay {
-        if let point = vm.memberToShow {
-          Circle().stroke(Color.red, lineWidth: 1)
-            .frame(width: 15, height: 15)
-            .scaleEffect(point.viewScaleFactor)
-            .position(
-              CGPoint(
-                x: vm.imageWidth * point.viewX,
-                y: 150 * (1 - point.viewY)
-              )
-            )
-        }
-      }
       .onTapGesture {
         vm.routeToEditPoints()
       }
@@ -258,24 +234,18 @@ struct BroadcastEditView: View {
         }
       }
       .padding(.horizontal, 5)
-
-      Spacer()
     }
-    .frame(
-      maxWidth: vm.broadcast.viewObvans.count > 0
-        ? vm.imageWidth + 20 : .infinity
-    )
-    .layoutPriority(1)
   }
 
   private var obvansColumn: some View {
-    VStack(alignment: .leading) {
+    VStack(alignment: .center) {
       ScrollView {
         ForEach(vm.broadcast.viewObvans.sorted { $0.viewName < $1.viewName }) {
           obvan in
           VStack {
             ImageWrapper(id: obvan.id, type: .obvan, imageSize: .smallImages)
               .scaledToFit()
+              .frame(height: 100)
 
             SmartCollectionLayout(hSpacing: 5, vSpacing: 5) {
               ForEach(vm.broadcast.crewsForObvan(obvan: obvan)) { crew in
@@ -300,9 +270,7 @@ struct BroadcastEditView: View {
           }
         }
       }
-      Spacer()
     }
-    .offset(x: -10)
   }
 
   // MARK: - Toolbar

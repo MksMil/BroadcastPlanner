@@ -56,6 +56,7 @@ class AddEditObvanViewModel: ObservableObject{
   
   @Published var isLoading: Bool = true
   @Published var isDeleteConfirm: Bool = false //confirmation
+  @Published var isRemoveCrew: Bool = false
   @Published var isSaving: Bool = false // progressView on saveButton
   @Published var isSaved: Bool = true
   @Published var isConfirmDiscardChangesOrSave: Bool = false //step backconfirmation
@@ -71,7 +72,6 @@ class AddEditObvanViewModel: ObservableObject{
     }
   }
   @Published var isAddObvanSheetShow: Bool = false
-
   @Published var obvanName: String = ""{
     didSet{
       isSaved = false
@@ -177,6 +177,12 @@ extension AddEditObvanViewModel{
   }
   func setPosition(_ position: String?){
     selectedUnit?.description = position
+  }
+  func removeObvan(){
+    Task{
+      await dataManager.removeObvan(obvan)
+      router.stepBack()
+    }
   }
   
   func save() async {
